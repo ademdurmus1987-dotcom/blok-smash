@@ -12,7 +12,7 @@ const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test');
 // v6.19: (Adem) Korsan modu pilotu: beta/korsan/index.html ayni motoru window.KORSAN ile acar; korsan.js sahneyi, hedefleri ve kartlari kurar.
 // KORSAN yoksa (Yapi modu) K null'dur ve asagidaki 'if (K)' satirlarinin hicbiri calismaz.
-const K = window.KORSAN ? await import('../korsan/korsan.js?v=8') : null;
+const K = window.KORSAN ? await import('../korsan/korsan.js?v=9') : null;
 const SKEY = K ? 'blokpop_korsan_v1' : 'blokpop_yapi_v3';
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
@@ -932,6 +932,7 @@ function updatePofi(dt) {
 const BR = 0.47;   // v6.8: (Adem) biraz kucultuldu. v6.5: 3B top mermisi net gorunsun.    // v6.2: top biraz buyudu, parlak ve isikli
 const BALLGEO = new THREE.SphereGeometry(BR, 32, 20);
 const TRAILGEO = new THREE.SphereGeometry(0.16, 12, 8);
+// Blok Smash 1. asama (Adem 9 Kas, Royal Smash referansi): top 62 yerine 95 birim/sn; kutle 5 yerine 3.3, carpma itisi (kutle x hiz) ayni kalsin diye.
 function shoot(target) {
   if (!g || g.state !== 'play' || g.shots <= 0) return false;
   const now = g.t; if (g.lastShot && now - g.lastShot < 0.22) return false;   // v6.0: daha seri
@@ -944,12 +945,12 @@ function shoot(target) {
   // yay: v = (hedef - baslangic)/T - g*T/2. En kisa ucus suresi secilir ama top platformun on kenarini (z = R) en az
   // 0.9 yukaridan asmali, yoksa kenara carpip geri seker
   const dv = target.clone().sub(st), gy = world.gravity.y, sz = st.x * Math.sin(YAW) + st.z * Math.cos(YAW), tz = target.x * Math.sin(YAW) + target.z * Math.cos(YAW), edge = Math.min(1, Math.max(0, (sz - RZ) / Math.max(0.01, sz - tz)));
-  let T = Math.max(0.08, dv.length() / 62);   // v6.10: (Adem) mermi daha da hizli (v6.9: 44)   // v6.5: biraz yavas, top gozle takip edilir   // v6.1: her yone ayni hiz (~44 birim/sn): yukari da asagi da ayni guc
+  let T = Math.max(0.08, dv.length() / 95);   // v6.10: (Adem) mermi daha da hizli (v6.9: 44)   // v6.5: biraz yavas, top gozle takip edilir   // v6.1: her yone ayni hiz (~44 birim/sn): yukari da asagi da ayni guc
   // v6.11: (Adem) alt siralara atis kavise girip yavasliyordu, karli koyde kare platformun kenarina takilip hic gitmiyordu:
   // mermi platforma carpmaz (carpisma filtresi), her hedefe duz ve ayni hizla gider
   const v = new CANNON.Vec3(dv.x / T, dv.y / T - 0.5 * gy * T, dv.z / T);
   const col = PF.col || '#3d9bff';
-  const body = new CANNON.Body({ mass: 5, material: PM.ball, linearDamping: 0.01, allowSleep: false }); body.addShape(new CANNON.Sphere(BR)); body.collisionFilterGroup = 2; body.collisionFilterMask = ~4;
+  const body = new CANNON.Body({ mass: 3.3, material: PM.ball, linearDamping: 0.01, allowSleep: false }); body.addShape(new CANNON.Sphere(BR)); body.collisionFilterGroup = 2; body.collisionFilterMask = ~4;
   body.position.set(st.x, st.y, st.z); body.velocity.copy(v); world.addBody(body);
   const tg = topGeo(), mesh = tg ? new THREE.Mesh(tg, topMat()) : new THREE.Mesh(BALLGEO, new THREE.MeshStandardMaterial({ color: col, roughness: 0.15, metalness: 0.1, emissive: col, emissiveIntensity: 0.45 })); mesh.castShadow = true; scene.add(mesh);
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#ffe6ff', transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false })); halo.scale.setScalar(BR * 4.2); halo.visible = false; mesh.add(halo);
@@ -1692,10 +1693,16 @@ function win() {
   SV.max = Math.max(SV.max, LV + 1); save();
   const r = g.shots / g.max, st = Math.min(3, (r >= 0.4 ? 3 : r >= 0.15 ? 2 : 1) + g.bonus);
   const stars = [0, 1, 2].map((i) => '<span' + (i < st ? '' : ' class="off"') + '>★</span>').join('');
+  // Blok Smash 1. asama: her kalan top 5 altin; bolum odulu 10 + yildiz basina 10
+  const bonus = g.shots * 5, kaz = 10 + st * 10 + bonus, once = SV.altin || 0; SV.altin = once + kaz; save();
   modal('<div class="rib">Tebrikler!</div><div class="stars">' + stars + '</div><h2>Bölüm ' + LV + ' tamam</h2>' +
-    '<div class="stat"><div>KALAN TOP<b>' + g.shots + '</b></div><div>BLOK<b>' + g.total + '</b></div>' + (g.gold ? '<div>HAZİNE<b>' + g.gold + '</b></div>' : '') + '</div>' +
+    '<div class="stat"><div>KALAN TOP<b>' + g.shots + '</b></div><div>TOP BONUSU<b>+' + bonus + '</b></div></div>' +
+    '<div class="kz"><i class="coin"></i><b id="kz">+0</b></div><p class="kasa">Altın: <b id="ks">' + once + '</b></p>' +
     '<button class="btn" id="nx">Devam Et</button>');
   for (let i = 0; i < st; i++) setTimeout(() => sfx('bonus'), 120 + i * 250);
+  let n = 0; const adim = Math.max(1, Math.round(kaz / 24));
+  setTimeout(function say() { n = Math.min(kaz, n + adim); const a = $('kz'), b = $('ks'); if (!a) return; a.textContent = '+' + n; b.textContent = once + n;
+    if (n < kaz) { if (n % (adim * 4) < adim) sfx('tik'); setTimeout(say, 45); } else a.parentNode.classList.add('pop'); }, 900);
   $('nx').onclick = () => { sfx('tik'); start(LV + 1); };
 }
 function lose() {
@@ -1731,10 +1738,16 @@ document.addEventListener('visibilitychange', () => { const v = $('bgv'); if (v 
   if (!AC) return; if (document.hidden) AC.suspend(); else if (!SV.sessiz) AC.resume().catch(() => {}); });
 function sesDugme() { const b = $('ses'); if (b) b.textContent = SV.sessiz ? '🔇' : '🔊'; }
 if ($('ses')) { sesDugme(); $('ses').onclick = () => { SV.sessiz = !SV.sessiz; save(); sesDugme(); if (SV.sessiz) { if (AC) AC.suspend(); } else { sesAc(); buzz(30); } }; }
+// Blok Smash 1. asama: parmak ekranda kaldikca seri atis (shoot kendi 0.22 sn araligini korur); parmak kayarsa nisan da kayar.
+let HOLD = null;
+function holdTick() { if (!HOLD) return; if (g && g.state === 'play') { const p = aimAt(HOLD.x, HOLD.y); if (p) shoot(p); } requestAnimationFrame(holdTick); }
 glc.addEventListener('pointerdown', (e) => {
   sesAc(); dokunTitre();
   const p = aimAt(e.clientX, e.clientY); if (p) shoot(p);
+  const ilk = !HOLD; HOLD = { x: e.clientX, y: e.clientY, id: e.pointerId }; if (ilk) requestAnimationFrame(holdTick);
 });
+glc.addEventListener('pointermove', (e) => { if (HOLD && HOLD.id === e.pointerId) { HOLD.x = e.clientX; HOLD.y = e.clientY; } });
+for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) glc.addEventListener(ev, (e) => { if (HOLD && HOLD.id === e.pointerId) HOLD = null; });
 
 // ---------------- kamera ----------------
 // platformun tamami ve altta Pofi ekrana sigar; dar (telefon) ekranda geriye cekilir
@@ -1802,7 +1815,7 @@ function fovK(dt) {
 }
 // top kupe carpinca: malzemeye gore agirlik, ses, titresim, kisa donma, gorus acisi vurusu
 function impactK(b, e) {
-  const c = b.hc, vn = e && e.contact ? Math.abs(e.contact.getImpactVelocityAlongNormal()) : 45, mp = MAT_P[matSnd(c ? c.kind : null)] || MAT_P.tahta, s = Math.min(1.4, vn / 45) * mp.w;
+  const c = b.hc, vn = e && e.contact ? Math.abs(e.contact.getImpactVelocityAlongNormal()) : 45, mp = MAT_P[matSnd(c ? c.kind : null)] || MAT_P.tahta, s = Math.min(1.4, vn / 70) * mp.w;
   wakeAll(); g.busy = 2.5;
   const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); burst(p, '#fff3a0', 12, 8);
   withS(Math.min(1.3, 0.75 + 0.3 * s), 1.04 - 0.1 * Math.min(1, s), () => sfx('hit'));

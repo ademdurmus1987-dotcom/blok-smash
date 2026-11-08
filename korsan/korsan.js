@@ -565,10 +565,10 @@ export function kart() {
   SV.max = Math.max(SV.max || 1, L + 1); if (!SV.yil) SV.yil = {};
   const r = g.shots / g.max, st = Math.min(3, (r >= 0.4 ? 3 : r >= 0.15 ? 2 : 1) + g.bonus);
   SV.yil[L] = Math.max(SV.yil[L] || 0, st);
-  const kaz = 10 + st * 10 + g.gold * 25 + (bolum(L).patron ? 50 : 0), once = SV.altin || 0; SV.altin = once + kaz; A.save();
+  const topBonus = g.shots * 5, kaz = 10 + st * 10 + g.gold * 25 + topBonus + (bolum(L).patron ? 50 : 0), once = SV.altin || 0; SV.altin = once + kaz; A.save();
   const sandik = L % 5 === 0;
   A.modal('<div class="rib">Zafer!</div><div class="stars">' + yildiz(st) + '</div><h2>Bölüm ' + L + ' tamam</h2>' +
-    '<div class="kz"><i class="coin"></i><b id="kz">+0</b></div><p class="kasa">Hazine: <b id="ks">' + once + '</b></p>' +
+    '<div class="kz"><i class="coin"></i><b id="kz">+0</b></div>' + (topBonus ? '<p class="kasa">Kalan ' + g.shots + ' top: <b>+' + topBonus + '</b></p>' : '') + '<p class="kasa">Hazine: <b id="ks">' + once + '</b></p>' +
     (sandik ? '<div class="sdk" id="sdk">' + sandikSvg() + '<small>Hazine sandığı! Aç</small></div>' : '') +
     '<button class="btn" id="nx">Devam Et</button>');
   for (let i = 0; i < st; i++) setTimeout(() => A.sfx('bonus'), 120 + i * 250);
