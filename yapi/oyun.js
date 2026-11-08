@@ -1097,7 +1097,7 @@ function updateBalls(dt) {
       b.lp = pos.clone(); }
     for (let j = b.trail.length - 1; j >= 0; j--) { const p = b.trail[j]; p.life -= dt; const k = Math.max(0, p.life / 0.2); p.m.scale.setScalar(BR * 1.3 * (1.6 - 0.6 * k)); p.m.material.opacity = 0.35 * k; if (p.life <= 0) { scene.remove(p.m); p.m.material.dispose(); b.trail.splice(j, 1); } }
     if (!b.pc && b.body.position.y > BR + 0.05) { b.pc = 1; b.body.collisionFilterMask = -1; }   // v6.12: (hata) top platformun icinden dusuyordu: platform hizasini asinca platforma carpar
-    if (!b.sunk && b.body.position.y < GY + BR * 1.1) { b.sunk = 1; const bx = b.body.position.x, bz = b.body.position.z; b.zn = zoneAt(bx, bz); if (b.zn === 'su') { splash(bx, bz, 0.9, true); sfx('su', 0); } else if (b.zn === 'cim') groundFx(bx, bz, 0.6); else { softBurst(b.zn, bx, bz, 0.6, b.body.velocity); sfx('thud', 3); } world.removeBody(b.body); }   // v6.17
+    if (!b.sunk && b.body.position.y < GY + BR * 1.1) { b.sunk = 1; const bx = b.body.position.x, bz = b.body.position.z; b.zn = zoneAt(bx, bz); if (b.zn === 'su') { splash(bx, bz, 0.9, true); if (K) sfx('su', 0); else sfx('yer', 'su'); } else if (b.zn === 'cim') { groundFx(bx, bz, 0.6); sfx('yer', 'kum'); } else { softBurst(b.zn, bx, bz, 0.6, b.body.velocity); sfx('yer', b.zn); } world.removeBody(b.body); }   // v6.17
     if (b.sunk) { b.sunk += dt; b.mesh.position.y = GY + BR - Math.min(1, b.sunk / (b.zn === 'su' ? 0.9 : 0.5)) * BR * (b.zn === 'kum' ? 1.1 : b.zn === 'kar' ? 1.5 : 2.4); }
     else if (b.t > 1.2 && b.body.velocity.length() < 1.2) b.rest = (b.rest || 0) + dt;
     if (b.rest > 0.6) b.mesh.scale.setScalar(Math.max(0.001, 1 - (b.rest - 0.6) / 0.4));
@@ -1293,7 +1293,7 @@ function softLand(c, zn) {
   if (zn === 'su') { splash(p.x, p.z, sp * sz, true); c.y0 = seaY(p.x, p.z); }
   else { softBurst(zn, p.x, p.z, sp * sz, v); c.cr = crater(zn, p.x, p.z, S * 0.75 * sz); c.rim = rimOf(zn, c, p.x, p.z); }
   c.bat = (zn === 'kar' ? h * (0.3 + 0.12 * Math.random()) : zn === 'kum' ? h * (0.16 + 0.08 * Math.random()) : 0) * Math.min(1.25, 0.6 + Math.abs(v.y) / 30);   // v6.18: hizla dusen daha derine saplanir
-  sfx(zn === 'su' ? 'su' : 'thud', zn === 'su' ? 1 : 3); buzz(18, 90); shake = Math.max(shake, 0.05);
+  sfx('yer', zn); buzz(18, 90); shake = Math.max(shake, 0.05);
 }
 function landTick(c, dt) {
   c.lt += dt; const m = c.mesh, h = c.h || S;
@@ -1407,7 +1407,7 @@ function groundFx(x, z0, s) {
   }
   const t0 = TOZ; TOZ = z.toz; dust(x, GY, z0, z.toz2 * s); TOZ = t0;
   if (z.halka) { ripple(x, z0, 2.2 * s); setTimeout(() => ripple(x, z0, 1.6 * s), 180); }
-  sfx('thud', 3);
+  // Blok Smash (Adem 9 Kas): cimen sert zemin, ayri dusme sesi yok; blogun kendi kirilma sesi (breakBlock) calar
 }
 // suya dusen seyin cevresinde genisleyen beyaz halka
 const RIPGEO = new THREE.RingGeometry(0.82, 1, 48);
@@ -1559,14 +1559,14 @@ function noise(ft, fq, q, t0, dur, vol, sweep) {
 }
 // v6.3: sesler artik onceden uretilmis kayitlar (ses/*.mp3): katmanli, yankili; her olay icin 2-3 cesit, her calista perde hafif degisir.
 // Malzemeye gore kirilma: tahta, tas, metal, cam. Ayni ses cok sik calmaz, ayni anda en fazla 6 ses.
-const SFILES = { atis: 3, vurus: 3, tahta: 3, tas: 3, metal: 3, cam: 3, buz: 3, dusme: 3, patlama: 2, pop: 0, bonus: 0, kazan: 0, kaybet: 0, tik: 0 };
+const SFILES = { atis: 3, vurus: 3, tahta: 3, tas: 3, metal: 3, cam: 3, buz: 3, yerkum: 3, yerkar: 3, yersu: 3, dusme: 3, patlama: 2, pop: 0, bonus: 0, kazan: 0, kaybet: 0, tik: 0 };
 const RAW = {}, BUF = {};
 // v6.29: (Adem: metal sesleri duruyor) yapi/ses/vurus, tahta, tas uretilmis kayitlardi: vurus 0.6 sn cinlayan 'dong', tahta/tas 1 sn boyunca
 // sonmeyen, tek perdede cinlayan yanki (metal gibi). Yerine korsanin gercek kisa kayitlari (CC0, korsan/ses/KAYNAKLAR.md).
 const GERCEK = new Set(['vurus']);
 // Blok Smash (Adem 9 Kas): tas, cam, tahta, buz kirilma sesleri Adem'in sectigi kayitlar, iki modda da ortak ses/ klasorunden (kaynak: ses/KAYNAKLAR.md)
-const SECILEN = new Set(['tahta', 'tas', 'cam', 'buz']);
-const sesYolu = (k) => SECILEN.has(k) ? ['../ses/', 'b2'] : !K && GERCEK.has(k) ? ['../korsan/ses/', 2] : [SDIR, SV2];
+const SECILEN = new Set(['tahta', 'tas', 'cam', 'buz', 'atis', 'yerkum', 'yerkar', 'yersu']);
+const sesYolu = (k) => SECILEN.has(k) ? ['../ses/', 'b3'] : !K && GERCEK.has(k) ? ['../korsan/ses/', 2] : [SDIR, SV2];
 // v6.22: (Adem 6 Kas) korsan modunda sesler korsan/ses/ klasorunden: gercek top, su, tahta, zincir, altin kayitlari (kaynaklar: korsan/ses/KAYNAKLAR.md)
 if (K) Object.assign(SFILES, { su: 4, kabarcik: 0, zincir: 0, para: 0, sandik: 0, dalga: 0, yelken: 0, pop: undefined });
 const SDIR = K ? '../korsan/ses/' : 'ses/', SV2 = K ? 2 : 1;
@@ -1574,7 +1574,7 @@ for (const k in SFILES) { if (SFILES[k] === undefined) continue; const n = SFILE
 function decodeAll() { for (const f in RAW) RAW[f].then((ab) => { if (ab && !BUF[f]) AC.decodeAudioData(ab.slice(0), (b) => { BUF[f] = b; }, () => {}); }); }
 const MATSND = { ahsap: 'tahta', sandik: 'tahta', ahsapmetal: 'tahta', kirmizi: 'tahta', hediye: 'tahta', kabak: 'tahta', recel: 'cam', tas: 'tas', tugla: 'tas', piramitTas: 'tas', metal: 'metal', celik: 'metal', altin: 'metal', fici: 'metal', yildiz: 'metal', cam: 'cam', buz: 'buz', jole: 'cam', buz2: 'buz', buzDikey: 'buz', ahsap2: 'tahta', alevUzun: 'tas', morDikey: 'tahta' };
 function matSnd(kind) { if (!kind) return 'tahta'; if (kind.startsWith('g_')) return 'cam'; const mt = MATSND[kind] || 'tahta'; return mt === 'metal' ? 'tas' : mt; }
-const LAST = {}, GAP = { atis: 0.06, vurus: 0.06, tahta: 0.05, tas: 0.05, metal: 0.07, cam: 0.06, buz: 0.06, patlama: 0.12, pop: 0.09, dusme: 0.07 };
+const LAST = {}, GAP = { atis: 0.06, vurus: 0.06, tahta: 0.05, tas: 0.05, metal: 0.07, cam: 0.06, buz: 0.06, yer: 0.07, patlama: 0.12, pop: 0.09, dusme: 0.07 };
 let voices = [];
 function play(k, vol, rate) {
   const n = SFILES[k], f = n ? k + Math.floor(Math.random() * n) : k, b = BUF[f]; if (!b) return;
@@ -1631,6 +1631,7 @@ function sfxK(k, n) {
   else if (k === 'cam') play('cam', 0.4);
   else if (k === 'metal') play('tas', 0.45);
   else if (k === 'boom') play('patlama', 0.95, 0.95);
+  else if (k === 'yer') sfxK(n === 'su' ? 'su' : 'thud', n === 'su' ? 1 : 0);
   else if (k === 'thud' || k === 'slap') play('dusme', 0.45, 0.9 + Math.random() * 0.15);
   else if (k === 'su') { play('su', n ? 0.6 : 0.35, 0.9 + Math.random() * 0.2); if (n) setTimeout(() => AC && play('kabarcik', 0.18, 0.9 + Math.random() * 0.2), 260); }
   else if (k === 'bonus') play('bonus', 0.55, 1);
@@ -1655,7 +1656,8 @@ function sfx(k, n) {
   const key = k === 'kir' ? matSnd(n) : k === 'shatter' ? 'tahta' : k;
   if (GAP[key] && LAST[key] && now - LAST[key] < GAP[key]) return; LAST[key] = now;
   voices = voices.filter((v) => v > now); if (voices.length >= 4 && k !== 'shoot' && k !== 'win' && k !== 'lose') return; voices.push(now + 0.15);
-  if (k === 'shoot') play('atis', 0.6, 0.92);
+  if (k === 'shoot') play('atis', 0.7, 0.97 + Math.random() * 0.06);
+  else if (k === 'yer') play('yer' + (n === 'su' || n === 'kar' ? n : 'kum'), 0.6, 0.95 + Math.random() * 0.1);
   else if (k === 'hit') play('vurus', 0.45, 0.9);
   else if (k === 'kir' || k === 'shatter') play(key === 'metal' ? 'tas' : key, 0.55, 0.88 + Math.random() * 0.1);
   else if (k === 'cam') play('cam', 0.4);
