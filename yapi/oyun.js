@@ -1566,7 +1566,7 @@ const RAW = {}, BUF = {};
 const GERCEK = new Set(['vurus']);
 // Blok Smash (Adem 9 Kas): tas, cam, tahta, buz kirilma sesleri Adem'in sectigi kayitlar, iki modda da ortak ses/ klasorunden (kaynak: ses/KAYNAKLAR.md)
 const SECILEN = new Set(['tahta', 'tas', 'cam', 'buz']);
-const sesYolu = (k) => SECILEN.has(k) ? ['../ses/', 'b1'] : !K && GERCEK.has(k) ? ['../korsan/ses/', 2] : [SDIR, SV2];
+const sesYolu = (k) => SECILEN.has(k) ? ['../ses/', 'b2'] : !K && GERCEK.has(k) ? ['../korsan/ses/', 2] : [SDIR, SV2];
 // v6.22: (Adem 6 Kas) korsan modunda sesler korsan/ses/ klasorunden: gercek top, su, tahta, zincir, altin kayitlari (kaynaklar: korsan/ses/KAYNAKLAR.md)
 if (K) Object.assign(SFILES, { su: 4, kabarcik: 0, zincir: 0, para: 0, sandik: 0, dalga: 0, yelken: 0, pop: undefined });
 const SDIR = K ? '../korsan/ses/' : 'ses/', SV2 = K ? 2 : 1;
