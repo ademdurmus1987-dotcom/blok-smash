@@ -1559,19 +1559,22 @@ function noise(ft, fq, q, t0, dur, vol, sweep) {
 }
 // v6.3: sesler artik onceden uretilmis kayitlar (ses/*.mp3): katmanli, yankili; her olay icin 2-3 cesit, her calista perde hafif degisir.
 // Malzemeye gore kirilma: tahta, tas, metal, cam. Ayni ses cok sik calmaz, ayni anda en fazla 6 ses.
-const SFILES = { atis: 3, vurus: 3, tahta: 3, tas: 3, metal: 3, cam: 3, dusme: 3, patlama: 2, pop: 0, bonus: 0, kazan: 0, kaybet: 0, tik: 0 };
+const SFILES = { atis: 3, vurus: 3, tahta: 3, tas: 3, metal: 3, cam: 3, buz: 3, dusme: 3, patlama: 2, pop: 0, bonus: 0, kazan: 0, kaybet: 0, tik: 0 };
 const RAW = {}, BUF = {};
 // v6.29: (Adem: metal sesleri duruyor) yapi/ses/vurus, tahta, tas uretilmis kayitlardi: vurus 0.6 sn cinlayan 'dong', tahta/tas 1 sn boyunca
 // sonmeyen, tek perdede cinlayan yanki (metal gibi). Yerine korsanin gercek kisa kayitlari (CC0, korsan/ses/KAYNAKLAR.md).
-const GERCEK = new Set(['vurus', 'tahta', 'tas']);
+const GERCEK = new Set(['vurus']);
+// Blok Smash (Adem 9 Kas): tas, cam, tahta, buz kirilma sesleri Adem'in sectigi kayitlar, iki modda da ortak ses/ klasorunden (kaynak: ses/KAYNAKLAR.md)
+const SECILEN = new Set(['tahta', 'tas', 'cam', 'buz']);
+const sesYolu = (k) => SECILEN.has(k) ? ['../ses/', 'b1'] : !K && GERCEK.has(k) ? ['../korsan/ses/', 2] : [SDIR, SV2];
 // v6.22: (Adem 6 Kas) korsan modunda sesler korsan/ses/ klasorunden: gercek top, su, tahta, zincir, altin kayitlari (kaynaklar: korsan/ses/KAYNAKLAR.md)
 if (K) Object.assign(SFILES, { su: 4, kabarcik: 0, zincir: 0, para: 0, sandik: 0, dalga: 0, yelken: 0, pop: undefined });
 const SDIR = K ? '../korsan/ses/' : 'ses/', SV2 = K ? 2 : 1;
-for (const k in SFILES) { if (SFILES[k] === undefined) continue; const n = SFILES[k] || 1; for (let i = 0; i < n; i++) { const f = SFILES[k] ? k + i : k; RAW[f] = fetch((!K && GERCEK.has(k) ? '../korsan/ses/' : SDIR) + f + '.mp3?v=' + (!K && GERCEK.has(k) ? 2 : SV2)).then((r) => r.arrayBuffer()).catch(() => null); } }
+for (const k in SFILES) { if (SFILES[k] === undefined) continue; const n = SFILES[k] || 1; for (let i = 0; i < n; i++) { const f = SFILES[k] ? k + i : k; const [yol, sv] = sesYolu(k); RAW[f] = fetch(yol + f + '.mp3?v=' + sv).then((r) => r.arrayBuffer()).catch(() => null); } }
 function decodeAll() { for (const f in RAW) RAW[f].then((ab) => { if (ab && !BUF[f]) AC.decodeAudioData(ab.slice(0), (b) => { BUF[f] = b; }, () => {}); }); }
-const MATSND = { ahsap: 'tahta', sandik: 'tahta', ahsapmetal: 'tahta', kirmizi: 'tahta', hediye: 'tahta', kabak: 'tahta', recel: 'cam', tas: 'tas', tugla: 'tas', piramitTas: 'tas', metal: 'metal', celik: 'metal', altin: 'metal', fici: 'metal', yildiz: 'metal', cam: 'cam', buz: 'cam', jole: 'cam', buz2: 'cam', buzDikey: 'cam', ahsap2: 'tahta', alevUzun: 'tas', morDikey: 'tahta' };
+const MATSND = { ahsap: 'tahta', sandik: 'tahta', ahsapmetal: 'tahta', kirmizi: 'tahta', hediye: 'tahta', kabak: 'tahta', recel: 'cam', tas: 'tas', tugla: 'tas', piramitTas: 'tas', metal: 'metal', celik: 'metal', altin: 'metal', fici: 'metal', yildiz: 'metal', cam: 'cam', buz: 'buz', jole: 'cam', buz2: 'buz', buzDikey: 'buz', ahsap2: 'tahta', alevUzun: 'tas', morDikey: 'tahta' };
 function matSnd(kind) { if (!kind) return 'tahta'; if (kind.startsWith('g_')) return 'cam'; const mt = MATSND[kind] || 'tahta'; return mt === 'metal' ? 'tas' : mt; }
-const LAST = {}, GAP = { atis: 0.06, vurus: 0.06, tahta: 0.05, tas: 0.05, metal: 0.07, cam: 0.06, patlama: 0.12, pop: 0.09, dusme: 0.07 };
+const LAST = {}, GAP = { atis: 0.06, vurus: 0.06, tahta: 0.05, tas: 0.05, metal: 0.07, cam: 0.06, buz: 0.06, patlama: 0.12, pop: 0.09, dusme: 0.07 };
 let voices = [];
 function play(k, vol, rate) {
   const n = SFILES[k], f = n ? k + Math.floor(Math.random() * n) : k, b = BUF[f]; if (!b) return;
@@ -1654,8 +1657,8 @@ function sfx(k, n) {
   voices = voices.filter((v) => v > now); if (voices.length >= 4 && k !== 'shoot' && k !== 'win' && k !== 'lose') return; voices.push(now + 0.15);
   if (k === 'shoot') play('atis', 0.6, 0.92);
   else if (k === 'hit') play('vurus', 0.45, 0.9);
-  else if (k === 'kir' || k === 'shatter') play(key === 'metal' || key === 'cam' ? 'tas' : key, 0.55, 0.88 + Math.random() * 0.1);
-  else if (k === 'cam') play('tas', 0.3, 0.9);
+  else if (k === 'kir' || k === 'shatter') play(key === 'metal' ? 'tas' : key, 0.55, 0.88 + Math.random() * 0.1);
+  else if (k === 'cam') play('cam', 0.4);
   else if (k === 'metal') play('tas', 0.3, 0.8);
   else if (k === 'boom') play('patlama', 0.7, 0.9);
   else if (k === 'thud') play('dusme', 0.3, 0.75 + Math.random() * 0.1);
@@ -1776,15 +1779,15 @@ addEventListener('resize', fit); fit();
 // Darbe siddeti (s) ses, titresim, kamera ve kisa donmayi birlikte belirler. ?kalite=0 eski hal, ?kalite=1 her bolumde.
 const KAL = () => !K && (Q.get('kalite') === '1' || (Q.get('kalite') !== '0' && LV === 1));
 let VS = 1, RS = 1, TS = 1, HS = 0, FP = 0;   // ses carpani, perde carpani, zaman olcegi, donma suresi, gorus acisi vurusu
-const MAT_P = { tahta: { v: 1, r: 1, w: 1 }, tas: { v: 1.15, r: 0.88, w: 1.2 }, metal: { v: 0.95, r: 1.06, w: 1.15 }, cam: { v: 0.9, r: 1.14, w: 0.8 } };
-const MAT_H = { tahta: (s) => [Math.round(30 + 24 * s)], tas: (s) => [Math.round(40 + 36 * s)], metal: (s) => [34, 26, Math.round(30 + 20 * s)], cam: (s) => [30, 20, 30, 20, Math.round(26 + 12 * s)] };
+const MAT_P = { tahta: { v: 1, r: 1, w: 1 }, tas: { v: 1.15, r: 0.88, w: 1.2 }, metal: { v: 0.95, r: 1.06, w: 1.15 }, cam: { v: 0.9, r: 1.14, w: 0.8 }, buz: { v: 0.9, r: 1.1, w: 0.85 } };
+const MAT_H = { tahta: (s) => [Math.round(30 + 24 * s)], tas: (s) => [Math.round(40 + 36 * s)], metal: (s) => [34, 26, Math.round(30 + 20 * s)], cam: (s) => [30, 20, 30, 20, Math.round(26 + 12 * s)], buz: (s) => [28, 18, Math.round(28 + 14 * s)] };
 function withS(s, rs, fn) { const a = VS, b = RS; VS = s; RS = rs; try { fn(); } finally { VS = a; RS = b; } }
 function hitstop(sec) { HS = Math.max(HS, sec); TS = 0.12; }
 function darbeHaptik(kind, s) { if (s < 0.35) return; buzz((MAT_H[matSnd(kind)] || MAT_H.tahta)(Math.min(1.4, s)), 70); }
 // bir kupun baska bir seye carpma sesi: yalniz yeterince sert ve sik degil; kirilacak cam/kavanoz kendi kirilma sesini cikarir
 function darbeSesi(c, vn) {
   if (!g || !g.armed || c.out || vn < 4) return; const now = performance.now(); if (c.sndT && now - c.sndT < 140) return;
-  const m = matSnd(c.kind); if (m === 'cam') return; c.sndT = now;
+  const m = matSnd(c.kind); if (m === 'cam' || m === 'buz') return; c.sndT = now;
   const s = Math.min(1, vn / 18) * 0.7, mp = MAT_P[m] || MAT_P.tahta;
   withS(s * mp.v, mp.r * (1.08 - 0.14 * s), () => sfx('kir', c.kind));
 }
