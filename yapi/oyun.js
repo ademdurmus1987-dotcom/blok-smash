@@ -654,7 +654,54 @@ const KULELER = [
 ];
 // sira: 1. bolum Recel Rafi, sonra her eski bolumden sonra bir kule
 const LSIRA = (() => { const o = [], e = LEVELS.slice(); o.push(e.shift()); for (let i = 0; i < Math.max(e.length, KULELER.length); i++) { if (KULELER[i]) o.push(KULELER[i]); if (e[i]) o.push(e[i]); } return o; })();
-function levelOf(L) { if (K) return K.bolum(L); return LSIRA[(L - 1) % LSIRA.length]; }
+// ================= Blok Smash 2. asama (Adem 9 Kas 2026) =================
+// Bolum uretici: 1-31 el yapimi bolumler (LSIRA) bir kez oynanir; 32'den sonra her bolum kendi tohumundan uretilir, hicbiri tekrar etmez.
+// Zorluk bolumle artar: daha saglam malzeme (tas, tugla, altin), daha az fici, donen/kayan platform ve hareketli engel daha sik.
+function mul32(a) { return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const zorluk = (L) => Math.min(1, Math.max(0, (L - 1) / 100));
+const USIF = ['Taş', 'Ahşap', 'Kızıl', 'Altın', 'Gizli', 'Eski', 'Dev', 'Sarı', 'Mor', 'Yüksek', 'Çifte', 'Kayıp', 'Güneş', 'Kum', 'Rüzgâr', 'Demir'];
+function uretBolum(L) {
+  const r = mul32(L * 7919 + 13), d = zorluk(L), ri = (a, b) => a + Math.floor(r() * (b - a + 1)), sec = (a) => a[Math.floor(r() * a.length)];
+  const KIRIK = [C.kir, C.tur, C.pem], SAGLAM = d > 0.45 ? [C.mav, C.sar, C.mor, 'tugla', 'altin'] : [C.mav, C.sar, C.yes, 'tugla'];
+  // her kat (j) ve aynaya gore sutun (m) icin malzeme: saglam payi zorlukla artar; sag-sol simetrik kalir
+  const ps = 0.18 + 0.5 * d, katR = [], memo = {};
+  const mal = (m, j) => { const key = m + ',' + j; if (memo[key]) return memo[key]; if (!katR[j]) katR[j] = [sec(KIRIK), sec(SAGLAM), r()];
+    const [a, b, s] = katR[j]; return (memo[key] = (s < ps ? b : a) === b && r() < 0.25 ? a : (s < ps ? b : a)); };
+  const ozel = (o, sayi, tur) => { for (let n = 0; n < sayi && o.length; n++) { const c = o[Math.floor(r() * o.length)]; if (c[3][0] === '#' || c[3] === 'tugla') c[3] = tur; } };
+  const SEKIL = ['Kale', 'Kule', 'Duvar', 'Piramit', 'Hisar', 'Merdiven', 'Sütunlar', 'İkizler'];
+  const sk = SEKIL[(L * 5 + ri(0, 7)) % SEKIL.length];
+  let o = [], pl = null, don = 0;
+  const Hmax = Math.round(5 + 5 * d);
+  if (sk === 'Duvar') { const W = ri(5, 7), H = ri(3, Hmax), m = ayna(W); box(o, 0, W - 1, 0, H - 1, 0, 1, (i, j) => mal(m(i), j)); }
+  else if (sk === 'Kule') { const W = ri(3, 4), H = ri(6, Math.max(7, Hmax + 2)), D = r() < 0.5 ? W : 2, m = ayna(W); box(o, 0, W - 1, 0, H - 1, 0, D - 1, (i, j) => mal(m(i), j)); if (D === W && r() < 0.35 + 0.3 * d) don = 0.35 + 0.25 * r(); }
+  else if (sk === 'Piramit') { const B = ri(5, 7), D = r() < 0.3 ? 3 : 2; for (let l = 0; l < B; l++) box(o, l / 2, B - 1 - l / 2, l, l, 0, D - 1, (i, j) => mal(0, j)); }
+  else if (sk === 'Kale') { const W = 7, H = ri(2, 3), T = ri(H + 2, H + 3 + Math.round(3 * d)), m = ayna(W);
+    box(o, 0, W - 1, 0, H - 1, 0, 1, (i, j) => mal(m(i) + 3, j)); box(o, 0, 1, H, T - 1, 0, 1, (i, j) => mal(m(i), j)); box(o, 5, 6, H, T - 1, 0, 1, (i, j) => mal(m(i), j)); box(o, 3, 3, H, H + 1, 0, 1, (i, j) => mal(2, j)); }
+  else if (sk === 'Hisar') { const W = 4, H = ri(3, 4 + Math.round(3 * d)); box(o, 0, W - 1, 0, H - 1, 0, W - 1, (i, j, k) => (i > 0 && i < W - 1 && k > 0 && k < W - 1 && j < H - 1 ? null : mal(Math.min(i, k, W - 1 - i, W - 1 - k), j))); o = o.filter((c) => c[3]); if (r() < 0.5 + 0.3 * d) don = 0.3 + 0.2 * r(); }
+  else if (sk === 'Merdiven') { const W = 7, m = ayna(W), b0 = ri(1, 2), st = ri(1, 2); for (let i = 0; i < W; i++) box(o, i, i, 0, b0 + m(i) * st, 0, 1, (ii, j) => mal(m(ii), j)); }
+  else if (sk === 'Sütunlar') { const W = 7, H = ri(4, Hmax + 1), m = ayna(W); box(o, 0, W - 1, 0, 0, 0, 1, (i, j) => mal(9, j)); for (let i = 0; i < W; i += 2) box(o, i, i, 1, H, 0, 1, (ii, j) => mal(m(ii), j)); }
+  else { const H = ri(5, Hmax + 2), yap = (n) => box([], 0, 2, 0, H - 1, 0, 1, (i, j) => mal(i === 1 ? 1 : 0, j)).map((c) => (c.push(n), c)); o = yap(0).concat(yap(1)); pl = [{ x: -4.3, z: 0 }, { x: 4.3, z: 0 }]; if (r() < 0.25 + 0.35 * d) pl.forEach((q) => (q.kay = { a: 1.3, h: 1 + 0.5 * d })); }
+  if (!pl && !don && r() < 0.12 + 0.2 * d && sk !== 'Kale') pl = [{ x: 0, z: 0, kay: { a: 2.2 + r(), h: 0.8 + 0.5 * d } }];
+  // telefon yorulmasin: en cok 110 blok, fazlasi en ust katlardan kesilir
+  while (o.length > 110) { const jm = Math.max(...o.map((c) => c[1])); o = o.filter((c) => c[1] < jm); }
+  // ozel bloklar: fici (yardimci, zorlukla azalir), cam/buz/jole, nadiren hediye (+2 top) ve yildiz
+  ozel(o, Math.max(0, Math.round((1.6 - 1.4 * d) * r() * 1.5)), 'fici'); if (r() < 0.4) ozel(o, ri(1, 3), sec(['cam', 'buz', 'jole'])); if (r() < 0.2) ozel(o, 1, 'hediye'); if (r() < 0.25) ozel(o, 1, 'yildiz');
+  if (d > 0.5 && r() < 0.3) ozel(o, 1, 'bomba');
+  const Y = { ad: sec(USIF) + ' ' + sk, make: () => o.map((c) => c.slice()), uretim: 1 };
+  if (pl) Y.pl = pl; if (don) Y.don = don;
+  return Y;
+}
+// hareketli engeller: top yolunda donen kurek, sallanan kalkan, kayan tahta. 1-3 yok; 4, 7, 10 tanitim; sonra sansla.
+function engelOf(L, Y) {
+  if (L < 4) return [];
+  if (L === 4) return [{ t: 'kurek' }]; if (L === 7) return [{ t: 'kalkan' }]; if (L === 10) return [{ t: 'kayan' }];
+  const r = mul32(L * 104729 + 7), d = zorluk(L); if (r() > 0.38 + 0.35 * d) return [];
+  const t = ['kurek', 'kalkan', 'kayan'][Math.floor(r() * 3)];
+  if (d > 0.4 && r() < 0.3 && !(Y.pl && Y.pl.length > 1)) return [{ t: 'kurek', x: -0.5, ters: 1 }, { t: 'kurek', x: 0.5 }];
+  return [{ t, hiz: 1 + 0.6 * d }];
+}
+const UCACHE = new Map();
+function levelOf(L) { if (K) return K.bolum(L); if (L <= LSIRA.length) return LSIRA[L - 1]; if (!UCACHE.has(L)) UCACHE.set(L, uretBolum(L)); return UCACHE.get(L); }
 // v6.13: kup listesindeki 5. alan platform numarasi (0, 1, ...); bolumun pl dizisi platformlarin yeri ve hareketi
 
 // ---------------- fizik ----------------
@@ -681,6 +728,68 @@ function clearLevel() {
   for (const d of DEB) scene.remove(d.m); for (const s of SPL) scene.remove(s.m);
   CUBE_OF.clear(); cubes.length = 0; balls.length = 0; DEB.length = 0; SPL.length = 0;
 }
+// ---------------- hareketli engeller (Blok Smash 2. asama) ----------------
+// Yapinin onunde, top yolunda: donen kurek, sallanan kalkan, kayan tahta. Kinematik govde: kupleri iter, ona carpan top hizinin
+// cogunu kaybeder ve kup kiramaz (top bosa gider). Zamanlamayi oyuncu tutturur.
+const ENG = [];
+const ENGTAH = canvasTex(256, 64, (x, w, h) => {
+  x.fillStyle = '#b8783a'; x.fillRect(0, 0, w, h);
+  for (let i = 0; i < 26; i++) { x.strokeStyle = 'rgba(' + (i % 2 ? '120,70,30' : '220,160,95') + ',0.45)'; x.lineWidth = 1 + (i % 3); x.beginPath(); const y = (i * 37) % h; x.moveTo(0, y); x.bezierCurveTo(w * 0.3, y + 6, w * 0.6, y - 6, w, y + 2); x.stroke(); }
+  x.fillStyle = 'rgba(70,38,14,0.55)'; x.fillRect(0, 0, w, 5); x.fillRect(0, h - 5, w, 5); x.fillRect(0, 0, 5, h); x.fillRect(w - 5, 0, 5, h);
+  x.fillStyle = '#6f7680'; for (const px of [16, w - 16]) for (const py of [14, h - 14]) { x.beginPath(); x.arc(px, py, 5, 0, 7); x.fill(); }
+});
+const ENGM = { tahta: new THREE.MeshStandardMaterial({ map: ENGTAH, roughness: 0.72 }), kirmizi: new THREE.MeshStandardMaterial({ color: '#e8333f', roughness: 0.35, emissive: '#5a0010', emissiveIntensity: 0.25 }),
+  beyaz: new THREE.MeshStandardMaterial({ color: '#fff6e8', roughness: 0.4 }), altin: new THREE.MeshStandardMaterial({ color: '#ffc531', roughness: 0.28, metalness: 0.65, emissive: '#6a4200', emissiveIntensity: 0.35 }) };
+function engTemizle() { for (const e of ENG) { world.removeBody(e.body); scene.remove(e.grp); } ENG.length = 0; }
+function engMesh(grp, geo, mat, x, y, z, rz) { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); if (rz) m.rotation.z = rz; m.castShadow = true; grp.add(m); return m; }
+function engKutu(body, hx, hy, hz, x, y, rz) { const q = new CANNON.Quaternion(); q.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), rz || 0); body.addShape(new CANNON.Box(new CANNON.Vec3(hx, hy, hz)), new CANNON.Vec3(x, y, 0), q); }
+function engKur(L, Y) {
+  engTemizle(); if (K || Q.has('engsiz')) return;
+  const list = engelOf(L, Y), d = zorluk(L); if (!list.length) return;
+  const zE = RZ + 1.9, yc = Math.max(S * 1.7, TOPY * 0.5);
+  for (const e of list) {
+    const grp = new THREE.Group(), body = new CANNON.Body({ mass: 0, type: CANNON.Body.KINEMATIC, material: PM.plat }), x0 = (e.x || 0) * R, hz = (e.hiz || 1);
+    body.collisionFilterGroup = 8; const E = { t: e.t, body, grp, x0, y0: yc, z0: zE, w: 0, a: 0, ters: e.ters ? -1 : 1 };
+    if (e.t === 'kurek') {
+      const Lk = e.x ? Math.max(2.2, R * 0.46) : Math.max(2.6, Math.min(5.2, Math.max(R * 0.8, TOPY * 0.48))), kol = !e.x && d > 0.55 ? 3 : 2;
+      for (let n = 0; n < kol; n++) { const a = n * Math.PI * 2 / kol, cx = Math.cos(a) * Lk / 2, cy = Math.sin(a) * Lk / 2;
+        engMesh(grp, new THREE.BoxGeometry(Lk, 0.72, 0.34), ENGM.tahta, cx, cy, 0, a); engMesh(grp, new THREE.BoxGeometry(0.5, 0.8, 0.42), ENGM.kirmizi, Math.cos(a) * (Lk - 0.25), Math.sin(a) * (Lk - 0.25), 0, a);
+        engKutu(body, Lk / 2, 0.36, 0.2, cx, cy, a); }
+      const hub = engMesh(grp, new THREE.CylinderGeometry(0.5, 0.5, 0.62, 28), ENGM.altin, 0, 0, 0); hub.rotation.x = Math.PI / 2;
+      engMesh(grp, new THREE.SphereGeometry(0.26, 16, 12), ENGM.kirmizi, 0, 0, 0.32);
+      E.w = (1.15 + 0.55 * d) * hz;
+    } else if (e.t === 'kalkan') {
+      const yTop = TOPY + 1.4, lr = Math.max(2.5, yTop - yc); E.y0 = yTop;
+      engMesh(grp, new THREE.CylinderGeometry(0.07, 0.07, lr, 8), ENGM.altin, 0, -lr / 2, 0); engKutu(body, 0.1, lr / 2, 0.1, 0, -lr / 2);
+      const disk = engMesh(grp, new THREE.CylinderGeometry(1.35, 1.35, 0.26, 40), ENGM.kirmizi, 0, -lr, 0); disk.rotation.x = Math.PI / 2;
+      const hal = engMesh(grp, new THREE.TorusGeometry(0.85, 0.12, 10, 40), ENGM.beyaz, 0, -lr, 0.14), kn = engMesh(grp, new THREE.TorusGeometry(1.35, 0.1, 10, 44), ENGM.altin, 0, -lr, 0);
+      engMesh(grp, new THREE.SphereGeometry(0.3, 16, 12), ENGM.altin, 0, -lr, 0.16); engMesh(grp, new THREE.SphereGeometry(0.22, 16, 12), ENGM.altin, 0, 0, 0);
+      engKutu(body, 1.3, 1.3, 0.16, 0, -lr);
+      E.a = Math.asin(Math.min(0.9, (R * 0.72) / lr)); E.w = (1.05 + 0.5 * d) * hz;
+    } else {
+      const bw = 2.7, bh = 1.9; engMesh(grp, new THREE.BoxGeometry(bw, bh, 0.32), ENGM.tahta, 0, 0, 0);
+      engMesh(grp, new THREE.BoxGeometry(0.22, bh + 0.1, 0.38), ENGM.kirmizi, -bw / 2, 0, 0); engMesh(grp, new THREE.BoxGeometry(0.22, bh + 0.1, 0.38), ENGM.kirmizi, bw / 2, 0, 0);
+      engMesh(grp, new THREE.BoxGeometry(bw, 0.16, 0.36), ENGM.altin, 0, bh / 2, 0); engMesh(grp, new THREE.BoxGeometry(bw, 0.16, 0.36), ENGM.altin, 0, -bh / 2, 0);
+      engKutu(body, bw / 2 + 0.1, bh / 2 + 0.05, 0.2, 0, 0);
+      E.a = Math.max(1.6, R * 0.72); E.w = (1.1 + 0.6 * d) * hz;
+    }
+    // top carpinca: hizinin cogu gider, artik kup kirmaz
+    body.addEventListener('collide', (ev) => { const b = balls.find((q) => q.body === ev.body); if (!b || b.eng) return; b.eng = 1; b.yavas = 1; b.hit = true; burst(new THREE.Vector3().copy(b.body.position), '#ffe0a0', 8, 5); sfx('kir', 'ahsap2'); buzz(20); });
+    world.addBody(body); scene.add(grp); ENG.push(E);
+  }
+  engKare(0);
+}
+function engKare(t) {
+  for (const E of ENG) {
+    const b = E.body; let x = E.x0, th = 0, vx = 0, wz = 0;
+    if (E.t === 'kurek') { th = E.ters * E.w * t; wz = E.ters * E.w; }
+    else if (E.t === 'kalkan') { th = E.a * Math.sin(E.w * t); wz = E.a * E.w * Math.cos(E.w * t); }
+    else { x = E.x0 + E.a * Math.sin(E.w * t); vx = E.a * E.w * Math.cos(E.w * t); }
+    b.position.set(x, E.y0, E.z0); b.quaternion.setFromAxisAngle(QZ, th); b.velocity.set(vx, 0, 0); b.angularVelocity.set(0, 0, wz); b.aabbNeedsUpdate = true;
+    E.grp.position.set(x, E.y0, E.z0); E.grp.rotation.set(0, 0, th);
+  }
+}
+const QZ = new CANNON.Vec3(0, 0, 1);
 function buildLevel() {
   clearLevel();
   const Y = levelOf(LV), made = Y.make(), list = convertLevel(made, LV);
@@ -781,7 +890,11 @@ function videoFon(fo) {
   if (!v._d) { v._d = 1; addEventListener('pointerup', () => { if (bg.classList.contains('vid') && v.paused) v.play().catch(() => {}); }, { passive: true }); }   // otomatik oynatma engellenirse ilk dokunusta
 }
 // v6.1: top sayisi blok sayisina gore (her sey kirildigi icin yaklasik 5 bloga 1 top, en az 6, en cok 16)
-function shotsFor(n, Y) { return Math.max(7, Math.min(18, Math.round(n / 4.5) + 2)); }
+function shotsFor(n, Y) {
+  if (K) return Math.max(7, Math.min(18, Math.round(n / 4.5) + 2));
+  // Blok Smash 2. asama: top artik ilk carpista yavasladigi icin taban biraz yukarida; bolum ilerledikce %15'e kadar azalir, her engel +1 top
+  return Math.max(7, Math.min(22, Math.round((n / 4.5 + 3) * (1 - 0.15 * zorluk(LV))) + engelOf(LV, Y).length));
+}
 // v6.13: (Adem) referanstaki gibi birden fazla platform ve saga sola kayan platform.
 // PLS[0] eski platform (platBody, SIRK.mesh, LEG); digerleri her bolumde yeniden kurulur.
 // Kayan platform elle tasinir; ustundeki (dusmemis) kupler de ayni miktar kayar, uyuyanlar uyanmaz.
@@ -1086,9 +1199,11 @@ function blast(b) {
     c.body.wakeUp(); c.body.applyImpulse(IMP, RP);
   }
 }
+// Blok Smash 2. asama: (Adem: bir atis cok kup deviriyordu) top ilk kupe carpinca hizinin cogunu kaybeder, yapinin icinden surup gitmez
+const TOPKAYIP = 0.35;
 function updateBalls(dt) {
   for (let i = balls.length - 1; i >= 0; i--) {
-    const b = balls[i]; b.t += dt; if (b.blast) { blast(b); b.blast = null; } if (b.slow) { b.slow = false; }   // ilk carpista enerjisini kaybeder, yapinin icinden gecip gitmez
+    const b = balls[i]; b.t += dt; if (b.blast) { blast(b); b.blast = null; } if (b.slow) { b.slow = false; if (!K) b.body.velocity.scale(TOPKAYIP, b.body.velocity); } if (b.yavas) { b.yavas = 0; b.body.velocity.scale(0.3, b.body.velocity); }   // ilk carpista enerjisini kaybeder, yapinin icinden gecip gitmez
     // v6.6: (hata) bu satir v6.3'ten beri yorumun icindeydi: top fizikte ucuyor ama gorunusu namlu onunde sabit kaliyordu
     if (b.hit) b.halo.material.opacity = Math.max(0, b.halo.material.opacity - dt * 2); b.mesh.position.copy(b.body.position); b.mesh.quaternion.copy(b.body.quaternion);
     // iz: arkasinda kuculen parlak toplar
@@ -1843,6 +1958,7 @@ function frame(ts) {
   const dt = Math.min(0.05, last ? (ts - last) / 1000 : 0.016); last = ts;
   if (HS > 0) { HS -= dt; if (HS <= 0) TS = 1; }
   if (K) K.kare(dt);   // v6.19: seyir, sallanan hedef, batma
+  if (g && ENG.length) engKare(g.t);
   if (g) { g.t += dt; spin(dt); slide(dt); world.step(1 / 120, dt * TS, 8); if (SIRK.mesh) SIRK.mesh.quaternion.set(platBody.quaternion.x, platBody.quaternion.y, platBody.quaternion.z, platBody.quaternion.w); updateFuse(dt); updateDebris(dt); syncMeshes(); updateBalls(dt); updateCubes(dt); if (KM.bomba) KM.bomba.emissiveIntensity = 0.45 + 0.4 * Math.sin(g.t * 8); }
   updatePofi(dt); updateCannon(dt); updateParts(dt); updateFX(dt); updSea(dt); CDT += dt; if (++CN % 2 === 0 || !sahneBos()) { canliKare(CDT); CDT = 0; }   /* v6.29: fondaki kus/koyun katmani boştayken saniyede 30 kez */ if (flashLight.intensity > 0) flashLight.intensity = Math.max(0, flashLight.intensity - dt * 400);
   if (shake > 0) { shake = Math.max(0, shake - dt * 1.4); cam.position.copy(cam.userData.base).add(KAL() ? shakeK() : new THREE.Vector3((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake, 0)); } else if (cam.userData.base) cam.position.copy(cam.userData.base);
@@ -1855,6 +1971,7 @@ function frame(ts) {
 }
 let BOS = 0, CN = 0, CDT = 0;
 function sahneBos() {
+  if (ENG.length) return false;
   if (K || TEST || !g || g.don || balls.length || FX.length || parts.length || DEB.length || shake > 0 || HS > 0 || FP > 0.01 || flashLight.intensity > 0 || TC.rec > 0 || Math.abs(TC.aimYaw - TC.yaw) > 1e-3 || PF.holder.visible) return false;
   for (const q of PLS) if (q.kay) return false;
   for (const c of cubes) if (!c.out && (c.landed || c.fuse != null || (c.body.world && c.body.mass > 0 && c.body.sleepState === 0))) return false;
@@ -1863,6 +1980,7 @@ function sahneBos() {
 function start(L) {
   LV = Math.max(1, L); SV.L = LV; save(); closeModal(); $('praise').innerHTML = '';
   setPofiCol(POFICOL[(LV - 1) % POFICOL.length]); buildLevel();
+  engKur(LV, levelOf(LV));
   if (KAL()) isitma();
 }
 window.YP = { K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
