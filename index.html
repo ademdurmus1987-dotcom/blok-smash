@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0e3a5c">
+<title>Blok Smash</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#ffd23f;--orange:#ff8a1f;--deep:#0e3a5c}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:Fredoka,system-ui,sans-serif;color:#fff;background:#0e3a5c;
+  background:radial-gradient(120% 80% at 50% 0%,#3fd0e0 0%,#1b78b0 40%,#0e3a5c 75%,#081d33 100%);
+  display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 20px);user-select:none}
+#sky{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.blk{position:absolute;top:-60px;border-radius:8px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.25),inset 0 4px 0 rgba(255,255,255,.35);animation:fall linear infinite;opacity:.85}
+@keyframes fall{to{transform:translateY(115vh) rotate(var(--r))}}
+.sun{position:fixed;left:50%;top:-30vh;width:120vw;height:60vh;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(255,240,170,.55),transparent);animation:pulse 4s ease-in-out infinite;pointer-events:none;z-index:0}
+@keyframes pulse{50%{opacity:.6;transform:translateX(-50%) scale(1.08)}}
+main{position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:14px;flex:1}
+.logo{width:120px;height:120px;border-radius:28px;box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 4px rgba(255,255,255,.85);animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-3deg)}}
+h1{font-family:'Lilita One',Fredoka,sans-serif;font-weight:400;font-size:clamp(46px,15vw,68px);line-height:.95;text-align:center;letter-spacing:1px;
+  background:linear-gradient(180deg,#fff7c2 0%,var(--gold) 45%,var(--orange) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 4px 0 #8a2b00) drop-shadow(0 8px 14px rgba(0,0,0,.5));animation:pop .9s cubic-bezier(.2,1.6,.4,1) both}
+h1 span{display:block;font-size:1.15em}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+.sub{font-weight:600;font-size:15px;opacity:.9;text-shadow:0 2px 4px rgba(0,0,0,.4);margin-top:-4px}
+.cards{width:100%;display:flex;flex-direction:column;gap:16px;margin-top:8px}
+.card{position:relative;display:block;height:150px;border-radius:24px;overflow:hidden;text-decoration:none;color:#fff;
+  box-shadow:0 8px 0 rgba(0,0,0,.35),0 14px 30px rgba(0,0,0,.4);border:4px solid #fff;transition:transform .12s;animation:slide .7s cubic-bezier(.2,1.4,.4,1) both}
+.card:nth-child(2){animation-delay:.12s}
+@keyframes slide{from{transform:translateY(40px);opacity:0}}
+.card:active{transform:translateY(5px) scale(.98);box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.card .bg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.15);animation:pan 9s ease-in-out infinite alternate}
+@keyframes pan{to{transform:scale(1.3) translateX(-4%)}}
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.1) 70%)}
+.card .shine{position:absolute;top:0;bottom:0;width:40%;left:-60%;z-index:2;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);animation:shine 3.2s ease-in-out infinite}
+.card:nth-child(2) .shine{animation-delay:1.6s}
+@keyframes shine{0%,60%{left:-60%}100%{left:130%}}
+.card .txt{position:absolute;z-index:3;left:20px;top:50%;transform:translateY(-50%)}
+.card b{display:block;font-family:'Lilita One',Fredoka,sans-serif;font-weight:400;font-size:36px;text-shadow:0 3px 0 rgba(0,0,0,.5)}
+.card small{display:inline-block;margin-top:6px;font-weight:700;font-size:14px;background:rgba(0,0,0,.4);padding:4px 10px;border-radius:99px}
+.play{position:absolute;z-index:3;right:18px;top:50%;transform:translateY(-50%);width:62px;height:62px;border-radius:50%;
+  background:linear-gradient(180deg,#7cf55a,#25a83a);box-shadow:0 5px 0 #146b22,0 0 0 4px #fff;display:grid;place-items:center;animation:beat 1.4s ease-in-out infinite}
+.play::before{content:"";margin-left:6px;border-left:22px solid #fff;border-top:14px solid transparent;border-bottom:14px solid transparent}
+@keyframes beat{50%{transform:translateY(-50%) scale(1.1)}}
+.yapi .bg{background-image:url(yapi/fon/sahil3.webp)}
+.korsan .bg{background-image:url(korsan/kaynak/fon_ada.webp)}
+.korsan .play{background:linear-gradient(180deg,#ffd23f,#ff8a1f);box-shadow:0 5px 0 #a24a00,0 0 0 4px #fff}
+footer{position:relative;z-index:1;font-size:12px;opacity:.6;margin-top:10px}
+@media (max-height:640px){.logo{width:84px;height:84px}.card{height:120px}}
+</style>
+</head>
+<body>
+<div class="sun"></div>
+<div id="sky"></div>
+<main>
+  <img class="logo" src="icon-512.png" alt="">
+  <h1>BLOK<span>SMASH</span></h1>
+  <div class="sub">Topu at, kuleyi yık!</div>
+  <div class="cards">
+    <a class="card yapi" href="yapi/">
+      <div class="bg"></div><div class="shine"></div>
+      <div class="txt"><b>Yapı</b><small id="lvY">Bölüm 1</small></div>
+      <div class="play"></div>
+    </a>
+    <a class="card korsan" href="korsan/">
+      <div class="bg"></div><div class="shine"></div>
+      <div class="txt"><b>Korsan Pilot</b><small id="lvK">Bölüm 1</small></div>
+      <div class="play"></div>
+    </a>
+  </div>
+</main>
+<footer>v1.0</footer>
+<script>
+// Bolum ilerlemesi oyunun kendi kaydindan okunur (Blokpop'taki ilerleme de devam eder).
+function lv(k, id){ try { const d = JSON.parse(localStorage.getItem(k) || 'null'); if (d && d.L) document.getElementById(id).textContent = 'Bölüm ' + d.L; } catch (e) {} }
+lv('blokpop_yapi_v3', 'lvY'); lv('blokpop_korsan_v1', 'lvK');
+// Arka planda yagan renkli bloklar
+const C = ['#ff4d4d', '#ffd23f', '#3ec95a', '#3b8cff', '#bfefff', '#ff8a1f', '#a06cff'], sky = document.getElementById('sky');
+for (let i = 0; i < 16; i++) {
+  const b = document.createElement('div'), s = 18 + Math.random() * 26;
+  b.className = 'blk';
+  b.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s}px;background:${C[i % C.length]};animation-duration:${7 + Math.random() * 8}s;animation-delay:${-Math.random() * 15}s;--r:${(Math.random() * 720 - 360) | 0}deg`;
+  sky.appendChild(b);
+}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
