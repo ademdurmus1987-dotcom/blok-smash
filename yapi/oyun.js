@@ -1047,7 +1047,9 @@ const BALLGEO = new THREE.SphereGeometry(BR, 32, 20);
 const TRAILGEO = new THREE.SphereGeometry(0.16, 12, 8);
 // Blok Smash 1. asama (Adem 9 Kas, Royal Smash referansi): top 62 yerine 95 birim/sn; kutle 5 yerine 3.3, carpma itisi (kutle x hiz) ayni kalsin diye.
 function shoot(target) {
-  if (!g || g.state !== 'play' || g.shots <= 0) return false;
+  if (!g || g.state !== 'play') return false;
+  if (g.kuyruk && g.kuyruk.length) return ggAtis(target);
+  if (g.shots <= 0) return false;
   const now = g.t; if (g.lastShot && now - g.lastShot < 0.22) return false;   // v6.0: daha seri
   g.lastShot = now; g.shots--; g.armed = true; PF.rec = 1;
   PF.aimYaw = Math.atan2(target.x - POFI.x, target.z - POFI.z);
@@ -1661,7 +1663,7 @@ function updateCubes(dt) {
     if (g.combo.t > 3) g.combo = null; }
   if (g.state === 'play') {
     if (g.left <= 0) { g.state = 'win'; confetti(); sfx('win'); praise('Harika!', 'Yapı yıkıldı', true); setTimeout(win, 1600); }
-    else if (g.shots <= 0 && !balls.length && g.busy <= 0) { g.quiet += dt; if (g.quiet > 1.2) { g.state = 'lose'; lose(); } }
+    else if (g.shots <= 0 && !balls.length && g.busy <= 0 && !GGA.length && !(g.kuyruk && g.kuyruk.length)) { g.quiet += dt; if (g.quiet > 1.2) { g.state = 'lose'; lose(); } }
     else g.quiet = 0;
   }
 }
@@ -1843,6 +1845,224 @@ function lose() {
   $('rt').onclick = () => { sfx('tik'); start(LV); };
   $('rv').onclick = () => { sfx('tik'); g.shots += 3; g.state = 'play'; g.quiet = 0; closeModal(); hud(); };
 }
+// ---------------- Blok Smash 3. asama (v1.4): guclendiriciler ----------------
+// roket: sonraki atis roket olur, ilk kupe varinca ikiye ayrilip o sirayi saga sola siler
+// bomba: sonraki atis bomba olur, ilk degdigi yerde patlar, cevresini kirar
+// yildirim: top harcamaz, gokten 4 simsek iner; +5 top: aninda 5 top
+// Her biri SV.gg sayacindan harcanir, sayac bitince altinla (SV.altin) alinir. Baslangicta 2'ser hediye.
+const GGT = [{ k: 'roket', ic: '🚀', fiyat: 50 }, { k: 'bomba', ic: '💣', fiyat: 75 }, { k: 'yildirim', ic: '⚡', fiyat: 100 }, { k: 'top', ic: '+5', fiyat: 150 }];
+const GGA = [];
+let GGD = null, GGF = null;
+function ggSay() { if (!SV.gg) { SV.gg = { roket: 2, bomba: 2, yildirim: 2, top: 2 }; save(); } return SV.gg; }
+function ggT(k) { return GGT.find((x) => x.k === k); }
+function ggKur() {
+  if (K || GGD) return;
+  GGD = document.createElement('div'); GGD.id = 'gg';
+  const sol = document.createElement('div'), sag = document.createElement('div'); sol.className = 'ggs'; sag.className = 'ggs';
+  GGT.forEach((t, i) => {
+    const b = document.createElement('button'); b.className = 'gb gb-' + t.k; b.setAttribute('aria-label', t.k);
+    b.innerHTML = '<span class="hl"></span><i>' + t.ic + '</i><span class="n"></span><span class="p"><em class="coin"></em>' + t.fiyat + '</span>';
+    b.addEventListener('pointerdown', (e) => e.stopPropagation());
+    b.onclick = (e) => { e.stopPropagation(); ggBas(t.k); };
+    (i < 2 ? sol : sag).appendChild(b); t.el = b;
+  });
+  GGD.appendChild(sol); GGD.appendChild(sag); document.body.appendChild(GGD);
+  GGF = document.createElement('div'); GGF.id = 'flas'; document.body.appendChild(GGF);
+  ggHud();
+}
+function ggHud() {
+  if (!GGD) return; const s = ggSay(), a = SV.altin || 0, q = (g && g.kuyruk) || [];
+  for (const t of GGT) { const b = t.el, n = s[t.k] || 0; b.querySelector('.n').textContent = n;
+    b.classList.toggle('var', n > 0); b.classList.toggle('yok', n <= 0 && a < t.fiyat); b.classList.toggle('sec', q.includes(t.k)); }
+}
+function ggCal(el, c) { if (!el) return; el.classList.remove(c); void el.offsetWidth; el.classList.add(c); }
+function ggOde(k) { const s = ggSay(); if (s[k] > 0) { s[k]--; save(); return true; } const f = ggT(k).fiyat; if ((SV.altin || 0) >= f) { SV.altin -= f; save(); return true; } return false; }
+function ggBas(k) {
+  if (!g || g.state !== 'play' || $('modal').classList.contains('on')) return;
+  const b = ggT(k).el; g.kuyruk = g.kuyruk || [];
+  if ((k === 'roket' || k === 'bomba') && g.kuyruk.includes(k)) { g.kuyruk.splice(g.kuyruk.indexOf(k), 1); ggSay()[k]++; save(); sfx('tik'); ggHud(); return; }
+  if (!ggOde(k)) { ggCal(b, 'salla'); buzz([40, 40, 40], 0); sfx('tik'); return; }
+  ggCal(b, 'bas'); buzz(35); sfx('bonus'); dokunTitre();
+  ggUygula(k); ggHud();
+}
+function ggUygula(k) {
+  if (k === 'roket' || k === 'bomba') { g.kuyruk = g.kuyruk || []; g.kuyruk.push(k); $('hint').style.opacity = 1; }
+  else if (k === 'top') ggTop();
+  else if (k === 'yildirim') ggYildirim();
+}
+function ggIade() {
+  if (g && g.kuyruk && g.kuyruk.length) { const s = ggSay(); for (const k of g.kuyruk) s[k]++; g.kuyruk = []; save(); }
+  for (const e of GGA) ggSil(e); GGA.length = 0;
+}
+function ggFlas(col, op) { if (!GGF) return; GGF.style.background = col; try { GGF.animate([{ opacity: op }, { opacity: 0 }], { duration: 380, easing: 'ease-out' }); } catch (x) {} }
+function ggSil(e) { if (e.grp) { scene.remove(e.grp); e.grp.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); e.grp = null; } }
+function yik(c, d) {
+  if (!c || c.gone || c.out) return false;
+  const kd = c.kind && KIND[c.kind];
+  if (kd && (kd.boom || kd.esya)) { if (c.fuse == null) { c.fuse = 0.03; FUSE.push(c); } return true; }
+  breakBlock(c, d || null, 10); return true;
+}
+function ggTop() {
+  g.shots += 5; const r = $('tc').getBoundingClientRect();
+  floatText('+5', r.left + r.width / 2, r.bottom + 8, 'blue'); hud(); sfx('bonus'); setTimeout(() => sfx('bonus'), 160);
+  ggCal($('tc').parentNode, 'ggpar');
+}
+// atis: shoot() yuklu guclendirici varsa buraya gelir (top harcamaz)
+function ggAtis(target) {
+  const now = g.t; if (g.lastShot && now - g.lastShot < 0.35) return false; g.lastShot = now;
+  const k = g.kuyruk.shift();
+  if (TC.gun) { TC.aimYaw = Math.atan2(target.x - TC.holder.position.x, target.z - TC.holder.position.z); TC.holder.rotation.y = TC.yaw = TC.aimYaw; TC.rec = 1; }
+  const st = trunkTip(TIP).clone(); if (target.y < S * 0.5) target = target.clone().setY(S * 0.5);
+  const dir = target.clone().sub(st).normalize();
+  if (k === 'roket') ggRoket(st, target, dir); else ggBomba(st, target);
+  muzzleFx(st, dir); sfx('shoot'); buzz(45); shake = Math.max(shake, 0.25); $('hint').style.opacity = 0; HOLD = null; ggHud();
+  return true;
+}
+function rokMesh(sc) {
+  const grp = new THREE.Group(), ic = new THREE.Group(); ic.rotation.x = Math.PI / 2; grp.add(ic);
+  const kir = new THREE.MeshStandardMaterial({ color: '#e8283c', roughness: 0.35, metalness: 0.3, emissive: '#5a0010', emissiveIntensity: 0.5 });
+  const bey = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.3, metalness: 0.25 });
+  const sar = new THREE.MeshStandardMaterial({ color: '#ffd23f', roughness: 0.25, metalness: 0.6, emissive: '#6a4200', emissiveIntensity: 0.5 });
+  const add = (geo, m, y) => { const o = new THREE.Mesh(geo, m); o.position.y = y; o.castShadow = true; ic.add(o); return o; };
+  add(new THREE.CylinderGeometry(0.22, 0.24, 1.0, 18), bey, 0);
+  add(new THREE.CylinderGeometry(0.235, 0.235, 0.22, 18), kir, 0.18);
+  add(new THREE.ConeGeometry(0.22, 0.5, 18), kir, 0.75);
+  add(new THREE.CylinderGeometry(0.16, 0.2, 0.14, 14), sar, -0.56);
+  for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2, f = add(new THREE.BoxGeometry(0.3, 0.4, 0.05), sar, -0.36); f.position.x = Math.cos(a) * 0.3; f.position.z = Math.sin(a) * 0.3; f.rotation.y = -a; }
+  const al = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#ffa030', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); al.position.y = -0.85; al.scale.setScalar(0.8); ic.add(al);
+  const al2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#fff2b0', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); al2.position.y = -0.7; al2.scale.setScalar(0.45); ic.add(al2);
+  grp.userData.al = [al, al2]; grp.scale.setScalar(sc); scene.add(grp); return grp;
+}
+function rokIz(p, dir) {
+  const f = spr('#ff9a30', true, 0.9); f.position.copy(p).addScaledVector(dir, -0.6);
+  fx(f, 0.18, (o, k) => { o.scale.setScalar(0.7 - k * 0.4); o.material.opacity = 0.9 * (1 - k); });
+  const m = spr('#eeeae6', false, 0.45), v = new THREE.Vector3((Math.random() - 0.5) * 0.8, 0.5 + Math.random() * 0.6, (Math.random() - 0.5) * 0.8);
+  m.position.copy(p).addScaledVector(dir, -0.75);
+  fx(m, 0.7, (o, k, dt) => { o.position.addScaledVector(v, dt); o.scale.setScalar(0.35 + k * 1.1); o.material.opacity = 0.45 * (1 - k); });
+}
+function ggRoket(st, target, dir) {
+  const grp = rokMesh(1); grp.position.copy(st); grp.lookAt(st.clone().add(dir));
+  GGA.push({ tur: 'roket', grp, p: st.clone(), dir, kalan: st.distanceTo(target) + 1.5, iz: 0 });
+  g.busy = Math.max(g.busy, 2);
+}
+function ggAyril(e) {
+  const p0 = e.p.clone(), dh = new THREE.Vector3(e.dir.x, 0, e.dir.z); if (dh.lengthSq() < 1e-4) dh.set(0, 0, -1); dh.normalize();
+  const yan = new THREE.Vector3(dh.z, 0, -dh.x);
+  for (const sg of [1, -1]) { const y = yan.clone().multiplyScalar(sg), grp = rokMesh(0.75); grp.position.copy(p0); grp.lookAt(p0.clone().add(y)); GGA.push({ tur: 'yan', grp, p0, yon: y, dh, yol: 0, iz: 0 }); }
+  hitFlash(p0); burst(p0, '#ffb020', 26, 10); burst(p0, '#ff4020', 14, 8);
+  boomLight.position.copy(p0); boomLight.intensity = 70; sfx('boom'); shake = Math.min(0.7, shake + 0.4); buzz([60, 30, 50], 0); ggFlas('#fff1c8', 0.35);
+  wakeAll(); g.busy = Math.max(g.busy, 2.5);
+}
+function ggBomba(st, target) {
+  const dv = target.clone().sub(st), gy = world.gravity.y, T = Math.max(0.1, dv.length() / 60);
+  const v = new CANNON.Vec3(dv.x / T, dv.y / T - 0.5 * gy * T, dv.z / T);
+  const body = new CANNON.Body({ mass: 3.3, material: PM.ball, linearDamping: 0.01, allowSleep: false }); body.addShape(new CANNON.Sphere(BR)); body.collisionFilterGroup = 2; body.collisionFilterMask = ~4;
+  body.position.set(st.x, st.y, st.z); body.velocity.copy(v); world.addBody(body); body.angularVelocity.set(-v.z * 0.3, 0, v.x * 0.3);
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(BR * 1.25, 24, 16), new THREE.MeshStandardMaterial({ color: '#2b2545', roughness: 0.28, metalness: 0.55, emissive: '#3a1478', emissiveIntensity: 0.35 })); mesh.castShadow = true; scene.add(mesh);
+  const kap = new THREE.Mesh(new THREE.CylinderGeometry(BR * 0.4, BR * 0.45, BR * 0.4, 14), new THREE.MeshStandardMaterial({ color: '#ffd23f', metalness: 0.6, roughness: 0.3 })); kap.position.y = BR * 1.25; mesh.add(kap);
+  const kv = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#ffcf40', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); kv.position.y = BR * 1.7; kv.scale.setScalar(BR * 2.2); mesh.add(kv);
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#c8a0ff', transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false })); halo.scale.setScalar(BR * 5); mesh.add(halo);
+  const b = { body, mesh, halo, t: 0, hit: false, trail: [], col: '#2b2545', dir: new THREE.Vector3(v.x, v.y, v.z).normalize(), sp: Math.hypot(v.x, v.y, v.z), bomba: true };
+  body.addEventListener('collide', () => { if (!b.boom) b.boom = new THREE.Vector3().copy(body.position); });
+  balls.push(b); GGA.push({ tur: 'bomba', b, kv });
+}
+function ggPatla(p) {
+  for (const c of cubes) { if (c.gone || c.out) continue; const q = c.body.position; if ((q.x - p.x) ** 2 + (q.y - p.y) ** 2 + (q.z - p.z) ** 2 < (S * 2.2) ** 2) yik(c, null); }
+  explode(p, { boom: 4.2, guc: 17 });
+  hitstop(0.07); buzz([90, 40, 70, 40, 50], 0); ggFlas('#ffe2a8', 0.55);
+  const grp = new THREE.Group(); grp.position.copy(p); scene.add(grp);
+  const h1 = new THREE.Mesh(new THREE.RingGeometry(0.7, 1, 48), new THREE.MeshBasicMaterial({ color: '#ffd27a', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); h1.lookAt(cam.position.clone().sub(p)); grp.add(h1);
+  const h2 = new THREE.Mesh(new THREE.RingGeometry(0.8, 1, 48), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); h2.rotation.x = -Math.PI / 2; grp.add(h2);
+  const top = spr('#fff4d0', true, 1); top.position.copy(p);
+  fx(top, 0.3, (o, k) => { o.scale.setScalar(3 + k * 8); o.material.opacity = 1 - k; });
+  GGA.push({ tur: 'halka', grp, h1, h2, t: 0 });
+}
+function ggYildirim() {
+  const al = cubes.filter((c) => !c.gone && !c.out); if (!al.length) return;
+  const sec = []; for (let i = 0; i < 4 && al.length; i++) sec.push(al.splice(Math.floor(Math.random() * al.length), 1)[0]);
+  sec.forEach((c, i) => GGA.push({ tur: 'simsek', c, t: -0.2 - i * 0.24 }));
+  ggFlas('#bcdcff', 0.3); g.busy = Math.max(g.busy, 3);
+}
+const BUP = new THREE.Vector3(0, 1, 0);
+function simsekMesh(a, b) {
+  const grp = new THREE.Group(), n = 9, pts = [];
+  for (let i = 0; i <= n; i++) { const k = i / n, p = a.clone().lerp(b, k); if (i > 0 && i < n) { p.x += (Math.random() - 0.5) * 1.3; p.z += (Math.random() - 0.5) * 0.6; } pts.push(p); }
+  const mc = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+  const mg = new THREE.MeshBasicMaterial({ color: '#6cc8ff', transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false });
+  for (let i = 0; i < n; i++) { const p = pts[i], q = pts[i + 1], d = q.clone().sub(p), L = d.length(); d.normalize();
+    for (const [m, w] of [[mc, 0.09], [mg, 0.32]]) { const o = new THREE.Mesh(new THREE.BoxGeometry(w, L + w, w), m); o.position.copy(p).lerp(q, 0.5); o.quaternion.setFromUnitVectors(BUP, d); grp.add(o); } }
+  const pa = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#a8dcff', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); pa.position.copy(b); pa.scale.setScalar(4); grp.add(pa);
+  grp.userData.m = [mc, mg, pa.material]; scene.add(grp); return grp;
+}
+function ggCarp(e) {
+  let c = e.c;
+  if (!c || c.gone || c.out) { const al = cubes.filter((x) => !x.gone && !x.out); if (!al.length) return false; c = al[Math.floor(Math.random() * al.length)]; }
+  const p = new THREE.Vector3().copy(c.body.position);
+  e.grp = simsekMesh(new THREE.Vector3(p.x + (Math.random() - 0.5) * 3, p.y + 16, p.z - 2), p);
+  for (const o of cubes) { if (o.gone || o.out) continue; const q = o.body.position; if ((q.x - p.x) ** 2 + (q.y - p.y) ** 2 + (q.z - p.z) ** 2 < (S * 1.1) ** 2) yik(o, new THREE.Vector3(0, -1, 0)); }
+  burst(p, '#bfe8ff', 18, 9); burst(p, '#ffffff', 10, 6); hitFlash(p);
+  flashLight.position.copy(p); flashLight.intensity = 90; ggFlas('#e8f4ff', 0.6);
+  if (AC) { out(); play('patlama', 0.5, 1.7 + Math.random() * 0.2); play('cam', 0.3, 0.7); }
+  shake = Math.min(0.7, shake + 0.35); buzz([50, 25, 40], 0); wakeAll();
+  return true;
+}
+function ggKare(dt) {
+  for (let i = GGA.length - 1; i >= 0; i--) {
+    const e = GGA[i]; let bitti = false;
+    if (e.tur === 'roket') {
+      const st = 60 * dt; e.p.addScaledVector(e.dir, st); e.kalan -= st; e.grp.position.copy(e.p);
+      e.grp.rotateZ(dt * 9); for (const a of e.grp.userData.al) a.scale.setScalar((a === e.grp.userData.al[0] ? 0.8 : 0.45) * (0.8 + Math.random() * 0.5));
+      e.iz += dt; if (e.iz > 0.012) { e.iz = 0; rokIz(e.p, e.dir); }
+      let vur = e.kalan <= 0 || e.p.y < GY + 0.2;
+      if (!vur) for (const c of cubes) { if (c.gone || c.out) continue; const q = c.body.position; if ((q.x - e.p.x) ** 2 + (q.y - e.p.y) ** 2 + (q.z - e.p.z) ** 2 < (S * 0.8) ** 2) { e.p.y = q.y; vur = true; break; } }
+      if (vur) { ggAyril(e); bitti = true; }
+    } else if (e.tur === 'yan') {
+      e.yol += 30 * dt; e.grp.position.copy(e.p0).addScaledVector(e.yon, e.yol); e.grp.rotateZ(dt * 9);
+      for (const a of e.grp.userData.al) a.scale.setScalar((a === e.grp.userData.al[0] ? 0.8 : 0.45) * (0.8 + Math.random() * 0.5));
+      e.iz += dt; if (e.iz > 0.02) { e.iz = 0; rokIz(e.grp.position, e.yon); }
+      for (const c of cubes) { if (c.gone || c.out) continue; const q = c.body.position, rx = q.x - e.p0.x, ry = q.y - e.p0.y, rz = q.z - e.p0.z;
+        const a = rx * e.yon.x + rz * e.yon.z; if (a < -S * 0.6 || a > e.yol) continue; if (Math.abs(ry) > S * 0.55) continue; if (Math.abs(rx * e.dh.x + rz * e.dh.z) > S * 1.7) continue;
+        yik(c, e.yon); }
+      if (e.yol > 15) { burst(e.grp.position.clone(), '#ffb020', 10, 5); bitti = true; }
+    } else if (e.tur === 'bomba') {
+      const b = e.b; e.kv.scale.setScalar(BR * (1.6 + Math.random() * 1.4)); e.kv.material.color.setHSL(0.1 + Math.random() * 0.05, 1, 0.6);
+      if (b.boom || b.sunk || b.t > 3) { const p = b.boom || b.mesh.position.clone(); b.mesh.visible = false; b.t = 99; ggPatla(p); bitti = true; }
+    } else if (e.tur === 'halka') {
+      e.t += dt; const k = Math.min(1, e.t / 0.5);
+      e.h1.scale.setScalar(1 + k * 6); e.h1.material.opacity = (1 - k) ** 1.5; e.h2.scale.setScalar(1 + k * 8); e.h2.material.opacity = 0.8 * (1 - k) ** 2;
+      if (k >= 1) bitti = true;
+    } else if (e.tur === 'simsek') {
+      e.t += dt;
+      if (e.t >= 0 && !e.vurdu) { e.vurdu = true; if (!ggCarp(e)) bitti = true; }
+      if (e.grp) { const op = Math.max(0, 1 - e.t / 0.4) * (0.6 + Math.random() * 0.4); for (const m of e.grp.userData.m) m.opacity = op; if (e.t > 0.4) bitti = true; }
+    }
+    if (bitti) { ggSil(e); GGA.splice(i, 1); }
+  }
+}
+function ggOnce() {
+  if (K || TEST || Q.get('gg') === '0') { ggHud(); return; }
+  ggKur(); const s = ggSay(), sec = new Set();
+  const maliyet = () => { let m = 0; for (const k of sec) if (!(s[k] > 0)) m += ggT(k).fiyat; return m; };
+  modal('<div class="rib">Bölüm ' + LV + '</div><h2>' + (g.ad || '') + '</h2><p>Güçlendirici seç</p><div class="ggk">' +
+    GGT.map((t) => '<button class="gt gt-' + t.k + '" data-k="' + t.k + '"><span class="hl"></span><i>' + t.ic + '</i>' + (s[t.k] > 0 ? '<span class="n">' + s[t.k] + '</span>' : '<span class="p"><em class="coin"></em>' + t.fiyat + '</span>') + '<span class="ok">✓</span></button>').join('') +
+    '</div><p class="kasa"><em class="coin"></em> <b id="ggal">' + (SV.altin || 0) + '</b></p><button class="btn" id="ggo">Oyna</button>');
+  for (const el of document.querySelectorAll('.gt')) el.onclick = () => {
+    const k = el.dataset.k;
+    if (sec.has(k)) { sec.delete(k); el.classList.remove('on'); sfx('tik'); }
+    else { sec.add(k); if (maliyet() > (SV.altin || 0)) { sec.delete(k); ggCal(el, 'salla'); buzz([40, 40, 40], 0); sfx('tik'); return; } el.classList.add('on'); ggCal(el, 'bas'); sfx('bonus'); buzz(30); }
+    $('ggal').textContent = (SV.altin || 0) - maliyet();
+  };
+  $('ggo').onclick = () => {
+    sfx('tik'); closeModal();
+    const nm = $('nm'); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on');
+    let gec = 0;
+    for (const t of GGT) { if (!sec.has(t.k) || !ggOde(t.k)) continue;
+      if (t.k === 'yildirim') { const gg0 = g; setTimeout(() => { if (g === gg0 && g.state === 'play') ggYildirim(); }, 900); }
+      else { const k = t.k; setTimeout(() => { if (g && g.state === 'play') { ggCal(ggT(k).el, 'bas'); ggUygula(k); ggHud(); sfx('bonus'); } }, 250 + gec * 200); gec++; } }
+    ggHud();
+  };
+  ggHud();
+}
 $('re').onclick = () => start(LV);
 $('home').onclick = () => { location.href = '../'; };
 
@@ -1975,7 +2195,7 @@ function frame(ts) {
   if (HS > 0) { HS -= dt; if (HS <= 0) TS = 1; }
   if (K) K.kare(dt);   // v6.19: seyir, sallanan hedef, batma
   if (g && ENG.length) engKare(g.t);
-  if (g) { g.t += dt; spin(dt); slide(dt); world.step(1 / 120, dt * TS, 8); if (SIRK.mesh) SIRK.mesh.quaternion.set(platBody.quaternion.x, platBody.quaternion.y, platBody.quaternion.z, platBody.quaternion.w); updateFuse(dt); updateDebris(dt); syncMeshes(); updateBalls(dt); updateCubes(dt); if (KM.bomba) KM.bomba.emissiveIntensity = 0.45 + 0.4 * Math.sin(g.t * 8); }
+  if (g) { g.t += dt; spin(dt); slide(dt); world.step(1 / 120, dt * TS, 8); if (SIRK.mesh) SIRK.mesh.quaternion.set(platBody.quaternion.x, platBody.quaternion.y, platBody.quaternion.z, platBody.quaternion.w); updateFuse(dt); updateDebris(dt); syncMeshes(); updateBalls(dt); ggKare(dt); updateCubes(dt); if (KM.bomba) KM.bomba.emissiveIntensity = 0.45 + 0.4 * Math.sin(g.t * 8); }
   updatePofi(dt); updateCannon(dt); updateParts(dt); updateFX(dt); updSea(dt); CDT += dt; if (++CN % 2 === 0 || !sahneBos()) { canliKare(CDT); CDT = 0; }   /* v6.29: fondaki kus/koyun katmani boştayken saniyede 30 kez */ if (flashLight.intensity > 0) flashLight.intensity = Math.max(0, flashLight.intensity - dt * 400);
   if (shake > 0) { shake = Math.max(0, shake - dt * 1.4); cam.position.copy(cam.userData.base).add(KAL() ? shakeK() : new THREE.Vector3((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake, 0)); } else if (cam.userData.base) cam.position.copy(cam.userData.base);
   fovK(dt);
@@ -1987,19 +2207,21 @@ function frame(ts) {
 }
 let BOS = 0, CN = 0, CDT = 0;
 function sahneBos() {
-  if (ENG.length) return false;
+  if (ENG.length || GGA.length) return false;
   if (K || TEST || !g || g.don || balls.length || FX.length || parts.length || DEB.length || shake > 0 || HS > 0 || FP > 0.01 || flashLight.intensity > 0 || TC.rec > 0 || Math.abs(TC.aimYaw - TC.yaw) > 1e-3 || PF.holder.visible) return false;
   for (const q of PLS) if (q.kay) return false;
   for (const c of cubes) if (!c.out && (c.landed || c.fuse != null || (c.body.world && c.body.mass > 0 && c.body.sleepState === 0))) return false;
   return true;
 }
 function start(L) {
+  ggIade();
   LV = Math.max(1, L); SV.L = LV; save(); closeModal(); $('praise').innerHTML = '';
   setPofiCol(POFICOL[(LV - 1) % POFICOL.length]); buildLevel();
   engKur(LV, levelOf(LV));
+  ggOnce();
   if (KAL()) isitma();
 }
-window.YP = { K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
+window.YP = { gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
 if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MOD, PM, platBody, GB, cubes, balls, S, TC, KEEP, NENV, SV, save, $, Q, TEST,
   get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set GY(v) { GY = v; GB.position.y = v; }, get shake() { return shake; }, set shake(v) { shake = v; },
   set TOPY(v) { TOPY = v; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, LEG, DIRT, KIND, splashSnd: (v) => AC && (K ? play('su', v + 0.2) : splashSnd(v)), dongu, play: (k, v, r) => AC && play(k, v, r),
