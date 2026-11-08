@@ -893,7 +893,7 @@ function videoFon(fo) {
 function shotsFor(n, Y) {
   if (K) return Math.max(7, Math.min(18, Math.round(n / 4.5) + 2));
   // Blok Smash 2. asama: top artik ilk carpista yavasladigi icin taban biraz yukarida; bolum ilerledikce %15'e kadar azalir, her engel +1 top
-  return Math.max(7, Math.min(22, Math.round((n / 4.5 + 3) * (1 - 0.15 * zorluk(LV))) + engelOf(LV, Y).length));
+  return Math.max(8, Math.min(24, Math.round((n / 3.6 + 3) * (1 - 0.15 * zorluk(LV))) + engelOf(LV, Y).length));   // v1.3: darbe yumusadi, top biraz artti
 }
 // v6.13: (Adem) referanstaki gibi birden fazla platform ve saga sola kayan platform.
 // PLS[0] eski platform (platBody, SIRK.mesh, LEG); digerleri her bolumde yeniden kurulur.
@@ -1070,7 +1070,7 @@ function shoot(target) {
   const b = { body, mesh, halo, t: 0, hit: false, trail: [], col, dir: new THREE.Vector3(v.x, v.y, v.z).normalize(), sp: Math.hypot(v.x, v.y, v.z) };
   body.angularVelocity.set(-v.z * 0.9, 0, v.x * 0.9);   // ucarken one dogru donsun
   // ilk kupe carpista vurus dalgasi: carpisma adimin icinde gelir, itis adimdan sonra yapilir (b.blast)
-  body.addEventListener('collide', (e) => { if (b.hit) return; const c = CUBE_OF.get(e.body); if (!c) return; b.hit = true; b.hc = c; b.blast = new THREE.Vector3().copy(body.position); b.slow = true; impact(b, e); });
+  body.addEventListener('collide', (e) => { if (b.hit) return; const c = CUBE_OF.get(e.body); if (!c) return; b.hit = true; b.hc = c; b.blast = new THREE.Vector3().copy(body.position); b.slow = true; YUM.push([b.blast.clone(), b]); impact(b, e); });
   balls.push(b);
   g.combo = { n: 0, t: 0, shown: 0 };
   if (KAL()) FP = Math.min(6, FP + 1.4);
@@ -1200,10 +1200,25 @@ function blast(b) {
   }
 }
 // Blok Smash 2. asama: (Adem: bir atis cok kup deviriyordu) top ilk kupe carpinca hizinin cogunu kaybeder, yapinin icinden surup gitmez
-const TOPKAYIP = 0.35;
+const TOPKAYIP = 0.45;
+// v1.3: (Adem: alttaki kupu vurunca ustteki ziplıyor, bolumler pat pat geciyor) top cok hizli (95) oldugu icin carptigi kup ve
+// komsulari 40-50 birim/sn hizla firliyordu. Her fizik adimindan sonra: carpisma noktasinin 3 birim cevresindeki kuplerin hizi sinirlanir,
+// top hafifler; patlama disinda hicbir kup yukari firlamaz.
+const YUM = [], VMAX = 13, VUP = 1.6, VUPG = 3.5; let BOOMT = -9;
+world.addEventListener('postStep', () => {
+  if (K || !g) return;
+  const patlama = g.t - BOOMT < 0.9;
+  while (YUM.length) { const [p, b] = YUM.pop();
+    if (b && !b.hafif) { b.hafif = 1; b.body.velocity.scale(TOPKAYIP, b.body.velocity); b.body.mass = 2; b.body.updateMassProperties(); }
+    if (patlama) continue;
+    for (const c of cubes) { if (c.out) continue; const q = c.body.position; if ((q.x - p.x) ** 2 + (q.y - p.y) ** 2 + (q.z - p.z) ** 2 > 9) continue;
+      const v = c.body.velocity; if (v.y > VUP) v.y = VUP; const h = Math.hypot(v.x, v.z); if (h > VMAX) { v.x *= VMAX / h; v.z *= VMAX / h; }
+      const w = c.body.angularVelocity, wl = w.length(); if (wl > 4) w.scale(4 / wl, w); } }
+  if (!patlama) for (const c of cubes) { if (c.out || c.gone) continue; const v = c.body.velocity; if (v.y > VUPG) v.y = VUPG; }
+});
 function updateBalls(dt) {
   for (let i = balls.length - 1; i >= 0; i--) {
-    const b = balls[i]; b.t += dt; if (b.blast) { blast(b); b.blast = null; } if (b.slow) { b.slow = false; if (!K) b.body.velocity.scale(TOPKAYIP, b.body.velocity); } if (b.yavas) { b.yavas = 0; b.body.velocity.scale(0.3, b.body.velocity); }   // ilk carpista enerjisini kaybeder, yapinin icinden gecip gitmez
+    const b = balls[i]; b.t += dt; if (b.blast) { blast(b); b.blast = null; } if (b.slow) { b.slow = false; } if (b.yavas) { b.yavas = 0; b.body.velocity.scale(0.3, b.body.velocity); }   // ilk carpista enerjisini kaybeder, yapinin icinden gecip gitmez
     // v6.6: (hata) bu satir v6.3'ten beri yorumun icindeydi: top fizikte ucuyor ama gorunusu namlu onunde sabit kaliyordu
     if (b.hit) b.halo.material.opacity = Math.max(0, b.halo.material.opacity - dt * 2); b.mesh.position.copy(b.body.position); b.mesh.quaternion.copy(b.body.quaternion);
     // iz: arkasinda kuculen parlak toplar
@@ -1606,6 +1621,7 @@ function updateFuse(dt) {
   }
 }
 function explode(p, kd) {
+  BOOMT = g ? g.t : 0;
   const RR = kd.boom * S;
   shake = Math.min(0.9, shake + (kd.boom > 4 ? 0.8 : 0.55)); boomLight.position.copy(p); boomLight.intensity = kd.boom > 4 ? 90 : 60;
   burst(p, '#ffb020', 30, 12); burst(p, '#ff4020', 20, 9); burst(p, '#5a4a40', 10, 6); sfx('boom');
