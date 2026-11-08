@@ -107,9 +107,9 @@ const MFILE = { kup: 'kup_metal', metal: 'kup_metal', ahsap: 'kup_ahsap', kirmiz
   // v6.4: (Adem) benim dokularim/boyam yok: ozel bloklar da Tripo modeli, orijinal renginde
   celik: 'kup_metal', bomba: 'fici', hediye: 'sandik', yildiz: 'kup_altin', jole: 'kup_kirmizi', cam: 'kup',
   // v6.16: (Adem 5 Kas 2026) yeni Tripo modelleri: buz kup 2, ahsap kup 2 ve uc dikey (iki kat boyunda) sutun
-  buz2: 'buz_kup_2', ahsap2: 'ahsap_kup_2', buzDikey: 'buz_dikey_kup', alevUzun: 'alev_tas_uzun_kup', morDikey: 'mor_dikey_kup' };
+  buz2: 'buz_kup_2', ahsap2: 'ahsap_kup_2', buzDikey: 'buz_dikey_kup', alevUzun: 'alev_tas_uzun_kup', morDikey: 'mor_dikey_kup', kola: 'teneke_kola' };
 const V1FILE = new Set(['kup', 'sandik', 'fici', 'platform_ahsap', 'platform_tas']);   // ilk Tripo modelleri (?v=1)
-const NEWM = new Set(['kup', 'metal', 'ahsap', 'kirmizi', 'sandik', 'platform_sirk', 'top', 'topcu', 'fici', 'tugla', 'tas', 'buz', 'altin', 'ahsapmetal', 'piramitTas', 'kabak', 'celik', 'bomba', 'hediye', 'yildiz', 'jole', 'cam', 'buz2', 'ahsap2', 'buzDikey', 'alevUzun', 'morDikey']);
+const NEWM = new Set(['kola', 'kup', 'metal', 'ahsap', 'kirmizi', 'sandik', 'platform_sirk', 'top', 'topcu', 'fici', 'tugla', 'tas', 'buz', 'altin', 'ahsapmetal', 'piramitTas', 'kabak', 'celik', 'bomba', 'hediye', 'yildiz', 'jole', 'cam', 'buz2', 'ahsap2', 'buzDikey', 'alevUzun', 'morDikey']);
 const GLBP = {};   // ayni dosya iki anahtarda (kup, celik) bir kez yuklenir
 const modelReady = Promise.all(Object.keys(MFILE).map((n) => new Promise((res) => {
   const url = 'model/' + MFILE[n] + '.glb?v=' + (V1FILE.has(MFILE[n]) ? 1 : 2);
@@ -129,7 +129,7 @@ function fitCube(n) {
   return (M.cube = g);
 }
 // v6.2: oranini koruyan modeller: varil ve buz silindir (silindir), tas piramit (koni), bal kabagi (top). Yukseklik S (kabak genislik).
-const KEEP = { fici: 'cyl', buz: 'cyl', piramitTas: 'cone', kabak: 'ball', buzDikey: 'tall', alevUzun: 'tall', morDikey: 'tall' };   // v6.16: tall = iki kat boyunda dikey sutun (oranı korunur)
+const KEEP = { fici: 'cyl', buz: 'cyl', piramitTas: 'cone', kabak: 'ball', buzDikey: 'tall', alevUzun: 'tall', morDikey: 'tall', kola: 'tall' };   // v6.16: tall = iki kat boyunda dikey sutun (oranı korunur)
 function fitKeep(n) {
   const M = MOD[n]; if (!M) return null; if (M.keep) return M.keep;
   const g = M.geo.clone(), b = g.boundingBox, c = b.getCenter(new THREE.Vector3()), z = b.getSize(new THREE.Vector3());
@@ -315,6 +315,7 @@ const KIND = {
   tas: { mass: 1.1, f: 0.7, r: 0.08 }, ahsapmetal: { mass: 1.1, f: 0.65, r: 0.12 }, piramitTas: { mass: 0.8, f: 0.7, r: 0.08 }, kabak: { mass: 0.7, f: 0.55, r: 0.2 },   // v6.2   // v6.1: Adem'in kup modelleri, orijinal renkleri
   tugla: { mass: 1.4, f: 0.75, r: 0.1 },   // v6.11: (Adem) karli koyde kaya kupler gecilmiyordu
   celik: { mass: 2.6, f: 0.7, r: 0.05 },
+  kola: { mass: 0.45, f: 0.5, r: 0.25 },
   buz: { mass: 1, f: 0.12, r: 0.1, kir: 7 },
   jole: { mass: 0.8, f: 0.6, r: 0.95, kir: 9 },
   cam: { mass: 0.9, f: 0.5, r: 0.1, kir: 5 },                  // bu hizla carpinca kirilir
@@ -790,10 +791,40 @@ function engKare(t) {
   }
 }
 const QZ = new CANNON.Vec3(0, 0, 1);
+// v1.5: (Adem) teneke kola kutusu: 11. bolumden sonra yaklasik 4 bolumde 1 (bolum numarasina bagli, hep ayni), yapinin en ust katinda
+// 2 kup boyunda hafif teneke. Vurulunca ya da dusunce kopuklu kola fiskirir.
+function kolaVar(L) { return Q.get('kola') !== '0' && L >= 11 && rnd3(L, 7, 3, 11) < 0.27; }
+const KOLAYOK = new Set(['altin', 'yildiz', 'hediye', 'celik', 'fici', 'bomba', 'recel', 'cam', 'jole', 'buz']);
+function kolaKoy(list, L) {
+  if (!kolaVar(L) || !MOD.kola) return;
+  const ust = new Map();
+  for (const c of list) { const key = c[0] + ',' + c[2] + ',' + (c[4] || 0); ust.set(key, Math.max(ust.has(key) ? ust.get(key) : -1, c[1])); }
+  let n = 0;
+  for (const c of list) { if (n >= 14) break; const col = c[3];
+    if (typeof col !== 'string' || col.startsWith('g_') || KEEP[col] || KOLAYOK.has(col)) continue;
+    if (ust.get(c[0] + ',' + c[2] + ',' + (c[4] || 0)) !== c[1]) continue;
+    c[3] = 'kola'; n++; }
+}
+function kolaFis(c) {
+  if (!c || !c.mesh || (g && c.fisT && g.t - c.fisT < 0.6)) return; if (g) c.fisT = g.t;
+  const p = new THREE.Vector3().copy(c.body.position), up = new THREE.Vector3(0, 1, 0).applyQuaternion(c.mesh.quaternion);
+  if (up.y < -0.2) up.negate();
+  const tip = p.clone().addScaledVector(up, (c.h || S) * 0.5);
+  for (let i = 0; i < 26; i++) {
+    const kopuk = i % 3 === 0, m = spr(kopuk ? '#fff6e8' : (i % 2 ? '#6a2e0e' : '#3a1606'), false, kopuk ? 0.95 : 0.9);
+    const v = up.clone().multiplyScalar(5 + Math.random() * 6).add(new THREE.Vector3((Math.random() - 0.5) * 3.2, Math.random() * 2, (Math.random() - 0.5) * 3.2));
+    const s0 = kopuk ? 0.35 + Math.random() * 0.3 : 0.22 + Math.random() * 0.18; m.position.copy(tip);
+    fx(m, 0.6 + Math.random() * 0.5, (o, k, dt) => { v.y -= 14 * dt; o.position.addScaledVector(v, dt); o.scale.setScalar(s0 * (kopuk ? 1 + k * 1.6 : 1)); o.material.opacity = (kopuk ? 0.95 : 0.9) * (1 - k * k); });
+  }
+  const pf = spr('#fffaf0', true, 0.8); pf.position.copy(tip);
+  fx(pf, 0.25, (o, k) => { o.scale.setScalar(0.6 + k * 1.6); o.material.opacity = 0.8 * (1 - k); });
+  if (AC) { out(); play('yersu', 0.3, 1.6 + Math.random() * 0.2); }
+}
 function buildLevel() {
   clearLevel();
   const Y = levelOf(LV), made = Y.make(), list = convertLevel(made, LV);
   list.forEach((c, n) => { c[4] = made[n][4] || 0; });
+  if (!K) kolaKoy(list, LV);
   if (K) return K.kur(Y, list);   // v6.19: korsan hedefi (sal, gemi, kule) kendi platformunu kurar
   const PD = Y.pl || [{ x: 0, z: 0 }];
   if (PD.length > 1 || PD[0].kay) return buildMulti(Y, list, PD);
@@ -1102,7 +1133,7 @@ const IMP = new CANNON.Vec3(), RP = new CANNON.Vec3();
 // kurali olanlar (cam, fici, bomba, recel kavanozu) parcalanmaz, sadece itilir.
 // v6.1: (Adem) her sey kirilsin: celik haric hepsi topla dogrudan vurulunca parcalanir; fici/bomba patlar; yere dusen her blok kirilir.
 const NOSHAT = new Set(['celik', 'fici', 'bomba', 'recel']);
-const KCOL = { sandik: '#9a6532', hediye: '#3d7bff', yildiz: '#b878ff', altin: '#ffd23f', metal: '#6b7380', ahsap: '#9a6532', kirmizi: '#d83a2e', celik: '#8a9098', tugla: '#b5533a', fici: '#b8432c', bomba: '#3a3a3a', buz: '#bfe6ff', jole: '#ff7ab0', cam: '#cfefff', recel: '#e8203a', buz2: '#bfe6ff', buzDikey: '#bfe6ff', ahsap2: '#9a6532', alevUzun: '#7a6a62', morDikey: '#8a5cd6' };
+const KCOL = { kola: '#c8102e', sandik: '#9a6532', hediye: '#3d7bff', yildiz: '#b878ff', altin: '#ffd23f', metal: '#6b7380', ahsap: '#9a6532', kirmizi: '#d83a2e', celik: '#8a9098', tugla: '#b5533a', fici: '#b8432c', bomba: '#3a3a3a', buz: '#bfe6ff', jole: '#ff7ab0', cam: '#cfefff', recel: '#e8203a', buz2: '#bfe6ff', buzDikey: '#bfe6ff', ahsap2: '#9a6532', alevUzun: '#7a6a62', morDikey: '#8a5cd6' };
 // v6.2: model bloklarinin parca rengi, modelin kendi dokusunun ortalama rengi (Adem'in orijinal renkleri)
 function avgCol(mat) {
   if (!mat || !mat.map || !mat.map.image) return null; if (mat.userData.avg) return mat.userData.avg;
@@ -1187,6 +1218,7 @@ function blast(b) {
     else if (KIRILGAN.has(c0.kind)) breakBlock(c0, b.dir, 14);
     else sfx(c0.kind === 'celik' || c0.kind === 'metal' || c0.kind === 'altin' ? 'metal' : 'kir', c0.kind);
     if (!KAL()) buzz(28);
+    if (c0.kind === 'kola') kolaFis(c0);
   }
   const p = b.blast, d = b.dir.clone(); d.y = Math.max(-0.2, Math.min(0.25, d.y)); d.normalize();
   for (const c of cubes) {
@@ -1606,6 +1638,7 @@ function knock(c, remove) {
   else if (c.kind === 'altin') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
   else if (c.kind === 'yildiz') { g.bonus++; floatText('+1 ★', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#c58bff', 20, 7); sfx('bonus'); }
 
+  if (c.kind === 'kola') kolaFis(c);
   sfx('pop', g.combo ? g.combo.n : 1); hud();
   if (remove) { c.out = true; world.removeBody(c.body); scene.remove(c.mesh); }
 }
@@ -1706,7 +1739,7 @@ if (K) Object.assign(SFILES, { su: 4, kabarcik: 0, zincir: 0, para: 0, sandik: 0
 const SDIR = K ? '../korsan/ses/' : 'ses/', SV2 = K ? 2 : 1;
 for (const k in SFILES) { if (SFILES[k] === undefined) continue; const n = SFILES[k] || 1; for (let i = 0; i < n; i++) { const f = SFILES[k] ? k + i : k; const [yol, sv] = sesYolu(k); RAW[f] = fetch(yol + f + '.mp3?v=' + sv).then((r) => r.arrayBuffer()).catch(() => null); } }
 function decodeAll() { for (const f in RAW) RAW[f].then((ab) => { if (ab && !BUF[f]) AC.decodeAudioData(ab.slice(0), (b) => { BUF[f] = b; }, () => {}); }); }
-const MATSND = { ahsap: 'tahta', sandik: 'tahta', ahsapmetal: 'tahta', kirmizi: 'tahta', hediye: 'tahta', kabak: 'tahta', recel: 'cam', tas: 'tas', tugla: 'tas', piramitTas: 'tas', metal: 'metal', celik: 'metal', altin: 'metal', fici: 'metal', yildiz: 'metal', cam: 'cam', buz: 'buz', jole: 'cam', buz2: 'buz', buzDikey: 'buz', ahsap2: 'tahta', alevUzun: 'tas', morDikey: 'tahta' };
+const MATSND = { kola: 'metal', ahsap: 'tahta', sandik: 'tahta', ahsapmetal: 'tahta', kirmizi: 'tahta', hediye: 'tahta', kabak: 'tahta', recel: 'cam', tas: 'tas', tugla: 'tas', piramitTas: 'tas', metal: 'metal', celik: 'metal', altin: 'metal', fici: 'metal', yildiz: 'metal', cam: 'cam', buz: 'buz', jole: 'cam', buz2: 'buz', buzDikey: 'buz', ahsap2: 'tahta', alevUzun: 'tas', morDikey: 'tahta' };
 function matSnd(kind) { if (!kind) return 'tahta'; if (kind.startsWith('g_')) return 'cam'; const mt = MATSND[kind] || 'tahta'; return mt === 'metal' ? 'tas' : mt; }
 const LAST = {}, GAP = { atis: 0.06, vurus: 0.06, tahta: 0.05, tas: 0.05, metal: 0.07, cam: 0.06, buz: 0.06, yer: 0.07, patlama: 0.12, pop: 0.09, dusme: 0.07 };
 let voices = [];
