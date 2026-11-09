@@ -166,6 +166,13 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
 .tg i{position:absolute;left:2px;top:2px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 0 rgba(0,0,0,.25);transition:left .2s}
 .tg.on{background:linear-gradient(180deg,#8cf05a,#3fb82a);border-color:#1f5e14}.tg.on i{left:32px}
 #hkart{padding-top:52px}
+.panda{position:absolute;left:50%;top:-118px;margin-left:-60px;filter:drop-shadow(0 5px 0 rgba(0,0,0,.25));animation:pgir .6s cubic-bezier(.3,1.6,.5,1) .15s both}
+.panda.mutlu{animation:pgir .6s cubic-bezier(.3,1.6,.5,1) .15s both,pzip .7s ease-in-out .8s infinite}
+@keyframes pgir{from{transform:translateY(70px)}}
+@keyframes pzip{50%{transform:translateY(-9px) rotate(-3deg)}}
+.halt{position:relative}.halt .panda{top:-92px;left:auto;right:16px;margin:0;width:96px;height:90px;animation:pzip 2.4s ease-in-out infinite;z-index:-1}
+.halt .btn{position:relative}
+.oyn{height:0}
 </style>
 </head>
 <body>
@@ -183,6 +190,6 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
 <div id="praise"></div>
 <div class="modal" id="modal"><div class="card" id="card"></div></div>
 <div id="load">Yükleniyor…</div>
-<script type="module" src="oyun.js?v=63"></script>
+<script type="module" src="oyun.js?v=64"></script>
 </body>
 </html>
