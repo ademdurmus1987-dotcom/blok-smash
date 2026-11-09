@@ -60,6 +60,7 @@ let FON = null, sheep = [], birds = [], IW = 720, IH = 1280, map = { s: 1, ox: 0
 
 export function canliFon(fo) {
   FON = fo.f; sheep = []; birds = []; flakes = []; cx2.clearRect(0, 0, cv2.width, cv2.height);
+  if (fo.vid) { FON = null; cx.clearRect(0, 0, cv.width, cv.height); return; }   // v1.7: video fonda koyun, kus, nehir ve kar videonun kendisinde
   if (FON === 'cayir4') {
     sheep = KOYUN.map((k, i) => ({ ...k, w: k.w * k.sc, h: k.h * k.sc, x0: k.x, dx: 0, face: k.yon, st: 'otla', t: 0, dur: 2 + i * 1.3, hb: 0, hbT: 0.5, step: 0, br: Math.random() * 6, nib: 0, look: 0 }));
     for (const k of KOYUN) { img(k.n + '_govde'); img(k.n + '_kafa'); }
