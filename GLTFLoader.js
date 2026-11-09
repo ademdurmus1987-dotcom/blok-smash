@@ -66,6 +66,8 @@ import {
 	InstancedBufferAttribute
 } from './three.module.min.js';
 import { toTrianglesDrawMode } from './BufferGeometryUtils.js';
+// Blok Smash v1.6: modeller EXT_meshopt_compression ile sikistirildi; cozucu yerel dosya (meshoptimizer v0.20, CDN yok)
+import { MeshoptDecoder } from './meshopt_decoder.module.js';
 
 class GLTFLoader extends Loader {
 
@@ -75,7 +77,7 @@ class GLTFLoader extends Loader {
 
 		this.dracoLoader = null;
 		this.ktx2Loader = null;
-		this.meshoptDecoder = null;
+		this.meshoptDecoder = MeshoptDecoder;   // Blok Smash v1.6: her yeni GLTFLoader meshopt cozucuyle gelir
 
 		this.pluginCallbacks = [];
 
