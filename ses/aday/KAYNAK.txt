@@ -26,3 +26,17 @@ tus_13 kenney_interfacesounds/Audio/toggle_002.ogg
 tus_14 kenney_interfacesounds/Audio/drop_002.ogg
 tus_15 LQ_interface/Boop.flac
 tus_16 LQ_interface/Blap.flac
+tus_17 bb - Bottle Plops (Apr 2021)/Plop - Airy 1.wav
+tus_18 bb - Bottle Plops (Apr 2021)/Plop - Airy 2.wav
+tus_19 bb - Bottle Plops (Apr 2021)/Plop - Airy 3.wav
+tus_20 bb - Bottle Plops (Apr 2021)/Plop - Airy 4.wav
+tus_21 bb - Pill Bottles (Jun 2021)/Bottle Pop 1.wav
+tus_22 bb - Pill Bottles (Jun 2021)/Bottle Pop 2.wav
+tus_23 100-CC0-SFX/plop_01.ogg
+tus_24 100-CC0-SFX/plop_02.ogg
+tus_25 bb - Bottle Plops (Apr 2021)/Plop - Viscous 1.wav
+tus_26 bb - Bottle Plops (Apr 2021)/Plop - Wheeze 1.wav
+tus_27 bb - Bottle Plops (Apr 2021)/Plop - Sputter 1.wav
+tus_28 bb - Pill Bottles (Jun 2021)/Cap Click 1.wav
+tus_29 Micro Pack - Small Can/Small Can - Flick Tab.wav
+tus_30 Micro Pack - Small Can/Small Can - Pluck Tab 1.wav
