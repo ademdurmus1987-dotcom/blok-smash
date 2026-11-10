@@ -50,3 +50,23 @@ altin_19 BB_Retail Therapy Sample Pack/Silverware Ting 3.wav
 altin_20 50-CC0-retro-synth-SFX/retro_coin_01.ogg
 altin_21-24 kodla uretildi (numpy), lisans yok
 altin_25-30 kodla uretildi (FM can + metal sikirti + parilti), lisans yok
+px_1 https://cdn.pixabay.com/audio/2024/08/30/audio_60cd586a99.mp3 (Pixabay Content License)
+px_2 https://cdn.pixabay.com/audio/2026/05/24/audio_98942bdcaa.mp3 (Pixabay Content License)
+px_3 https://cdn.pixabay.com/audio/2024/02/07/audio_a143337bbf.mp3 (Pixabay Content License)
+px_4 https://cdn.pixabay.com/audio/2022/01/30/audio_e498f38f84.mp3 (Pixabay Content License)
+px_5 https://cdn.pixabay.com/audio/2024/03/24/audio_b05069ac7c.mp3 (Pixabay Content License)
+px_6 https://cdn.pixabay.com/audio/2026/05/24/audio_be0cdd88b8.mp3 (Pixabay Content License)
+px_7 https://cdn.pixabay.com/audio/2024/08/30/audio_c8d3ae76c7.mp3 (Pixabay Content License)
+px_8 https://cdn.pixabay.com/audio/2024/08/30/audio_53954d8511.mp3 (Pixabay Content License)
+px_9 https://cdn.pixabay.com/audio/2026/10/19/audio_596211d6b0.mp3 (Pixabay Content License)
+px_10 https://cdn.pixabay.com/audio/2021/08/04/audio_a9afe06aac.mp3 (Pixabay Content License)
+px_11 https://cdn.pixabay.com/audio/2025/05/30/audio_c48b72a164.mp3 (Pixabay Content License)
+px_12 https://cdn.pixabay.com/audio/2026/05/05/audio_079c241521.mp3 (Pixabay Content License)
+px_13 https://cdn.pixabay.com/audio/2022/03/10/audio_a73a69f548.mp3 (Pixabay Content License)
+px_14 https://cdn.pixabay.com/audio/2025/08/05/audio_69f210e199.mp3 (Pixabay Content License)
+px_15 https://cdn.pixabay.com/audio/2024/08/30/audio_9043fdb982.mp3 (Pixabay Content License)
+px_16 https://cdn.pixabay.com/audio/2025/07/25/audio_391026f448.mp3 (Pixabay Content License)
+px_17 https://cdn.pixabay.com/audio/2022/03/10/audio_bd83aac9d8.mp3 (Pixabay Content License)
+px_18 https://cdn.pixabay.com/audio/2023/03/18/audio_bbbae2815a.mp3 (Pixabay Content License)
+px_19 https://cdn.pixabay.com/audio/2025/01/29/audio_7e63556dae.mp3 (Pixabay Content License)
+px_20 https://cdn.pixabay.com/audio/2026/06/19/audio_9fba5b92ad.mp3 (Pixabay Content License)
