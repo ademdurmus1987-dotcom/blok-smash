@@ -1,4 +1,4 @@
-// Blok Smash v3.0 (10 Kas 2026): (Adem: Royal Smash videosundaki kalite) acilis ekrani, 3B tilkili ana sayfa, magaza, hazine haritasi, bolum karti, havai fisekli kazanma sahnesi, 'Devam Et?' karti, gunluk odul, hazine sandigi, profil istatistikleri, duraklatma - hepsi yapi/merkez.js + merkez.css. v2.0 (10 Kas 2026): gercek 3B kamera (yandan/yukaridan + bolum basi donus), bolum haritasi, gunluk gorevler, ayarlar, muzik, yildiz kaydi, golge hafifletme, denge ve hata duzeltmeleri. v1.7: (Adem 9 Kas 2026) cayir ve karli koy fonlari da video oldu (Adem'in Gemini videolari); sahil videosu 10. saniyede dalga atlamasin diye dikissiz donguye cevrildi (bas ve sona en iyi uyan kareler arandi, son 1 sn baslangicla harmanlandi: sahil 7,6 sn, cayir 7 sn, kar 6,5 sn; mp4 + webm). Video fonlarda canli.js cizimleri (koyun, kus, nehir, on kar) kapali, cunku videonun kendisinde var. Blok Smash v1.6: (Adem 9 Kas 2026) tum modeller sikistirildi (yapi/model, model/parcali ve live_pofi.glb: dokular WebP en fazla 1024px, geometri meshopt, dedup ve prune; toplam 78 MB -> 34 MB); GLTFLoader yerel meshopt_decoder.module.js ile cozer; oyun mantigi degismedi. v6.18: (Adem) sahilde platformun alti 3B kum (bloklar suya batar gibi gorunmuyor), kum ve karda saplanan blok asagi inmez; koyunlar daha uzakta; nehir akiyor; karli koyde kar yagiyor. v6.17: (Adem 5 Kas 2026) kuma dusen kuma gomulur, kara dusen kara saplanir, suya dusen batar (tahta/buz/fici yuzer); sahil bolumlerinde platformun arkasi gercek dalgali deniz; fondaki koyun ve kuslar canli (canli.js). v6.16: (Adem 5 Kas 2026) bloklar Blender ile parcalanmis gercek parcalarina ayrilir (model/parcali), 5 yeni model (buz kup 2, ahsap kup 2, buz/mor dikey ve alev tas sutun) ve 4 yeni kule (bolum 28-31). v6.6: top gorunusu fizige baglandi (v6.3 hatasi), Adem in top mermisi ve platform 2/3 modelleri, denize batis, yumusak kazanma zili, alcak kamera, zor devrilme. v6.5: dusen blok kara/kuma/cimene gomulur (sekmez), yumusak sesler, buyuk 3B top, simetrik kuleler, bazi bolumlerde 360 derece donen platform. v6.4: cam sekiller ve boyali dokular yok, tum bloklar Tripo modeli orijinal renginde; top parlamasi yok; yuksek genis kuleler. v6.3: kayitli (sentezlenip mp3'e basilmis) sesler, yeni yazilar ve bolum bandi, atis dengesi. v6.2: 7 yeni model, platform kameraya duz bakar, top arabasi yerlesimi/olcusu yeniden, top ve kirilma gorunumu, atis/yikilma dengesi. v6.1: cam sekiller, her sey kirilir, boyama yok (Adem'in model renkleri), duz/esit atis, temiz platform ayagi, fon degisimi. v6.0: Royal Smash kalitesi icin atis/kirilma/ses/efekt yenilendi, kamera hafif yandan. v5.5: Pofi yok; onden bakis, altta yakindan buyuk top arabasi, metal kupler boyali. v5.4: cayir fonu + Adem'in Tripo modelleri (cizgili platform, top arabasi, top, ahsap/kirmizi/metal kupler). Direk ustundeki platformda iri metal kuplerden bir yapi; altta Pofi durur.
+// Blok Smash v3.1 (10 Kas 2026): kodla cizilen 3B sekiller (sekil.js) ve uc yeni yapi: Oyuncak Duvar, Buz Tapinagi, Seker Rafi. v3.0 (10 Kas 2026): (Adem: Royal Smash videosundaki kalite) acilis ekrani, 3B tilkili ana sayfa, magaza, hazine haritasi, bolum karti, havai fisekli kazanma sahnesi, 'Devam Et?' karti, gunluk odul, hazine sandigi, profil istatistikleri, duraklatma - hepsi yapi/merkez.js + merkez.css. v2.0 (10 Kas 2026): gercek 3B kamera (yandan/yukaridan + bolum basi donus), bolum haritasi, gunluk gorevler, ayarlar, muzik, yildiz kaydi, golge hafifletme, denge ve hata duzeltmeleri. v1.7: (Adem 9 Kas 2026) cayir ve karli koy fonlari da video oldu (Adem'in Gemini videolari); sahil videosu 10. saniyede dalga atlamasin diye dikissiz donguye cevrildi (bas ve sona en iyi uyan kareler arandi, son 1 sn baslangicla harmanlandi: sahil 7,6 sn, cayir 7 sn, kar 6,5 sn; mp4 + webm). Video fonlarda canli.js cizimleri (koyun, kus, nehir, on kar) kapali, cunku videonun kendisinde var. Blok Smash v1.6: (Adem 9 Kas 2026) tum modeller sikistirildi (yapi/model, model/parcali ve live_pofi.glb: dokular WebP en fazla 1024px, geometri meshopt, dedup ve prune; toplam 78 MB -> 34 MB); GLTFLoader yerel meshopt_decoder.module.js ile cozer; oyun mantigi degismedi. v6.18: (Adem) sahilde platformun alti 3B kum (bloklar suya batar gibi gorunmuyor), kum ve karda saplanan blok asagi inmez; koyunlar daha uzakta; nehir akiyor; karli koyde kar yagiyor. v6.17: (Adem 5 Kas 2026) kuma dusen kuma gomulur, kara dusen kara saplanir, suya dusen batar (tahta/buz/fici yuzer); sahil bolumlerinde platformun arkasi gercek dalgali deniz; fondaki koyun ve kuslar canli (canli.js). v6.16: (Adem 5 Kas 2026) bloklar Blender ile parcalanmis gercek parcalarina ayrilir (model/parcali), 5 yeni model (buz kup 2, ahsap kup 2, buz/mor dikey ve alev tas sutun) ve 4 yeni kule (bolum 28-31). v6.6: top gorunusu fizige baglandi (v6.3 hatasi), Adem in top mermisi ve platform 2/3 modelleri, denize batis, yumusak kazanma zili, alcak kamera, zor devrilme. v6.5: dusen blok kara/kuma/cimene gomulur (sekmez), yumusak sesler, buyuk 3B top, simetrik kuleler, bazi bolumlerde 360 derece donen platform. v6.4: cam sekiller ve boyali dokular yok, tum bloklar Tripo modeli orijinal renginde; top parlamasi yok; yuksek genis kuleler. v6.3: kayitli (sentezlenip mp3'e basilmis) sesler, yeni yazilar ve bolum bandi, atis dengesi. v6.2: 7 yeni model, platform kameraya duz bakar, top arabasi yerlesimi/olcusu yeniden, top ve kirilma gorunumu, atis/yikilma dengesi. v6.1: cam sekiller, her sey kirilir, boyama yok (Adem'in model renkleri), duz/esit atis, temiz platform ayagi, fon degisimi. v6.0: Royal Smash kalitesi icin atis/kirilma/ses/efekt yenilendi, kamera hafif yandan. v5.5: Pofi yok; onden bakis, altta yakindan buyuk top arabasi, metal kupler boyali. v5.4: cayir fonu + Adem'in Tripo modelleri (cizgili platform, top arabasi, top, ahsap/kirmizi/metal kupler). Direk ustundeki platformda iri metal kuplerden bir yapi; altta Pofi durur.
 // Oyuncu yapida bir yere dokunur, Pofi hortumuyla oraya top atar. Kupler gercek fizikle (cannon-es) devrilir, platformdan
 // dusen her kup sayilir. Hepsi dusunce bolum biter; toplar biterse kaybedilir.
 import * as THREE from '../three.module.min.js';
@@ -9,6 +9,7 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
+import { sekilKur, YAPI } from './sekil.js?v=1';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=1';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
@@ -22,7 +23,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.0', ZOR_ODUL = 20;
+const SURUM = 'v3.1', ZOR_ODUL = 20;
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -379,6 +380,15 @@ const NENV = (() => {
   const pm = new THREE.PMREMGenerator(ren), e = pm.fromEquirectangular(t).texture; pm.dispose(); return e;
 })();
 
+// v3.1: (Adem 10 Kas 2026) kodla cizilen 3B sekiller (sekil.js): parlak oyuncak kup, tas kiris, mermer tambur, buz, ahsap dikme, kavanoz, raf.
+// KIND'e eklenir (sek: 1); olculeri kup kenari cinsinden SEK.TUR'da, govde ve malzemesi ilk kullanimda SEK.al(ad) ile kurulur.
+const SEK = sekilKur({ THREE, S, canvasTex, ENV });
+for (const k in SEK.TUR) { const t = SEK.TUR[k]; KIND[k] = { mass: t.mass, f: t.f, r: t.r, sek: 1 }; if (t.carp) KIND[k].kir = t.carp; }
+const SEKSH = {};
+function sekShape(k) { if (SEKSH[k]) return SEKSH[k]; const s = SEK.al(k); return (SEKSH[k] = s.sil ? new CANNON.Cylinder(s.r, s.r, s.h, 16) : new CANNON.Box(new CANNON.Vec3(s.w / 2, s.h / 2, s.d / 2))); }
+// parcanin yarim genisligi, yuksekligi, yarim derinligi (kup kenari cinsinden): platform ve kamera yapiya gore ayarlanir
+function olcu(col) { const t = SEK.TUR[col]; return t ? [t.w / 2, t.h, t.d / 2] : [0.5, KEEP[col] === 'tall' ? 2 : 1, 0.5]; }
+
 // ---------------- v6.1 cam sekiller (Adem'in 2. sayfasi): kodla, parlak yari saydam cam + beyaz kenar cizgisi ----------------
 // 'yig': ust uste konabilen (tam hucre), 'tepe': sadece sutunun tepesine konur. Her biri kirilir: topla vurulunca, sert carpinca, yere dusunce.
 const GS = S * 0.98;
@@ -641,6 +651,10 @@ function convertLevel(list, L) {
 // v6.5: (Adem) simetrik ve cesitli dizilimler. ayna(W) -> merkezden uzaklik. don: platform 360 derece doner (rad/sn).
 const ayna = (W) => (i) => Math.round(Math.min(i, W - 1 - i));
 const KULELER = [
+  // v3.1: (Adem 10 Kas 2026) uc yeni yapi, kodla cizilen 3B sekillerle (sekil.js)
+  { ad: 'Oyuncak Duvar', ek: 4, make: () => YAPI.duvar() },
+  { ad: 'Buz Tapınağı', ek: 4, make: () => YAPI.tapinak() },
+  { ad: 'Şeker Rafı', make: () => YAPI.raf() },
   { ad: 'Renkli Kule', make: () => { const m = ayna(5); return box([], 0, 4, 0, 9, 0, 1, (i) => [C.kir, C.sar, C.mav][m(i)]); } },
   { ad: 'Kayan Kule', pl: [{ x: 0, z: 0, kay: { a: 2.6, h: 1.1 } }], make: () => box([], 0, 3, 0, 7, 0, 1, (i, j) => (j % 3 === 2 ? C.sar : i === 0 || i === 3 ? C.kir : C.mav)) },
   { ad: 'Basamaklı Kule', make: () => { const o = []; [[0, 6, 0, 2, C.kir], [1, 5, 3, 5, C.sar], [2, 4, 6, 8, C.mav], [3, 3, 9, 9, 'altin']].forEach(([a, b, c, d, col]) => box(o, a, b, c, d, 0, 1, col)); return o; } },
@@ -671,6 +685,11 @@ const zorluk = (L) => Math.min(1, Math.max(0, (L - 1) / 100));
 const USIF = ['Taş', 'Ahşap', 'Kızıl', 'Altın', 'Gizli', 'Eski', 'Dev', 'Sarı', 'Mor', 'Yüksek', 'Çifte', 'Kayıp', 'Güneş', 'Kum', 'Rüzgâr', 'Demir'];
 function uretBolum(L) {
   const r = mul32(L * 7919 + 13), d = zorluk(L), ri = (a, b) => a + Math.floor(r() * (b - a + 1)), sec = (a) => a[Math.floor(r() * a.length)];
+  if (L % 3 === 2) {   // v3.1: her uc bolumde bir yeni yapilardan biri, her seferinde baska olcu ve renkte
+    const OY = ['oyK', 'oyY', 'oyM', 'oyS', 'oyP'], a = ri(0, 4), b = (a + ri(1, 4)) % 5, tip = Math.floor(L / 3) % 3;
+    const op = tip === 0 ? { r1: OY[a], r2: OY[b], kat: ri(1, 2), desen: ri(0, 3) } : tip === 1 ? { sut: ri(2, 4) } : { kat: ri(2, 3), kay: ri(0, 2) };
+    return { ad: sec(USIF) + ' ' + ['Duvar', 'Tapınak', 'Raf'][tip], ek: 3, uretim: 1, make: () => YAPI[['duvar', 'tapinak', 'raf'][tip]](op) };
+  }
   const KIRIK = [C.kir, C.tur, C.pem], SAGLAM = d > 0.45 ? [C.mav, C.sar, C.mor, 'tugla', 'altin'] : [C.mav, C.sar, C.yes, 'tugla'];
   // her kat (j) ve aynaya gore sutun (m) icin malzeme: saglam payi zorlukla artar; sag-sol simetrik kalir
   const ps = 0.18 + 0.5 * d, katR = [], memo = {};
@@ -810,7 +829,7 @@ function kolaKoy(list, L) {
   for (const c of list) { const key = c[0] + ',' + c[2] + ',' + (c[4] || 0); ust.set(key, Math.max(ust.has(key) ? ust.get(key) : -1, c[1])); }
   let n = 0;
   for (const c of list) { if (n >= 14) break; const col = c[3];
-    if (typeof col !== 'string' || col.startsWith('g_') || KEEP[col] || KOLAYOK.has(col)) continue;
+    if (typeof col !== 'string' || col.startsWith('g_') || KEEP[col] || KOLAYOK.has(col) || SEK.TUR[col]) continue;
     if (ust.get(c[0] + ',' + c[2] + ',' + (c[4] || 0)) !== c[1]) continue;
     c[3] = 'kola'; n++; }
 }
@@ -837,14 +856,14 @@ function buildLevel() {
   if (K) return K.kur(Y, list);   // v6.19: korsan hedefi (sal, gemi, kule) kendi platformunu kurar
   const PD = Y.pl || [{ x: 0, z: 0 }];
   if (PD.length > 1 || PD[0].kay) return buildMulti(Y, list, PD);
-  let i0 = 1e9, i1 = -1e9, k0 = 1e9, k1 = -1e9; for (const c of list) { i0 = Math.min(i0, c[0]); i1 = Math.max(i1, c[0]); k0 = Math.min(k0, c[2]); k1 = Math.max(k1, c[2]); }
+  let i0 = 1e9, i1 = -1e9, k0 = 1e9, k1 = -1e9; for (const c of list) { const o = olcu(c[3]); i0 = Math.min(i0, c[0] - o[0] + 0.5); i1 = Math.max(i1, c[0] + o[0] - 0.5); k0 = Math.min(k0, c[2] - o[2] + 0.5); k1 = Math.max(k1, c[2] + o[2] - 0.5); }
   const ci = (i0 + i1) / 2, ck = (k0 + k1) / 2;
   // platform yapiya gore: en uzak kup kosesinin hemen disi
   R = 0;
-  for (const [i, , k] of list) { const x = Math.abs(i - ci) * S + S / 2, z = Math.abs(k - ck) * S + S / 2; R = Math.max(R, Math.hypot(x, z)); }
-  R = Math.max(3.4, R + 0.3); RZ = R; TOPY = 0; for (const c of list) TOPY = Math.max(TOPY, (c[1] + (KEEP[c[3]] === 'tall' ? 2 : 1)) * S);
+  for (const [i, , k, col] of list) { const o = olcu(col), x = (Math.abs(i - ci) + o[0]) * S, z = (Math.abs(k - ck) + o[2]) * S; R = Math.max(R, Math.hypot(x, z)); }
+  R = Math.max(3.4, R + 0.3); RZ = R; TOPY = 0; for (const c of list) TOPY = Math.max(TOPY, (c[1] + olcu(c[3])[1]) * S);
   if (TEMA_YAPI[1] === 'sirk') {   // dikdortgen masa: yapinin her yanindan ~yarim kup bosluk
-    let mx = 0, mz = 0; for (const [i, , k] of list) { mx = Math.max(mx, Math.abs(i - ci) * S + S / 2); mz = Math.max(mz, Math.abs(k - ck) * S + S / 2); }
+    let mx = 0, mz = 0; for (const [i, , k, col] of list) { const o = olcu(col); mx = Math.max(mx, (Math.abs(i - ci) + o[0]) * S); mz = Math.max(mz, (Math.abs(k - ck) + o[2]) * S); }
     // v6.12: (Adem) bolum 166'da kalan bloklar genis platformda yatip kaliyordu: kenar daraldi, kare platform sadece donen bolumde
     R = Math.max(3.6, mx + S * 0.5); RZ = Math.max(2.4, mz + S * 0.45); const kare = Y.don; if (kare) R = RZ = Math.max(R, RZ); const karli = fonOf(LV).f.startsWith('kar'); setSirk(R, RZ, kare || karli ? 'platform_3' : fonOf(LV).f.startsWith('sahil') ? 'platform_2' : 'platform_4');   // v6.6: Adem'in platformlari   // v6.5: yapinin her yaninda genis kenar; donen platform kare
     DIRT.scale.set(6.4, 5, 1);
@@ -864,7 +883,7 @@ function buildMulti(Y, list, PD) {
   const fo0 = fonOf(LV).f, pn0 = fo0.startsWith('kar') ? 'platform_3' : fo0.startsWith('sahil') ? 'platform_2' : 'platform_4', pn = MOD[pn0] ? pn0 : 'platform_sirk';
   const info = PD.map(() => ({ i0: 1e9, i1: -1e9, k0: 1e9, k1: -1e9 }));
   TOPY = 0;
-  for (const c of list) { const f = info[c[4]]; f.i0 = Math.min(f.i0, c[0]); f.i1 = Math.max(f.i1, c[0]); f.k0 = Math.min(f.k0, c[2]); f.k1 = Math.max(f.k1, c[2]); TOPY = Math.max(TOPY, (c[1] + (KEEP[c[3]] === 'tall' ? 2 : 1)) * S); }
+  for (const c of list) { const f = info[c[4]], o = olcu(c[3]); f.i0 = Math.min(f.i0, c[0] - o[0] + 0.5); f.i1 = Math.max(f.i1, c[0] + o[0] - 0.5); f.k0 = Math.min(f.k0, c[2] - o[2] + 0.5); f.k1 = Math.max(f.k1, c[2] + o[2] - 0.5); TOPY = Math.max(TOPY, (c[1] + o[1]) * S); }
   R = 0; RZ = 0;
   PD.forEach((d, n) => {
     const f = info[n]; f.ci = (f.i0 + f.i1) / 2; f.ck = (f.k0 + f.k1) / 2;
@@ -897,13 +916,14 @@ function addCubes(Y, list, ctr) {
     const kd = col[0] === '#' ? null : KIND[col], mg = fitCube(kd ? col : 'kup'), isF = col === 'fici' && !mg;
     const pm = kd ? (kd.pm || (kd.pm = new CANNON.Material({ friction: kd.f, restitution: kd.r }))) : PM.cube;
     const body = new CANNON.Body({ mass: (kd ? kd.mass : 1) * KAGIR, material: pm, sleepSpeedLimit: 0.25, sleepTimeLimit: 0.4, linearDamping: 0.03, angularDamping: 0.16 });   // v6.8: 3 kat agir, kolay donmez
-    const isE = kd && kd.esya, gl = kd && kd.cam, kp = KEEP[col] && MOD[col] ? fitKeep(col) : null, ghh = gl ? glassInfo(gl).hh : kp ? MOD[col].dim.h : S;
-    body.addShape(gl ? glassShape(gl) : kp ? keepShape(col) : isF || isE ? FICISHAPE : CUBESHAPE); body.position.set(ox + (i - ci) * S, (oy || 0) + ghh / 2 + j * (S + 0.002), oz + (k - ck) * S);
+    const sk = kd && kd.sek ? SEK.al(col) : null;   // v3.1: kodla cizilen sekil
+    const isE = kd && kd.esya, gl = kd && kd.cam, kp = KEEP[col] && MOD[col] ? fitKeep(col) : null, ghh = sk ? sk.h : gl ? glassInfo(gl).hh : kp ? MOD[col].dim.h : S;
+    body.addShape(sk ? sekShape(col) : gl ? glassShape(gl) : kp ? keepShape(col) : isF || isE ? FICISHAPE : CUBESHAPE); body.position.set(ox + (i - ci) * S, (oy || 0) + ghh / 2 + j * (S + 0.002), oz + (k - ck) * S);
     if (isE) body.quaternion.setFromEuler(0, (Math.random() - 0.5) * 0.5, 0);
     world.addBody(body); body.sleep();
-    const mesh = gl ? makeGlass(gl) : kp ? new THREE.Mesh(kp, MOD[col].mat) : isE ? makeJar() : mg ? new THREE.Mesh(mg, kd ? MOD[col].mat : kupModelMat(col)) : new THREE.Mesh(isF ? FICIGEO : CUBEGEO, kd ? kindMat(col) : kupMat(col)); mesh.castShadow = !gl; mesh.receiveShadow = col !== 'cam' && !gl; scene.add(mesh);
-    if (!gl && !isE && (mg || kp)) { mesh.castShadow = false; const d = kp ? MOD[col].dim : null, sp = new THREE.Mesh(SHBOX, GOLGEM); sp.scale.set(d ? d.w * 0.94 : S * 0.96, d ? d.h : S * 0.98, d ? d.d * 0.94 : S * 0.96); sp.castShadow = true; sp.frustumCulled = false; mesh.add(sp); }   // v2.0: golge gecisinde 5-10 bin ucgen yerine 12 ucgen
-    const c = { body, mesh, col, kind: kd ? col : null, gone: false, out: false, h: ghh, pi: pn || 0 };
+    const mesh = sk ? new THREE.Mesh(sk.geo, sk.mat) : gl ? makeGlass(gl) : kp ? new THREE.Mesh(kp, MOD[col].mat) : isE ? makeJar() : mg ? new THREE.Mesh(mg, kd ? MOD[col].mat : kupModelMat(col)) : new THREE.Mesh(isF ? FICIGEO : CUBEGEO, kd ? kindMat(col) : kupMat(col)); mesh.castShadow = !gl; mesh.receiveShadow = col !== 'cam' && !gl; scene.add(mesh);
+    if (!sk && !gl && !isE && (mg || kp)) { mesh.castShadow = false; const d = kp ? MOD[col].dim : null, sp = new THREE.Mesh(SHBOX, GOLGEM); sp.scale.set(d ? d.w * 0.94 : S * 0.96, d ? d.h : S * 0.98, d ? d.d * 0.94 : S * 0.96); sp.castShadow = true; sp.frustumCulled = false; mesh.add(sp); }   // v2.0: golge gecisinde 5-10 bin ucgen yerine 12 ucgen
+    const c = { body, mesh, col, kind: kd ? col : null, gone: false, out: false, h: ghh, pi: pn || 0, sek: sk };
     // kirilan/patlayan: carpisma olayi adimin icinde gelir, isi adimdan sonra yapilir (FUSE)
     if (kd && (kd.kir || kd.boom)) body.addEventListener('collide', (e) => {
       if (!g || !g.armed || c.out || c.fuse != null || (c.gone && !kd.esya)) return;   // dusen kavanoz yerde de kirilir
@@ -938,8 +958,8 @@ function shotsFor(n, Y) {
   // Blok Smash 2. asama: top artik ilk carpista yavasladigi icin taban biraz yukarida; bolum ilerledikce %15'e kadar azalir, her engel +1 top
   const taban = Math.max(8, Math.min(24, Math.round((n / 3.6 + 3) * (1 - 0.15 * zorluk(LV))) + engelOf(LV, Y).length));
   // v2.0: denge (bot testleri): ilk bolum kolay; cok bloklu bolumde top basina en cok 4,6 blok; saglam malzemeli bolume ek top
-  let sert = 0; for (const c of cubes) if (c.kind === 'tugla' || c.kind === 'altin' || c.kind === 'tas' || c.kind === 'alevUzun') sert++;
-  return Math.min(36, Math.max(taban, Math.ceil(n / 4.6)) + (LV === 1 ? 3 : 0) + (sert / Math.max(1, n) > 0.6 ? 3 : 0));   // v1.3: darbe yumusadi, top biraz artti
+  let sert = 0; for (const c of cubes) if (c.kind === 'tugla' || c.kind === 'altin' || c.kind === 'tas' || c.kind === 'alevUzun' || (c.kind && SEK.TUR[c.kind] && SEK.TUR[c.kind].sert)) sert++;
+  return Math.min(36, Math.max(taban, Math.ceil(n / 4.6)) + (LV === 1 ? 3 : 0) + (sert / Math.max(1, n) > 0.6 ? 3 : 0) + ((Y && Y.ek) || 0));   // v1.3: darbe yumusadi, top biraz artti
 }
 // v6.13: (Adem) referanstaki gibi birden fazla platform ve saga sola kayan platform.
 // PLS[0] eski platform (platBody, SIRK.mesh, LEG); digerleri her bolumde yeniden kurulur.
@@ -1202,10 +1222,10 @@ function avgCol(mat) {
 }
 // parca rengi icin doku ortalamasi ilk kirilista hesaplaniyordu (buyuk dokuda 100-200 ms takilma): acilista, kareleri bozmadan teker teker onceden hesapla
 function avgIsit() { const ks = Object.keys(MOD).filter((k) => NEWM.has(k) && MOD[k] && MOD[k].mat); ks.forEach((k, i) => setTimeout(() => { try { avgCol(MOD[k].mat); } catch (e) {} }, 700 + i * 90)); }
-function bColor(c) { const k = c.kind; if (!k) return c.col; if (k.startsWith('g_')) return GLASS[k.slice(2)][0]; return (MOD[k] && NEWM.has(k) && avgCol(MOD[k].mat)) || KCOL[k] || '#cccccc'; }
+function bColor(c) { const k = c.kind; if (!k) return c.col; if (k.startsWith('g_')) return GLASS[k.slice(2)][0]; return (MOD[k] && NEWM.has(k) && avgCol(MOD[k].mat)) || KCOL[k] || (SEK.TUR[k] && SEK.TUR[k].renk) || '#cccccc'; }
 // parcalar blogun kendi malzemesiyle (Adem'in modellerinde gercek doku parcaciklari gorunur; cam parcalari cam)
 function bMat(c) { const k = c.kind; if (k && k.startsWith('g_')) return glassMat(k.slice(2)); return null; }
-function bChunk(c) { const k = c.kind; return k && MOD[k] && NEWM.has(k) ? MOD[k].mat : null; }
+function bChunk(c) { const k = c.kind; return c.sek ? c.sek.parca : k && MOD[k] && NEWM.has(k) ? MOD[k].mat : null; }
 // bir blogu parcala: sayilir (knock), parcalar sacilir, tek kisa ses
 function breakBlock(c, dir, n) {
   if (c.out) return; const p = new THREE.Vector3().copy(c.body.position), gl = c.kind && (c.kind.startsWith('g_') || c.kind === 'cam' || c.kind === 'buz' || c.kind === 'jole');
@@ -1798,6 +1818,7 @@ const SDIR = K ? '../korsan/ses/' : 'ses/', SV2 = K ? 2 : 1;
 for (const k in SFILES) { if (SFILES[k] === undefined) continue; const n = SFILES[k] || 1; for (let i = 0; i < n; i++) { const f = SFILES[k] ? k + i : k; const [yol, sv] = sesYolu(k); RAW[f] = fetch(yol + f + '.mp3?v=' + sv).then((r) => r.arrayBuffer()).catch(() => null); } }
 function decodeAll() { for (const f in RAW) RAW[f].then((ab) => { if (ab && !BUF[f]) AC.decodeAudioData(ab.slice(0), (b) => { BUF[f] = b; }, () => {}); }); }
 const MATSND = { kola: 'metal', ahsap: 'tahta', sandik: 'tahta', ahsapmetal: 'tahta', kirmizi: 'tahta', hediye: 'tahta', kabak: 'tahta', recel: 'cam', tas: 'tas', tugla: 'tas', piramitTas: 'tas', metal: 'metal', celik: 'metal', altin: 'metal', fici: 'metal', yildiz: 'metal', cam: 'cam', buz: 'buz', jole: 'cam', buz2: 'buz', buzDikey: 'buz', ahsap2: 'tahta', alevUzun: 'tas', morDikey: 'tahta' };
+for (const k in SEK.TUR) { const t = SEK.TUR[k]; if (t.kir) KIRILGAN.add(k); if (t.yuzer) FLOAT.add(k); MATSND[k] = t.ses; }   // v3.1
 function matSnd(kind) { if (!kind) return 'tahta'; if (kind.startsWith('g_')) return 'cam'; const mt = MATSND[kind] || 'tahta'; return mt === 'metal' ? 'tas' : mt; }
 const LAST = {}, GAP = { atis: 0.06, vurus: 0.06, tahta: 0.05, tas: 0.05, metal: 0.07, cam: 0.06, buz: 0.06, yer: 0.07, patlama: 0.12, pop: 0.09, dusme: 0.07 };
 let voices = [];
