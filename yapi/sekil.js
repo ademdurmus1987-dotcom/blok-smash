@@ -230,6 +230,142 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
     return { geo: torna(prof, 28), mat: mat(map, { roughness: 0.3, metalness: 0.1, envMapIntensity: 0.6 }), parca: mat(null, { color: RAFR, roughness: 0.3 }) };
   }
 
+  // ================= v3.11 (Adem 11 Kas): yeni sekil cesitleri, ayni boyama yontemiyle =================
+  // ---------------- jole kup: yari saydam, ici parlayan, ustu seker serpintili ----------------
+  function jole(renk) {
+    const N = 256;
+    const map = canvasTex(N, N, (x, w, h) => {
+      const r = rng(renk.length * 31 + 7);
+      let g = x.createRadialGradient(w * 0.42, h * 0.38, 0, w / 2, h / 2, w * 0.75); g.addColorStop(0, acik(renk, 0.35)); g.addColorStop(0.55, renk); g.addColorStop(1, koyu(renk, 0.3)); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      // icteki kabarciklar
+      for (let i = 0; i < 9; i++) { const a = w * (0.15 + r() * 0.7), b = h * (0.2 + r() * 0.65), rr = 4 + r() * 9; g = x.createRadialGradient(a - rr * 0.3, b - rr * 0.3, 0, a, b, rr); g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(0.6, 'rgba(255,255,255,.12)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.beginPath(); x.arc(a, b, rr, 0, 6.2832); x.fill(); }
+      // seker serpintisi (kucuk beyaz kristaller)
+      for (let i = 0; i < 70; i++) { const a = r() * w, b = r() * h; x.fillStyle = 'rgba(255,255,255,' + (0.35 + r() * 0.5) + ')'; x.save(); x.translate(a, b); x.rotate(r() * 3); x.fillRect(-1.5, -1.5, 3, 3); x.restore(); }
+      kenarIsik(x, w, h, 0.8);
+      // buyuk kavisli parlama
+      x.save(); x.beginPath(); x.ellipse(w * 0.3, h * 0.22, w * 0.2, h * 0.08, -0.5, 0, 6.2832); x.fillStyle = 'rgba(255,255,255,.5)'; x.fill(); x.restore();
+    });
+    return { geo: kutu(S * 0.97, S * 0.97, S * 0.97, S * 0.2, 3), mat: mat(map, { roughness: 0.08, envMapIntensity: 0.9, transparent: true, opacity: 0.93, emissive: renk, emissiveIntensity: 0.3 }), parca: mat(null, { color: renk, roughness: 0.1, transparent: true, opacity: 0.9, emissive: renk, emissiveIntensity: 0.25 }) };
+  }
+
+  // ---------------- hediye kutusu: puantiyeli kagit, capraz kurdele ----------------
+  function hediye(renk, kur) {
+    const yuz = (ust) => canvasTex(P, P, (x, w, h) => {
+      let g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, acik(renk, 0.08)); g.addColorStop(1, koyu(renk, 0.2)); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      x.fillStyle = 'rgba(255,255,255,.22)'; for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { x.beginPath(); x.arc((i + 0.5 + (j % 2) * 0.5) / 4 * w, (j + 0.5) / 4 * h, w * 0.035, 0, 6.2832); x.fill(); }
+      const band = (dik) => { const bw = w * 0.2; x.save(); if (!dik) { x.translate(w / 2, h / 2); x.rotate(Math.PI / 2); x.translate(-w / 2, -h / 2); }
+        g = x.createLinearGradient(w / 2 - bw / 2, 0, w / 2 + bw / 2, 0); g.addColorStop(0, koyu(kur, 0.25)); g.addColorStop(0.3, acik(kur, 0.25)); g.addColorStop(0.55, kur); g.addColorStop(1, koyu(kur, 0.3)); x.fillStyle = g; x.fillRect(w / 2 - bw / 2, 0, bw, h);
+        x.fillStyle = 'rgba(0,0,0,.18)'; x.fillRect(w / 2 - bw / 2 - 2, 0, 2, h); x.fillRect(w / 2 + bw / 2, 0, 2, h); x.restore(); };
+      band(true); if (ust) { band(false);
+        // fiyonk: iki ilmek ve dugum
+        x.save(); x.translate(w / 2, h / 2); for (const sg of [-1, 1]) { x.beginPath(); x.ellipse(sg * w * 0.16, -h * 0.02, w * 0.17, h * 0.1, sg * 0.5, 0, 6.2832); g = x.createLinearGradient(0, -h * 0.12, 0, h * 0.1); g.addColorStop(0, acik(kur, 0.35)); g.addColorStop(1, koyu(kur, 0.2)); x.fillStyle = g; x.fill(); x.strokeStyle = koyu(kur, 0.4); x.lineWidth = 3; x.stroke(); }
+        x.beginPath(); x.arc(0, 0, w * 0.07, 0, 6.2832); x.fillStyle = acik(kur, 0.15); x.fill(); x.stroke(); x.restore(); }
+      kenarIsik(x, w, h, 1);
+    });
+    const o = { roughness: 0.38, envMapIntensity: 0.45, emissive: renk, emissiveIntensity: 0.08 }, yan = mat(yuz(false), o), ust = mat(yuz(true), o);
+    return { geo: kutu(S, S, S, S * 0.07, 2), mat: [yan, yan, ust, ust, yan, yan], parca: mat(null, { color: renk, roughness: 0.4 }) };
+  }
+
+  // ---------------- cikolata kiris: kabarik kareler, uclari altin yaldiz ----------------
+  function cikolata(wS) {
+    const renk = '#6a3414';
+    const yuz = (hS, kare) => canvasTex(Math.round(wS * P), Math.round(hS * P), (x, w, h) => {
+      x.fillStyle = koyu(renk, 0.2); x.fillRect(0, 0, w, h);
+      const n = kare ? wS * 2 : 1, m = kare ? Math.max(1, Math.round(hS * 2)) : 1, cw = w / n, ch = h / m, b = Math.min(cw, ch) * 0.12;
+      for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) { const a = i * cw + 3, c = j * ch + 3, ww = cw - 6, hh = ch - 6;
+        let g = x.createLinearGradient(a, c, a + ww, c + hh); g.addColorStop(0, acik(renk, 0.22)); g.addColorStop(0.5, renk); g.addColorStop(1, koyu(renk, 0.25)); x.fillStyle = g; yuvar(x, a, c, ww, hh, b); x.fill();
+        g = x.createLinearGradient(a, c, a, c + hh); g.addColorStop(0, 'rgba(255,220,180,.25)'); g.addColorStop(0.2, 'rgba(255,220,180,0)'); x.fillStyle = g; yuvar(x, a + b, c + b, ww - 2 * b, hh - 2 * b, b); x.fill(); }
+      // iki ucta altin yaldiz kagidi
+      for (const a of [0, w - P * 0.22]) { const g = x.createLinearGradient(a, 0, a + P * 0.22, 0); g.addColorStop(0, '#c98a10'); g.addColorStop(0.4, '#ffe58a'); g.addColorStop(1, '#d99a18'); x.fillStyle = g; x.fillRect(a, 0, P * 0.22, h);
+        x.strokeStyle = 'rgba(120,70,0,.35)'; x.lineWidth = 1.2; for (let y = 4; y < h; y += 7) { x.beginPath(); x.moveTo(a, y); x.lineTo(a + P * 0.22, y + 3); x.stroke(); } }
+      kenarIsik(x, w, h, 0.9);
+    });
+    const bump = canvasTex(wS * 64, 64, (x, w, h) => { x.fillStyle = '#5a5a5a'; x.fillRect(0, 0, w, h); const n = wS * 2, cw = w / n; for (let i = 0; i < n; i++) for (let j = 0; j < 2; j++) { x.fillStyle = '#a8a8a8'; yuvar(x, i * cw + 3, j * h / 2 + 3, cw - 6, h / 2 - 6, 4); x.fill(); } });
+    bump.colorSpace = THREE.NoColorSpace;
+    const o = { roughness: 0.3, envMapIntensity: 0.5 }, on = mat(yuz(1, true), Object.assign({ bumpMap: bump, bumpScale: 2 }, o)), ust = mat(yuz(1, true), o), yan = mat(canvasTex(P, P, (x, w, h) => { const g = x.createLinearGradient(0, 0, w, 0); g.addColorStop(0, '#c98a10'); g.addColorStop(0.5, '#ffe58a'); g.addColorStop(1, '#d99a18'); x.fillStyle = g; x.fillRect(0, 0, w, h); kenarIsik(x, w, h, 1); }), { roughness: 0.25, metalness: 0.5, envMapIntensity: 0.9 });
+    return { geo: kutu(wS * S, S, S, S * 0.07, 2), mat: [yan, yan, ust, ust, on, on], parca: mat(null, { color: renk, roughness: 0.35 }) };
+  }
+
+  // ---------------- tugla kiris: harcli kirmizi tuglalar ----------------
+  function tugla(wS, tohum) {
+    const yuz = (ww, hh, t) => canvasTex(Math.round(ww * P), Math.round(hh * P), (x, w, h) => {
+      const r = rng(t); x.fillStyle = '#f2dfc0'; x.fillRect(0, 0, w, h);
+      const sat = 3, sh = h / sat, tw = P * 0.5;
+      for (let j = 0; j < sat; j++) for (let a = -(j % 2) * tw / 2; a < w; a += tw) { const ton = ['#c8402a', '#d24e30', '#b83a24', '#dc5a36'][Math.floor(r() * 4)], c = j * sh + 2.5, bb = Math.max(a + 2.5, 0);
+        let g = x.createLinearGradient(0, c, 0, c + sh - 5); g.addColorStop(0, acik(ton, 0.15)); g.addColorStop(1, koyu(ton, 0.18)); x.fillStyle = g; yuvar(x, bb, c, Math.min(a + tw - 2.5, w) - bb, sh - 5, 4); x.fill();
+        for (let k = 0; k < 6; k++) { x.fillStyle = r() < 0.5 ? 'rgba(255,200,170,.18)' : 'rgba(80,10,0,.16)'; x.beginPath(); x.arc(bb + r() * (tw - 5), c + r() * (sh - 5), 1 + r() * 2.5, 0, 6.2832); x.fill(); } }
+      kenarIsik(x, w, h, 1.1);
+    });
+    const bump = canvasTex(wS * 64, 64, (x, w, h) => { x.fillStyle = '#404040'; x.fillRect(0, 0, w, h); const sh = h / 3, tw = 32; for (let j = 0; j < 3; j++) for (let a = -(j % 2) * tw / 2; a < w; a += tw) { x.fillStyle = '#b0b0b0'; x.fillRect(Math.max(a + 1.5, 0), j * sh + 1.5, tw - 3, sh - 3); } });
+    bump.colorSpace = THREE.NoColorSpace;
+    const o = { roughness: 0.75, envMapIntensity: 0.25, bumpMap: bump, bumpScale: 2.4 }, on = mat(yuz(wS, 1, tohum), o), yan = mat(yuz(1, 1, tohum + 4), Object.assign({}, o, { bumpMap: null }));
+    return { geo: kutu(wS * S, S, S, S * 0.05, 2), mat: [yan, yan, on, on, on, on], parca: mat(null, { color: '#c8402a', roughness: 0.8 }) };
+  }
+
+  // ---------------- kristal kup: yuzlu mucevher, parilti ----------------
+  function kristal(renk) {
+    const map = canvasTex(256, 256, (x, w, h) => {
+      const cx = w / 2, cy = h / 2, R0 = w * 0.2, R1 = w * 0.5, n = 8;
+      x.fillStyle = koyu(renk, 0.3); x.fillRect(0, 0, w, h);
+      for (let i = 0; i < n; i++) { const a0 = i / n * 6.2832 + 0.39, a1 = (i + 1) / n * 6.2832 + 0.39, isik = 0.5 + 0.5 * Math.cos(a0 + 2.3);
+        x.beginPath(); x.moveTo(cx + Math.cos(a0) * R0, cy + Math.sin(a0) * R0); x.lineTo(cx + Math.cos(a0) * R1 * 1.5, cy + Math.sin(a0) * R1 * 1.5); x.lineTo(cx + Math.cos(a1) * R1 * 1.5, cy + Math.sin(a1) * R1 * 1.5); x.lineTo(cx + Math.cos(a1) * R0, cy + Math.sin(a1) * R0); x.closePath();
+        x.fillStyle = mix(koyu(renk, 0.25), acik(renk, 0.45), isik); x.fill(); x.strokeStyle = acik(renk, 0.55); x.lineWidth = 2; x.stroke(); }
+      x.beginPath(); for (let i = 0; i < n; i++) { const a = i / n * 6.2832 + 0.39; x.lineTo(cx + Math.cos(a) * R0, cy + Math.sin(a) * R0); } x.closePath();
+      const g = x.createLinearGradient(cx - R0, cy - R0, cx + R0, cy + R0); g.addColorStop(0, acik(renk, 0.6)); g.addColorStop(1, renk); x.fillStyle = g; x.fill(); x.strokeStyle = '#ffffff'; x.lineWidth = 2.5; x.stroke();
+      x.save(); x.translate(w * 0.3, h * 0.28); AMB.kivilcim(x, w * 0.09); x.fillStyle = 'rgba(255,255,255,.9)'; x.fill(); x.restore();
+      x.save(); x.translate(w * 0.72, h * 0.7); AMB.kivilcim(x, w * 0.05); x.fillStyle = 'rgba(255,255,255,.7)'; x.fill(); x.restore();
+      kenarIsik(x, w, h, 0.7);
+    });
+    return { geo: kutu(S, S, S, S * 0.1, 2), mat: mat(map, { roughness: 0.08, metalness: 0.15, envMapIntensity: 1.1, emissive: renk, emissiveIntensity: 0.3 }), parca: mat(null, { color: renk, roughness: 0.08, envMapIntensity: 1.2, emissive: renk, emissiveIntensity: 0.25 }) };
+  }
+
+  // ---------------- kurabiye (yarim kat disk): citir kenar, damla cikolatalar ----------------
+  function kurabiye() {
+    const R = S * 0.47, HH = S * 0.5, y0 = -HH / 2, pv = (y) => 0.1 + 0.8 * (y - y0) / HH;
+    const prof = [[0, y0, 0.02], [R * 0.86, y0, 0.08], [R * 0.98, y0 + HH * 0.18, pv(y0 + HH * 0.18)], [R, y0 + HH * 0.5, pv(y0 + HH * 0.5)], [R * 0.95, y0 + HH * 0.85, pv(y0 + HH * 0.85)], [R * 0.78, y0 + HH, 0.93], [R * 0.4, y0 + HH * 1.04, 0.97], [0, y0 + HH * 1.05, 0.99]];
+    const map = canvasTex(512, 256, (x, w, h) => {
+      const r = rng(99); let g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#f0b464'); g.addColorStop(0.5, '#d88c3c'); g.addColorStop(1, '#a8601e'); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      for (let i = 0; i < 140; i++) { x.fillStyle = r() < 0.5 ? 'rgba(255,230,170,.25)' : 'rgba(120,60,10,.22)'; x.beginPath(); x.arc(r() * w, r() * h, 1 + r() * 3, 0, 6.2832); x.fill(); }
+      for (let i = 0; i < 26; i++) { const a = r() * w, b = h * (0.05 + r() * 0.75), rr = 5 + r() * 6; g = x.createRadialGradient(a - 2, b - 2, 0, a, b, rr); g.addColorStop(0, '#7a4020'); g.addColorStop(0.6, '#3a1806'); g.addColorStop(1, '#2a1004'); x.fillStyle = g; x.beginPath(); x.ellipse(a, b, rr * 1.2, rr, r(), 0, 6.2832); x.fill(); }
+    });
+    return { geo: torna(prof, 30), mat: mat(map, { roughness: 0.7, envMapIntensity: 0.25 }), parca: mat(null, { color: '#d88c3c', roughness: 0.8 }) };
+  }
+
+  // ---------------- makaron (yarim kat): iki kabuk, arada krema, kenarda tirtikli etek ----------------
+  function makaron(renk) {
+    const R = S * 0.46, HH = S * 0.5, y0 = -HH / 2, pv = (y) => 0.1 + 0.8 * (y - y0) / HH;
+    const ys = [[0, 0.82], [0.02, 0.95], [0.1, 1], [0.2, 0.96], [0.26, 0.98], [0.32, 0.9], [0.4, 0.86], [0.6, 0.86], [0.68, 0.9], [0.74, 0.98], [0.8, 0.96], [0.9, 1], [0.98, 0.95], [1, 0.82]];
+    const prof = [[0, y0, 0.02]].concat(ys.map(([t, k]) => [R * k, y0 + t * HH, pv(y0 + t * HH)]), [[R * 0.5, y0 + HH * 1.03, 0.95], [0, y0 + HH * 1.04, 0.99]]);
+    const map = canvasTex(512, 256, (x, w, h) => {
+      const Y = (t) => h * (1 - (0.1 + 0.8 * t)), r = rng(renk.length * 13);
+      x.fillStyle = renk; x.fillRect(0, 0, w, h);
+      for (const [t0, t1] of [[0, 0.32], [0.68, 1.04]]) { const g = x.createLinearGradient(0, Y(t1), 0, Y(t0)); g.addColorStop(0, acik(renk, 0.3)); g.addColorStop(0.6, renk); g.addColorStop(1, koyu(renk, 0.12)); x.fillStyle = g; x.fillRect(0, Y(t1) - 30, w, Y(t0) - Y(t1) + 30); }
+      // etek (tirtikli ayak): kucuk benekler
+      for (const [t0, t1] of [[0.2, 0.32], [0.68, 0.8]]) for (let i = 0; i < 160; i++) { x.fillStyle = r() < 0.5 ? acik(renk, 0.35) : koyu(renk, 0.15); x.beginPath(); x.arc(r() * w, Y(t0 + r() * (t1 - t0)), 1.5 + r() * 2, 0, 6.2832); x.fill(); }
+      // krema
+      const g = x.createLinearGradient(0, Y(0.62), 0, Y(0.38)); g.addColorStop(0, '#fffaf2'); g.addColorStop(0.5, '#fff0dc'); g.addColorStop(1, '#ead6bc'); x.fillStyle = g; x.fillRect(0, Y(0.62), w, Y(0.38) - Y(0.62));
+      x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(0, Y(0.95), w, 6);
+    });
+    return { geo: torna(prof, 30), mat: mat(map, { roughness: 0.55, envMapIntensity: 0.35, emissive: renk, emissiveIntensity: 0.08 }), parca: mat(null, { color: renk, roughness: 0.55 }) };
+  }
+
+  // ---------------- konserve kutusu: parlak teneke, renkli etiket ----------------
+  function konserve(renk) {
+    const R = S * 0.45, y0 = -S / 2, pv = (y) => 0.1 + 0.8 * (y - y0) / S;
+    const ys = [[0, 0.9], [0.02, 1], [0.06, 1], [0.08, 0.96], [0.12, 0.98], [0.88, 0.98], [0.92, 0.96], [0.94, 1], [0.98, 1], [1, 0.9]];
+    const prof = [[0, y0 + 0.01 * S, 0.02]].concat(ys.map(([t, k]) => [R * k, y0 + t * S, pv(y0 + t * S)]), [[R * 0.88, y0 + S * 0.985, 0.93], [0, y0 + S * 0.985, 0.99]]);
+    const map = canvasTex(512, 256, (x, w, h) => {
+      const Y = (t) => h * (1 - (0.1 + 0.8 * t));
+      let g = x.createLinearGradient(0, 0, w, 0); for (let i = 0; i <= 10; i++) g.addColorStop(i / 10, i % 2 ? '#f4f6fa' : '#9aa2b2'); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      // etiket
+      const e0 = Y(0.86), e1 = Y(0.14); g = x.createLinearGradient(0, e0, 0, e1); g.addColorStop(0, acik(renk, 0.15)); g.addColorStop(1, koyu(renk, 0.15)); x.fillStyle = g; x.fillRect(0, e0, w, e1 - e0);
+      x.fillStyle = '#ffffff'; x.fillRect(0, e0 + (e1 - e0) * 0.12, w, 5); x.fillRect(0, e1 - (e1 - e0) * 0.12 - 5, w, 5);
+      for (let i = 0; i < 4; i++) { x.save(); x.translate((i + 0.5) / 4 * w, (e0 + e1) / 2); const s2 = (e1 - e0) * 0.26; AMB.yildiz(x, s2); x.fillStyle = '#ffd23f'; x.fill(); x.strokeStyle = koyu(renk, 0.4); x.lineWidth = 3; x.stroke(); x.restore(); }
+      g = x.createLinearGradient(0, 0, w, 0); for (let i = 0; i <= 10; i++) g.addColorStop(i / 10, i % 2 ? 'rgba(255,255,255,.22)' : 'rgba(0,0,0,.08)'); x.fillStyle = g; x.fillRect(0, e0, w, e1 - e0);
+    });
+    return { geo: torna(prof, 30), mat: mat(map, { roughness: 0.22, metalness: 0.45, envMapIntensity: 0.9 }), parca: mat(null, { color: '#c8ccd6', roughness: 0.25, metalness: 0.6 }) };
+  }
+
   // ---------------- tur tablosu ----------------
   // sekil: 'kutu' (dikdortgen carpisma) ya da 'sil' (dik silindir). kir: topla vurulunca / sert carpinca kirilir. ses: darbe sesi ailesi.
   const TUR = {
@@ -250,7 +386,25 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
     raf2: { w: 2, h: 0.5, d: 1, mass: 0.9, f: 0.6, r: 0.1, ses: 'tahta', renk: RAFR, yuzer: 1, yap: () => raf(2) },
     raf3: { w: 3, h: 0.5, d: 1, mass: 1.3, f: 0.6, r: 0.1, ses: 'tahta', renk: RAFR, yuzer: 1, yap: () => raf(3) },
     dalga: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.62, r: 0.08, ses: 'tas', renk: RAFR, sekil: 'sil', yap: () => dalga(1) },
-    disk: { w: 1, h: 0.5, d: 1, mass: 0.6, f: 0.62, r: 0.08, ses: 'tas', renk: RAFA, sekil: 'sil', yap: () => dalga(0.5) }
+    disk: { w: 1, h: 0.5, d: 1, mass: 0.6, f: 0.62, r: 0.08, ses: 'tas', renk: RAFA, sekil: 'sil', yap: () => dalga(0.5) },
+    // v3.11 yeni sekiller
+    joP: { w: 1, h: 1, d: 1, mass: 0.7, f: 0.4, r: 0.3, ses: 'buz', renk: '#ff4fa8', kir: 1, carp: 7, yuzer: 1, yap: () => jole('#f2268a') },
+    joY: { w: 1, h: 1, d: 1, mass: 0.7, f: 0.4, r: 0.3, ses: 'buz', renk: '#7ee83a', kir: 1, carp: 7, yuzer: 1, yap: () => jole('#4ccc14') },
+    joT: { w: 1, h: 1, d: 1, mass: 0.7, f: 0.4, r: 0.3, ses: 'buz', renk: '#ff9a2a', kir: 1, carp: 7, yuzer: 1, yap: () => jole('#ff7a00') },
+    hdK: { w: 1, h: 1, d: 1, mass: 0.8, f: 0.6, r: 0.1, ses: 'tahta', renk: '#e8283c', kir: 1, yuzer: 1, yap: () => hediye('#d81e36', '#ffd23f') },
+    hdM: { w: 1, h: 1, d: 1, mass: 0.8, f: 0.6, r: 0.1, ses: 'tahta', renk: '#2f7df2', kir: 1, yuzer: 1, yap: () => hediye('#1f5fd8', '#ffffff') },
+    hdY: { w: 1, h: 1, d: 1, mass: 0.8, f: 0.6, r: 0.1, ses: 'tahta', renk: '#22b04a', kir: 1, yuzer: 1, yap: () => hediye('#169a3c', '#ff4fa8') },
+    cik2: { w: 2, h: 1, d: 1, mass: 1.5, f: 0.65, r: 0.06, ses: 'tahta', renk: '#6a3414', kir: 1, carp: 10, yap: () => cikolata(2) },
+    tug2: { w: 2, h: 1, d: 1, mass: 1.9, f: 0.75, r: 0.05, ses: 'tas', renk: '#c8402a', sert: 1, yap: () => tugla(2, 31) },
+    tug3: { w: 3, h: 1, d: 1, mass: 2.5, f: 0.75, r: 0.05, ses: 'tas', renk: '#c8402a', sert: 1, yap: () => tugla(3, 37) },
+    krM: { w: 1, h: 1, d: 1, mass: 1.1, f: 0.5, r: 0.1, ses: 'cam', renk: '#a64cff', kir: 1, carp: 8, yap: () => kristal('#8a2cf0') },
+    krT: { w: 1, h: 1, d: 1, mass: 1.1, f: 0.5, r: 0.1, ses: 'cam', renk: '#2ad4e8', kir: 1, carp: 8, yap: () => kristal('#10b4d8') },
+    kur: { w: 1, h: 0.5, d: 1, mass: 0.5, f: 0.7, r: 0.05, ses: 'tahta', renk: '#d88c3c', sekil: 'sil', kir: 1, yuzer: 1, yap: kurabiye },
+    mkP: { w: 1, h: 0.5, d: 1, mass: 0.45, f: 0.6, r: 0.1, ses: 'tahta', renk: '#ff8ac4', sekil: 'sil', kir: 1, yuzer: 1, yap: () => makaron('#ff7ab8') },
+    mkY: { w: 1, h: 0.5, d: 1, mass: 0.45, f: 0.6, r: 0.1, ses: 'tahta', renk: '#9be06a', sekil: 'sil', kir: 1, yuzer: 1, yap: () => makaron('#8ad65a') },
+    mkM: { w: 1, h: 0.5, d: 1, mass: 0.45, f: 0.6, r: 0.1, ses: 'tahta', renk: '#9ab8ff', sekil: 'sil', kir: 1, yuzer: 1, yap: () => makaron('#86a8ff') },
+    knK: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.5, r: 0.12, ses: 'tas', renk: '#e8283c', sekil: 'sil', yap: () => konserve('#d81e36') },
+    knM: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.5, r: 0.12, ses: 'tas', renk: '#2f7df2', sekil: 'sil', yap: () => konserve('#1f5fd8') }
   };
   const HAZIR = {};
   function al(k) { if (HAZIR[k]) return HAZIR[k]; const t = TUR[k], y = t.yap(); return (HAZIR[k] = Object.assign({ w: t.w * S, h: t.h * S, d: t.d * S, sil: t.sekil === 'sil', r: S * 0.47 }, y)); }
@@ -293,6 +447,51 @@ export const YAPI = {
       L.push([2, j + 4, k, 'buzP'], [3, j + 4, k, 'buzP']);
     }
     L.push([2.5, sut + 6, (D - 1) / 2, 'altin']);
+    return L;
+  },
+  // v3.11: Pastane: cikolata kirisler, makaron ve kurabiye katlari, jole ve hediye kutulari, tepede kristal
+  pastane(o = {}) {
+    const D = o.d || 2, MK = ['mkP', 'mkY', 'mkM'], JO = ['joP', 'joY', 'joT'], HD = ['hdK', 'hdM', 'hdY'], s0 = o.kay || 0, L = [];
+    for (let k = 0; k < D; k++) {
+      L.push([0.5, 0, k, 'cik2'], [2.5, 0, k, 'cik2'], [4.5, 0, k, 'cik2']);
+      for (let i = 0; i < 6; i++) L.push([i, 1, k, MK[(i + s0) % 3]]);
+      for (let i = 0; i < 6; i++) L.push([i, 1.5, k, 'kur']);
+      for (let i = 0; i < 6; i++) L.push([i, 2, k, i === 0 || i === 5 ? HD[(k + s0) % 3] : JO[(i + k + s0) % 3]]);
+      L.push([1.5, 3, k, 'cik2'], [3.5, 3, k, 'cik2']);
+      for (let i = 1; i < 5; i++) L.push([i, 4, k, MK[(i + 1 + s0) % 3]]);
+      L.push([2, 4.5, k, 'kur'], [3, 4.5, k, 'kur']);
+      L.push([2, 5, k, JO[(s0 + 1) % 3]], [3, 5, k, JO[(s0 + 2) % 3]]);
+    }
+    L.push([2.5, 6, (D - 1) / 2, o.tepe || 'krM']);
+    return L;
+  },
+  // v3.11: Hediye kulesi: tugla kirisler arasinda hediye kutulari ve jole katlari
+  hediye(o = {}) {
+    const D = o.d || 2, kat = o.kat || 1, JO = ['joP', 'joY', 'joT'], HD = ['hdK', 'hdM', 'hdY'], s0 = o.kay || 0, L = [];
+    for (let k = 0; k < D; k++) {
+      let j = 0; L.push([0.5, j, k, 'tug2'], [2.5, j, k, 'tug2'], [4.5, j, k, 'tug2']); j++;
+      for (let n = 0; n < kat; n++) {
+        for (let i = 0; i < 6; i++) L.push([i, j, k, HD[(i + n + s0) % 3]]); j++;
+        for (let i = 0; i < 6; i++) L.push([i, j, k, JO[(i + k + n + s0) % 3]]); j++;
+      }
+      L.push([1, j, k, 'tug3'], [4, j, k, 'tug3']); j++;
+      for (let i = 1; i < 5; i++) L.push([i, j, k, HD[(i + s0 + 1) % 3]]); j++;
+      L.push([2.5, j, k, 'tug2']); j++;
+      L.push([2, j, k, 'krT'], [3, j, k, 'krM']);
+    }
+    return L;
+  },
+  // v3.11: Hazine deposu: konserve sutunlari arasinda kristaller, tugla ve cikolata kirisler
+  depo(o = {}) {
+    const D = o.d || 2, sut = o.sut || 2, KN = ['knK', 'knM'], KR = ['krM', 'krT'], s0 = o.kay || 0, L = [];
+    for (let k = 0; k < D; k++) {
+      let j = 0;
+      for (let n = 0; n < sut; n++) { for (const i of [0, 1, 4, 5]) L.push([i, j, k, KN[(i + n + s0) % 2]]); L.push([2, j, k, n % 2 ? 'joP' : KR[(k + s0) % 2]], [3, j, k, n % 2 ? 'joY' : KR[(k + s0 + 1) % 2]]); j++; }
+      L.push([0.5, j, k, 'tug2'], [2.5, j, k, 'cik2'], [4.5, j, k, 'tug2']); j++;
+      for (const i of [1, 4]) L.push([i, j, k, KN[(i + s0) % 2]]); L.push([2, j, k, 'hdK'], [3, j, k, 'hdM']); j++;
+      L.push([1.5, j, k, 'tug2'], [3.5, j, k, 'tug2']); j++;
+      L.push([2, j, k, KN[s0 % 2]], [3, j, k, KN[(s0 + 1) % 2]]);
+    }
     return L;
   },
   // Seker rafi: ortada dalgali tambur sutunu, iki yaninda raflara dizili kavanozlar.

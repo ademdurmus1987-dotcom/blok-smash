@@ -9,7 +9,7 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=1';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
+import { sekilKur, YAPI } from './sekil.js?v=2';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=6';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
@@ -23,7 +23,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.10', ZOR_ODUL = 20;
+const SURUM = 'v3.11', ZOR_ODUL = 20;
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -696,6 +696,10 @@ const KULELER = [
   { ad: 'Oyuncak Duvar', ek: 4, make: () => YAPI.duvar() },
   { ad: 'Buz Tapınağı', ek: 4, make: () => YAPI.tapinak() },
   { ad: 'Şeker Rafı', make: () => YAPI.raf() },
+  // v3.11: (Adem 11 Kas) yeni kodla cizilen sekillerle uc yapi daha
+  { ad: 'Pastane', ek: 4, make: () => YAPI.pastane() },
+  { ad: 'Hediye Kulesi', ek: 4, make: () => YAPI.hediye() },
+  { ad: 'Hazine Deposu', ek: 4, make: () => YAPI.depo() },
   { ad: 'Renkli Kule', make: () => { const m = ayna(5); return box([], 0, 4, 0, 9, 0, 1, (i) => [C.kir, C.sar, C.mav][m(i)]); } },
   { ad: 'Kayan Kule', pl: [{ x: 0, z: 0, kay: { a: 2.6, h: 1.1 } }], make: () => box([], 0, 3, 0, 7, 0, 1, (i, j) => (j % 3 === 2 ? C.sar : i === 0 || i === 3 ? C.kir : C.mav)) },
   { ad: 'Basamaklı Kule', make: () => { const o = []; [[0, 6, 0, 2, C.kir], [1, 5, 3, 5, C.sar], [2, 4, 6, 8, C.mav], [3, 3, 9, 9, 'altin']].forEach(([a, b, c, d, col]) => box(o, a, b, c, d, 0, 1, col)); return o; } },
@@ -727,9 +731,9 @@ const USIF = ['Taş', 'Ahşap', 'Kızıl', 'Altın', 'Gizli', 'Eski', 'Dev', 'Sa
 function uretBolum(L) {
   const r = mul32(L * 7919 + 13), d = zorluk(L), ri = (a, b) => a + Math.floor(r() * (b - a + 1)), sec = (a) => a[Math.floor(r() * a.length)];
   if (L % 3 === 2) {   // v3.1: her uc bolumde bir yeni yapilardan biri, her seferinde baska olcu ve renkte
-    const OY = ['oyK', 'oyY', 'oyM', 'oyS', 'oyP'], a = ri(0, 4), b = (a + ri(1, 4)) % 5, tip = Math.floor(L / 3) % 3;
-    const op = tip === 0 ? { r1: OY[a], r2: OY[b], kat: ri(1, 2), desen: ri(0, 3) } : tip === 1 ? { sut: ri(2, 4) } : { kat: ri(2, 3), kay: ri(0, 2) };
-    return { ad: sec(USIF) + ' ' + ['Duvar', 'Tapınak', 'Raf'][tip], ek: 3, uretim: 1, make: () => YAPI[['duvar', 'tapinak', 'raf'][tip]](op) };
+    const OY = ['oyK', 'oyY', 'oyM', 'oyS', 'oyP'], a = ri(0, 4), b = (a + ri(1, 4)) % 5, tip = Math.floor(L / 3) % 6;
+    const op = tip === 0 ? { r1: OY[a], r2: OY[b], kat: ri(1, 2), desen: ri(0, 3) } : tip === 1 ? { sut: ri(2, 4) } : tip === 2 ? { kat: ri(2, 3), kay: ri(0, 2) } : tip === 3 ? { kay: ri(0, 2), tepe: sec(['krM', 'krT']) } : tip === 4 ? { kat: ri(1, 2), kay: ri(0, 2) } : { sut: ri(2, 3), kay: ri(0, 1) };
+    return { ad: sec(USIF) + ' ' + ['Duvar', 'Tapınak', 'Raf', 'Pastane', 'Hediye Kulesi', 'Depo'][tip], ek: 3, uretim: 1, make: () => YAPI[['duvar', 'tapinak', 'raf', 'pastane', 'hediye', 'depo'][tip]](op) };
   }
   const KIRIK = [C.kir, C.tur, C.pem], SAGLAM = d > 0.45 ? [C.mav, C.sar, C.mor, 'tugla', 'altin'] : [C.mav, C.sar, C.yes, 'tugla'];
   // her kat (j) ve aynaya gore sutun (m) icin malzeme: saglam payi zorlukla artar; sag-sol simetrik kalir
