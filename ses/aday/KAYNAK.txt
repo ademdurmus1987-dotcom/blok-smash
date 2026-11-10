@@ -40,3 +40,12 @@ tus_27 bb - Bottle Plops (Apr 2021)/Plop - Sputter 1.wav
 tus_28 bb - Pill Bottles (Jun 2021)/Cap Click 1.wav
 tus_29 Micro Pack - Small Can/Small Can - Flick Tab.wav
 tus_30 Micro Pack - Small Can/Small Can - Pluck Tab 1.wav
+altin_13 MMRetroArcadeSoundsPack1_0_5/Misc/ogg/KerChing1.ogg
+altin_14 MMRetroArcadeSoundsPack1_0_5/Misc/ogg/KerChing2.ogg
+altin_15 MMRetroArcadeSoundsPack1_0_5/Misc/ogg/Kerching3.ogg
+altin_16 MMRetroArcadeSoundsPack1_0_5/Misc/ogg/Bell1.ogg
+altin_17 MMRetroArcadeSoundsPack1_0_5/Misc/ogg/Bell3.ogg
+altin_18 BB_Retail Therapy Sample Pack/Silverware Ting 1.wav
+altin_19 BB_Retail Therapy Sample Pack/Silverware Ting 3.wav
+altin_20 50-CC0-retro-synth-SFX/retro_coin_01.ogg
+altin_21-24 kodla uretildi (numpy), lisans yok
