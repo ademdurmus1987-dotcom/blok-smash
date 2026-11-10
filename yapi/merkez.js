@@ -98,15 +98,19 @@ export function merkezKur(A) {
   function ucur(x, y, adet, eski, yeni) {
     const hedef = $('m-ahap').querySelector('.coin').getBoundingClientRect(), tx = hedef.left + hedef.width / 2, ty = hedef.top + hedef.height / 2, n = Math.max(4, Math.min(14, adet));
     altinYaz(eski);
+    // v3.7: (Adem 11 Kas) altin sesi (Pixabay P14) kendisi seri bir ses: tek altina bolunmez, ilk altin kasaya degince bir kez baslar;
+    // altin cok ise ses arka arkaya uzar (her 40 altinda bir tekrar, en fazla 4), ucan altinlar da sesin suresine yayilir
+    const tekrar = Math.max(1, Math.min(4, 1 + Math.floor((yeni - eski) / 40))), ara = Math.max(55, tekrar * 560 / n);
+    setTimeout(() => { for (let k = 0; k < tekrar; k++) setTimeout(() => A.ses('para', 0.6, 1), k * 560); }, 900);
     for (let i = 0; i < n; i++) {
       const c = document.createElement('i'); c.className = 'coin m-ucan'; c.style.left = x + 'px'; c.style.top = y + 'px'; document.body.appendChild(c);
       const sx = (Math.random() - 0.5) * 150, sy = (Math.random() - 0.5) * 110 - 20;
       const an = c.animate([{ transform: 'translate(0,0) scale(.3)', opacity: 0 }, { transform: 'translate(' + sx + 'px,' + sy + 'px) scale(1.15)', opacity: 1, offset: 0.28 }, { transform: 'translate(' + sx + 'px,' + sy + 'px) scale(1)', opacity: 1, offset: 0.42 }, { transform: 'translate(' + (tx - x) + 'px,' + (ty - y) + 'px) scale(.75)', opacity: 1 }],
-        { duration: 900, delay: i * 55, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'both' });
+        { duration: 900, delay: i * ara, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'both' });
       an.onfinish = () => { c.remove(); const hap = $('m-ahap'); hap.classList.remove('pop'); void hap.offsetWidth; hap.classList.add('pop');
-        altinYaz(i === n - 1 ? yeni : Math.round(eski + (yeni - eski) * (i + 1) / n)); A.ses('para', 0.5, 1 + i * 0.045); };   // v3.4: (Adem 11 Kas) kasaya uçan her altın tik sesi (Altın 27), perdesi gittikçe yükselir
+        altinYaz(i === n - 1 ? yeni : Math.round(eski + (yeni - eski) * (i + 1) / n)); };   // v3.4: (Adem 11 Kas) kasaya uçan her altın tik sesi (Altın 27), perdesi gittikçe yükselir
     }
-    setTimeout(() => altinYaz(SV.altin || 0), 900 + n * 55 + 200);
+    setTimeout(() => altinYaz(SV.altin || 0), 900 + n * ara + 200);
   }
   function odulVer(o) { if (o.a) SV.altin = (SV.altin || 0) + o.a; if (o.g) { const s = A.ggSay(); s[o.g] = (s[o.g] || 0) + (o.n || 1); } A.save(); A.ggHud(); }
   const odulHtml = (o) => (o.a ? '<div class="o-od"><div class="g-ik"><i class="coin"></i></div>' + o.a + '</div>' : '') + (o.g ? '<div class="o-od"><div class="g-ik">' + ggIc(o.g) + '</div>' + ggAd[o.g] + ' x' + (o.n || 1) + '</div>' : '');
@@ -380,7 +384,9 @@ export function merkezKur(A) {
     for (let i = 0; i < d.st; i++) setTimeout(() => { if (KZ.classList.contains('on')) { A.sfx('bonus'); A.buzz(25); } }, 1400 + i * 250);
     setTimeout(() => { const c = $('k-snc'); if (c) c.style.width = Math.round(100 * Math.min(sn, SANDIK_HEDEF) / SANDIK_HEDEF) + '%'; }, 2300);
     let n = 0; const adim = Math.max(1, Math.round(d.kaz / 22));
-    setTimeout(function say() { const e = $('k-say'); if (!e) return; n = Math.min(d.kaz, n + adim); e.textContent = n; A.ses('para', 0.3, 0.95 + 0.4 * n / Math.max(1, d.kaz));
+    // v3.7: sayac sayarken altin sesi (P14) her adimda kesilmez; sayma suresince arka arkaya bir kac kez tam calar
+    { const sure = Math.ceil(d.kaz / adim) * 50, tk = Math.max(1, Math.min(4, Math.round(sure / 560))); for (let k = 0; k < tk; k++) setTimeout(() => { if (KZ.classList.contains('on')) A.ses('para', 0.55, 1); }, 1750 + k * 560); }
+    setTimeout(function say() { const e = $('k-say'); if (!e) return; n = Math.min(d.kaz, n + adim); e.textContent = n;
       if (n < d.kaz) setTimeout(say, 50); else e.classList.add('pop'); }, 1750);
     $('k-dv').onclick = () => {
       tik(); const r = KZ.querySelector('.k-odul').getBoundingClientRect(); KZ.classList.add('cik');
