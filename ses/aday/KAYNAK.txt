@@ -49,3 +49,4 @@ altin_18 BB_Retail Therapy Sample Pack/Silverware Ting 1.wav
 altin_19 BB_Retail Therapy Sample Pack/Silverware Ting 3.wav
 altin_20 50-CC0-retro-synth-SFX/retro_coin_01.ogg
 altin_21-24 kodla uretildi (numpy), lisans yok
+altin_25-30 kodla uretildi (FM can + metal sikirti + parilti), lisans yok
