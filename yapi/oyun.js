@@ -7,9 +7,11 @@ import { GLTFLoader } from '../GLTFLoader.js?v=2';   // v1.6: meshopt cozuculu s
 import { canliFon, canliKare } from './canli.js?v=4';   // v6.17: fondaki canli koyun ve kuslar
 import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
+import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
+import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 
 const $ = (id) => document.getElementById(id);
-const Q = new URLSearchParams(location.search), TEST = Q.has('test');
+const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
 // v6.19: (Adem) Korsan modu pilotu: beta/korsan/index.html ayni motoru window.KORSAN ile acar; korsan.js sahneyi, hedefleri ve kartlari kurar.
 // KORSAN yoksa (Yapi modu) K null'dur ve asagidaki 'if (K)' satirlarinin hicbiri calismaz.
 const K = window.KORSAN ? await import('../korsan/korsan.js?v=9') : null;
@@ -1079,6 +1081,49 @@ function updatePofi(dt) {
   if (PF.b.Trunk1) { PF.b.Trunk1.rotation.x -= r * 0.9; PF.b.Trunk2.rotation.x -= r * 0.6; }
 }
 
+// ---------------- Korsan Tilki (v2.1) ----------------
+// Adem'in Tripo modeli (karakter/tilki.glb). Kazanilan karakter ekranin sol altinda, guclendirici dugmelerinin ustunde durur:
+// beklerken nefes alir, etrafa bakar, kuyruk sallar; atista irkilir, bolum kazanilinca ziplar, toplar bitince uzulur.
+// Oyun kamerasi cok genis acili oldugu icin (kenarda cisimler egilip uzuyor) tilki kendi kucuk sahnesinde, kendi kamerasiyla
+// ana goruntunun ustune cizilir (tilkiCiz): her ekranda ayni yerde, ayni boyda ve bozulmadan gorunur.
+const TK = { sahne: new THREE.Scene(), kam: new THREE.PerspectiveCamera(22, 1, 0.1, 20), holder: new THREE.Group(), t: null, yaw: 0.5, yawH: 0.5, yuk: null, gor: false, r: [0, 0, 1, 1] };
+TK.sahne.add(TK.holder, new THREE.HemisphereLight(0xfffaf0, 0x8a8a7a, 1.7)); { const l = new THREE.DirectionalLight(0xfff0d0, 2.4); l.position.set(-4, 8, 10); TK.sahne.add(l); }
+TK.kam.position.set(0, 0.78, 4.1); TK.kam.lookAt(0, 0.6, 0);
+function tilkiGoster() {
+  if (K || TK.yuk) return TK.yuk || Promise.resolve();
+  return (TK.yuk = tilkiYukle().then((s) => {
+    const t = new Tilki(s, 1); t.mesh.castShadow = false; TK.holder.add(t.root);
+    const golge = new THREE.Mesh(new THREE.CircleGeometry(0.4, 32), new THREE.MeshBasicMaterial({ map: canvasTex(64, 64, (x, w, h) => { const gg = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gg.addColorStop(0, 'rgba(0,0,0,.45)'); gg.addColorStop(0.6, 'rgba(0,0,0,.2)'); gg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = gg; x.fillRect(0, 0, w, h); }), transparent: true, depthWrite: false }));
+    golge.rotation.x = -Math.PI / 2; golge.position.y = 0.005; TK.sahne.add(golge); TK.golge = golge;
+    TK.t = t; TK.gor = true; tilkiYer();
+  }).catch(() => {}));
+}
+// ekrandaki yeri (CSS pikseli, sol alt koseden): guclendirici dugmelerinin hemen ustu
+function tilkiYer() {
+  if (!TK.sab) { TK.sab = document.createElement('div'); TK.sab.style.cssText = 'position:fixed;left:0;bottom:0;width:0;height:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none'; document.body.appendChild(TK.sab); }
+  const W = innerWidth, H = innerHeight, sab = TK.sab.offsetHeight || 0, boy = Math.max(110, Math.min(180, H * 0.19)), h = boy * 1.42, w = boy * 1.25;
+  TK.r = [Math.max(0, (W - 520) / 2) - boy * 0.12, sab + 74, w, h]; TK.kam.aspect = w / h; TK.kam.updateProjectionMatrix();
+}
+function updateTilki(dt) {
+  if (!TK.t || !TK.gor) return;
+  TK.yaw += (TK.yawH - TK.yaw) * Math.min(1, dt * 6); TK.holder.rotation.y = TK.yaw; TK.t.update(dt);
+  const z = TK.t.zip; TK.golge.scale.setScalar(1 - z * 1.6); TK.golge.material.opacity = 1 - z * 2.2;
+}
+const TKVP = new THREE.Vector4();
+function tilkiCiz() {
+  if (!TK.t || !TK.gor) return;
+  ren.getViewport(TKVP); const ac = ren.autoClear; ren.autoClear = false; ren.clearDepth();
+  ren.setViewport(TK.r[0], TK.r[1], TK.r[2], TK.r[3]); ren.render(TK.sahne, TK.kam);
+  ren.setViewport(TKVP); ren.autoClear = ac;
+}
+// durum: 'oyun' (platforma donuk bekler), 'kazan', 'kaybet'
+function tilkiDurum(d) {
+  if (!TK.t) return; TK.t.dur();
+  if (d === 'kazan') { TK.yawH = 0.1; TK.t.bak(0); TK.t.oyna('sevin'); }
+  else if (d === 'kaybet') { TK.yawH = 0.25; TK.t.bak(0); TK.t.oyna('uzul'); }
+  else { TK.yawH = 0.5; TK.t.bak(0.2); }
+}
+
 // ---------------- toplar ----------------
 const BR = 0.47;   // v6.8: (Adem) biraz kucultuldu. v6.5: 3B top mermisi net gorunsun.    // v6.2: top biraz buyudu, parlak ve isikli
 const BALLGEO = new THREE.SphereGeometry(BR, 32, 20);
@@ -1089,7 +1134,7 @@ function shoot(target) {
   if (g.kuyruk && g.kuyruk.length) return ggAtis(target);
   if (g.shots <= 0) return false;
   const now = g.t; if (g.lastShot && now - g.lastShot < 0.22) return false;   // v6.0: daha seri
-  g.lastShot = now; g.shots--; g.armed = true; PF.rec = 1;
+  g.lastShot = now; g.shots--; g.armed = true; PF.rec = 1; if (TK.t) TK.t.oyna('atis', 0.22);
   PF.aimYaw = Math.atan2(target.x - POFI.x, target.z - POFI.z);
   PF.holder.rotation.y = PF.yaw = PF.aimYaw;   // atis aninda hedefe donuk olsun ki top hortumdan ciksin
   if (TC.gun) { TC.aimYaw = Math.atan2(target.x - TC.holder.position.x, target.z - TC.holder.position.z); TC.holder.rotation.y = TC.yaw = TC.aimYaw; TC.rec = 1; }
@@ -1865,7 +1910,9 @@ function yildizHtml(st) { return [0, 1, 2].map((i) => '<span' + (i < st ? '' : '
 function win() {
   if (K) return K.kart();   // v6.19: korsan kazanma karti (yildiz, altin sayaci, sandik, harita)
   // v2.0: ilerleme kazanildigi an yazilir (kartta uygulama kapansa da bolum gecilmis sayilir); yildizlar bolum bolum saklanir
-  SV.max = Math.max(SV.max, LV + 1); SV.L = LV + 1;
+  const maxOnce = SV.max; SV.max = Math.max(SV.max, LV + 1); SV.L = LV + 1;
+  const yeniK = TEST ? null : KARAKTERLER.find((k) => !acikMi(k.id, maxOnce) && acikMi(k.id, SV.max));   // v2.1: bu bolumle yeni karakter kazanildi mi
+  tilkiDurum('kazan');
   const r = g.shots / g.max, st = Math.min(3, (r >= 0.4 ? 3 : r >= 0.15 ? 2 : 1) + g.bonus);
   if (!SV.yil) SV.yil = {}; const ilk = !SV.yil[LV]; SV.yil[LV] = Math.max(SV.yil[LV] || 0, st);
   gorevArt('kazan', 1); if (st >= 3) gorevArt('y3', 1); gorevArt('top', g.shots);
@@ -1874,6 +1921,7 @@ function win() {
   modal('<div class="rib">Tebrikler!</div><div class="stars">' + yildizHtml(st) + '</div><h2>Bölüm ' + LV + ' tamam</h2>' +
     '<div class="stat"><div>KALAN TOP<b>' + g.shots + '</b></div><div>TOP BONUSU<b>+' + bonus + '</b></div></div>' +
     '<div class="kz"><i class="coin"></i><b id="kz">+0</b></div><p class="kasa">Altın: <b id="ks">' + once + '</b></p>' +
+    (yeniK ? '<div class="ykar"><img src="../' + yeniK.av + '?v=1" alt=""><div><small>Yeni karakter kazandın!</small><b>' + yeniK.ad + '</b></div></div>' : '') +
     (gorevHazir() ? '<p class="gvuy">🎯 Görev ödülün hazır!</p>' : '') +
     '<button class="btn" id="nx">Sonraki Bölüm</button><button class="btn o kck" id="hrt">Harita</button>');
   for (let i = 0; i < st; i++) setTimeout(() => sfx('bonus'), 120 + i * 250);
@@ -1885,7 +1933,7 @@ function win() {
 }
 const DEVAM_FIYAT = 100;
 function lose() {
-  sfx('lose'); gorevKaydet(true);
+  sfx('lose'); gorevKaydet(true); tilkiDurum('kaybet');
   // v2.0: bolum basina bir kez bedava devam; sonrakiler altinla
   const bedava = !g.devam, yeter = (SV.altin || 0) >= DEVAM_FIYAT;
   modal('<div class="rib r">Toplar bitti!</div><h2>' + g.left + ' blok kaldı</h2><p>' + (g.left <= 5 ? 'Çok az kalmıştı, tekrar dene!' : 'Alt sıraları hedefle, kule devrilsin!') + '</p>' +
@@ -1893,7 +1941,7 @@ function lose() {
     '<button class="btn" id="rt">Tekrar Dene</button><button class="btn o kck" id="hrt">Harita</button>');
   $('rt').onclick = () => { sfx('tik'); start(LV); };
   $('hrt').onclick = () => { sfx('tik'); start(LV); haritaAc(); };
-  if ($('rv')) $('rv').onclick = () => { if (!bedava) { if ((SV.altin || 0) < DEVAM_FIYAT) return; SV.altin -= DEVAM_FIYAT; save(); } sfx('tik'); g.devam = (g.devam || 0) + 1; g.shots += 3; g.state = 'play'; g.quiet = 0; closeModal(); hud(); ggHud(); };
+  if ($('rv')) $('rv').onclick = () => { if (!bedava) { if ((SV.altin || 0) < DEVAM_FIYAT) return; SV.altin -= DEVAM_FIYAT; save(); } sfx('tik'); g.devam = (g.devam || 0) + 1; g.shots += 3; g.state = 'play'; g.quiet = 0; closeModal(); hud(); ggHud(); tilkiDurum('oyun'); };
 }
 // ================= v2.0: gunluk gorevler =================
 // Her gun 3 gorev (gune gore sabit secim). Ilerleme oyun icinde bellekte artar, bolum sonunda kaydedilir; odul gorev ekranindan alinir.
@@ -2287,7 +2335,7 @@ function fit() {
     TC.by = (lo + hi) / 2; TC.holder.position.y = TC.by;
     const ph = Math.max(0.2, (TC.by - GY) / TC.k); TC.pad.scale.y = ph; TC.pad.position.y = -ph / 2; TC.rim2.position.y = -ph + 0.12;
   }
-  cam.userData.base = cam.position.clone();
+  cam.userData.base = cam.position.clone(); tilkiYer();
 }
 addEventListener('resize', fit); fit();
 
@@ -2346,20 +2394,20 @@ function frame(ts) {
   if (K) K.kare(dt);   // v6.19: seyir, sallanan hedef, batma
   if (g && ENG.length) engKare(g.t);
   if (g) { g.t += dt; spin(dt); slide(dt); world.step(1 / 120, dt * TS, 8); if (SIRK.mesh) SIRK.mesh.quaternion.set(platBody.quaternion.x, platBody.quaternion.y, platBody.quaternion.z, platBody.quaternion.w); updateFuse(dt); updateDebris(dt); syncMeshes(); updateBalls(dt); ggKare(dt); updateCubes(dt); if (KM.bomba) KM.bomba.emissiveIntensity = 0.45 + 0.4 * Math.sin(g.t * 8); }
-  updatePofi(dt); updateCannon(dt); updateParts(dt); updateFX(dt); updSea(dt); CDT += dt; if (++CN % 2 === 0 || !sahneBos()) { canliKare(CDT); CDT = 0; }   /* v6.29: fondaki kus/koyun katmani boştayken saniyede 30 kez */ if (flashLight.intensity > 0) flashLight.intensity = Math.max(0, flashLight.intensity - dt * 400);
+  updatePofi(dt); updateCannon(dt); updateTilki(dt); updateParts(dt); updateFX(dt); updSea(dt); CDT += dt; if (++CN % 2 === 0 || !sahneBos()) { canliKare(CDT); CDT = 0; }   /* v6.29: fondaki kus/koyun katmani boştayken saniyede 30 kez */ if (flashLight.intensity > 0) flashLight.intensity = Math.max(0, flashLight.intensity - dt * 400);
   if (shake > 0) { shake = Math.max(0, shake - dt * 1.4); cam.position.copy(cam.userData.base).add(KAL() ? shakeK() : new THREE.Vector3((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake, 0)); } else if (cam.userData.base) cam.position.copy(cam.userData.base);
   if (CAMI > 0 && cam.userData.base) { CAMI = Math.max(0, CAMI - dt); const k = CAMI / 1.6, a = 0.75 * k * k * (3 - 2 * k), b = cam.userData.base, dx = b.x - CTG.x, dz = b.z - CTG.z, c = Math.cos(a), sn = Math.sin(a); cam.position.set(CTG.x + dx * c + dz * sn, b.y + 2.2 * k * k, CTG.z - dx * sn + dz * c); cam.lookAt(CTG); if (CAMI === 0) { cam.position.copy(b); cam.lookAt(CTG); } }
   fovK(dt);
   // v6.29: (Adem: telefon cok isiniyor) hicbir sey kipirdamiyorsa golge haritasi yeniden cizilmez ve sahne saniyede 20 kez cizilir
   if (sahneBos()) { BOS++; if (BOS > 12) { ren.shadowMap.autoUpdate = false; if (BOS % 3) { if (!TEST) requestAnimationFrame(frame); return; } } }
   else { BOS = 0; ren.shadowMap.autoUpdate = true; }
-  ren.render(scene, cam);
+  ren.render(scene, cam); tilkiCiz();
   if (!TEST) requestAnimationFrame(frame);
 }
 let BOS = 0, CN = 0, CDT = 0;
 function sahneBos() {
   if (ENG.length || GGA.length) return false;
-  if (CAMI > 0 || K || TEST || !g || g.don || balls.length || FX.length || parts.length || DEB.length || shake > 0 || HS > 0 || FP > 0.01 || flashLight.intensity > 0 || TC.rec > 0 || Math.abs(TC.aimYaw - TC.yaw) > 1e-3 || PF.holder.visible) return false;
+  if (CAMI > 0 || K || TEST || !g || g.don || balls.length || FX.length || parts.length || DEB.length || shake > 0 || HS > 0 || FP > 0.01 || flashLight.intensity > 0 || TC.rec > 0 || Math.abs(TC.aimYaw - TC.yaw) > 1e-3 || PF.holder.visible || (TK.t && TK.gor)) return false;
   for (const q of PLS) if (q.kay) return false;
   for (const c of cubes) if (!c.out && (c.landed || c.fuse != null || (c.body.world && c.body.mass > 0 && c.body.sleepState === 0))) return false;
   return true;
@@ -2368,11 +2416,12 @@ function start(L) {
   ggIade();
   LV = Math.max(1, Math.floor(+L) || 1); SV.L = LV; gorevKaydet(); save(); if (!TEST && !K) CAMI = 1.6; closeModal(); $('praise').innerHTML = '';
   setPofiCol(POFICOL[(LV - 1) % POFICOL.length]); buildLevel();
+  if (!K && !TEST_TILKISIZ && seciliKarakter(SV.max) === 'tilki') tilkiGoster().then(() => { TK.gor = !!TK.t; tilkiDurum('oyun'); if (TK.t) TK.t.oyna('selam', 1.4); }); else TK.gor = false;
   engKur(LV, levelOf(LV));
   ggOnce();
   if (KAL()) isitma();
 }
-window.YP = { gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
+window.YP = { TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
 if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MOD, PM, platBody, GB, cubes, balls, S, TC, KEEP, NENV, SV, save, $, Q, TEST,
   get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set GY(v) { GY = v; GB.position.y = v; }, get shake() { return shake; }, set shake(v) { shake = v; },
   set TOPY(v) { TOPY = v; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, LEG, DIRT, KIND, splashSnd: (v) => AC && (K ? play('su', v + 0.2) : splashSnd(v)), dongu, play: (k, v, r) => AC && play(k, v, r),
