@@ -1,4 +1,4 @@
-// Blok Smash v2.0 (10 Kas 2026): gercek 3B kamera (yandan/yukaridan + bolum basi donus), bolum haritasi, gunluk gorevler, ayarlar, muzik, yildiz kaydi, golge hafifletme, denge ve hata duzeltmeleri. v1.7: (Adem 9 Kas 2026) cayir ve karli koy fonlari da video oldu (Adem'in Gemini videolari); sahil videosu 10. saniyede dalga atlamasin diye dikissiz donguye cevrildi (bas ve sona en iyi uyan kareler arandi, son 1 sn baslangicla harmanlandi: sahil 7,6 sn, cayir 7 sn, kar 6,5 sn; mp4 + webm). Video fonlarda canli.js cizimleri (koyun, kus, nehir, on kar) kapali, cunku videonun kendisinde var. Blok Smash v1.6: (Adem 9 Kas 2026) tum modeller sikistirildi (yapi/model, model/parcali ve live_pofi.glb: dokular WebP en fazla 1024px, geometri meshopt, dedup ve prune; toplam 78 MB -> 34 MB); GLTFLoader yerel meshopt_decoder.module.js ile cozer; oyun mantigi degismedi. v6.18: (Adem) sahilde platformun alti 3B kum (bloklar suya batar gibi gorunmuyor), kum ve karda saplanan blok asagi inmez; koyunlar daha uzakta; nehir akiyor; karli koyde kar yagiyor. v6.17: (Adem 5 Kas 2026) kuma dusen kuma gomulur, kara dusen kara saplanir, suya dusen batar (tahta/buz/fici yuzer); sahil bolumlerinde platformun arkasi gercek dalgali deniz; fondaki koyun ve kuslar canli (canli.js). v6.16: (Adem 5 Kas 2026) bloklar Blender ile parcalanmis gercek parcalarina ayrilir (model/parcali), 5 yeni model (buz kup 2, ahsap kup 2, buz/mor dikey ve alev tas sutun) ve 4 yeni kule (bolum 28-31). v6.6: top gorunusu fizige baglandi (v6.3 hatasi), Adem in top mermisi ve platform 2/3 modelleri, denize batis, yumusak kazanma zili, alcak kamera, zor devrilme. v6.5: dusen blok kara/kuma/cimene gomulur (sekmez), yumusak sesler, buyuk 3B top, simetrik kuleler, bazi bolumlerde 360 derece donen platform. v6.4: cam sekiller ve boyali dokular yok, tum bloklar Tripo modeli orijinal renginde; top parlamasi yok; yuksek genis kuleler. v6.3: kayitli (sentezlenip mp3'e basilmis) sesler, yeni yazilar ve bolum bandi, atis dengesi. v6.2: 7 yeni model, platform kameraya duz bakar, top arabasi yerlesimi/olcusu yeniden, top ve kirilma gorunumu, atis/yikilma dengesi. v6.1: cam sekiller, her sey kirilir, boyama yok (Adem'in model renkleri), duz/esit atis, temiz platform ayagi, fon degisimi. v6.0: Royal Smash kalitesi icin atis/kirilma/ses/efekt yenilendi, kamera hafif yandan. v5.5: Pofi yok; onden bakis, altta yakindan buyuk top arabasi, metal kupler boyali. v5.4: cayir fonu + Adem'in Tripo modelleri (cizgili platform, top arabasi, top, ahsap/kirmizi/metal kupler). Direk ustundeki platformda iri metal kuplerden bir yapi; altta Pofi durur.
+// Blok Smash v3.0 (10 Kas 2026): (Adem: Royal Smash videosundaki kalite) acilis ekrani, 3B tilkili ana sayfa, magaza, hazine haritasi, bolum karti, havai fisekli kazanma sahnesi, 'Devam Et?' karti, gunluk odul, hazine sandigi, profil istatistikleri, duraklatma - hepsi yapi/merkez.js + merkez.css. v2.0 (10 Kas 2026): gercek 3B kamera (yandan/yukaridan + bolum basi donus), bolum haritasi, gunluk gorevler, ayarlar, muzik, yildiz kaydi, golge hafifletme, denge ve hata duzeltmeleri. v1.7: (Adem 9 Kas 2026) cayir ve karli koy fonlari da video oldu (Adem'in Gemini videolari); sahil videosu 10. saniyede dalga atlamasin diye dikissiz donguye cevrildi (bas ve sona en iyi uyan kareler arandi, son 1 sn baslangicla harmanlandi: sahil 7,6 sn, cayir 7 sn, kar 6,5 sn; mp4 + webm). Video fonlarda canli.js cizimleri (koyun, kus, nehir, on kar) kapali, cunku videonun kendisinde var. Blok Smash v1.6: (Adem 9 Kas 2026) tum modeller sikistirildi (yapi/model, model/parcali ve live_pofi.glb: dokular WebP en fazla 1024px, geometri meshopt, dedup ve prune; toplam 78 MB -> 34 MB); GLTFLoader yerel meshopt_decoder.module.js ile cozer; oyun mantigi degismedi. v6.18: (Adem) sahilde platformun alti 3B kum (bloklar suya batar gibi gorunmuyor), kum ve karda saplanan blok asagi inmez; koyunlar daha uzakta; nehir akiyor; karli koyde kar yagiyor. v6.17: (Adem 5 Kas 2026) kuma dusen kuma gomulur, kara dusen kara saplanir, suya dusen batar (tahta/buz/fici yuzer); sahil bolumlerinde platformun arkasi gercek dalgali deniz; fondaki koyun ve kuslar canli (canli.js). v6.16: (Adem 5 Kas 2026) bloklar Blender ile parcalanmis gercek parcalarina ayrilir (model/parcali), 5 yeni model (buz kup 2, ahsap kup 2, buz/mor dikey ve alev tas sutun) ve 4 yeni kule (bolum 28-31). v6.6: top gorunusu fizige baglandi (v6.3 hatasi), Adem in top mermisi ve platform 2/3 modelleri, denize batis, yumusak kazanma zili, alcak kamera, zor devrilme. v6.5: dusen blok kara/kuma/cimene gomulur (sekmez), yumusak sesler, buyuk 3B top, simetrik kuleler, bazi bolumlerde 360 derece donen platform. v6.4: cam sekiller ve boyali dokular yok, tum bloklar Tripo modeli orijinal renginde; top parlamasi yok; yuksek genis kuleler. v6.3: kayitli (sentezlenip mp3'e basilmis) sesler, yeni yazilar ve bolum bandi, atis dengesi. v6.2: 7 yeni model, platform kameraya duz bakar, top arabasi yerlesimi/olcusu yeniden, top ve kirilma gorunumu, atis/yikilma dengesi. v6.1: cam sekiller, her sey kirilir, boyama yok (Adem'in model renkleri), duz/esit atis, temiz platform ayagi, fon degisimi. v6.0: Royal Smash kalitesi icin atis/kirilma/ses/efekt yenilendi, kamera hafif yandan. v5.5: Pofi yok; onden bakis, altta yakindan buyuk top arabasi, metal kupler boyali. v5.4: cayir fonu + Adem'in Tripo modelleri (cizgili platform, top arabasi, top, ahsap/kirmizi/metal kupler). Direk ustundeki platformda iri metal kuplerden bir yapi; altta Pofi durur.
 // Oyuncu yapida bir yere dokunur, Pofi hortumuyla oraya top atar. Kupler gercek fizikle (cannon-es) devrilir, platformdan
 // dusen her kup sayilir. Hepsi dusunce bolum biter; toplar biterse kaybedilir.
 import * as THREE from '../three.module.min.js';
@@ -9,6 +9,7 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
+import { merkezKur } from './merkez.js?v=1';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -19,6 +20,11 @@ const SKEY = K ? 'blokpop_korsan_v1' : 'blokpop_yapi_v3';
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
+// v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
+let M = null;
+const SURUM = 'v3.0', ZOR_ODUL = 20;
+const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
+const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
 // ---------------- olculer ----------------
 const S = 1.55;          // kup kenari (iri)
@@ -1684,7 +1690,7 @@ let lastFl = 0;
 function screenAt(p, dy) { V.copy(p); V.y += dy || 0; V.project(cam); return [(V.x + 1) / 2 * innerWidth, (1 - V.y) / 2 * innerHeight]; }
 // kup gitti (dustu, kirildi ya da patladi): sayilir, ozel kuplerin odulu verilir; remove ise sahneden hemen kalkar
 function knock(c, remove) {
-  c.gone = true; g.left--; gorevArt('blok', 1); if (g.combo) { g.combo.n++; g.combo.t = 0; if (!g.combo.at) g.combo.at = screenAt(c.body.position, 0.3); }
+  c.gone = true; g.left--; gorevArt('blok', 1); if (M) ist().blok = (ist().blok || 0) + 1; if (g.combo) { g.combo.n++; g.combo.t = 0; if (!g.combo.at) g.combo.at = screenAt(c.body.position, 0.3); }
   const p = c.body.position, at = screenAt(p, 0.3);
   if (c.kind === 'hediye') { g.shots += 2; floatText('+2 Top', at[0], at[1], 'blue'); burst(new THREE.Vector3().copy(p), '#ffd23f', 16, 6); sfx('bonus'); }
   else if (c.kind === 'altin') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
@@ -1778,11 +1784,11 @@ function noise(ft, fq, q, t0, dur, vol, sweep) {
 }
 // v6.3: sesler artik onceden uretilmis kayitlar (ses/*.mp3): katmanli, yankili; her olay icin 2-3 cesit, her calista perde hafif degisir.
 // Malzemeye gore kirilma: tahta, tas, metal, cam. Ayni ses cok sik calmaz, ayni anda en fazla 6 ses.
-const SFILES = { atis: 3, vurus: 3, tahta: 3, tas: 3, metal: 3, cam: 3, buz: 3, yerkum: 3, yerkar: 3, yersu: 3, dusme: 3, patlama: 2, pop: 0, bonus: 0, kazan: 0, kaybet: 0, tik: 0 };
+const SFILES = { atis: 3, vurus: 3, tahta: 3, tas: 3, metal: 3, cam: 3, buz: 3, yerkum: 3, yerkar: 3, yersu: 3, dusme: 3, patlama: 2, pop: 0, bonus: 0, kazan: 0, kaybet: 0, tik: 0, para: 0, sandik: 0 };   // v3.0: para ve sandik (korsan/ses, gercek kayit)
 const RAW = {}, BUF = {};
 // v6.29: (Adem: metal sesleri duruyor) yapi/ses/vurus, tahta, tas uretilmis kayitlardi: vurus 0.6 sn cinlayan 'dong', tahta/tas 1 sn boyunca
 // sonmeyen, tek perdede cinlayan yanki (metal gibi). Yerine korsanin gercek kisa kayitlari (CC0, korsan/ses/KAYNAKLAR.md).
-const GERCEK = new Set(['vurus']);
+const GERCEK = new Set(['vurus', 'para', 'sandik']);
 // Blok Smash (Adem 9 Kas): tas, cam, tahta, buz kirilma sesleri Adem'in sectigi kayitlar, iki modda da ortak ses/ klasorunden (kaynak: ses/KAYNAKLAR.md)
 const SECILEN = new Set(['tahta', 'tas', 'cam', 'buz', 'atis', 'yerkum', 'yerkar', 'yersu']);
 const sesYolu = (k) => SECILEN.has(k) ? ['../ses/', 'b3'] : !K && GERCEK.has(k) ? ['../korsan/ses/', 2] : [SDIR, SV2];
@@ -1917,7 +1923,14 @@ function win() {
   if (!SV.yil) SV.yil = {}; const ilk = !SV.yil[LV]; SV.yil[LV] = Math.max(SV.yil[LV] || 0, st);
   gorevArt('kazan', 1); if (st >= 3) gorevArt('y3', 1); gorevArt('top', g.shots);
   // her kalan top 5 altin (en cok 60); bolum odulu 10 + yildiz basina 10; tekrar oynanan bolumde yari odul
-  const bonus = Math.min(60, g.shots * 5), kaz = Math.round((10 + st * 10 + bonus) * (ilk ? 1 : 0.5)), once = SV.altin || 0; SV.altin = once + kaz; gorevKaydet(true);
+  const zorB = zorMu(LV) && ilk ? ZOR_ODUL : 0;
+  const bonus = Math.min(60, g.shots * 5), kaz = Math.round((10 + st * 10 + bonus) * (ilk ? 1 : 0.5)) + zorB, once = SV.altin || 0; SV.altin = once + kaz;
+  if (M) {   // v3.0: istatistik (ilk denemede kazanma, seri), hazine sandigi ilerlemesi ve yeni kazanma sahnesi
+    const I = ist(); I.kazan++; if (SV.dus !== LV) { I.ilk++; I.seri++; I.enSeri = Math.max(I.enSeri, I.seri); } else I.seri = 1; SV.dus = 0;
+    if (ilk) SV.sn = (SV.sn || 0) + 1;
+    gorevKaydet(true); M.kazan({ L: LV, st, kaz, once, kalan: g.shots, bonus, zorB, yeniK, ilk }); return;
+  }
+  gorevKaydet(true);
   modal('<div class="rib">Tebrikler!</div><div class="stars">' + yildizHtml(st) + '</div><h2>Bölüm ' + LV + ' tamam</h2>' +
     '<div class="stat"><div>KALAN TOP<b>' + g.shots + '</b></div><div>TOP BONUSU<b>+' + bonus + '</b></div></div>' +
     '<div class="kz"><i class="coin"></i><b id="kz">+0</b></div><p class="kasa">Altın: <b id="ks">' + once + '</b></p>' +
@@ -1936,6 +1949,7 @@ function lose() {
   sfx('lose'); gorevKaydet(true); tilkiDurum('kaybet');
   // v2.0: bolum basina bir kez bedava devam; sonrakiler altinla
   const bedava = !g.devam, yeter = (SV.altin || 0) >= DEVAM_FIYAT;
+  if (M) { M.kaybet({ L: LV, kaldi: g.left, bedava, fiyat: DEVAM_FIYAT }); return; }
   modal('<div class="rib r">Toplar bitti!</div><h2>' + g.left + ' blok kaldı</h2><p>' + (g.left <= 5 ? 'Çok az kalmıştı, tekrar dene!' : 'Alt sıraları hedefle, kule devrilsin!') + '</p>' +
     (bedava || yeter ? '<button class="btn o" id="rv">+3 Top ile Devam' + (bedava ? '' : ' <i class="coin"></i> ' + DEVAM_FIYAT) + '</button>' : '') +
     '<button class="btn" id="rt">Tekrar Dene</button><button class="btn o kck" id="hrt">Harita</button>');
@@ -1960,58 +1974,39 @@ function gorevler() {
 function gorevArt(k, n) { if (K || TEST || !n) return; for (const q of gorevler()) { const G = GHAV[q.i]; if (G.k !== k || q.n >= G.h) continue; q.n = Math.min(G.h, q.n + n); GVKIRLI = true; } }
 function gorevKaydet(zorla) { if (GVKIRLI || zorla) { GVKIRLI = false; save(); } }
 function gorevHazir() { if (K || TEST) return 0; return gorevler().filter((q) => !q.a && q.n >= GHAV[q.i].h).length; }
-// ================= v2.0: bolum haritasi, gorev ve ayar ekranlari =================
-let HRT = null;
+// ================= v3.0: merkez (ana sayfa) baglantisi =================
+// Eski bolum haritasi, gorev ve ayar ekranlari (v2.0) kalkti; hepsi yapi/merkez.js icinde, yeni gorunumle.
 const FONAD = { cayir4: ['Çiçekli Çayır', 'c'], kar3: ['Karlı Köy', 'k'], sahil3: ['Palmiye Sahili', 's'] };
-function haritaKur() {
-  if (HRT) return HRT;
-  HRT = document.createElement('div'); HRT.id = 'harita';
-  HRT.innerHTML = '<div class="hbar"><button class="ib" id="hgeri" aria-label="Ana menü">‹</button><div class="haltin"><i class="coin"></i><b id="haltin">0</b></div>' +
-    '<button class="ib" id="hgorev" aria-label="Görevler">🎯<em id="hgn"></em></button><button class="ib" id="hayar" aria-label="Ayarlar">⚙</button></div>' +
-    '<div class="hyol" id="hyol"></div><div class="halt"><button class="btn" id="hoyna">Oyna</button></div><div class="hpan" id="hpan"><div class="card" id="hkart"></div></div>';
-  document.body.appendChild(HRT);
-  for (const ev of ['pointerdown', 'pointerup', 'pointermove']) HRT.addEventListener(ev, (e) => e.stopPropagation());
-  $('hgeri').onclick = () => { location.href = '../'; };
-  $('hgorev').onclick = () => { sfx('tik'); gorevPanel(); };
-  $('hayar').onclick = () => { sfx('tik'); ayarPanel(); };
-  $('hpan').onclick = (e) => { if (e.target.id === 'hpan') $('hpan').classList.remove('on'); };
-  return HRT;
+function haritaAc() {}   // yalniz eski kartlardaki (korsan/test) 'Harita' dugmesi icin; korsanin kendi haritasi korsan.js'te
+function ayarDegis(k) {
+  if (k === 'ses') { SV.sessiz = !SV.sessiz; save(); if (SV.sessiz) { if (AC) AC.suspend(); } else sesAc(); }
+  else if (k === 'muzik') { SV.muziksiz = !SV.muziksiz; save(); if (SV.muziksiz) muzikDur(); else muzikBasla(); }
+  else if (k === 'titresim') { SV.titresimsiz = !SV.titresimsiz; save(); buzz(40); }
 }
-function haritaCiz() {
-  const max = Math.max(1, SV.max || 1), son = Math.max(max + 6, 15), yil = SV.yil || {}; let h = '', bolge = '';
-  for (let L = son; L >= 1; L--) {
-    const fo = FONAD[fonOf(L).f] || ['', 'c'], kilit = L > max, cur = L === max, st = yil[L] || 0, x = 50 + 30 * Math.sin(L * 1.05);
-    const bas = (L - 1) % 3 === 0;
-    h += '<div class="hs t-' + fo[1] + '"><button class="hn' + (kilit ? ' kilit' : '') + (cur ? ' cur' : '') + (st ? ' ok' : '') + '" data-l="' + L + '" style="left:' + x.toFixed(1) + '%"><b>' + (kilit ? '🔒' : L) + '</b>' +
-      (st ? '<i>' + '★'.repeat(st) + '<u>' + '★'.repeat(3 - st) + '</u></i>' : '') + '</button>' + (bas ? '<span class="hb" style="' + (x > 50 ? 'left:6%' : 'right:6%') + '">' + fo[0] + '</span>' : '') + '</div>';
-  }
-  $('hyol').innerHTML = h;
-  for (const el of $('hyol').querySelectorAll('.hn')) el.onclick = () => { const L = +el.dataset.l; if (L > max) { el.classList.remove('salla'); void el.offsetWidth; el.classList.add('salla'); sfx('tik'); return; } sfx('tik'); haritaKapat(L); };
-  $('haltin').textContent = SV.altin || 0; const n = gorevHazir(); $('hgn').textContent = n || ''; $('hgn').style.display = n ? 'block' : 'none';
-  $('hoyna').textContent = 'Bölüm ' + max + ' · Oyna'; $('hoyna').onclick = () => { sfx('tik'); haritaKapat(max); };
-  const c = $('hyol').querySelector('.hn.cur'); if (c) setTimeout(() => c.scrollIntoView({ block: 'center' }), 0);
+// bolum kartinda 'Oyna': bolum kurulur (zaten taze kuruluysa yalniz kamera donusu ve bolum adi tekrarlanir),
+// secilen guclendiriciler odenir ve sirayla uygulanir
+function oyna(L, sec) {
+  if (L !== LV || !g || g.state !== 'play' || g.armed) start(L);
+  else { CAMI = 1.6; STARTT = performance.now(); const nm = $('nm'); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1; if (TK.t && TK.gor) TK.t.oyna('selam', 1.4); }
+  muzikBasla(); ggKur();
+  let gec = 0;
+  for (const t of GGT) { if (!sec || !sec.has(t.k) || !ggOde(t.k)) continue;
+    if (t.k === 'yildirim') { const gg0 = g; setTimeout(() => { if (g === gg0 && g.state === 'play') ggYildirim(); }, 1500); }
+    else { const k = t.k; setTimeout(() => { if (g && g.state === 'play') { ggCal(ggT(k).el, 'bas'); ggUygula(k); ggHud(); sfx('bonus'); } }, 700 + gec * 200); gec++; } }
+  ggHud();
 }
-function haritaAc(ilk) { if (K) return; haritaKur(); haritaCiz(); HRT.classList.add('on'); $('hpan').classList.remove('on'); }
-function haritaKapat(L) { HRT.classList.remove('on'); if (L !== LV || !g || g.state !== 'play' || g.armed) start(L); muzikBasla(); }
-function gorevPanel() {
-  const l = gorevler();
-  $('hkart').innerHTML = '<div class="rib">Günlük Görevler</div>' + l.map((q, n) => { const G = GHAV[q.i], bitti = q.n >= G.h;
-    return '<div class="gv' + (q.a ? ' alindi' : '') + '"><div class="gva"><b>' + G.ad + '</b><div class="gvp"><span style="width:' + Math.round(100 * q.n / G.h) + '%"></span><em>' + q.n + ' / ' + G.h + '</em></div></div>' +
-      (q.a ? '<span class="gvok">✓</span>' : '<button class="gvb' + (bitti ? '' : ' yok') + '" data-n="' + n + '"><i class="coin"></i>' + G.o + '</button>') + '</div>'; }).join('') +
-    '<p class="kasa">Görevler her gün yenilenir</p><button class="btn" id="hkk">Tamam</button>';
-  for (const b of $('hkart').querySelectorAll('.gvb')) b.onclick = () => { const q = l[+b.dataset.n], G = GHAV[q.i]; if (q.a || q.n < G.h) { sfx('tik'); return; } q.a = 1; SV.altin = (SV.altin || 0) + G.o; save(); sfx('bonus'); buzz(30); gorevPanel(); haritaCiz(); ggHud(); };
-  $('hkk').onclick = () => { sfx('tik'); $('hpan').classList.remove('on'); };
-  $('hpan').classList.add('on');
+// toplar bitince '+3 top ile devam': bolum basina bir kez bedava, sonrakiler altinla
+function devamEt() {
+  if (!g || g.state !== 'lose') return false;
+  if (g.devam) { if ((SV.altin || 0) < DEVAM_FIYAT) return false; SV.altin -= DEVAM_FIYAT; save(); }
+  g.devam = (g.devam || 0) + 1; g.shots += 3; g.state = 'play'; g.quiet = 0; hud(); ggHud(); tilkiDurum('oyun'); return true;
 }
-function ayarPanel() {
-  const sat = (id, ad, acik) => '<div class="ay"><b>' + ad + '</b><button class="tg' + (acik ? ' on' : '') + '" id="' + id + '" aria-label="' + ad + '"><i></i></button></div>';
-  $('hkart').innerHTML = '<div class="rib">Ayarlar</div>' + sat('ayses', 'Ses', !SV.sessiz) + sat('aymuz', 'Müzik', !SV.muziksiz) + sat('aytit', 'Titreşim', !SV.titresimsiz) +
-    '<p class="kasa">Blok Smash v2.0</p><button class="btn" id="hkk">Tamam</button>';
-  $('ayses').onclick = () => { SV.sessiz = !SV.sessiz; save(); if (SV.sessiz) { if (AC) AC.suspend(); } else { sesAc(); sfx('tik'); } ayarPanel(); };
-  $('aymuz').onclick = () => { SV.muziksiz = !SV.muziksiz; save(); if (SV.muziksiz) muzikDur(); else muzikBasla(); sfx('tik'); ayarPanel(); };
-  $('aytit').onclick = () => { SV.titresimsiz = !SV.titresimsiz; save(); buzz(40); sfx('tik'); ayarPanel(); };
-  $('hkk').onclick = () => { sfx('tik'); $('hpan').classList.remove('on'); };
-  $('hpan').classList.add('on');
+// bolumden vazgecme (tekrar dene, ana sayfa): seri biter, bu bolum artik 'ilk denemede' sayilmaz
+function pesEt() { if (g && (g.armed || g.state === 'lose')) { SV.dus = LV; ist().seri = 0; save(); } }
+function merkezBagla() {
+  M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, SURUM, ZOR_ODUL,
+    ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
+    bolge: (L) => FONAD[fonOf(L).f] || ['', 'c'], bolumAdi: (L) => { try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
 }
 // ================= v2.0: muzik =================
 // Kayit dosyasi yok: Web Audio ile calinan sakin, neseli bir dongu (yumusak akor zemini + marimba benzeri ezgi + hafif bas). Sessize alininca durur.
@@ -2260,8 +2255,8 @@ function ggOnce() {
   };
   ggHud();
 }
-$('re').onclick = () => start(LV);
-$('home').onclick = () => { if (K) location.href = '../'; else { sfx('tik'); haritaAc(); } };
+if ($('re')) $('re').onclick = () => start(LV);
+$('home').onclick = () => { if (K) location.href = '../'; else if (M) { if (g && g.state === 'play') { sfx('tik'); M.duraklat(); } } else start(LV); };
 
 // dokunma: once kuplere, yoksa yapinin onundeki dikey duzleme nisan alinir
 const ray = new THREE.Raycaster(), NDC = new THREE.Vector2(), AIMPL = new THREE.Plane(new THREE.Vector3(0, 0, 1), -0.0);
@@ -2387,8 +2382,10 @@ function isitma() {
   const sp = SPL.pop(); if (sp) scene.remove(sp.m);
 }
 // ---------------- dongu ----------------
-let last = 0, shake = 0;
+let last = 0, shake = 0, STARTT = 0;
 function frame(ts) {
+  // v3.0: ana sayfa acikken ya da oyun duraklatilmisken sahne islemez ve cizilmez (telefon isinmasin); bolum kurulduktan sonraki ilk 2,5 sn haric (malzemeler derlensin)
+  if (M && M.durdur() && performance.now() - STARTT > 2500) { last = 0; if (!TEST) requestAnimationFrame(frame); return; }
   const dt = Math.min(0.05, last ? (ts - last) / 1000 : 0.016); last = ts;
   if (HS > 0) { HS -= dt; if (HS <= 0) TS = 1; }
   if (K) K.kare(dt);   // v6.19: seyir, sallanan hedef, batma
@@ -2418,22 +2415,26 @@ function start(L) {
   setPofiCol(POFICOL[(LV - 1) % POFICOL.length]); buildLevel();
   if (!K && !TEST_TILKISIZ && seciliKarakter(SV.max) === 'tilki') tilkiGoster().then(() => { TK.gor = !!TK.t; tilkiDurum('oyun'); if (TK.t) TK.t.oyna('selam', 1.4); }); else TK.gor = false;
   engKur(LV, levelOf(LV));
-  ggOnce();
+  STARTT = performance.now();
+  if (M) { ggKur(); ggHud(); } else ggOnce();   // v3.0: guclendirici secimi bolum kartinda (merkez.js), bolum kurulmadan once
   if (KAL()) isitma();
 }
-window.YP = { TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
+window.YP = { get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
 if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MOD, PM, platBody, GB, cubes, balls, S, TC, KEEP, NENV, SV, save, $, Q, TEST,
   get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set GY(v) { GY = v; GB.position.y = v; }, get shake() { return shake; }, set shake(v) { shake = v; },
   set TOPY(v) { TOPY = v; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, LEG, DIRT, KIND, splashSnd: (v) => AC && (K ? play('su', v + 0.2) : splashSnd(v)), dongu, play: (k, v, r) => AC && play(k, v, r),
   clearLevel, addCubes, hud, setPlat, sfx, play, chime, splash, ripple, bubble, foam, seaY, burst, confetti, modal, closeModal, start, buzz, spr, fx, trunkTip, wakeAll, FOAMT, SOFT, canvasTex, floatText, screenAt,
   get AC() { return AC; } });
+// v3.0: acilis ekranindaki yukleme cubugu (index.html'deki BSYUK)
+{ let n = 0; const P5 = [faceReady, pofiReady, texReady, modelReady]; for (const p of P5) p.then(() => { n++; if (window.BSYUK) window.BSYUK(0.15 + 0.75 * n / P5.length); }); }
 Promise.all([faceReady, pofiReady, texReady, modelReady, K ? K.yukle() : 0]).then(() => {
   makeCannon(); fit();
+  if (!K && !TEST) merkezBagla();
   for (const k in KMAT) delete KMAT[k];
   start(Math.floor(+(Q.get('sv') || SV.L || 1)) || 1);
-  if (!K && !TEST && !Q.has('sv')) haritaAc(true);
+  if (M && !Q.has('sv')) M.ac({ ilk: true });
   loadPieces();   // v6.16
   avgIsit();
-  const l = $('load'); l.style.opacity = 0; setTimeout(() => l.remove(), 400);
+  if (window.BSYUK) window.BSYUK(1); const l = $('load'); setTimeout(() => { l.style.opacity = 0; setTimeout(() => l.remove(), 550); }, 350);
   if (!TEST) requestAnimationFrame(frame); else frame(16);
 });
