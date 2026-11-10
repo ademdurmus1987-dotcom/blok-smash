@@ -23,7 +23,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.8', ZOR_ODUL = 20;
+const SURUM = 'v3.9', ZOR_ODUL = 20;
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -1929,7 +1929,7 @@ const GERCEK = new Set(['vurus', 'para', 'sandik']);
 // Blok Smash (Adem 9 Kas): tas, cam, tahta, buz kirilma sesleri Adem'in sectigi kayitlar, iki modda da ortak ses/ klasorunden (kaynak: ses/KAYNAKLAR.md)
 const SECILEN = new Set(['tahta', 'tas', 'cam', 'buz', 'atis', 'yerkum', 'yerkar', 'yersu']);
 // v3.3: (Adem 11 Kas) Yapi'da altin sesi = ses/para.mp3 (aday Altin 6), tus sesi = ses/tik.mp3 (aday Tus 14); Korsan eski seslerinde
-const sesYolu = (k) => SECILEN.has(k) || (!K && (k === 'para' || k === 'tik')) ? ['../ses/', 'b8'] : !K && GERCEK.has(k) ? ['../korsan/ses/', 2] : [SDIR, SV2];
+const sesYolu = (k) => SECILEN.has(k) || (!K && (k === 'para' || k === 'tik')) ? ['../ses/', 'b9'] : !K && GERCEK.has(k) ? ['../korsan/ses/', 2] : [SDIR, SV2];
 // v6.22: (Adem 6 Kas) korsan modunda sesler korsan/ses/ klasorunden: gercek top, su, tahta, zincir, altin kayitlari (kaynaklar: korsan/ses/KAYNAKLAR.md)
 if (K) Object.assign(SFILES, { su: 4, kabarcik: 0, zincir: 0, para: 0, sandik: 0, dalga: 0, yelken: 0, pop: undefined });
 const SDIR = K ? '../korsan/ses/' : 'ses/', SV2 = K ? 2 : 1;
