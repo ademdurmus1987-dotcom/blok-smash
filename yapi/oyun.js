@@ -23,7 +23,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.4', ZOR_ODUL = 20;
+const SURUM = 'v3.5', ZOR_ODUL = 20;
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -1601,8 +1601,10 @@ function setSea(fo) {
   const kk = fo.f.startsWith('kar'), gom = OCC.mesh.visible, mu = LEG.userData.mm;
   mu.color.set(kk ? '#eef4ff' : '#d6b475'); mu.emissive.set(kk ? '#9db4d8' : '#8a6a3a');
   const suda = fo.f.startsWith('sahil') && !PLS.some((q) => q.leg && q.leg !== LEG);
-  setLeg(suda ? 0.62 : gom ? 0.3 : 0); for (const q of PLS) if (q.leg && q.leg !== LEG) setLeg(gom ? 0.3 : 0, q.leg);
-  HAVUZ.visible = suda; HAVUZ.position.y = GY + 0.03; HAVUZ.scale.setScalar(1.3); if (suda) { LEG.userData.mound.visible = false; LEG.userData.shade.visible = false; }
+  setLeg(suda ? 1.2 : gom ? 0.3 : 0); for (const q of PLS) if (q.leg && q.leg !== LEG) setLeg(gom ? 0.3 : 0, q.leg);
+  HAVUZ.visible = false; if (suda) { LEG.userData.mound.visible = false; LEG.userData.shade.visible = false; }
+  // v3.4: (Adem 11 Kas) su birikintisi begenilmedi: sahilde alt kaide yok, yalniz dikey direk suyun icine iner (yer alti gizli)
+  for (const k of ['base', 'ring', 'cap']) LEG.userData[k].visible = !suda;
   DIRT.visible = !gom;   // v6.26: video fonda on plandaki kum ve kiyiya vuran dalgalar videonun kendisi (3B kum ortmesin)
 }
 // v6.27: (Adem) karda ve kumda kup gercekten icinde gorunsun: yerin altini gizleyen gorunmez derinlik duzlemi (kup yarisi gomulur)
