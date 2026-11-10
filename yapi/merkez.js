@@ -104,7 +104,7 @@ export function merkezKur(A) {
       const an = c.animate([{ transform: 'translate(0,0) scale(.3)', opacity: 0 }, { transform: 'translate(' + sx + 'px,' + sy + 'px) scale(1.15)', opacity: 1, offset: 0.28 }, { transform: 'translate(' + sx + 'px,' + sy + 'px) scale(1)', opacity: 1, offset: 0.42 }, { transform: 'translate(' + (tx - x) + 'px,' + (ty - y) + 'px) scale(.75)', opacity: 1 }],
         { duration: 900, delay: i * 55, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'both' });
       an.onfinish = () => { c.remove(); const hap = $('m-ahap'); hap.classList.remove('pop'); void hap.offsetWidth; hap.classList.add('pop');
-        altinYaz(i === n - 1 ? yeni : Math.round(eski + (yeni - eski) * (i + 1) / n)); if (i % 2 === 0) A.ses('para', 0.35, 1 + i * 0.03); };
+        altinYaz(i === n - 1 ? yeni : Math.round(eski + (yeni - eski) * (i + 1) / n)); A.ses('para', 0.5, 1 + i * 0.045); };   // v3.4: (Adem 11 Kas) kasaya uçan her altın tik sesi (Altın 27), perdesi gittikçe yükselir
     }
     setTimeout(() => altinYaz(SV.altin || 0), 900 + n * 55 + 200);
   }
