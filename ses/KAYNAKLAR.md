@@ -15,3 +15,7 @@ Başındaki sessizlik kesildi, ses seviyesi eşitlendi, 0/1/2 dosyaları perdesi
 - yerkar*.mp3: kenney_impactsounds/Audio/footstep_snow_000.ogg (Kara düşme 1)
 - yersu*.mp3: 40-cc0-water-splash-slime-sfx/splash_05.ogg (Suya düşme 4), yalnız Yapı (Korsan kendi su kayıtlarını kullanır)
 - Çimen sert zemin: ayrı düşme sesi yok, bloğun kendi kırılma sesi (taş/cam/tahta/buz) çalar.
+
+## Altın sesi (v3.6, Adem 11 Kas 2026)
+- para.mp3: Pixabay "coin collect" araması, aday P14 (https://cdn.pixabay.com/audio/2025/08/05/audio_69f210e199.mp3), Pixabay Content License
+- tik.mp3: kenney_interfacesounds drop_002.ogg (aday Tuş 14), CC0
