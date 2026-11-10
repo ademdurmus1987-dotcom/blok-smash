@@ -53,14 +53,57 @@ h1 span{display:block;font-size:1.15em}
 .korsan .bg{background-image:url(korsan/kaynak/fon_ada.webp)}
 .korsan .play{background:linear-gradient(180deg,#ffd23f,#ff8a1f);box-shadow:0 5px 0 #a24a00,0 0 0 4px #fff}
 footer{position:relative;z-index:1;font-size:12px;opacity:.6;margin-top:10px}
-@media (max-height:640px){.logo{width:84px;height:84px}.card{height:120px}}
+/* v2.1: profil, kazanilan karakter (Korsan Tilki), kartlar */
+.prof{align-self:flex-start;display:flex;align-items:center;gap:9px;padding:4px 16px 4px 4px;border-radius:99px;border:3px solid #fff;background:linear-gradient(180deg,#2a7fd0,#124a8e);box-shadow:0 4px 0 rgba(0,0,0,.35);color:#fff;font:inherit;cursor:pointer;text-align:left;margin-top:-10px}
+.prof:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.prof b{display:block;font-family:'Lilita One',Fredoka,sans-serif;font-weight:400;font-size:17px;line-height:1.05;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prof small{display:block;font-weight:600;font-size:12px;opacity:.85}
+.av{position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;overflow:hidden;border:2px solid #ffd23f;font-size:24px;line-height:1;flex:none}
+.av img{width:100%;height:100%;object-fit:cover;object-position:50% 10%;transform:scale(1.35);transform-origin:50% 22%}
+#sahne{position:relative;display:grid;place-items:center;min-height:120px}
+#kc{display:none;width:210px;height:200px;margin:-18px 0 -14px;cursor:pointer;touch-action:manipulation;filter:drop-shadow(0 10px 10px rgba(0,0,0,.25))}
+#sahne.var #kc{display:block}#sahne.var .logo{display:none}
+.kilit{width:100%;display:flex;align-items:center;gap:12px;padding:8px 14px 8px 8px;border-radius:20px;background:rgba(6,24,48,.55);border:2px solid rgba(255,255,255,.35)}
+.kilit[hidden]{display:none}
+.kilit .av{width:56px;height:56px;border-color:rgba(255,255,255,.5);background:#0b2748}.kilit .av img{filter:brightness(0) invert(.18)}
+.kilit .av::after{content:"🔒";position:absolute;font-size:22px}
+.kilit b{display:block;font-family:'Lilita One',Fredoka,sans-serif;font-weight:400;font-size:18px}.kilit small{display:block;font-weight:600;font-size:13px;opacity:.9}
+.kilit .cub{height:8px;border-radius:9px;background:rgba(255,255,255,.2);margin-top:6px;overflow:hidden}.kilit .cub i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#ffd23f,#ff8a1f)}
+.kilit>div:last-child{flex:1;min-width:0}
+#mod{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(4,14,30,.72)}
+#mod.on{display:flex}
+.kart{position:relative;width:100%;max-width:400px;max-height:calc(100% - 20px);overflow:auto;border-radius:28px;padding:54px 16px 18px;background:linear-gradient(180deg,#b01846,#7a0c36);border:4px solid #ffcf4a;box-shadow:0 10px 0 rgba(0,0,0,.35),0 20px 40px rgba(0,0,0,.5);animation:pop .35s cubic-bezier(.2,1.5,.4,1) both;text-align:center}
+.kart h2{position:absolute;left:0;right:0;top:10px;font-family:'Lilita One',Fredoka,sans-serif;font-weight:400;font-size:27px;text-shadow:0 3px 0 rgba(0,0,0,.4)}
+.kart .x{position:absolute;right:8px;top:6px;width:42px;height:42px;border-radius:50%;border:3px solid #ffcf4a;background:linear-gradient(180deg,#ff5a5a,#c8142a);color:#fff;font:700 22px/1 Fredoka,sans-serif;cursor:pointer}
+.kart h3{font-family:'Lilita One',Fredoka,sans-serif;font-weight:400;font-size:17px;text-align:left;margin:12px 4px 6px;color:#ffe9a8}
+.kart input{width:100%;height:50px;border-radius:16px;border:3px solid #6a0a2a;background:#fff3de;color:#3a1a10;font:700 20px/1 Fredoka,sans-serif;padding:0 16px;outline:none}
+.izg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px;border-radius:18px;background:#fbe9d2}
+.izg button{position:relative;aspect-ratio:1;border:0;background:none;padding:0;cursor:pointer;font:inherit;color:#5a2a10}
+.izg .av{width:100%;height:100%;font-size:30px;border:3px solid #f0a020;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.izg .sec .av{border-color:#2fbf3f;box-shadow:0 0 0 3px #2fbf3f,0 3px 0 rgba(0,0,0,.25)}
+.izg .sec::after{content:"✓";position:absolute;right:-4px;top:-6px;width:24px;height:24px;border-radius:50%;background:#2fbf3f;border:2px solid #fff;color:#fff;font:700 15px/20px Fredoka,sans-serif}
+.izg .kpl .av img{filter:brightness(0) invert(.25)}.izg .kpl .av{background:#c9b49a;border-color:#a08a70}
+.izg .kpl::after{content:"🔒";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px}
+.izg.kr{grid-template-columns:repeat(3,1fr)}.izg.kr button{aspect-ratio:auto}.izg.kr .av{aspect-ratio:1;height:auto;border-radius:20px}
+.izg.kr span.ad{display:block;font-weight:700;font-size:12.5px;line-height:1.15;margin-top:5px}
+.btn{display:block;width:78%;margin:16px auto 0;height:58px;border-radius:20px;border:3px solid #ffcf4a;background:linear-gradient(180deg,#7cf55a,#25a83a);box-shadow:0 6px 0 #146b22;color:#fff;font-family:'Lilita One',Fredoka,sans-serif;font-size:27px;text-shadow:0 2px 0 rgba(0,0,0,.35);cursor:pointer}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #146b22}
+.kart.yeni{background:linear-gradient(180deg,#2a7fd0,#103a78);padding-top:20px;overflow:hidden}
+.kart.yeni h2{position:static;font-size:25px;color:#ffe27a}.kart.yeni .adk{font-family:'Lilita One',Fredoka,sans-serif;font-size:36px;line-height:1;margin-top:2px;text-shadow:0 3px 0 rgba(0,0,0,.4)}
+.kart.yeni p{font-weight:600;font-size:15px;opacity:.95;margin-top:4px}
+.isin{position:absolute;left:50%;top:210px;width:560px;height:560px;margin:-280px;border-radius:50%;background:repeating-conic-gradient(rgba(255,235,150,.28) 0 12deg,transparent 12deg 24deg);animation:don 14s linear infinite;pointer-events:none;-webkit-mask:radial-gradient(closest-side,#000 30%,transparent);mask:radial-gradient(closest-side,#000 30%,transparent)}
+@keyframes don{to{transform:rotate(360deg)}}
+.kart.yeni #kc{display:block;position:relative;width:250px;height:250px;margin:0 auto -6px}
+.kart.yeni .yav{position:relative;width:200px;height:200px;margin:14px auto 8px;border-width:4px}
+@media (max-height:640px){.logo{width:84px;height:84px}.card{height:120px}#kc{width:150px;height:140px}#sahne{min-height:84px}}
 </style>
 </head>
 <body>
 <div class="sun"></div>
 <div id="sky"></div>
 <main>
-  <img class="logo" src="icon-512.png" alt="">
+  <button class="prof" id="prof" aria-label="Profil"><span class="av" id="pav"></span><span><b id="padi">Kaptan</b><small id="plv">Bölüm 1</small></span></button>
+  <div id="sahne"><img class="logo" src="icon-512.png" alt=""><canvas id="kc" aria-label="Korsan Tilki"></canvas></div>
   <h1>BLOK<span>SMASH</span></h1>
   <div class="sub">Topu at, kuleyi yık!</div>
   <div class="cards">
@@ -75,8 +118,10 @@ footer{position:relative;z-index:1;font-size:12px;opacity:.6;margin-top:10px}
       <div class="play"></div>
     </a>
   </div>
+  <div class="kilit" id="kilit" hidden></div>
 </main>
-<footer>v2.0</footer>
+<footer>v2.1</footer>
+<div id="mod"></div>
 <script>
 // Bolum ilerlemesi oyunun kendi kaydindan okunur (Blokpop'taki ilerleme de devam eder).
 function lv(k, id){ try { const d = JSON.parse(localStorage.getItem(k) || 'null'); if (d && d.L) document.getElementById(id).textContent = 'Bölüm ' + d.L; } catch (e) {} }
@@ -90,6 +135,82 @@ for (let i = 0; i < 16; i++) {
   sky.appendChild(b);
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+<script type="module">
+// v2.1: profil (isim, avatar), kazanilan karakter (Korsan Tilki: gercek 3B, kodla canlandirilir) ve "yeni karakter" karti
+import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, ulasilanBolum, acikMi, seciliKarakter } from './karakter/profil.js?v=1';
+const $ = (id) => document.getElementById(id), MAX = ulasilanBolum(), sahne = $('sahne'), kc = $('kc'), mod = $('mod');
+let P = profilOku(), T3 = null;
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function avIc(id) {
+  const k = KARAKTERLER.find((x) => x.id === id); if (k) return ['radial-gradient(circle at 50% 30%,#8fdcff,#1b6fc0)', '<img src="' + k.av + '?v=1" alt="">'];
+  const a = AVATARLAR.find((x) => x.id === id) || AVATARLAR[0]; return ['radial-gradient(circle at 50% 30%,' + a.renk[0] + ',' + a.renk[1] + ')', a.ic];
+}
+function avKoy(el, id) { const [bg, ic] = avIc(id); el.style.background = bg; el.innerHTML = ic; }
+function ustCiz() { avKoy($('pav'), P.av); $('padi').textContent = P.ad; $('plv').textContent = 'Bölüm ' + MAX; }
+function kilitCiz() {
+  const k = KARAKTERLER.find((x) => !acikMi(x.id, MAX)), el = $('kilit'); if (!k) { el.hidden = true; return; }
+  el.hidden = false; el.innerHTML = '<span class="av"><img src="' + k.av + '?v=1" alt=""></span><div><b>' + k.ad + '</b><small>Bölüm ' + k.sart + '\'e ulaş, bu karakteri kazan!</small><div class="cub"><i style="width:' + Math.round(Math.min(1, (MAX - 1) / (k.sart - 1)) * 100) + '%"></i></div></div>';
+}
+function kapat() { if (kc.parentNode !== sahne) sahne.appendChild(kc); mod.classList.remove('on'); mod.innerHTML = ''; if (T3) T3.boyut(); }
+mod.addEventListener('click', (e) => { if (e.target === mod && !mod.querySelector('.yeni')) kapat(); });
+
+// ---- profil karti ----
+function profilAc() {
+  let av = P.av, kar = seciliKarakter(MAX) || '';
+  const ciz = () => {
+    const avl = AVATARLAR.map((a) => a.id).concat(KARAKTERLER.map((k) => k.id));
+    $('avg').innerHTML = avl.map((id) => { const kpl = KARAKTERLER.some((k) => k.id === id) && !acikMi(id, MAX), [bg, ic] = avIc(id);
+      return '<button data-a="' + id + '" class="' + (kpl ? 'kpl' : id === av ? 'sec' : '') + '"><span class="av" style="background:' + bg + '">' + ic + '</span></button>'; }).join('');
+    $('krg').innerHTML = KARAKTERLER.map((k) => { const ac = acikMi(k.id, MAX), [bg, ic] = avIc(k.id);
+      return '<button data-k="' + k.id + '" class="' + (!ac ? 'kpl' : kar === k.id ? 'sec' : '') + '"><span class="av" style="background:' + bg + '">' + ic + '</span><span class="ad">' + k.ad + (ac ? '' : '<br>Bölüm ' + k.sart) + '</span></button>'; }).join('') +
+      '<button data-k="" class="' + (kar === '' ? 'sec' : '') + '"><span class="av" style="background:#e6d3ba;border-color:#c9b08c">🚫</span><span class="ad">Karaktersiz</span></button>' +
+      '<button class="kpl" disabled><span class="av" style="background:#c9b49a">❔</span><span class="ad">Yakında</span></button>';
+  };
+  mod.innerHTML = '<div class="kart"><h2>Profili Düzenle</h2><button class="x" id="mx" aria-label="Kapat">✕</button>' +
+    '<input id="pin" maxlength="14" autocomplete="off" value="' + esc(P.ad) + '" aria-label="İsim">' +
+    '<h3>Avatar</h3><div class="izg" id="avg"></div><h3>Karakter (oyunda yanında durur)</h3><div class="izg kr" id="krg"></div>' +
+    '<button class="btn" id="kay">Kaydet</button></div>';
+  ciz(); mod.classList.add('on');
+  $('avg').onclick = (e) => { const b = e.target.closest('button'); if (!b || b.classList.contains('kpl')) return; av = b.dataset.a; ciz(); };
+  $('krg').onclick = (e) => { const b = e.target.closest('button'); if (!b || b.classList.contains('kpl')) return; kar = b.dataset.k; ciz(); };
+  $('mx').onclick = kapat;
+  $('kay').onclick = () => { P.ad = ($('pin').value || '').trim().slice(0, 14) || 'Kaptan'; P.av = av; P.kar = kar; profilYaz(P); ustCiz(); kapat(); sahneKur(); };
+}
+$('prof').onclick = profilAc;
+
+// ---- 3B sahne: karakter kazanildiysa logonun yerinde durur; dokununca selam verir / sevinir ----
+async function sahneKur() {
+  const id = seciliKarakter(MAX); if (!id) { sahne.classList.remove('var'); return null; }
+  if (T3) { sahne.classList.add('var'); T3.boyut(); return T3; }
+  try {
+    const THREE = await import('./three.module.min.js'), { Tilki, tilkiYukle } = await import('./karakter/karakter.js?v=1');
+    const ren = new THREE.WebGLRenderer({ canvas: kc, antialias: true, alpha: true }); ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.3;
+    const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(22, 1, 0.1, 20); cam.position.set(0, 0.74, 3.45); cam.lookAt(0, 0.6, 0);
+    sc.add(new THREE.HemisphereLight(0xfffaf0, 0x8a8a7a, 1.7)); const l = new THREE.DirectionalLight(0xfff0d0, 2.4); l.position.set(-4, 8, 10); sc.add(l);
+    const t = new Tilki(await tilkiYukle(), 1); sc.add(t.root); t.root.rotation.y = -0.2;
+    const boyut = () => { const w = kc.clientWidth, h = kc.clientHeight; if (!w || !h) return; ren.setPixelRatio(Math.min(2, devicePixelRatio || 1)); ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+    let son = 0, sira = 0;
+    const kare = (ts) => { requestAnimationFrame(kare); if (document.hidden) { son = 0; return; } const dt = Math.min(0.05, son ? (ts - son) / 1000 : 0.016); son = ts; t.update(dt); ren.render(sc, cam); };
+    kc.addEventListener('click', () => { if (sira++ % 2) t.oyna('sevin', 1.85); else t.oyna('selam', 1.5); });
+    addEventListener('resize', boyut);
+    T3 = { t, boyut, kare1: () => { t.update(1 / 60); ren.render(sc, cam); } }; sahne.classList.add('var'); boyut(); t.oyna('selam', 1.6); requestAnimationFrame(kare);
+    return T3;
+  } catch (e) { sahne.classList.remove('var'); return null; }
+}
+
+// ---- "yeni karakter kazandin" karti: her karakter icin bir kez ----
+async function yeniKart() {
+  const k = KARAKTERLER.find((x) => acikMi(x.id, MAX) && !P.gor[x.id]); if (!k) return;
+  mod.innerHTML = '<div class="kart yeni"><div class="isin"></div><h2>Yeni karakter kazandın!</h2><div id="yk"><span class="av yav"><img src="' + k.av + '?v=1" alt=""></span></div>' +
+    '<div class="adk">' + k.ad + '</div><p>Artık oyunda yanında duracak.</p><button class="btn" id="yt">Harika!</button></div>';
+  mod.classList.add('on');
+  $('yt').onclick = () => { P.gor[k.id] = 1; if (!P.kar) P.kar = k.id; P.av = P.av === 'a1' ? k.id : P.av; profilYaz(P); ustCiz(); kapat(); };
+  if (T3 && mod.classList.contains('on')) { $('yk').innerHTML = ''; $('yk').appendChild(kc); T3.boyut(); T3.t.oyna('sevin', 6); }
+}
+ustCiz(); kilitCiz();
+window.BS = { get T3() { return T3; }, profilAc };
+sahneKur().then(yeniKart);
 </script>
 </body>
 </html>
