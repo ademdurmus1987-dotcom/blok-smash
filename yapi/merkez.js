@@ -5,7 +5,6 @@
 // hazine sandigi, profil + istatistik, ayarlar / duraklatma, kazanma ve kaybetme sahneleri.
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
-import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 
 const $ = (id) => document.getElementById(id);
@@ -19,10 +18,10 @@ const IK = {
   disli: svg('<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>', 24),
   kilit: svg('<path d="M15 21v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><rect x="9" y="20" width="30" height="23" rx="5" fill="#ffc81e" stroke="#7a3a00" stroke-width="2.5"/><circle cx="24" cy="30" r="3.4" fill="#7a3a00"/><path d="M24 31v6" stroke="#7a3a00" stroke-width="3.4" stroke-linecap="round"/>'),
   // dumen: ana sayfa
-  ev: svg('<g stroke="#4a2406" stroke-width="2.2" stroke-linecap="round">' + [0, 45, 90, 135].map((a) => '<rect x="21.6" y="2" width="4.8" height="44" rx="2.4" fill="#c8843a" transform="rotate(' + a + ' 24 24)"/>').join('') + '</g><circle cx="24" cy="24" r="14" fill="none" stroke="#4a2406" stroke-width="8.5"/><circle cx="24" cy="24" r="14" fill="none" stroke="#e0a050" stroke-width="4.5"/><circle cx="24" cy="24" r="6" fill="#ffc81e" stroke="#7a3a00" stroke-width="2.2"/>'),
+  ev: '<img class="ik3" src="ikon/ev.webp?v=1" alt="" draggable="false">',
   // altin kesesi: magaza
-  magaza: svg('<path d="M15 19c-7 6-10 12-10 17 0 6 6 9 19 9s19-3 19-9c0-5-3-11-10-17z" fill="#c8843a" stroke="#4a2406" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 9c3 3 4 6 3 9h14c-1-3 0-6 3-9l-6 2-4-5-4 5z" fill="#e0a050" stroke="#4a2406" stroke-width="2.5" stroke-linejoin="round"/><rect x="13" y="16.5" width="22" height="6" rx="3" fill="#e8413c" stroke="#6a0a1c" stroke-width="2.2"/><circle cx="24" cy="33.5" r="8" fill="#ffd23f" stroke="#7a3a00" stroke-width="2.2"/><path d="M24 28.5l1.6 3.2 3.5.5-2.5 2.5.6 3.5-3.2-1.7-3.2 1.7.6-3.5-2.5-2.5 3.5-.5z" fill="#fff6b8"/>'),
-  harita: svg('<path d="M5 11l13-5 12 5 13-5v31l-13 5-12-5-13 5z" fill="#f8e2b0" stroke="#5a2c06" stroke-width="2.5" stroke-linejoin="round"/><path d="M18 6v31M30 11v31" stroke="#c9a060" stroke-width="2"/><path d="M10 31c4-7 7 1 11-4s6-7 10-8" fill="none" stroke="#a03a1a" stroke-width="2.6" stroke-dasharray="1 5" stroke-linecap="round"/><path d="M33 13l6 6m0-6l-6 6" stroke="#d81e36" stroke-width="3.6" stroke-linecap="round"/>'),
+  magaza: '<img class="ik3" src="ikon/magaza.webp?v=1" alt="" draggable="false">',
+  harita: '<img class="ik3" src="ikon/harita.webp?v=1" alt="" draggable="false">',
   gorev: svg('<circle cx="22" cy="26" r="19" fill="#e8413c" stroke="#6a0a1c" stroke-width="2.5"/><circle cx="22" cy="26" r="13.5" fill="#fff"/><circle cx="22" cy="26" r="8.5" fill="#e8413c"/><circle cx="22" cy="26" r="3.5" fill="#fff"/><path d="M22 26L41 7" stroke="#4a2406" stroke-width="3.2" stroke-linecap="round"/><path d="M36 4l1 7 7 1-5 5-6-1-2-7z" fill="#ffc81e" stroke="#7a3a00" stroke-width="2" stroke-linejoin="round"/>'),
   hediye: svg('<rect x="7" y="21" width="34" height="22" rx="3" fill="#e8413c" stroke="#6a0a1c" stroke-width="2.5"/><rect x="4" y="13" width="40" height="10" rx="3" fill="#ff6a5a" stroke="#6a0a1c" stroke-width="2.5"/><rect x="20" y="13" width="8" height="30" fill="#ffd23f" stroke="#8a5a00" stroke-width="2"/><path d="M24 13c-9-11-17-3-9 0zM24 13c9-11 17-3 9 0z" fill="#ffd23f" stroke="#8a5a00" stroke-width="2.2" stroke-linejoin="round"/>'),
   sandik: svg('<path d="M6 23c0-10 6-14 18-14s18 4 18 14z" fill="#c07a30" stroke="#4a2406" stroke-width="2.5" stroke-linejoin="round"/><rect x="6" y="22" width="36" height="20" rx="3" fill="#9a5a20" stroke="#4a2406" stroke-width="2.5"/><path d="M14.5 10v32M33.5 10v32" stroke="#ffc81e" stroke-width="4.5"/><rect x="6" y="20.5" width="36" height="5" fill="#ffc81e" stroke="#7a4a00" stroke-width="1.6"/><rect x="19.5" y="19" width="9" height="11" rx="2.5" fill="#ffe36b" stroke="#7a4a00" stroke-width="2"/><circle cx="24" cy="24.5" r="1.8" fill="#7a4a00"/>'),
@@ -138,47 +137,60 @@ export function merkezKur(A) {
   }
 
   // ---------------- 3B tilki (ana sayfanin ortasi) ----------------
+  // v3.2: (Adem 11 Kas) ana sayfadaki tilki artik Adem'in videosu: goz kirpar, gercekci bakar, el sallar ve dans eder.
+  // Video yesil fonlu (karakter/tilki_dans.mp4, kesintisiz 4.5 sn dongu); yesil fon WebGL ile canli olarak saydam yapilir,
+  // kenardaki yesil tasma temizlenir. Her telefonda calisir (saydam video bicimi gerekmez).
   function tilkiKur() {
     if (t3yuk) return t3yuk;
     return (t3yuk = (async () => {
-      const kc = $('m-kc'), ren = new THREE.WebGLRenderer({ canvas: kc, antialias: true, alpha: true });
-      ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.3;
-      const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(24, 1, 0.1, 40);
-      sc.add(new THREE.HemisphereLight(0xfff4e6, 0x7a78a8, 1.7));
-      const l1 = new THREE.DirectionalLight(0xfff0d0, 2.3); l1.position.set(-4, 8, 10); sc.add(l1);
-      const l2 = new THREE.DirectionalLight(0xffa860, 1.6); l2.position.set(5, 3, -6); sc.add(l2);   // gun batimi kenar isigi
-      // tilkinin durdugu yuvarlak tahta iskele: tahta ust yuz, altin kenar, altinda golge
-      const ada = new THREE.Group(); sc.add(ada);
-      const tx = (w, h, f) => { const c = document.createElement('canvas'); c.width = w; c.height = h; f(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
-      const tahta = tx(256, 256, (x, w, h) => { x.fillStyle = '#b8742e'; x.fillRect(0, 0, w, h); for (let i = 0; i < 6; i++) { x.fillStyle = i % 2 ? '#c98a40' : '#a9682a'; x.fillRect(i * w / 6, 0, w / 6 - 3, h); x.fillStyle = 'rgba(60,30,6,.55)'; x.fillRect(i * w / 6 - 3, 0, 3, h); }
-        x.strokeStyle = 'rgba(70,36,8,.28)'; x.lineWidth = 2; for (let i = 0; i < 26; i++) { const px = Math.random() * w, py = Math.random() * h; x.beginPath(); x.moveTo(px, py); x.lineTo(px + (Math.random() - 0.5) * 6, py + 20 + Math.random() * 50); x.stroke(); } });
-      const yan = new THREE.MeshStandardMaterial({ color: '#8a4e1c', roughness: 0.8 }), ust = new THREE.MeshStandardMaterial({ map: tahta, roughness: 0.75 });
-      const tabla = new THREE.Mesh(new THREE.CylinderGeometry(0.54, 0.48, 0.15, 48), [yan, ust, yan]); tabla.position.y = -0.08; ada.add(tabla);
-      const altinM = new THREE.MeshStandardMaterial({ color: '#ffc81e', roughness: 0.3, metalness: 0.6, emissive: '#7a4a00', emissiveIntensity: 0.35 });
-      for (const [r, y] of [[0.545, -0.012], [0.5, -0.14]]) { const h = new THREE.Mesh(new THREE.TorusGeometry(r, 0.03, 10, 56), altinM); h.rotation.x = Math.PI / 2; h.position.y = y; ada.add(h); }
-      const golge = new THREE.Mesh(new THREE.CircleGeometry(0.42, 32), new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, map: tx(64, 64, (x, w, h) => { const g = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); g.addColorStop(0, 'rgba(0,0,0,.5)'); g.addColorStop(0.6, 'rgba(0,0,0,.2)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, w, h); }) }));
-      golge.rotation.x = -Math.PI / 2; golge.position.y = 0.006; ada.add(golge);
-      const t = new Tilki(await tilkiYukle(), 1); ada.add(t.root); t.root.rotation.y = -0.15;
+      const kc = $('m-kc'), gl = kc.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
+      if (!gl) return null;
+      const vid = document.createElement('video'); vid.src = '../karakter/tilki_dans.mp4?v=1'; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute('playsinline', ''); vid.setAttribute('webkit-playsinline', ''); vid.preload = 'auto'; vid.crossOrigin = 'anonymous';
+      const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+      const pg = gl.createProgram();
+      gl.attachShader(pg, sh(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 u; void main(){ u = vec2(p.x * 0.5 + 0.5, 0.5 - p.y * 0.5); gl_Position = vec4(p, 0.0, 1.0); }'));
+      gl.attachShader(pg, sh(gl.FRAGMENT_SHADER, `precision mediump float; uniform sampler2D v; uniform vec2 px; varying vec2 u;
+        float k(vec3 c){ return c.g - max(c.r, c.b); }
+        void main(){
+          vec3 c = texture2D(v, u).rgb;
+          float g = k(c);
+          float g2 = max(max(k(texture2D(v, u + vec2(px.x, 0.0)).rgb), k(texture2D(v, u - vec2(px.x, 0.0)).rgb)), max(k(texture2D(v, u + vec2(0.0, px.y)).rgb), k(texture2D(v, u - vec2(0.0, px.y)).rgb)));
+          float a = 1.0 - smoothstep(0.045, 0.13, mix(g, g2, 0.35));
+          float m = max(c.r, c.b); c.g = min(c.g, m + 0.03);
+          c *= 1.0 + 0.06 * (1.0 - a);
+          gl_FragColor = vec4(c * a, a);
+        }`));
+      gl.linkProgram(pg); gl.useProgram(pg);
+      const bf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      const lp = gl.getAttribLocation(pg, 'p'); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 0, 0);
+      const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.uniform2f(gl.getUniformLocation(pg, 'px'), 1 / 478, 1 / 850);
+      let VW = 0, VH = 0;
       const boyut = () => {
-        const w = kc.clientWidth, h = kc.clientHeight; if (!w || !h) return; ren.setPixelRatio(Math.min(2, devicePixelRatio || 1)); ren.setSize(w, h, false); cam.aspect = w / h;
-        const tg = Math.tan(cam.fov * Math.PI / 360), d = Math.max(0.66 / tg / 0.9, 0.6 / (tg * cam.aspect) / 0.86);   // tilki + iskele hem boya hem ene sigsin
-        cam.position.set(0, 0.76, d); cam.lookAt(0, 0.44, 0); cam.updateProjectionMatrix();
+        const w = kc.clientWidth, h = kc.clientHeight; if (!w || !h) return; const pr = Math.min(2, devicePixelRatio || 1);
+        kc.width = Math.round(w * pr); kc.height = Math.round(h * pr);
+        const ar = 478 / 850; VH = kc.height * 0.97; VW = VH * ar; if (VW > kc.width * 0.98) { VW = kc.width * 0.98; VH = VW / ar; }
+        gl.viewport(Math.round((kc.width - VW) / 2), 0, Math.round(VW), Math.round(VH)); ciz(true);
       };
-      let son = 0, zaman = 0, sayac = 0;
-      const kare = (ts) => {
-        requestAnimationFrame(kare); if (!acik || sekmeAd !== 'ana' || document.hidden) { son = 0; return; }
-        const dt = Math.min(0.05, son ? (ts - son) / 1000 : 0.016); son = ts; zaman += dt;
-        ada.position.y = Math.sin(zaman * 1.5) * 0.018; ada.rotation.z = Math.sin(zaman * 1.05) * 0.018; ada.rotation.x = Math.sin(zaman * 0.8 + 1) * 0.012;
-        const z = t.zip || 0; golge.scale.setScalar(1 - z * 1.6); golge.material.opacity = Math.max(0, 1 - z * 2.2);
-        t.update(dt); ren.render(sc, cam);
+      const ciz = (zorla) => {
+        if (vid.readyState < 2) return;
+        gl.bindTexture(gl.TEXTURE_2D, tx); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
+        gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       };
+      const oynat = () => { if (acik && sekmeAd === 'ana' && !document.hidden) { if (vid.paused) vid.play().catch(() => {}); } else if (!vid.paused) vid.pause(); };
+      const kare = () => { requestAnimationFrame(kare); oynat(); if (!vid.paused) ciz(); };
+      vid.addEventListener('loadeddata', () => { boyut(); ciz(true); });
+      document.addEventListener('visibilitychange', oynat);
+      const zipla = (n) => { kc.classList.remove('zip'); void kc.offsetWidth; kc.style.setProperty('--zn', n || 1); kc.classList.add('zip'); };
       kc.addEventListener('click', () => {
         if ($('m-sahne').classList.contains('kilitli')) { salla($('m-sahne').querySelector('.m-kil')); tik(); return; }
-        if (sayac++ % 2) t.oyna('sevin', 1.85); else t.oyna('selam', 1.5); A.sfx('bonus');
+        zipla(1); A.sfx('bonus');
         const b = $('m-balon'); b.textContent = SOZ[Math.floor(Math.random() * SOZ.length)]; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
       });
       addEventListener('resize', boyut);
-      T3 = { t, boyut }; boyut(); requestAnimationFrame(kare);
+      T3 = { t: { oyna: (ad, sn) => zipla(ad === 'sevin' ? 2 : 1) }, boyut }; boyut(); vid.load(); requestAnimationFrame(kare);
       return T3;
     })().catch(() => null));
   }
@@ -231,9 +243,13 @@ export function merkezKur(A) {
   function bolumKarti(L) {
     const s = A.ggSay(), sec = new Set(), zor = A.zor(L), st = (SV.yil || {})[L] || 0;
     const maliyet = () => { let m = 0; for (const k of sec) if (!(s[k] > 0)) m += A.GGT.find((t) => t.k === k).fiyat; return m; };
-    pop(bas('Bölüm ' + L) + (zor ? '<div class="p-zor">Zor bölüm · +' + A.ZOR_ODUL + ' altın</div>' : '') + '<div class="p-ic"><h3>' + esc(A.bolumAdi(L) || '') + '</h3>' +
-      (st ? '<div class="p-yil">' + '★'.repeat(st) + '<u>' + '★'.repeat(3 - st) + '</u></div>' : '') + '<div class="p-et">Güçlendirici seç</div><div class="ggk">' +
-      A.GGT.map((t) => '<button class="gt gt-' + t.k + '" data-k="' + t.k + '"><span class="hl"></span><i>' + t.ic + '</i>' + (s[t.k] > 0 ? '<span class="n">' + s[t.k] + '</span>' : '<span class="p"><em class="coin"></em>' + t.fiyat + '</span>') + '<span class="ok">✓</span></button>').join('') +
+    // v3.2: (Adem 11 Kas) daha profesyonel bolum karti: sus cizgili baslik, uc yildiz yuvasi, hedef satiri, adli guclendiriciler
+    const GAD = { roket: 'Roket', bomba: 'Bomba', yildirim: 'Yıldırım', top: '+5 Top' };
+    pop(bas('Bölüm ' + L) + (zor ? '<div class="p-zor">Zor bölüm · +' + A.ZOR_ODUL + ' altın</div>' : '') + '<div class="p-ic bk"><h3>' + esc(A.bolumAdi(L) || '') + '</h3>' +
+      '<div class="bk-yil">' + [0, 1, 2].map((i) => i < st ? IK.yildiz : IK.yildizBos).join('') + '</div>' +
+      '<div class="bk-hd"><i></i>Bütün küpleri platformdan düşür!</div>' +
+      '<div class="p-et">Güçlendirici seç</div><div class="ggk">' +
+      A.GGT.map((t) => '<button class="gt gt-' + t.k + '" data-k="' + t.k + '"><span class="hl"></span><i>' + t.ic + '</i>' + (s[t.k] > 0 ? '<span class="n">' + s[t.k] + '</span>' : '<span class="p"><em class="coin"></em>' + t.fiyat + '</span>') + '<span class="ok">✓</span><em class="ad">' + (GAD[t.k] || '') + '</em></button>').join('') +
       '</div><div class="p-altin"><i class="coin"></i><b id="p-al">' + (SV.altin || 0) + '</b></div></div><button class="m-btn" id="p-oyna">Oyna</button>', () => { if (!acik) ac(); });
     for (const el of P.querySelectorAll('.gt')) el.onclick = () => {
       const k = el.dataset.k;
@@ -291,7 +307,7 @@ export function merkezKur(A) {
   // ---------------- yeni karakter ----------------
   function yeniKarakter() {
     const Pf = profilOku(), k = KARAKTERLER.find((x) => acikMi(x.id, maxL()) && !Pf.gor[x.id]); if (!k) return false;
-    pop(bas('Yeni Karakter!', false) + '<div class="p-ic"><div class="o-sahne"><div class="m-isin"></div><img src="../' + k.av + '?v=1" alt=""></div><h3>' + k.ad + '</h3><p>Artık oyunda yanında duracak. Kazandığında sevinir, toplar bitince üzülür.</p></div><button class="m-btn" id="p-tm">Harika!</button>');
+    pop(bas('Yeni Karakter!', false) + '<div class="p-ic"><div class="o-sahne"><div class="m-isin"></div><img src="../' + k.av + '?v=1" alt=""></div><h3>' + k.ad + '</h3><p>Ana sayfada seni karşılar: göz kırpar, el sallar, dans eder!</p></div><button class="m-btn" id="p-tm">Harika!</button>');
     A.sfx('win'); if (T3) T3.t.oyna('sevin', 5);
     $('p-tm').onclick = () => { Pf.gor[k.id] = 1; if (!Pf.kar) Pf.kar = k.id; if (Pf.av === 'a1') Pf.av = k.id; profilYaz(Pf); tik(); pkapat(); ciz(); };
     return true;

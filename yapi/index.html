@@ -6,9 +6,9 @@
 <meta name="theme-color" content="#0c1c58">
 <link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icon-192.png">
 <title>Blok Smash</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+<link rel="preload" href="../yazi/baloo_lat.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="../yazi/yazi.css?v=1">
 <style>
-:root{--disp:"Lilita One","Fredoka","Arial Rounded MT Bold",system-ui,sans-serif;--font:"Fredoka","Baloo 2","Nunito","Arial Rounded MT Bold",system-ui,sans-serif;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+:root{--disp:"BS Baslik","Arial Rounded MT Bold",system-ui,sans-serif;--font:"BS Metin","Arial Rounded MT Bold",system-ui,sans-serif;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:var(--font);color:#2b1d5c;touch-action:none}
 #bg{position:fixed;inset:0;background:#7cc6ff center/cover no-repeat;transition:background-image .4s;filter:saturate(1.25) brightness(1.06) contrast(1.04)}
@@ -146,7 +146,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
 .ykar small{display:block;font-weight:700;font-size:13px}.ykar b{display:block;font-size:21px;line-height:1.1}
 @keyframes ykar{from{transform:scale(.4);opacity:0}}
 </style>
-<link rel="stylesheet" href="merkez.css?v=1">
+<link rel="stylesheet" href="merkez.css?v=2">
 </head>
 <body>
 <div id="bg"><video id="bgv" muted playsinline webkit-playsinline loop preload="auto" disablepictureinpicture></video></div>
@@ -173,7 +173,19 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
   window.BSYUK = function (v) { hedef = Math.max(hedef, v); if (v >= 1) { p = 1; c.style.width = '100%'; y.textContent = 'Hazır!'; } };
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(function () {});
 })();
+// v3.2: (Adem 11 Kas) dokunma hissi: parmak degdigi an dugme kuculur (bas sinifi), cok hafif titresim; tus sesi BSTUS ile
+(function () {
+  var S = 'button,.m-btn,.btn,.m-yb,.gt,.gb,.ib,.p-x,[data-s]', son = null;
+  function birak() { if (son) { son.classList.remove('bas'); son = null; } }
+  addEventListener('pointerdown', function (e) {
+    var b = e.target && e.target.closest && e.target.closest(S); if (!b || b.disabled) return;
+    birak(); son = b; b.classList.add('bas');
+    try { if (navigator.vibrate) navigator.vibrate(8); } catch (_) {}
+    if (window.BSTUS) window.BSTUS();
+  }, { passive: true, capture: true });
+  addEventListener('pointerup', birak, true); addEventListener('pointercancel', birak, true);
+})();
 </script>
-<script type="module" src="oyun.js?v=66"></script>
+<script type="module" src="oyun.js?v=67"></script>
 </body>
 </html>
