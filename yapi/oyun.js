@@ -23,7 +23,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.9', ZOR_ODUL = 20;
+const SURUM = 'v3.10', ZOR_ODUL = 20;
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -202,8 +202,12 @@ const LEG = new THREE.Group(); scene.add(LEG);
   const shade = new THREE.Mesh(new THREE.PlaneGeometry(5.4, 5.4), new THREE.MeshBasicMaterial({ map: shd, transparent: true, depthWrite: false })); shade.rotation.x = -Math.PI / 2;
   mound.visible = shade.visible = false; LEG.add(mound, shade); Object.assign(LEG.userData, { mound, shade, mm });
 }
+function legBoy(L, oy) {   // v3.10: asansor platformda direk ust ucu platformla iner/kalkar, alt ucu yerde kalir
+  const [pole, collar] = L.children, y0 = -0.75; if (L.userData.bot == null) L.userData.bot = pole.position.y - pole.scale.y / 2;
+  const top = y0 - 0.3 + oy, bot = L.userData.bot; collar.position.y = y0 - 0.17 + oy; pole.scale.set(1, Math.max(0.05, top - bot), 1); pole.position.y = (top + bot) / 2;
+}
 function setLeg(sink, leg) {   // sink: ayagin yere gomulme derinligi (yalniz yerin alti gizlenen karda/kumda)
-  sink = sink || 0; const L = leg || LEG, [pole, collar, base, ring, cap, mound, shade] = L.children, y0 = -0.75, top = y0 - 0.3, bot = GY + 0.82 - sink;
+  sink = sink || 0; const L = leg || LEG; L.userData.bot = null; const [pole, collar, base, ring, cap, mound, shade] = L.children, y0 = -0.75, top = y0 - 0.3, bot = GY + 0.82 - sink;
   collar.position.y = y0 - 0.17; pole.scale.set(1, top - bot, 1); pole.position.y = (top + bot) / 2;
   base.position.y = GY + 0.275 - sink; ring.position.y = GY + 0.42 - sink; cap.position.y = GY + 0.7 - sink;
   if (mound) { mound.visible = sink > 0; mound.position.y = GY + 0.02; shade.visible = sink > 0; shade.position.y = GY + 0.012; }
@@ -766,6 +770,7 @@ function engelOf(L, Y) {
   return [{ t, hiz: 1 + 0.6 * d }];
 }
 const UCACHE = new Map();
+function asansorMu(L) { return Q.get('asansor') === '1' || (Q.get('asansor') !== '0' && L >= 5 && L % 4 === 1); }
 function levelOf(L) { if (K) return K.bolum(L); if (L <= LSIRA.length) return LSIRA[L - 1]; if (!UCACHE.has(L)) UCACHE.set(L, uretBolum(L)); return UCACHE.get(L); }
 // v6.13: kup listesindeki 5. alan platform numarasi (0, 1, ...); bolumun pl dizisi platformlarin yeri ve hareketi
 
@@ -893,8 +898,10 @@ function buildLevel() {
   list.forEach((c, n) => { c[4] = made[n][4] || 0; });
   if (!K) kolaKoy(list, LV);
   if (K) return K.kur(Y, list);   // v6.19: korsan hedefi (sal, gemi, kule) kendi platformunu kurar
-  const PD = Y.pl || [{ x: 0, z: 0 }];
-  if (PD.length > 1 || PD[0].kay) return buildMulti(Y, list, PD);
+  let PD = Y.pl || [{ x: 0, z: 0 }];
+  // v3.10: (Adem 11 Kas) asansor platform: 5. bolumden sonra her 4 bolumde bir (5, 9, 13...) platform yavasca iner ve kalkar
+  if (!Y.pl && !Y.don && asansorMu(LV)) PD = [{ x: 0, z: 0, asn: { a: 1.4, h: 0.85 } }];
+  if (PD.length > 1 || PD[0].kay || PD[0].asn) return buildMulti(Y, list, PD);
   let i0 = 1e9, i1 = -1e9, k0 = 1e9, k1 = -1e9; for (const c of list) { const o = olcu(c[3]); i0 = Math.min(i0, c[0] - o[0] + 0.5); i1 = Math.max(i1, c[0] + o[0] - 0.5); k0 = Math.min(k0, c[2] - o[2] + 0.5); k1 = Math.max(k1, c[2] + o[2] - 0.5); }
   const ci = (i0 + i1) / 2, ck = (k0 + k1) / 2;
   // platform yapiya gore: en uzak kup kosesinin hemen disi
@@ -940,7 +947,7 @@ function buildMulti(Y, list, PD) {
       const mesh = new THREE.Mesh(fitPlatRect(pn, f.r, f.rz), MOD[pn].mat); mesh.castShadow = mesh.receiveShadow = true; scene.add(mesh);
       const leg = LEG.clone(); leg.visible = true; scene.add(leg); q = { body, mesh, leg };
     }
-    Object.assign(q, { x, z, cx: x, r: f.r, rz: f.rz, kay: d.kay || null, ph: d.ph || 0 });
+    Object.assign(q, { x, z, cx: x, r: f.r, rz: f.rz, kay: d.kay || null, ph: d.ph || 0, asn: d.asn || null, ah: 0, cy: 0 }); if (q.asn && q.leg) legBoy(q.leg, 0);
     q.body.position.set(x, 0, z); if (q.mesh) q.mesh.position.set(x, 0, z); q.leg.position.set(x, 0, z);
     PLS.push(q);
   });
@@ -1012,10 +1019,17 @@ function platShapes(body, r, rz) {
 }
 function slide(dt) {
   for (let n = 0; n < PLS.length; n++) {
-    const q = PLS[n]; if (!q.kay) continue;
-    q.ph += dt * q.kay.h; const nx = q.x + q.kay.a * Math.sin(q.ph), dx = nx - q.cx; q.cx = nx; if (!dx) continue;
-    q.body.position.x += dx; q.body.aabbNeedsUpdate = true; if (q.mesh) q.mesh.position.x += dx;
-    for (const c of cubes) { if (c.pi !== n || c.gone || c.out) continue; c.body.position.x += dx; c.body.aabbNeedsUpdate = true; }
+    const q = PLS[n]; if (!q.kay && !q.asn) continue;
+    if (q.kay) {
+      q.ph += dt * q.kay.h; const nx = q.x + q.kay.a * Math.sin(q.ph), dx = nx - q.cx; q.cx = nx;
+      if (dx) { q.body.position.x += dx; q.body.aabbNeedsUpdate = true; if (q.mesh) q.mesh.position.x += dx;
+        for (const c of cubes) { if (c.pi !== n || c.gone || c.out) continue; c.body.position.x += dx; c.body.aabbNeedsUpdate = true; } }
+    }
+    if (q.asn) {   // v3.10: asansor: once asagi iner, yavasca geri kalkar (yumusak kosinus); direk boyu da birlikte kisalir/uzar
+      q.ah += dt * q.asn.h; const ny = -q.asn.a * (1 - Math.cos(q.ah)) / 2, dy = ny - q.cy; q.cy = ny;
+      if (dy) { q.body.position.y += dy; q.body.aabbNeedsUpdate = true; if (q.mesh) q.mesh.position.y += dy; legBoy(q.leg, ny);
+        for (const c of cubes) { if (c.pi !== n || c.gone || c.out) continue; c.body.position.y += dy; c.body.aabbNeedsUpdate = true; } }
+    }
   }
 }
 // v6.5: (Adem) bazi bolumlerde platform 360 derece doner. Platform kinematik govde: uyanik kupleri surtunmeyle tasir;
@@ -2545,7 +2559,7 @@ let BOS = 0, CN = 0, CDT = 0;
 function sahneBos() {
   if (ENG.length || GGA.length) return false;
   if (CAMI > 0 || K || TEST || !g || g.don || balls.length || FX.length || parts.length || DEB.length || shake > 0 || HS > 0 || FP > 0.01 || flashLight.intensity > 0 || TC.rec > 0 || Math.abs(TC.aimYaw - TC.yaw) > 1e-3 || PF.holder.visible || (TK.t && TK.gor)) return false;
-  for (const q of PLS) if (q.kay) return false;
+  for (const q of PLS) if (q.kay || q.asn) return false;
   for (const c of cubes) if (!c.out && (c.landed || c.fuse != null || (c.body.world && c.body.mass > 0 && c.body.sleepState === 0))) return false;
   return true;
 }
