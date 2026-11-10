@@ -71,7 +71,7 @@ export function merkezKur(A) {
     '<div class="m-hap">' + IK.yildiz + '<b id="m-yil">0</b></div><button class="m-yuv" id="m-ayar" aria-label="Ayarlar">' + IK.disli + '</button></header>' +
     '<main class="m-sayfalar" id="m-sayfalar">' +
     '<section class="m-sayfa" id="s-magaza"><div class="m-ic"><h2 class="m-sb">Mağaza</h2><div class="m-kay" id="d-liste"></div></div></section>' +
-    '<section class="m-sayfa" id="s-ana"><div class="m-ic"><h1 class="m-logo"><b>BLOK</b><span>SMASH</span></h1>' +
+    '<section class="m-sayfa" id="s-ana"><div class="m-ic"><h1 class="m-logo"><b>FOXI</b><span>SMASH</span></h1>' +
     '<div class="m-sahne" id="m-sahne"><div class="m-isin"></div><canvas id="m-kc" aria-label="Korsan Tilki"></canvas><div class="m-kil">' + IK.kilit + '<b id="m-kilyaz"></b></div><div class="m-balon" id="m-balon"></div>' +
     '<div class="m-yan sol"><button class="m-yb" id="m-gorev"><span class="m-yk">' + IK.gorev + '<em class="m-rz" id="m-gorevn"></em></span><small>Görevler</small></button>' +
     '<button class="m-yb" id="m-gunluk"><span class="m-yk">' + IK.hediye + '<em class="m-rz" id="m-gunlukn">!</em></span><small>Günlük</small></button></div>' +
@@ -338,7 +338,7 @@ export function merkezKur(A) {
   // ---------------- ayarlar / duraklatma ----------------
   function ayarKarti(oyunda) {
     const sat = (id, ad, on) => '<div class="ay"><b>' + ad + '</b><button class="tg' + (on ? ' on' : '') + '" data-a="' + id + '" aria-label="' + ad + '"><i></i></button></div>';
-    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not">Blok Smash ' + A.SURUM + '</p></div>' +
+    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p></div>' +
       (oyunda ? '<button class="m-btn" id="p-dv">Devam Et</button><button class="m-btn tur kck" id="p-yb">Yeniden Başla</button><button class="m-btn mavi kck" id="p-as">Ana Sayfa</button>' : '<button class="m-btn kck" id="p-dv">Tamam</button>'));
     durak = !!oyunda;
     for (const b of P.querySelectorAll('.tg')) b.onclick = () => { A.ayar(b.dataset.a); tik(); ayarKarti(oyunda); };
@@ -369,7 +369,7 @@ export function merkezKur(A) {
   function kazan(d) {
     const sn = SV.sn || 0, onceSn = d.ilk ? sn - 1 : sn, dolu = sn >= SANDIK_HEDEF, kaldi = Math.max(0, SANDIK_HEDEF - sn);
     KZ.className = 'on';
-    KZ.innerHTML = '<canvas></canvas><div class="m-logo k-logo"><b>BLOK</b><span>SMASH</span></div><div class="k-ic"><h1>Tebrikler!</h1><div class="k-bol">Bölüm ' + d.L + ' tamam</div>' +
+    KZ.innerHTML = '<canvas></canvas><div class="m-logo k-logo"><b>FOXI</b><span>SMASH</span></div><div class="k-ic"><h1>Tebrikler!</h1><div class="k-bol">Bölüm ' + d.L + ' tamam</div>' +
       '<div class="k-yil">' + [0, 1, 2].map((i) => (i < d.st ? IK.yildiz : IK.yildizBos).replace('<svg ', '<svg ' + (i < d.st ? '' : 'class="off" ') + 'style="animation-delay:' + (1.4 + i * 0.25) + 's" ')).join('') + '</div>' +
       '<div class="k-odul"><div class="m-isin"></div>' + YIGIN + '<b id="k-say">0</b></div>' +
       '<div class="k-sat"><span>Kalan top <b>' + d.kalan + '</b></span><span>Top bonusu <b>+' + d.bonus + '</b></span>' + (d.zorB ? '<span>Zor bölüm <b>+' + d.zorB + '</b></span>' : '') + (d.ilk ? '' : '<span>Tekrar <b>yarı ödül</b></span>') + '</div>' +

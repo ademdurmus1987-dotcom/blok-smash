@@ -1,13 +1,13 @@
 {
-  "name": "Blok Smash",
-  "short_name": "Blok Smash",
+  "name": "Foxi Smash",
+  "short_name": "Foxi Smash",
   "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
   "orientation": "portrait",
-  "background_color": "#0c1c58",
-  "theme_color": "#0c1c58",
+  "background_color": "#2a8ee8",
+  "theme_color": "#2a8ee8",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },

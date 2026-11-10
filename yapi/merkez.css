@@ -340,3 +340,10 @@ button,.m-btn,.btn,.m-yb,.gt,.gb,.ib,.p-x,[data-s]{touch-action:manipulation;-we
 .bk .ggk{display:flex;justify-content:center}
 .bk .gt{flex:0 1 60px;width:auto;height:auto;aspect-ratio:1;min-width:0}
 .bk h3:before,.bk h3:after{flex-basis:22px}
+/* v3.3: (Adem 11 Kas) oyunun adi Foxi Smash; acilis ekrani Adem'in afis resmi (yapi/acilis.webp) tam ekran, altta yukleme cubugu */
+#load{background:#2a8ee8}
+#load .a-bg{inset:0;background:url(acilis.webp?v=1) center top/cover no-repeat;animation:acnef 9s ease-in-out infinite alternate}
+@keyframes acnef{to{transform:scale(1.04)}}
+#load .a-bg:after{background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 72%,rgba(20,40,90,.55) 100%)}
+#load .a-isin,#load .a-kapak,#load .a-logo{display:none!important}
+#load .a-alt{margin-bottom:6px}
