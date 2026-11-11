@@ -82,9 +82,13 @@ export function merkezKur(A) {
     '</main><nav class="m-alt"><button data-s="magaza">' + IK.magaza + '<span>Mağaza</span></button><button data-s="ana" class="on">' + IK.ev + '<span>Ana Sayfa</span></button><button data-s="harita">' + IK.harita + '<span>Harita</span></button></nav>';
   const P = document.createElement('div'); P.id = 'mpop';
   const KZ = document.createElement('div'); KZ.id = 'mkazan';
-  document.body.append(M, KZ, P);
+  // v3.14: (Adem 11 Kas) Foxi'nin karsilama sarkisi (Gemini videosu, sesli): 'Welcome to Foxy Smash, let's go...'
+  // Gunun ilk acilisinda bir kez kendiliginden, ana sayfada Foxi'ye dokununca her zaman tam ekran oynar; bitince ya da 'Gec' ile kapanir.
+  const FV = document.createElement('div'); FV.id = 'mfoxi';
+  FV.innerHTML = '<video playsinline webkit-playsinline preload="none" poster="../karakter/foxi_sarki.jpg?v=1"></video><button class="fv-ses">🔊 Sesi aç</button><button class="fv-gec">Geç ✕</button>';
+  document.body.append(M, KZ, P, FV);
   // kartlar ve merkez oyun alanina dokunus gecirmesin
-  for (const e of [M, P, KZ]) for (const ev of ['pointerdown', 'pointerup', 'pointermove']) e.addEventListener(ev, (x) => x.stopPropagation());
+  for (const e of [M, P, KZ, FV]) for (const ev of ['pointerdown', 'pointerup', 'pointermove']) e.addEventListener(ev, (x) => x.stopPropagation());
 
   // ---------------- yardimcilar ----------------
   function avIc(id) {
@@ -119,7 +123,26 @@ export function merkezKur(A) {
   }
   function pkapat(xIle) { const f = popKapat; popKapat = null; durak = false; P.classList.remove('on'); P.innerHTML = ''; if (xIle && f) f(); else sonraki(); }
   P.addEventListener('click', (e) => { if (e.target === P && P.querySelector('.p-x')) pkapat(true); });
-  function sonraki() { if (!acik || P.classList.contains('on')) return; const f = sira.shift(); if (f) setTimeout(f, 250); }
+  const FVV = FV.querySelector('video');
+  function foxiGoster(oto) {
+    if (FV.classList.contains('on')) return;
+    if (!FVV.getAttribute('src')) FVV.src = '../karakter/foxi_sarki.mp4?v=1';
+    FV.classList.remove('sessiz', 'cik'); FV.classList.add('on');
+    if (A.sarkiDur) A.sarkiDur(); if (A.muzikKis) A.muzikKis(true);
+    const kapali = !!(SV.sessiz || SV.muziksiz);   // ayarlarda ses/muzik kapaliysa sessiz oynar
+    FVV.muted = kapali; try { FVV.currentTime = 0; } catch (x) {}
+    FVV.play().catch(() => { FVV.muted = true; if (!kapali) FV.classList.add('sessiz'); FVV.play().catch(() => {}); });   // telefon dokunussuz sesli oynatmaya izin vermezse
+    if (oto) { SV.fxGun = bugun(); A.save(); }
+  }
+  function foxiKapat() {
+    if (!FV.classList.contains('on')) return; FVV.pause(); FV.classList.add('cik');
+    setTimeout(() => { FV.classList.remove('on', 'cik', 'sessiz'); }, 300);
+    if (A.muzikKis) A.muzikKis(false); setTimeout(sonraki, 350);
+  }
+  FVV.addEventListener('ended', foxiKapat);
+  FV.querySelector('.fv-gec').onclick = () => { tik(); foxiKapat(); };
+  FV.querySelector('.fv-ses').onclick = () => { FVV.muted = false; FV.classList.remove('sessiz'); try { FVV.currentTime = 0; } catch (x) {} FVV.play().catch(() => {}); };
+  function sonraki() { if (!acik || P.classList.contains('on') || FV.classList.contains('on')) return; const f = sira.shift(); if (f) setTimeout(f, 250); }
 
   // ---------------- ana sayfa cizimi ----------------
   function ciz() {
@@ -188,7 +211,7 @@ export function merkezKur(A) {
       const zipla = (n) => { kc.classList.remove('zip'); void kc.offsetWidth; kc.style.setProperty('--zn', n || 1); kc.classList.add('zip'); };
       kc.addEventListener('click', () => {
         if ($('m-sahne').classList.contains('kilitli')) { salla($('m-sahne').querySelector('.m-kil')); tik(); return; }
-        zipla(1); A.sfx('bonus'); if (A.sarki) A.sarki('tilki');   // v3.13: dokununca Foxi'nin sarkisindan 8 sn
+        zipla(1); A.sfx('bonus'); setTimeout(() => foxiGoster(false), 250);   // v3.14: dokununca Foxi'nin karsilama sarkisi (tam ekran video)
         const b = $('m-balon'); b.textContent = SOZ[Math.floor(Math.random() * SOZ.length)]; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
       });
       addEventListener('resize', boyut);
@@ -411,7 +434,8 @@ export function merkezKur(A) {
     durak = false; sekme('ana', true); ciz(); acik = true; M.classList.remove('cik'); M.classList.add('on', 'gir'); setTimeout(() => M.classList.remove('gir'), 450);
     tilkiKur().then((t) => { if (t) { t.boyut(); if (o.ucan) t.t.oyna('sevin', 2.2); else t.t.oyna('selam', 1.6); } });
     A.muzikBasla();
-    sira.length = 0; sira.push(() => { if (!yeniKarakter()) sonraki(); });
+    sira.length = 0; if (o.ilk && SV.fxGun !== bugun()) sira.push(() => foxiGoster(true));   // v3.14: gunun ilk acilisinda bir kez
+    sira.push(() => { if (!yeniKarakter()) sonraki(); });
     if ((SV.sn || 0) >= SANDIK_HEDEF) sira.push(sandikKarti);
     if (o.ilk && (!SV.go || SV.go.gun !== bugun())) sira.push(gunlukKarti);
     if (o.ucan) { const u = o.ucan; altinYaz(u.eski); setTimeout(() => ucur(u.x, u.y, u.n, u.eski, u.yeni), 380); setTimeout(sonraki, 1900); }

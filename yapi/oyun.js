@@ -10,7 +10,7 @@ import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=2';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=8';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { merkezKur } from './merkez.js?v=9';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -23,7 +23,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.13', ZOR_ODUL = 20;
+const SURUM = 'v3.14', ZOR_ODUL = 20;
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -2162,7 +2162,7 @@ function devamEt() {
 // bolumden vazgecme (tekrar dene, ana sayfa): seri biter, bu bolum artik 'ilk denemede' sayilmaz
 function pesEt() { if (g && (g.armed || g.state === 'lose')) { SV.dus = LV; ist().seri = 0; save(); } }
 function merkezBagla() {
-  M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, SURUM, ZOR_ODUL,
+  M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, SURUM, ZOR_ODUL,
     ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
     bolge: (L) => FONAD[fonOf(L).f] || ['', 'c'], bolumAdi: (L) => { try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
 }
@@ -2180,7 +2180,9 @@ function mzKaynak(yol) {
   const g = AC.createGain(); g.gain.value = 0; AC.createMediaElementSource(el).connect(g); g.connect(AC.destination);
   return { el, g };
 }
-function mzHedef() { return SR && SR.calar ? MZV * 0.18 : MZV; }   // Foxi sarkisi calarken bolum muzigi kisik
+let FXK = false;   // v3.14: Foxi'nin sarki videosu oynarken bolum muzigi tamamen susar
+function mzHedef() { return FXK ? 0 : SR && SR.calar ? MZV * 0.18 : MZV; }   // Foxi sarkisi calarken bolum muzigi kisik
+function muzikKis(b) { FXK = !!b; if (MZ && AC) MZ.g.gain.setTargetAtTime(mzHedef(), AC.currentTime, b ? 0.15 : 0.8); }
 function muzikBasla() {
   if (K || TEST || !AC || SV.sessiz || SV.muziksiz) return;
   if (!MZ) { try { MZ = mzKaynak('../ses/muzik/bolum.mp3?v=1'); MZ.el.loop = true; } catch (x) { MZ = null; return; } }
