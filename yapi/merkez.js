@@ -83,7 +83,7 @@ export function merkezKur(A) {
   const P = document.createElement('div'); P.id = 'mpop';
   const KZ = document.createElement('div'); KZ.id = 'mkazan';
   // v3.14: (Adem 11 Kas) Foxi'nin karsilama sarkisi (Gemini videosu, sesli): 'Welcome to Foxy Smash, let's go...'
-  // Gunun ilk acilisinda bir kez kendiliginden, ana sayfada Foxi'ye dokununca her zaman tam ekran oynar; bitince ya da 'Gec' ile kapanir.
+  // Ana sayfada Foxi'ye dokununca tam ekran oynar; bitince ya da 'Gec' ile kapanir. (v3.15: acilis ekrani da bu video, index.html)
   const FV = document.createElement('div'); FV.id = 'mfoxi';
   FV.innerHTML = '<video playsinline webkit-playsinline preload="none" poster="../karakter/foxi_sarki.jpg?v=1"></video><button class="fv-ses">🔊 Sesi aç</button><button class="fv-gec">Geç ✕</button>';
   document.body.append(M, KZ, P, FV);
@@ -434,7 +434,7 @@ export function merkezKur(A) {
     durak = false; sekme('ana', true); ciz(); acik = true; M.classList.remove('cik'); M.classList.add('on', 'gir'); setTimeout(() => M.classList.remove('gir'), 450);
     tilkiKur().then((t) => { if (t) { t.boyut(); if (o.ucan) t.t.oyna('sevin', 2.2); else t.t.oyna('selam', 1.6); } });
     A.muzikBasla();
-    sira.length = 0; if (o.ilk && SV.fxGun !== bugun()) sira.push(() => foxiGoster(true));   // v3.14: gunun ilk acilisinda bir kez
+    sira.length = 0;   // v3.15: karsilama sarkisi artik acilis ekraninin kendisi (index.html); burada yalniz Foxi'ye dokununca
     sira.push(() => { if (!yeniKarakter()) sonraki(); });
     if ((SV.sn || 0) >= SANDIK_HEDEF) sira.push(sandikKarti);
     if (o.ilk && (!SV.go || SV.go.gun !== bugun())) sira.push(gunlukKarti);

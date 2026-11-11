@@ -10,7 +10,7 @@ import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=2';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=9';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { merkezKur } from './merkez.js?v=10';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -23,7 +23,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.14', ZOR_ODUL = 20;
+const SURUM = 'v3.15', ZOR_ODUL = 20;
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -2184,7 +2184,7 @@ let FXK = false;   // v3.14: Foxi'nin sarki videosu oynarken bolum muzigi tamame
 function mzHedef() { return FXK ? 0 : SR && SR.calar ? MZV * 0.18 : MZV; }   // Foxi sarkisi calarken bolum muzigi kisik
 function muzikKis(b) { FXK = !!b; if (MZ && AC) MZ.g.gain.setTargetAtTime(mzHedef(), AC.currentTime, b ? 0.15 : 0.8); }
 function muzikBasla() {
-  if (K || TEST || !AC || SV.sessiz || SV.muziksiz) return;
+  if (K || TEST || !AC || SV.sessiz || SV.muziksiz || $('load')) return;   // v3.14: acilis videosu (sarki) bitene kadar muzik yok
   if (!MZ) { try { MZ = mzKaynak('../ses/muzik/bolum.mp3?v=1'); MZ.el.loop = true; } catch (x) { MZ = null; return; } }
   clearTimeout(MZ.dur); if (MZ.el.paused) MZ.el.play().catch(() => {});
   MZ.g.gain.setTargetAtTime(mzHedef(), AC.currentTime, 0.6);
@@ -2205,7 +2205,7 @@ function sarkiDur() {
   SR.g.gain.setTargetAtTime(0, AC.currentTime, 0.35); clearTimeout(SR.dur); SR.dur = setTimeout(() => { if (!SR.calar) SR.el.pause(); }, 1600);
   if (MZ && !MZ.el.paused) MZ.g.gain.setTargetAtTime(mzHedef(), AC.currentTime, 0.8);
 }
-addEventListener('pointerup', () => muzikBasla(), { capture: true, passive: true });   // v3.13: capture (ana sayfa dokunuslari yukari iletilmiyor); eski satir tanimsiz HRT'ye takilip hata veriyordu, muzik ana sayfada hic baslamiyordu
+addEventListener('pointerup', () => muzikBasla(), { capture: true, passive: true }); addEventListener('bsacildi', () => muzikBasla());   // v3.13: capture (ana sayfa dokunuslari yukari iletilmiyor); eski satir tanimsiz HRT'ye takilip hata veriyordu, muzik ana sayfada hic baslamiyordu
 // ---------------- Blok Smash 3. asama (v1.4): guclendiriciler ----------------
 // roket: sonraki atis roket olur, ilk kupe varinca ikiye ayrilip o sirayi saga sola siler
 // bomba: sonraki atis bomba olur, ilk degdigi yerde patlar, cevresini kirar
@@ -2605,6 +2605,6 @@ Promise.all([faceReady, pofiReady, texReady, modelReady, K ? K.yukle() : 0]).the
   if (M && !Q.has('sv')) M.ac({ ilk: true });
   loadPieces();   // v6.16
   avgIsit();
-  if (window.BSYUK) window.BSYUK(1); const l = $('load'); setTimeout(() => { l.style.opacity = 0; setTimeout(() => l.remove(), 550); }, 350);
+  if (window.BSYUK) window.BSYUK(1); if (window.BSACILIS) window.BSACILIS(); else { const l = $('load'); setTimeout(() => { l.style.opacity = 0; setTimeout(() => l.remove(), 550); }, 350); }   // v3.14: acilis videosu kendi kapanir
   if (!TEST) requestAnimationFrame(frame); else frame(16);
 });

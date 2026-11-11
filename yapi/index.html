@@ -146,7 +146,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
 .ykar small{display:block;font-weight:700;font-size:13px}.ykar b{display:block;font-size:21px;line-height:1.1}
 @keyframes ykar{from{transform:scale(.4);opacity:0}}
 </style>
-<link rel="stylesheet" href="merkez.css?v=4">
+<link rel="stylesheet" href="merkez.css?v=5">
 </head>
 <body>
 <div id="bg"><video id="bgv" muted playsinline webkit-playsinline loop preload="auto" disablepictureinpicture></video></div>
@@ -162,16 +162,35 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
 <div id="hint">Dokun ve ateş et!</div>
 <div id="praise"></div>
 <div class="modal" id="modal"><div class="card" id="card"></div></div>
-<div id="load"><div class="a-bg"></div><div class="a-isin"></div><div class="a-kapak"></div><h1 class="m-logo a-logo"><b>FOXI</b><span>SMASH</span></h1>
+<div id="load"><div class="a-bg"></div><video class="a-vid" muted autoplay playsinline webkit-playsinline preload="auto" poster="../karakter/foxi_sarki.jpg?v=1" src="../karakter/foxi_sarki.mp4?v=1"></video><button class="a-ses" aria-label="Sesi aç">🔊 Sesi aç</button><div class="a-isin"></div><div class="a-kapak"></div><h1 class="m-logo a-logo"><b>FOXI</b><span>SMASH</span></h1>
 <div class="a-alt"><div class="a-cub"><i id="a-cub"></i></div><div class="a-yaz" id="a-yaz">Toplar dolduruluyor…</div></div></div>
 <script>
 // acilis ekrani: yukleme cubugu (oyun.js gercek ilerlemeyi BSYUK ile bildirir; arada cubuk yavasca ilerler)
 (function () {
   var c = document.getElementById('a-cub'), y = document.getElementById('a-yaz'), p = 0.04, hedef = 0.12;
   var YAZ = ['Toplar dolduruluyor…', 'Kuleler diziliyor…', 'Korsan Tilki hazırlanıyor…', 'Yelkenler açılıyor…'];
-  var iv = setInterval(function () { if (!c.isConnected) { clearInterval(iv); return; } hedef = Math.min(0.92, hedef + 0.004); p += (hedef - p) * 0.2; c.style.width = Math.round(p * 100) + '%'; y.textContent = YAZ[Math.min(YAZ.length - 1, Math.floor(p * YAZ.length))]; }, 120);
+  var iv = setInterval(function () { if (!c.isConnected || window.__bsHazir) { clearInterval(iv); return; } hedef = Math.min(0.92, hedef + 0.004); p += (hedef - p) * 0.2; c.style.width = Math.round(p * 100) + '%'; y.textContent = YAZ[Math.min(YAZ.length - 1, Math.floor(p * YAZ.length))]; }, 120);
   window.BSYUK = function (v) { hedef = Math.max(hedef, v); if (v >= 1) { p = 1; c.style.width = '100%'; y.textContent = 'Hazır!'; } };
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(function () {});
+  // v3.14: (Adem 11 Kas) acilis ekrani Foxi'nin karsilama sarkisi videosu; yukleme cubugu ve yazisi videonun ustunde.
+  // Video sessiz baslar (telefon dokunussuz sese izin vermez); 'Sesi ac' ile bastan sesli oynar. Oyun yuklenince
+  // video bitmisse ekran kapanir, bitmemisse 'Dokun ve basla!' yazar ve dokununca (ya da video bitince) kapanir.
+  var L = document.getElementById('load'), V = L.querySelector('.a-vid'), S = L.querySelector('.a-ses'), hazir = false, bitti = false, kapandi = false;
+  function kapat() {
+    if (kapandi) return; kapandi = true; L.style.opacity = 0; L.style.pointerEvents = 'none';
+    setTimeout(function () { try { V.pause(); } catch (e) {} L.remove(); dispatchEvent(new Event('bsacildi')); }, 550);
+  }
+  V.addEventListener('ended', function () { bitti = true; if (hazir) kapat(); });
+  V.addEventListener('error', function () { bitti = true; if (hazir) kapat(); });
+  var pr = V.play(); if (pr && pr.catch) pr.catch(function () {});
+  S.addEventListener('click', function (e) { e.stopPropagation(); V.muted = false; try { V.currentTime = 0; } catch (x) {} var q = V.play(); if (q && q.catch) q.catch(function () {}); S.style.display = 'none'; });
+  L.addEventListener('click', function () { if (hazir) kapat(); });
+  window.BSACILIS = function () {
+    hazir = true; window.__bsHazir = true;
+    if (bitti) { kapat(); return; }
+    y.textContent = 'Dokun ve başla!'; L.classList.add('hazir');
+    setTimeout(function () { if (V.paused && !kapandi) kapat(); }, 1500);   // video oynamiyorsa (telefon engelledi) beklemeden gec
+  };
 })();
 // v3.2: (Adem 11 Kas) dokunma hissi: parmak degdigi an dugme kuculur (bas sinifi), cok hafif titresim; tus sesi BSTUS ile
 (function () {
