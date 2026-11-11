@@ -25,7 +25,11 @@ export const AILE = {
   hediye: ['Sürpriz Kutu', 'Düşürünce ekstra top verir.'],
   yildiz: ['Yıldız Küp', 'Düşürünce bonus kazandırır.'],
   raf: ['Raf Tahtası', 'İnce uzun raf; üstündekileri taşır.'],
-  dalga: ['Taş Halka', 'Yuvarlak taş parça.']
+  dalga: ['Taş Halka', 'Yuvarlak taş parça.'],
+  kkK: ['Kuru Kafa', 'Korsanların simgesi! Vurunca takır takır kırılır.'],
+  kkA: ['Altın Kuru Kafa', 'Ağır ve sağlam. Düşürürsen hazine senin!'],
+  kkL: ['Lanetli Kuru Kafa', 'Gözleri yeşil yanar. Vurunca patlar, çevresini savurur!'],
+  kemik: ['Kemik Kiriş', 'Kocaman bir kemik. Üstündekileri taşır, sert vurunca kırılır.']
 };
 export function aileOf(t) {
   if (typeof t !== 'string') return null;
@@ -82,7 +86,10 @@ export const BOLUMLER = [
   { ad: 'Kurabiye Basamakları', pl: [{ x: -4.2, z: 0 }, { x: 4.2, z: 0, y: 2 }], make: () => { const yap = (n, h) => { const o = []; for (let m = 0; m < h; m++) for (let i = 0; i < 3; i++) for (let k = 0; k < 2; k++) o.push([i, m * 0.5, k, 'kur', 0]); kutu(o, 0, 2, h * 0.5, h * 0.5, 0, 1, (i) => (i === 1 ? 'oyK' : 'oyY')); return P(n, o); }; return yap(0, 7).concat(yap(1, 5)); } },
   { ad: 'Bomba Kalesi', make: () => { const o = D.kale(3, 6, 2, (i, j) => (j === 2 ? 'oyP' : 'oyM'), 'krM', 'oyS'); for (const c of o) if (c[0] === 3 && c[1] === 1 && c[2] === 0) c[3] = 'bomba'; return o; } },
   { ad: 'Büyük Şenlik', pl: [{ x: -5.4, z: 0, kay: { a: 0.9, h: 1.2 } }, { x: 0, z: 0, y: 1.2 }, { x: 5.4, z: 0, ph: Math.PI, kay: { a: 0.9, h: 1.2 } }],
-    make: () => P(0, D.kule(2, 5, 1, sira(['joP', 'hdK', 'oyY']))).concat(P(1, D.piramit(4, 2, (i, j) => ['krM', 'buzP', 'hdM', 'altin'][j]))).concat(P(2, D.kule(2, 5, 1, sira(['joY', 'hdM', 'oyK'])))) }
+    make: () => P(0, D.kule(2, 5, 1, sira(['joP', 'hdK', 'oyY']))).concat(P(1, D.piramit(4, 2, (i, j) => ['krM', 'buzP', 'hdM', 'altin'][j]))).concat(P(2, D.kule(2, 5, 1, sira(['joY', 'hdM', 'oyK'])))) },
+  { ad: 'Kuru Kafa Kulesi', make: () => { const o = D.kule(3, 6, 2, (i, j) => (j % 2 ? 'oyK' : 'kkK')); for (const c of o) if (c[1] === 5 && c[0] === 1) c[3] = 'kkA'; return o; } },
+  { ad: 'Kemik Duvarı', pl: [{ x: 0, z: 0, kay: { a: 1.8, h: 0.9 } }], make: () => D.orgu(6, 6, 2, 'kemik', (j) => (j % 4 === 1 ? 'kkA' : 'kkK')) },
+  { ad: 'Lanetli Mağara', pl: [{ x: -4.4, z: 0 }, { x: 4.4, z: 0, y: 1.4 }], make: () => { const yap = (n) => { const o = D.kemer(2, 1, 'kkK', 'tas4', 'kkK'); for (const c of o) if (c[1] === 0 && c[0] === 0) c[3] = 'kkL'; return P(n, o); }; return yap(0).concat(yap(1)); } }
 ];
 
 // ---------------- 21+ bolum uretici ----------------
@@ -91,10 +98,11 @@ function mul32(a) { return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a
 const KOLAY = ['oyK', 'oyM', 'oyY', 'oyS', 'oyP', 'joP', 'joY', 'joT', 'hdK', 'hdM', 'hdY', 'buzP', 'krM', 'krT'];
 const ORTA = ['knK', 'knM', 'mermer'];
 const ADLAR = ['Renkli', 'Neşeli', 'Şekerli', 'Parlak', 'Dev', 'Gizli', 'Tatlı', 'Sihirli', 'Çılgın', 'Uçan', 'Güneşli', 'Rüzgârlı', 'Gökkuşağı', 'Mini', 'Süper', 'Sallanan'];
-export function uret2(L, zor) {
+export function uret2(L, zor, koy) {
   const r = mul32(L * 7919 + 101), d = zor, ri = (a, b) => a + Math.floor(r() * (b - a + 1)), sec = (a) => a[Math.floor(r() * a.length)];
   const pal = []; const n = ri(2, 3); while (pal.length < n) { const t = r() < 0.2 + 0.3 * d ? sec(ORTA) : sec(KOLAY); if (!pal.includes(t)) pal.push(t); }
-  const sert = d > 0.35 && r() < 0.5 ? sec(['tug2', 'tas2', 'cik2']) : null;
+  if (koy || r() < 0.12) { pal.length = 0; pal.push('kkK', sec(KOLAY)); if (r() < 0.5) pal.push(r() < 0.6 ? 'kkA' : 'kkL'); }   // v3.17: korsan koyunda kuru kafalar
+  const sert = koy && r() < 0.6 ? 'kemik' : d > 0.35 && r() < 0.5 ? sec(['tug2', 'tas2', 'cik2']) : null;
   const boya = sec([sira(pal), serit(pal), satranc(pal[0], pal[1]), (i, j) => pal[(Math.round(i) + j) % pal.length]]);
   const DIZ = ['duvar', 'kule', 'piramit', 'kemer', 'merdiven', 'kale', 'orgu', 'ikiz', 'uclu', 'basamak', 'onarka', 'hisar'];
   const tip = DIZ[(L * 7 + ri(0, 2)) % DIZ.length], Hm = Math.round(4 + 4 * d);
@@ -106,7 +114,7 @@ export function uret2(L, zor) {
   else if (tip === 'kemer') { o = D.kemer(ri(2, 3), 2, pal[0], 'tas4', pal[1]); ad += 'Kemer'; }
   else if (tip === 'merdiven') { o = D.merdiven(7, ri(1, 2), ri(1, 2), 2, boya); ad += 'Merdiven'; }
   else if (tip === 'kale') { const H = ri(2, 3); o = D.kale(H, H + ri(2, 3 + Math.round(2 * d)), 2, pal[0], pal[1], pal[2] || pal[0]); ad += 'Kale'; }
-  else if (tip === 'orgu') { o = D.orgu(ri(5, 7), ri(4, Hm), 2, sert || 'tug2', (j) => pal[j % pal.length]); ad += 'Örgü'; }
+  else if (tip === 'orgu') { o = D.orgu(ri(5, 7), ri(4, Hm), 2, sert || 'tug2', (j) => pal[j % pal.length]); ad += sert === 'kemik' ? 'Kemik Duvar' : 'Örgü'; }
   else if (tip === 'hisar') { o = D.hisar(4, ri(3, Hm - 1), boya, r() < 0.5 ? 'altin' : 'fici'); if (r() < 0.6) don = 0.3 + 0.2 * r(); ad += 'Hisar'; }
   else if (tip === 'ikiz') { const H = ri(4, Hm + 1), W = ri(2, 3); o = P(0, D.kule(W, H, 1, boya)).concat(P(1, D.kule(W, H, 1, boya))); pl = [{ x: -4.3, z: 0 }, { x: 4.3, z: 0 }]; if (r() < 0.3 + 0.3 * d) { pl[0].kay = { a: 1.1, h: 1 + 0.5 * d }; pl[1].kay = { a: 1.1, h: 1 + 0.5 * d }; pl[1].ph = Math.PI; } ad += 'İkizler'; }
   else if (tip === 'uclu') { const H = ri(3, Hm), yk = r() < 0.6 ? ri(1, 2) : 0; o = P(0, D.kule(2, H, 1, boya)).concat(P(1, D.kule(2, H + 1, 1, boya))).concat(P(2, D.kule(2, H, 1, boya))); pl = [{ x: -5.2, z: 0 }, { x: 0, z: 0, y: yk }, { x: 5.2, z: 0 }]; if (r() < 0.3 + 0.3 * d) pl[1].asn = { a: 1.2, h: 0.9 }; ad += 'Üçlü'; }

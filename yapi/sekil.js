@@ -366,6 +366,62 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
     return { geo: torna(prof, 30), mat: mat(map, { roughness: 0.22, metalness: 0.45, envMapIntensity: 0.9 }), parca: mat(null, { color: '#c8ccd6', roughness: 0.25, metalness: 0.6 }) };
   }
 
+  // ---------------- v3.17 (Adem 12 Kas): kuru kafa sekilleri ----------------
+  // Kuru kafa kup: on/arka yuzde kabartma sevimli korsan kafatasi, yanlarda capraz kemik. Uc cesit: kemik beyazi, altin, lanetli (yesil gozler parlar).
+  function kafaCiz(x, w, h, R) {
+    const cx = w / 2, cy = h * 0.47, k = w * 0.34;
+    x.lineJoin = 'round'; x.lineCap = 'round';
+    const kafa = () => { x.beginPath(); x.arc(cx, cy - k * 0.12, k, Math.PI * 0.82, Math.PI * 2.18); x.lineTo(cx + k * 0.62, cy + k * 0.62); x.quadraticCurveTo(cx + k * 0.6, cy + k * 0.98, cx + k * 0.3, cy + k * 0.98); x.lineTo(cx - k * 0.3, cy + k * 0.98); x.quadraticCurveTo(cx - k * 0.6, cy + k * 0.98, cx - k * 0.62, cy + k * 0.62); x.closePath(); };
+    x.save(); x.translate(0, 8); kafa(); x.fillStyle = 'rgba(0,0,0,.28)'; x.fill(); x.restore();
+    kafa(); const g = x.createRadialGradient(cx - k * 0.35, cy - k * 0.6, k * 0.1, cx, cy, k * 1.3); g.addColorStop(0, R.isik); g.addColorStop(0.55, R.ana); g.addColorStop(1, R.koyu); x.fillStyle = g; x.fill(); x.strokeStyle = R.kontur; x.lineWidth = 7; x.stroke();
+    for (const sx of [-1, 1]) { x.beginPath(); x.ellipse(cx + sx * k * 0.4, cy - k * 0.02, k * 0.27, k * 0.31, sx * 0.25, 0, 6.2832); x.fillStyle = R.goz; x.fill(); x.strokeStyle = R.kontur; x.lineWidth = 4; x.stroke();
+      x.beginPath(); x.arc(cx + sx * k * 0.4 - k * 0.08, cy - k * 0.12, k * 0.07, 0, 6.2832); x.fillStyle = R.gozIsik; x.fill(); }
+    x.beginPath(); x.moveTo(cx, cy + k * 0.26); x.lineTo(cx - k * 0.11, cy + k * 0.45); x.quadraticCurveTo(cx, cy + k * 0.5, cx + k * 0.11, cy + k * 0.45); x.closePath(); x.fillStyle = R.goz; x.fill();
+    x.strokeStyle = R.kontur; x.lineWidth = 4; x.beginPath(); x.moveTo(cx - k * 0.38, cy + k * 0.7); x.lineTo(cx + k * 0.38, cy + k * 0.7); x.stroke();
+    for (let i = -2; i <= 2; i++) { x.beginPath(); x.moveTo(cx + i * k * 0.14, cy + k * 0.6); x.lineTo(cx + i * k * 0.14, cy + k * 0.86); x.stroke(); }
+    x.save(); kafa(); x.clip(); x.fillStyle = 'rgba(255,255,255,.28)'; x.beginPath(); x.ellipse(cx - k * 0.35, cy - k * 0.7, k * 0.45, k * 0.2, -0.4, 0, 6.2832); x.fill(); x.restore();
+  }
+  function caprazKemik(x, w, h, R) {
+    const kem = (a) => { x.save(); x.translate(w / 2, h / 2); x.rotate(a); const L = w * 0.36, t = w * 0.06, d = w * 0.075;
+      x.beginPath(); x.rect(-L, -t, 2 * L, 2 * t); for (const sx of [-1, 1]) for (const sy of [-1, 1]) { x.moveTo(sx * L + d, sy * d); x.arc(sx * L, sy * d, d, 0, 6.2832); }
+      x.fillStyle = R.ana; x.fill(); x.strokeStyle = R.kontur; x.lineWidth = 4; x.stroke(); x.restore(); };
+    kem(0.78); kem(-0.78);
+  }
+  const KAFAR = {
+    k: { taban: '#e9dcc0', ana: '#fbf4e4', koyu: '#cdbb98', isik: '#ffffff', kontur: '#6a5638', goz: '#2a1e18', gozIsik: 'rgba(255,255,255,.55)', mat: { roughness: 0.5 } },
+    a: { taban: '#e8a810', ana: '#ffd84a', koyu: '#c88a00', isik: '#fff6c0', kontur: '#7a4a00', goz: '#c8102e', gozIsik: '#ffb0c0', mat: { roughness: 0.22, metalness: 0.75, envMapIntensity: 1.2, emissive: '#6a4200', emissiveIntensity: 0.2 } },
+    l: { taban: '#3e2460', ana: '#6e48a0', koyu: '#2e1a48', isik: '#a888d0', kontur: '#160a28', goz: '#3cff5a', gozIsik: '#e0ffe0', mat: { roughness: 0.35 } }
+  };
+  function kafaKup(tur) {
+    const R = KAFAR[tur], N = 256;
+    const zemin = (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, acik(R.taban, 0.12)); g.addColorStop(0.55, R.taban); g.addColorStop(1, koyu(R.taban, 0.22)); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      const r = rng(tur.charCodeAt(0)); for (let i = 0; i < 70; i++) { x.fillStyle = r() < 0.5 ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.07)'; x.beginPath(); x.arc(r() * w, r() * h, 2 + r() * 6, 0, 6.2832); x.fill(); }
+      kenarIsik(x, w, h, 0.9); x.strokeStyle = koyu(R.taban, 0.35); x.lineWidth = 8; yuvar(x, 10, 10, w - 20, h - 20, 26); x.stroke(); };
+    const on = canvasTex(N, N, (x, w, h) => { zemin(x, w, h); kafaCiz(x, w, h, R); });
+    const yan = canvasTex(N, N, (x, w, h) => { zemin(x, w, h); caprazKemik(x, w, h, R); });
+    const ust = canvasTex(N, N, (x, w, h) => zemin(x, w, h));
+    const bump = canvasTex(128, 128, (x, w, h) => { x.fillStyle = '#707070'; x.fillRect(0, 0, w, h); x.scale(0.5, 0.5); kafaCiz(x, 256, 256, { ana: '#d0d0d0', koyu: '#a0a0a0', isik: '#f0f0f0', kontur: '#404040', goz: '#202020', gozIsik: '#202020' }); });
+    bump.colorSpace = THREE.NoColorSpace;
+    const o = R.mat, m = (map, ek) => mat(map, Object.assign({}, o, ek || {}));
+    const ekOn = { bumpMap: bump, bumpScale: 2.6 };
+    if (tur === 'l') { ekOn.emissiveMap = canvasTex(N, N, (x, w, h) => { x.fillStyle = '#000'; x.fillRect(0, 0, w, h); const k = w * 0.34, cx = w / 2, cy = h * 0.47; for (const sx of [-1, 1]) { const g = x.createRadialGradient(cx + sx * k * 0.4, cy, 0, cx + sx * k * 0.4, cy, k * 0.36); g.addColorStop(0, '#b8ffc0'); g.addColorStop(0.6, '#3cff5a'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, w, h); } }); ekOn.emissive = '#ffffff'; ekOn.emissiveIntensity = 1.3; }
+    const mOn = m(on, ekOn), mYan = m(yan), mUst = m(ust);
+    return { geo: kutu(S, S, S, S * 0.12, 3), mat: [mYan, mYan, mUst, mUst, mOn, mOn], parca: mat(null, Object.assign({ color: R.ana }, o)) };
+  }
+  // kemik kiris: gercek 3B kemik (govde + iki ucta ikiser yumru), iki kup boyunda
+  function birlestir(gs) {
+    const ls = gs.map((g) => (g.index ? g.toNonIndexed() : g)), out = new THREE.BufferGeometry();
+    for (const ad of ['position', 'normal', 'uv']) { const n = ls[0].attributes[ad].itemSize, arr = new Float32Array(ls.reduce((t, g) => t + g.attributes[ad].array.length, 0)); let o = 0; for (const g of ls) { arr.set(g.attributes[ad].array, o); o += g.attributes[ad].array.length; } out.setAttribute(ad, new THREE.BufferAttribute(arr, n)); }
+    out.computeBoundingBox(); out.computeBoundingSphere(); return out;
+  }
+  function kemik() {
+    const parts = [], gov = new THREE.CylinderGeometry(S * 0.2, S * 0.2, S * 1.5, 22, 1, true); gov.rotateZ(Math.PI / 2); gov.scale(1, 1, 1.5); parts.push(gov);
+    for (const sx of [-1, 1]) for (const sy of [-1, 1]) { const b = new THREE.SphereGeometry(S * 0.27, 22, 16); b.scale(1, 1, 1.55); b.translate(sx * S * 0.76, sy * S * 0.22, 0); parts.push(b); }
+    const map = canvasTex(256, 128, (x, w, h) => { const r = rng(77); const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#fffaf0'); g.addColorStop(1, '#e2d2b0'); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      for (let i = 0; i < 90; i++) { x.fillStyle = r() < 0.5 ? 'rgba(160,130,90,.12)' : 'rgba(255,255,255,.2)'; x.beginPath(); x.ellipse(r() * w, r() * h, 2 + r() * 8, 1 + r() * 2, 0, 0, 6.2832); x.fill(); } });
+    return { geo: birlestir(parts), mat: mat(map, { roughness: 0.48, envMapIntensity: 0.5, emissive: '#3a2a10', emissiveIntensity: 0.06 }), parca: mat(null, { color: '#f4ead2', roughness: 0.5 }) };
+  }
+
   // ---------------- tur tablosu ----------------
   // sekil: 'kutu' (dikdortgen carpisma) ya da 'sil' (dik silindir). kir: topla vurulunca / sert carpinca kirilir. ses: darbe sesi ailesi.
   const TUR = {
@@ -404,7 +460,12 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
     mkY: { w: 1, h: 0.5, d: 1, mass: 0.45, f: 0.6, r: 0.1, ses: 'tahta', renk: '#9be06a', sekil: 'sil', kir: 1, yuzer: 1, yap: () => makaron('#8ad65a') },
     mkM: { w: 1, h: 0.5, d: 1, mass: 0.45, f: 0.6, r: 0.1, ses: 'tahta', renk: '#9ab8ff', sekil: 'sil', kir: 1, yuzer: 1, yap: () => makaron('#86a8ff') },
     knK: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.5, r: 0.12, ses: 'tas', renk: '#e8283c', sekil: 'sil', yap: () => konserve('#d81e36') },
-    knM: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.5, r: 0.12, ses: 'tas', renk: '#2f7df2', sekil: 'sil', yap: () => konserve('#1f5fd8') }
+    knM: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.5, r: 0.12, ses: 'tas', renk: '#2f7df2', sekil: 'sil', yap: () => konserve('#1f5fd8') },
+    // v3.17 kuru kafalar
+    kkK: { w: 1, h: 1, d: 1, mass: 0.9, f: 0.6, r: 0.12, ses: 'tas', renk: '#f3ead6', kir: 1, carp: 7, yuzer: 1, yap: () => kafaKup('k') },
+    kkA: { w: 1, h: 1, d: 1, mass: 1.5, f: 0.6, r: 0.1, ses: 'tas', renk: '#ffc531', sert: 1, yap: () => kafaKup('a') },
+    kkL: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.6, r: 0.1, ses: 'tas', renk: '#7a4cc0', boom: 1.8, guc: 11, yap: () => kafaKup('l') },
+    kemik: { w: 2, h: 1, d: 1, mass: 1.3, f: 0.65, r: 0.08, ses: 'tahta', renk: '#f1e6cf', kir: 1, carp: 9, yuzer: 1, yap: kemik }
   };
   const HAZIR = {};
   function al(k) { if (HAZIR[k]) return HAZIR[k]; const t = TUR[k], y = t.yap(); return (HAZIR[k] = Object.assign({ w: t.w * S, h: t.h * S, d: t.d * S, sil: t.sekil === 'sil', r: S * 0.47 }, y)); }

@@ -9,6 +9,7 @@ import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } 
 
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const I3 = (n, c, st) => '<img class="i3 ' + (c || '') + '" src="ikon/3b/' + n + '.webp?v=1" alt="" draggable="false"' + (st ? ' style="' + st + '"' : '') + '>';   // v3.17: Gemini 3B ikonlar
 const svg = (ic, vb = 48) => '<svg viewBox="0 0 ' + vb + ' ' + vb + '" aria-hidden="true">' + ic + '</svg>';
 const YILDIZ_YOL = 'M24 3l6.5 13.2 14.5 2.1-10.5 10.2 2.5 14.5L24 36.2 11 43l2.5-14.5L3 18.3l14.5-2.1z';
 // simgeler: emoji yerine kendi cizimlerimiz (her telefonda ayni gorunur)
@@ -68,15 +69,15 @@ export function merkezKur(A) {
   M.innerHTML = '<div class="m-bg"></div><div class="m-pus">' + pus + '</div>' +
     '<header class="m-ust"><button class="m-prof" id="m-prof" aria-label="Profil"><span class="m-av" id="m-av"></span><span class="m-pt"><b id="m-ad"></b><small id="m-lv"></small></span></button>' +
     '<div class="m-hap" id="m-ahap"><i class="coin"></i><b id="m-altin">0</b><button class="m-arti" id="m-arti" aria-label="Mağaza">+</button></div>' +
-    '<div class="m-hap">' + IK.yildiz + '<b id="m-yil">0</b></div><button class="m-yuv" id="m-ayar" aria-label="Ayarlar">' + IK.disli + '</button></header>' +
+    '<div class="m-hap">' + I3('yildiz') + '<b id="m-yil">0</b></div><button class="m-yuv" id="m-ayar" aria-label="Ayarlar">' + I3('disli') + '</button></header>' +
     '<main class="m-sayfalar" id="m-sayfalar">' +
     '<section class="m-sayfa" id="s-magaza"><div class="m-ic"><h2 class="m-sb">Mağaza</h2><div class="m-kay" id="d-liste"></div></div></section>' +
     '<section class="m-sayfa" id="s-ana"><div class="m-ic"><h1 class="m-logo"><b>FOXI</b><span>SMASH</span></h1>' +
     '<div class="m-sahne" id="m-sahne"><div class="m-isin"></div><canvas id="m-kc" aria-label="Korsan Tilki"></canvas><div class="m-kil">' + IK.kilit + '<b id="m-kilyaz"></b></div><div class="m-balon" id="m-balon"></div>' +
-    '<div class="m-yan sol"><button class="m-yb" id="m-gorev"><span class="m-yk">' + IK.gorev + '<em class="m-rz" id="m-gorevn"></em></span><small>Görevler</small></button>' +
-    '<button class="m-yb" id="m-gunluk"><span class="m-yk">' + IK.hediye + '<em class="m-rz" id="m-gunlukn">!</em></span><small>Günlük</small></button></div>' +
-    '<div class="m-yan sag"><button class="m-yb" id="m-sandik"><span class="m-yk">' + IK.sandik + '<em class="m-rz" id="m-sandikn">!</em><span class="m-mc"><i id="m-sandikc"></i></span></span><small>Hazine</small></button>' +
-    '<button class="m-yb" id="m-korsan"><span class="m-yk">' + IK.capa + '</span><small>Korsan</small></button></div></div>' +
+    '<div class="m-yan sol"><button class="m-yb" id="m-gorev"><span class="m-yk">' + I3('gorev') + '<em class="m-rz" id="m-gorevn"></em></span><small>Görevler</small></button>' +
+    '<button class="m-yb" id="m-gunluk"><span class="m-yk">' + I3('hediye') + '<em class="m-rz" id="m-gunlukn">!</em></span><small>Günlük</small></button></div>' +
+    '<div class="m-yan sag"><button class="m-yb" id="m-sandik"><span class="m-yk">' + I3('sandik') + '<em class="m-rz" id="m-sandikn">!</em><span class="m-mc"><i id="m-sandikc"></i></span></span><small>Hazine</small></button>' +
+    '<button class="m-yb" id="m-korsan"><span class="m-yk">' + I3('capa') + '</span><small>Korsan</small></button></div></div>' +
     '<div class="m-oynak" id="m-oynak"><div class="m-seri" id="m-seri"></div><span class="m-zor">Zor bölüm!</span><button class="m-btn m-oyna" id="m-oyna"><b></b><small></small></button></div></div></section>' +
     '<section class="m-sayfa" id="s-harita"><div class="m-ic"><h2 class="m-sb">Hazine Haritası</h2><div class="m-kay" id="h-kay"><div class="h-yol" id="h-yol"></div></div></div></section>' +
     '</main><nav class="m-alt"><button data-s="magaza">' + IK.magaza + '<span>Mağaza</span></button><button data-s="ana" class="on">' + IK.ev + '<span>Ana Sayfa</span></button><button data-s="harita">' + IK.harita + '<span>Harita</span></button></nav>';
@@ -319,12 +320,12 @@ export function merkezKur(A) {
   function sandikKarti() {
     const sn = SV.sn || 0;
     if (sn < SANDIK_HEDEF) {
-      pop(bas('Hazine Sandığı') + '<div class="p-ic"><div class="o-sahne" style="height:120px">' + IK.sandik.replace('<svg ', '<svg class="o-sn" style="width:110px;height:110px;animation:none" ') + '</div><p>Her <b>' + SANDIK_HEDEF + '</b> yeni bölümde bir sandık açılır: altın ve güçlendirici çıkar.</p>' +
+      pop(bas('Hazine Sandığı') + '<div class="p-ic"><div class="o-sahne" style="height:120px">' + I3('sandik', 'o-sn', 'width:110px;height:110px;animation:none') + '</div><p>Her <b>' + SANDIK_HEDEF + '</b> yeni bölümde bir sandık açılır: altın ve güçlendirici çıkar.</p>' +
         '<div class="k-cub" style="border-color:#c9a56a"><i style="width:' + Math.round(100 * sn / SANDIK_HEDEF) + '%"></i><em>' + sn + ' / ' + SANDIK_HEDEF + '</em></div></div><button class="m-btn kck" id="p-tm">Tamam</button>');
       $('p-tm').onclick = () => { tik(); pkapat(); }; return;
     }
     const o = sandikOdul();
-    pop(bas('Hazine Sandığı', false) + '<div class="p-ic"><div class="o-sahne"><div class="m-isin"></div>' + IK.sandik.replace('<svg ', '<svg class="o-sn" ') + '</div><h3>Sandık açıldı!</h3><div class="o-liste">' + odulHtml(o) + '</div></div><button class="m-btn" id="p-tm">Topla</button>');
+    pop(bas('Hazine Sandığı', false) + '<div class="p-ic"><div class="o-sahne"><div class="m-isin"></div>' + I3('sandik', 'o-sn') + '</div><h3>Sandık açıldı!</h3><div class="o-liste">' + odulHtml(o) + '</div></div><button class="m-btn" id="p-tm">Topla</button>');
     A.ses('sandik', 0.7); A.sfx('win'); A.buzz([40, 60, 40], 0);
     $('p-tm').onclick = () => { const r = P.querySelector('.o-od').getBoundingClientRect(), eski = SV.altin || 0; SV.sn = sn - SANDIK_HEDEF; SV.sa = (SV.sa || 0) + 1; odulVer(o); tik(); pkapat(); ciz(); ucur(r.left + r.width / 2, r.top + r.height / 2, 12, eski, SV.altin); };
   }

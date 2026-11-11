@@ -75,3 +75,51 @@
 .m-alt button{text-shadow:0 2px 0 #0b1242}
 .m-alt button img,.m-alt button svg{filter:drop-shadow(0 3px 0 rgba(0,0,0,.45)) drop-shadow(0 0 6px rgba(255,255,255,.3))}
 .m-seri,.m-zor{box-shadow:0 4px 0 rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.3)}
+
+/* ---------- v3.17: gercekci 3B ikonlar (Gemini), ust cubuk sigdirma, 3B kabartma yazilar ---------- */
+img.i3{display:block;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+.m-yb .m-yk{display:grid;place-items:center}
+.m-yb .m-yk img.i3{position:relative;width:54px;height:54px;margin-top:-2px;filter:drop-shadow(0 4px 3px rgba(0,0,0,.45))!important;transition:transform .2s}
+.m-yb:active .m-yk img.i3{transform:scale(.9)}
+.m-hap img.i3{width:30px;height:30px;margin:0 -1px 0 -3px;flex:none}
+.m-yuv{display:grid!important;place-items:center;padding:0!important}
+.m-yuv img.i3{width:30px;height:30px;animation:dislidon 12s linear infinite}
+@keyframes dislidon{to{transform:rotate(360deg)}}
+.o-sahne img.o-sn{position:relative;width:150px;height:150px;filter:drop-shadow(0 8px 4px rgba(90,50,10,.35));animation:osal .5s ease-in-out 3,mzip .5s cubic-bezier(.2,1.6,.4,1) both}
+.gb i,.gt i{display:grid!important;place-items:center;width:100%;height:100%}
+.gb img.i3,.gt img.i3{width:44px;height:44px;filter:drop-shadow(0 3px 2px rgba(0,0,0,.5))}
+.gb-top img.i3,.gt-top img.i3{width:46px;height:46px}
+/* altin: her yerde 3B altin resmi */
+.coin{background:url(ikon/3b/altin.webp) center/contain no-repeat!important;border:0!important;border-radius:0!important;box-shadow:none!important;filter:drop-shadow(0 2px 1px rgba(0,0,0,.35))}
+/* ust cubuk: dar telefonda tasmasin (ayarlar disarida kaliyordu) */
+.m-ust{gap:5px!important;padding-left:8px!important;padding-right:8px!important}
+.m-prof{flex:0 1 auto!important;min-width:0!important;padding-right:9px!important}
+.m-pt{overflow:hidden}
+.m-prof b{max-width:76px}
+.m-prof small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-hap{flex:0 1 auto!important;min-width:0;padding-right:8px!important}
+.m-hap b{overflow:hidden;text-overflow:ellipsis}
+.m-yuv{flex:none!important;width:42px!important;height:42px!important}
+@media (max-width:400px){.m-av{width:38px!important;height:38px!important}.m-prof b{font-size:15px!important;max-width:64px}.m-prof small{font-size:10.5px!important}.m-hap{height:34px!important;gap:3px!important}.m-hap b{font-size:16px!important}.m-hap img.i3{width:26px;height:26px}.m-yuv{width:38px!important;height:38px!important}.m-yuv img.i3{width:27px;height:27px}.m-arti{width:22px!important;height:22px!important}}
+
+/* 3B kabartma yazi: kontur + katman katman derinlik (alt yuz) + uzak golge. Duz renkli yazilarda text-shadow ile,
+   renk gecisli yazilarda (background-clip) filter drop-shadow yigini ile (text-shadow seffaf harften gorunuyordu). */
+.topc small,.lvp,#hint,.m-yb small,.m-alt button,.m-prof b,.m-hap b,.ggk+p,.kasa{
+  text-shadow:0 1px 0 var(--k3,#0c1c58),0 2px 0 var(--k3,#0c1c58),0 3px 0 var(--k3,#0c1c58),0 4px 1px rgba(0,0,0,.45),0 6px 8px rgba(0,0,0,.35)!important}
+#hint{--k3:#1a0a66}
+.btn,.m-btn{text-shadow:0 1px 0 var(--k3,#1f5e14),0 2px 0 var(--k3,#1f5e14),0 3px 0 var(--k3,#1f5e14),0 4px 0 var(--k3,#1f5e14),0 5px 1px rgba(0,0,0,.4),0 7px 10px rgba(0,0,0,.35)!important}
+.btn.o,.m-btn.tur{--k3:#8a3a00}.m-btn.mavi{--k3:#0c2a78}.m-oynak.zor .m-oyna{--k3:#3a0d5e}
+.card .rib{text-shadow:0 1px 0 #8a3a00,0 2px 0 #8a3a00,0 3px 0 #8a3a00,0 4px 0 #8a3a00,0 5px 0 #8a3a00,0 6px 1px rgba(0,0,0,.4),0 9px 12px rgba(0,0,0,.3)!important}
+.card .rib.r{text-shadow:0 1px 0 #6a0a22,0 2px 0 #6a0a22,0 3px 0 #6a0a22,0 4px 0 #6a0a22,0 5px 0 #6a0a22,0 6px 1px rgba(0,0,0,.4),0 9px 12px rgba(0,0,0,.3)!important}
+.card .rib.ys{text-shadow:0 1px 0 #0c2a78,0 2px 0 #0c2a78,0 3px 0 #0c2a78,0 4px 0 #0c2a78,0 5px 0 #0c2a78,0 6px 1px rgba(0,0,0,.4),0 9px 12px rgba(0,0,0,.3)!important}
+#nm b{text-shadow:0 1px 0 #6a0a22,0 2px 0 #6a0a22,0 3px 0 #6a0a22,0 4px 0 #6a0a22,0 5px 0 #6a0a22,0 6px 1px rgba(0,0,0,.4),0 10px 14px rgba(0,0,0,.35)!important}
+/* renk gecisli 3B: parlak ust, koyu alt + kontur + yigin golge */
+.topc b,.lvp b,.card h2,.m-oyna b,.stars+h2{background:linear-gradient(180deg,#ffffff 0%,#fff6c8 38%,#ffd23a 62%,#ff9a12 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;
+  -webkit-text-stroke:0!important;text-shadow:none!important;display:inline-block;
+  filter:drop-shadow(2px 0 0 var(--k3,#0c1c58)) drop-shadow(-2px 0 0 var(--k3,#0c1c58)) drop-shadow(0 2px 0 var(--k3,#0c1c58)) drop-shadow(0 -2px 0 var(--k3,#0c1c58)) drop-shadow(0 1px 0 var(--k3,#0c1c58)) drop-shadow(0 1px 0 var(--k3,#0c1c58)) drop-shadow(0 2px 0 var(--k3,#0c1c58)) drop-shadow(0 4px 4px rgba(0,0,0,.4))!important}
+.topc b{display:block!important;box-shadow:none!important;border-radius:0!important;font-size:36px!important;line-height:1.15!important}
+.topc{padding-bottom:4px!important}
+.lvp b{--k3:#0b1242}
+.card h2{--k3:#4a1f6e;font-size:31px!important}
+.m-oyna b{--k3:#17520f;background:linear-gradient(180deg,#ffffff 0%,#ffffff 45%,#e4ffd0 70%,#b8f08c 100%)!important}
+.m-oynak.zor .m-oyna b{--k3:#3a0d5e;background:linear-gradient(180deg,#ffffff 0%,#ffffff 45%,#f0dcff 70%,#d8a8ff 100%)!important}

@@ -9,9 +9,9 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=2';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=10';
-import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=1';   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { sekilKur, YAPI } from './sekil.js?v=3';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
+import { merkezKur } from './merkez.js?v=11';
+import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=2';   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -417,7 +417,7 @@ const NENV = (() => {
 // v3.1: (Adem 10 Kas 2026) kodla cizilen 3B sekiller (sekil.js): parlak oyuncak kup, tas kiris, mermer tambur, buz, ahsap dikme, kavanoz, raf.
 // KIND'e eklenir (sek: 1); olculeri kup kenari cinsinden SEK.TUR'da, govde ve malzemesi ilk kullanimda SEK.al(ad) ile kurulur.
 const SEK = sekilKur({ THREE, S, canvasTex, ENV });
-for (const k in SEK.TUR) { const t = SEK.TUR[k]; KIND[k] = { mass: t.mass, f: t.f, r: t.r, sek: 1 }; if (t.carp) KIND[k].kir = t.carp; }
+for (const k in SEK.TUR) { const t = SEK.TUR[k]; KIND[k] = { mass: t.mass, f: t.f, r: t.r, sek: 1 }; if (t.carp) KIND[k].kir = t.carp; if (t.boom) { KIND[k].boom = t.boom; KIND[k].guc = t.guc; } }
 const SEKSH = {};
 function sekShape(k) { if (SEKSH[k]) return SEKSH[k]; const s = SEK.al(k); return (SEKSH[k] = s.sil ? new CANNON.Cylinder(s.r, s.r, s.h, 16) : new CANNON.Box(new CANNON.Vec3(s.w / 2, s.h / 2, s.d / 2))); }
 // parcanin yarim genisligi, yuksekligi, yarim derinligi (kup kenari cinsinden): platform ve kamera yapiya gore ayarlanir
@@ -736,7 +736,7 @@ function uretBolum(L) {
     const op = tip === 0 ? { r1: OY[a], r2: OY[b], kat: ri(1, 2), desen: ri(0, 3) } : tip === 1 ? { sut: ri(2, 4) } : tip === 2 ? { kat: ri(2, 3), kay: ri(0, 2) } : tip === 3 ? { kay: ri(0, 2), tepe: sec(['krM', 'krT']) } : tip === 4 ? { kat: ri(1, 2), kay: ri(0, 2) } : { sut: ri(2, 3), kay: ri(0, 1) };
     return { ad: sec(USIF) + ' ' + ['Duvar', 'Tapınak', 'Raf', 'Pastane', 'Hediye Kulesi', 'Depo'][tip], ek: 3, uretim: 1, make: () => YAPI[['duvar', 'tapinak', 'raf', 'pastane', 'hediye', 'depo'][tip]](op) };
   }
-  if (Q.get('eski') !== '1') return uret2(L, d);   // v3.16: yeni uretici (eski kod asagida duruyor, ?eski=1)
+  if (Q.get('eski') !== '1') return uret2(L, d, fonOf(L).f === 'koy');   // v3.16: yeni uretici (eski kod asagida duruyor, ?eski=1)
   const KIRIK = [C.kir, C.tur, C.pem], SAGLAM = d > 0.45 ? [C.mav, C.sar, C.mor, 'tugla', 'altin'] : [C.mav, C.sar, C.yes, 'tugla'];
   // her kat (j) ve aynaya gore sutun (m) icin malzeme: saglam payi zorlukla artar; sag-sol simetrik kalir
   const ps = 0.18 + 0.5 * d, katR = [], memo = {};
@@ -1851,7 +1851,7 @@ function knock(c, remove) {
   c.gone = true; g.left--; gorevArt('blok', 1); if (M) ist().blok = (ist().blok || 0) + 1; if (g.combo) { g.combo.n++; g.combo.t = 0; if (!g.combo.at) g.combo.at = screenAt(c.body.position, 0.3); }
   const p = c.body.position, at = screenAt(p, 0.3);
   if (c.kind === 'hediye') { g.shots += 2; floatText('+2 Top', at[0], at[1], 'blue'); burst(new THREE.Vector3().copy(p), '#ffd23f', 16, 6); sfx('bonus'); }
-  else if (c.kind === 'altin') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
+  else if (c.kind === 'altin' || c.kind === 'kkA') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
   else if (c.kind === 'yildiz') { g.bonus++; floatText('+1 ★', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#c58bff', 20, 7); sfx('bonus'); }
 
   if (c.kind === 'kola') kolaFis(c);
@@ -2214,7 +2214,7 @@ addEventListener('pointerup', () => muzikBasla(), { capture: true, passive: true
 // bomba: sonraki atis bomba olur, ilk degdigi yerde patlar, cevresini kirar
 // yildirim: top harcamaz, gokten 4 simsek iner; +5 top: aninda 5 top
 // Her biri SV.gg sayacindan harcanir, sayac bitince altinla (SV.altin) alinir. Baslangicta 2'ser hediye.
-const GGT = [{ k: 'roket', ic: '🚀', fiyat: 50 }, { k: 'bomba', ic: '💣', fiyat: 75 }, { k: 'yildirim', ic: '⚡', fiyat: 100 }, { k: 'top', ic: '+5', fiyat: 150 }];
+const GGT = [{ k: 'roket', ic: '<img class="i3" src="ikon/3b/roket.webp?v=1" alt="" draggable="false">', fiyat: 50 }, { k: 'bomba', ic: '<img class="i3" src="ikon/3b/bomba.webp?v=1" alt="" draggable="false">', fiyat: 75 }, { k: 'yildirim', ic: '<img class="i3" src="ikon/3b/yildirim.webp?v=1" alt="" draggable="false">', fiyat: 100 }, { k: 'top', ic: '<img class="i3" src="ikon/3b/top5.webp?v=1" alt="" draggable="false">', fiyat: 150 }];   // v3.17: 3B ikonlar
 const GGA = [];
 let GGD = null, GGF = null;
 function ggSay() { if (!SV.gg) { SV.gg = { roket: 2, bomba: 2, yildirim: 2, top: 2 }; save(); } return SV.gg; }
