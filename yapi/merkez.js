@@ -188,7 +188,7 @@ export function merkezKur(A) {
       const zipla = (n) => { kc.classList.remove('zip'); void kc.offsetWidth; kc.style.setProperty('--zn', n || 1); kc.classList.add('zip'); };
       kc.addEventListener('click', () => {
         if ($('m-sahne').classList.contains('kilitli')) { salla($('m-sahne').querySelector('.m-kil')); tik(); return; }
-        zipla(1); A.sfx('bonus');
+        zipla(1); A.sfx('bonus'); if (A.sarki) A.sarki('tilki');   // v3.13: dokununca Foxi'nin sarkisindan 8 sn
         const b = $('m-balon'); b.textContent = SOZ[Math.floor(Math.random() * SOZ.length)]; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
       });
       addEventListener('resize', boyut);
@@ -379,13 +379,14 @@ export function merkezKur(A) {
       '<div class="k-sn' + (dolu ? ' dolu' : '') + '"><small>' + (dolu ? 'Hazine sandığı hazır! Ana sayfada aç.' : 'Hazine sandığına ' + kaldi + ' bölüm kaldı') + '</small><div class="k-cub"><i id="k-snc" style="width:' + Math.round(100 * Math.min(onceSn, SANDIK_HEDEF) / SANDIK_HEDEF) + '%"></i><em>' + Math.min(sn, SANDIK_HEDEF) + ' / ' + SANDIK_HEDEF + '</em></div>' + IK.sandik + '</div>' +
       '<button class="m-btn" id="k-dv">Devam Et</button></div>';
     if (fxDur) fxDur(); fxDur = havaiFisek(KZ.querySelector('canvas'));
+    if (A.sarki) setTimeout(() => { if (KZ.classList.contains('on')) A.sarki('kazan'); }, 600);   // v3.13: (Adem) kazaninca Foxi'nin sarkisi
     for (let i = 0; i < d.st; i++) setTimeout(() => { if (KZ.classList.contains('on')) { A.sfx('bonus'); A.buzz(25); } }, 1400 + i * 250);
     setTimeout(() => { const c = $('k-snc'); if (c) c.style.width = Math.round(100 * Math.min(sn, SANDIK_HEDEF) / SANDIK_HEDEF) + '%'; }, 2300);
     let n = 0; const adim = Math.max(1, Math.round(d.kaz / 22));
     setTimeout(function say() { const e = $('k-say'); if (!e) return; n = Math.min(d.kaz, n + adim); e.textContent = n; A.ses('para', 0.3, 0.95 + 0.4 * n / Math.max(1, d.kaz));
       if (n < d.kaz) setTimeout(say, 50); else e.classList.add('pop'); }, 1750);
     $('k-dv').onclick = () => {
-      tik(); const r = KZ.querySelector('.k-odul').getBoundingClientRect(); KZ.classList.add('cik');
+      tik(); if (A.sarkiDur) A.sarkiDur(); const r = KZ.querySelector('.k-odul').getBoundingClientRect(); KZ.classList.add('cik');
       setTimeout(() => { KZ.className = ''; KZ.innerHTML = ''; if (fxDur) { fxDur(); fxDur = null; } }, 340);
       ac({ ucan: { x: r.left + r.width / 2, y: r.top + r.height / 2, n: Math.round(d.kaz / 8), eski: d.once, yeni: d.once + d.kaz } });
     };

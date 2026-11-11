@@ -10,7 +10,7 @@ import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=2';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=7';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { merkezKur } from './merkez.js?v=8';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -23,7 +23,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.12', ZOR_ODUL = 20;
+const SURUM = 'v3.13', ZOR_ODUL = 20;
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -2137,7 +2137,7 @@ function gorevHazir() { if (K || TEST) return 0; return gorevler().filter((q) =>
 const FONAD = { cayir4: ['Çiçekli Çayır', 'c'], kar3: ['Karlı Köy', 'k'], sahil3: ['Palmiye Sahili', 's'] };
 function haritaAc() {}   // yalniz eski kartlardaki (korsan/test) 'Harita' dugmesi icin; korsanin kendi haritasi korsan.js'te
 function ayarDegis(k) {
-  if (k === 'ses') { SV.sessiz = !SV.sessiz; save(); if (SV.sessiz) { if (AC) AC.suspend(); } else sesAc(); }
+  if (k === 'ses') { SV.sessiz = !SV.sessiz; save(); if (SV.sessiz) { if (AC) AC.suspend(); if (MZ) MZ.el.pause(); if (SR) SR.el.pause(); } else { sesAc(); muzikBasla(); } }
   else if (k === 'muzik') { SV.muziksiz = !SV.muziksiz; save(); if (SV.muziksiz) muzikDur(); else muzikBasla(); }
   else if (k === 'titresim') { SV.titresimsiz = !SV.titresimsiz; save(); buzz(40); }
 }
@@ -2162,39 +2162,48 @@ function devamEt() {
 // bolumden vazgecme (tekrar dene, ana sayfa): seri biter, bu bolum artik 'ilk denemede' sayilmaz
 function pesEt() { if (g && (g.armed || g.state === 'lose')) { SV.dus = LV; ist().seri = 0; save(); } }
 function merkezBagla() {
-  M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, SURUM, ZOR_ODUL,
+  M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, SURUM, ZOR_ODUL,
     ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
     bolge: (L) => FONAD[fonOf(L).f] || ['', 'c'], bolumAdi: (L) => { try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
 }
-// ================= v2.0: muzik =================
-// Kayit dosyasi yok: Web Audio ile calinan sakin, neseli bir dongu (yumusak akor zemini + marimba benzeri ezgi + hafif bas). Sessize alininca durur.
-let MZ = null;
-const MZAK = [[261.63, 329.63, 392.0], [220.0, 261.63, 329.63], [174.61, 220.0, 261.63], [196.0, 246.94, 293.66]];
-const MZEZ = [[0, 2, 1, 2, 0, 2, 1, 3], [1, 2, 0, 2, 1, 3, 2, 1], [0, 1, 2, 1, 0, 2, 1, 2], [2, 1, 0, 1, 2, 3, 2, 0]];
-function muzikNota(f, t, d, v, tip) {
-  const o = AC.createOscillator(), e = AC.createGain(); o.type = tip; o.frequency.value = f;
-  e.gain.setValueAtTime(0.0001, t); e.gain.linearRampToValueAtTime(v, t + (tip === 'sine' && d > 1 ? 0.35 : 0.012)); e.gain.exponentialRampToValueAtTime(0.0001, t + d);
-  o.connect(e); e.connect(MZ.g); o.start(t); o.stop(t + d + 0.05);
+// ================= v3.13: muzik =================
+// (Adem 11 Kas) kodla calinan eski notalar yerine Adem'in Gemini ile urettigi muzikler (ses/muzik/):
+//  bolum.mp3      'Saltwater Jig' - korsan jig, 108 vurus/dk. Son 2 sn basla harmanlandi: 155 sn dikissiz dongu. Ana sayfa ve bolumde calar.
+//  foxi_sarki.mp3 'Foxi's Golden Haul' - vokalli 28 sn sarki. Bolum kazaninca tamami, ana sayfada Foxi'ye dokununca ilk 8 sn calar;
+//                 calarken bolum muzigi kisilir, bitince geri acilir.
+// Uzun dosyalar <audio> ile akar (Web Audio tamponuna cozulse telefonda ~60 MB bellek yer); ses seviyesi Web Audio kazanciyla ayarlanir
+// (iPhone <audio>.volume'u yok sayar). Ses ya da muzik kapaliysa calmaz.
+const MZV = 0.32, SRV = 0.85;   // bolum muzigi ve Foxi sarkisi seviyesi (efektlerin altinda kalsin)
+let MZ = null, SR = null;
+function mzKaynak(yol) {
+  const el = new Audio(yol); el.preload = 'auto'; el.setAttribute('playsinline', '');
+  const g = AC.createGain(); g.gain.value = 0; AC.createMediaElementSource(el).connect(g); g.connect(AC.destination);
+  return { el, g };
 }
+function mzHedef() { return SR && SR.calar ? MZV * 0.18 : MZV; }   // Foxi sarkisi calarken bolum muzigi kisik
 function muzikBasla() {
   if (K || TEST || !AC || SV.sessiz || SV.muziksiz) return;
-  if (MZ) { MZ.g.gain.setTargetAtTime(0.5, AC.currentTime, 0.4); return; }
-  const gn = AC.createGain(), lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3200; gn.gain.value = 0; gn.connect(lp); lp.connect(AC.destination);
-  MZ = { g: gn, t: AC.currentTime + 0.1, n: 0 }; gn.gain.setTargetAtTime(0.5, AC.currentTime, 0.8);
-  const ADIM = 0.3;   // sekizlik nota suresi (100 vurus/dk)
-  MZ.iv = setInterval(() => {
-    if (!AC || AC.state !== 'running') return; if (MZ.t < AC.currentTime) MZ.t = AC.currentTime + 0.05;
-    while (MZ.t < AC.currentTime + 0.5) {
-      const olcu = Math.floor(MZ.n / 8) % 4, vur = MZ.n % 8, ak = MZAK[olcu], ez = MZEZ[Math.floor(MZ.n / 32) % 4];
-      if (vur === 0) { for (const f of ak) muzikNota(f, MZ.t, ADIM * 8.2, 0.035, 'sine'); muzikNota(ak[0] / 2, MZ.t, ADIM * 3.5, 0.07, 'triangle'); }
-      if (vur === 4) muzikNota(ak[0] / 2, MZ.t, ADIM * 3, 0.05, 'triangle');
-      const k = ez[vur], f = k === 3 ? ak[0] * 4 : ak[k] * 2; if (!(vur === 3 && olcu % 2)) muzikNota(f, MZ.t, 0.42, vur % 2 ? 0.035 : 0.055, 'triangle');
-      MZ.t += ADIM; MZ.n++;
-    }
-  }, 120);
+  if (!MZ) { try { MZ = mzKaynak('../ses/muzik/bolum.mp3?v=1'); MZ.el.loop = true; } catch (x) { MZ = null; return; } }
+  clearTimeout(MZ.dur); if (MZ.el.paused) MZ.el.play().catch(() => {});
+  MZ.g.gain.setTargetAtTime(mzHedef(), AC.currentTime, 0.6);
 }
-function muzikDur() { if (MZ) MZ.g.gain.setTargetAtTime(0, AC.currentTime, 0.2); }
-addEventListener('pointerup', () => { if (HRT && !HRT.classList.contains('on')) muzikBasla(); else if (!HRT) muzikBasla(); }, { passive: true });
+function muzikDur() { if (!MZ) return; MZ.g.gain.setTargetAtTime(0, AC.currentTime, 0.2); clearTimeout(MZ.dur); MZ.dur = setTimeout(() => MZ.el.pause(), 900); sarkiDur(); }
+// Foxi sarkisi. ad: 'kazan' (tamami) | 'tilki' (ilk 8 sn, yumusak kapanis). Tekrar cagrilirsa bastan baslar.
+function sarki(ad) {
+  if (K || TEST || !AC || SV.sessiz || SV.muziksiz) return;
+  if (!SR) { try { SR = mzKaynak('../ses/muzik/foxi_sarki.mp3?v=1'); SR.el.addEventListener('ended', sarkiDur); } catch (x) { SR = null; return; } }
+  clearTimeout(SR.kes); clearTimeout(SR.dur); SR.calar = true;
+  const t = AC.currentTime; SR.g.gain.cancelScheduledValues(t); SR.g.gain.setValueAtTime(SRV, t);
+  try { SR.el.currentTime = 0; } catch (x) {} SR.el.play().catch(() => {});
+  if (MZ) MZ.g.gain.setTargetAtTime(mzHedef(), t, 0.25);
+  if (ad === 'tilki') SR.kes = setTimeout(sarkiDur, 8000);
+}
+function sarkiDur() {
+  if (!SR || !SR.calar) return; SR.calar = false; clearTimeout(SR.kes);
+  SR.g.gain.setTargetAtTime(0, AC.currentTime, 0.35); clearTimeout(SR.dur); SR.dur = setTimeout(() => { if (!SR.calar) SR.el.pause(); }, 1600);
+  if (MZ && !MZ.el.paused) MZ.g.gain.setTargetAtTime(mzHedef(), AC.currentTime, 0.8);
+}
+addEventListener('pointerup', () => muzikBasla(), { capture: true, passive: true });   // v3.13: capture (ana sayfa dokunuslari yukari iletilmiyor); eski satir tanimsiz HRT'ye takilip hata veriyordu, muzik ana sayfada hic baslamiyordu
 // ---------------- Blok Smash 3. asama (v1.4): guclendiriciler ----------------
 // roket: sonraki atis roket olur, ilk kupe varinca ikiye ayrilip o sirayi saga sola siler
 // bomba: sonraki atis bomba olur, ilk degdigi yerde patlar, cevresini kirar
@@ -2436,7 +2445,7 @@ function sesAc() {
 }
 for (const ev of ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown']) addEventListener(ev, sesAc, { capture: true, passive: true });
 document.addEventListener('visibilitychange', () => { const v = $('bgv'); if (v && $('bg').classList.contains('vid')) { if (document.hidden) v.pause(); else v.play().catch(() => {}); }   // v6.29: ekran kapaliyken fon videosu durur
-  if (!AC) return; if (document.hidden) AC.suspend(); else if (!SV.sessiz) AC.resume().catch(() => {}); });
+  if (!AC) return; if (document.hidden) { AC.suspend(); if (MZ) MZ.el.pause(); if (SR) SR.el.pause(); } else if (!SV.sessiz) { AC.resume().catch(() => {}); if (MZ && !SV.muziksiz) muzikBasla(); } });   // v3.13: arka planda muzik dosyalari da durur
 function sesDugme() { const b = $('ses'); if (b) b.textContent = SV.sessiz ? '🔇' : '🔊'; }
 if ($('ses')) { sesDugme(); $('ses').onclick = () => { SV.sessiz = !SV.sessiz; save(); sesDugme(); if (SV.sessiz) { if (AC) AC.suspend(); } else { sesAc(); buzz(30); } }; }
 // Blok Smash 1. asama: parmak ekranda kaldikca seri atis (shoot kendi 0.22 sn araligini korur); parmak kayarsa nisan da kayar.
