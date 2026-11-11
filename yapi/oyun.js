@@ -10,7 +10,7 @@ import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=2';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=6';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { merkezKur } from './merkez.js?v=7';   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -23,7 +23,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.11', ZOR_ODUL = 20;
+const SURUM = 'v3.12', ZOR_ODUL = 20;
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 

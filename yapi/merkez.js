@@ -138,14 +138,16 @@ export function merkezKur(A) {
 
   // ---------------- 3B tilki (ana sayfanin ortasi) ----------------
   // v3.2: (Adem 11 Kas) ana sayfadaki tilki artik Adem'in videosu: goz kirpar, gercekci bakar, el sallar ve dans eder.
-  // Video yesil fonlu (karakter/tilki_dans.mp4, kesintisiz 4.5 sn dongu); yesil fon WebGL ile canli olarak saydam yapilir,
+  // v3.12: (Adem 11 Kas) yeni korsan tilki videosu (Gemini): eski videoda donguye girerken kesilme oluyordu. Yeni video ileri + geri (bumerang)
+  // oynatilarak dikissiz 19.8 sn donguye cevrildi; 480x700, ses yok.
+  // Video yesil fonlu (karakter/tilki_dans.mp4); yesil fon WebGL ile canli olarak saydam yapilir,
   // kenardaki yesil tasma temizlenir. Her telefonda calisir (saydam video bicimi gerekmez).
   function tilkiKur() {
     if (t3yuk) return t3yuk;
     return (t3yuk = (async () => {
       const kc = $('m-kc'), gl = kc.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
       if (!gl) return null;
-      const vid = document.createElement('video'); vid.src = '../karakter/tilki_dans.mp4?v=1'; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute('playsinline', ''); vid.setAttribute('webkit-playsinline', ''); vid.preload = 'auto'; vid.crossOrigin = 'anonymous';
+      const vid = document.createElement('video'); vid.src = '../karakter/tilki_dans.mp4?v=2'; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute('playsinline', ''); vid.setAttribute('webkit-playsinline', ''); vid.preload = 'auto'; vid.crossOrigin = 'anonymous';
       const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return o; };
       const pg = gl.createProgram();
       gl.attachShader(pg, sh(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 u; void main(){ u = vec2(p.x * 0.5 + 0.5, 0.5 - p.y * 0.5); gl_Position = vec4(p, 0.0, 1.0); }'));
@@ -166,12 +168,12 @@ export function merkezKur(A) {
       const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.uniform2f(gl.getUniformLocation(pg, 'px'), 1 / 478, 1 / 850);
+      gl.uniform2f(gl.getUniformLocation(pg, 'px'), 1 / 480, 1 / 700);
       let VW = 0, VH = 0;
       const boyut = () => {
         const w = kc.clientWidth, h = kc.clientHeight; if (!w || !h) return; const pr = Math.min(2, devicePixelRatio || 1);
         kc.width = Math.round(w * pr); kc.height = Math.round(h * pr);
-        const ar = 478 / 850; VH = kc.height * 0.97; VW = VH * ar; if (VW > kc.width * 0.98) { VW = kc.width * 0.98; VH = VW / ar; }
+        const ar = 480 / 700; VH = kc.height * 0.97; VW = VH * ar; if (VW > kc.width * 0.98) { VW = kc.width * 0.98; VH = VW / ar; }
         gl.viewport(Math.round((kc.width - VW) / 2), 0, Math.round(VW), Math.round(VH)); ciz(true);
       };
       const ciz = (zorla) => {
