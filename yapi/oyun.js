@@ -671,7 +671,33 @@ const TEMA_YAPI = ['cayir4', 'sirk'];
 // v6.1: fon her 3 bolumde bir degisir: cayir, karli koy, sahil. Zemin lekesi ve toz rengi fona uyar.
 const FONLAR = [{ f: 'cayir4', vid: 'cayir4', dirt: ['176,128,82', '160,112,70', '120,92,50'], toz: '#d9c3a0' }, { f: 'koy', vid: 'koy', dirt: ['120,78,40', '104,66,32', '80,50,24'], toz: '#e8c896' }, { f: 'kar3', vid: 'kar3', bs: 'auto 135%', bp: '50% 100%', dirt: ['236,242,252', '222,232,248', '200,214,236'], toz: '#ffffff' }, { f: 'sahil3', vid: 'sahil4', dirt: ['240,214,160', '228,198,140', '210,180,120'], toz: '#f3dfb4' }];
 const BOSFON = new Set(['cayir4', 'sahil3']);   // v6.17: cizili koyun/martilari silinmis fon; canlilari canli.js cizer
-function fonOf(L) { return FONLAR[Math.floor((L - 1) / 3) % FONLAR.length]; }   // v5.4: Adem'in cayir resmi + cizgili Tripo platformu (harabe kodu duruyor)
+function fonEski(L) { return FONLAR[Math.floor((L - 1) / 3) % FONLAR.length]; }   // v5.4: Adem'in cayir resmi + cizgili Tripo platformu (harabe kodu duruyor)
+// v3.19: (Adem) ?fon=yeni deneme anahtari: 8 tam resim fon (fon/yeni/*.webp, 768x1376), her dunya 10 bolum. Eski gorunum varsayilan.
+// cy: resimdeki bos yuvarlak zemin alaninin orta noktasi (yukseklik orani); platform ayagi kamera ile tam buraya oturur (fit).
+// isi: gunes/ay/isik huzmesinin resimdeki yeri (yalniz transform+opacity ile yavas parilti). pn: zemine gore zit renkli platform modeli.
+const FONYENI = Q.get('fon') === 'yeni';
+const YFON = {
+  koy: { f: 'y_koy', r: 'koy_gunduz', cy: 0.685, pn: 'platform_4', toz: '#e8c896', ad: 'Korsan Koyu' },
+  col: { f: 'y_col', r: 'col', cy: 0.688, pn: 'platform_4', toz: '#e8c48a', ad: 'Altın Çöl' },
+  seker: { f: 'y_seker', r: 'seker', cy: 0.700, pn: 'platform_4', toz: '#ffd0e4', ad: 'Şeker Diyarı' },
+  buz: { f: 'y_buz', r: 'buz', cy: 0.678, pn: 'platform_3', toz: '#ffffff', ad: 'Buz Koyu', isi: [0.49, 0.36, 0.5] },
+  gunbatimi: { f: 'y_gunbatimi', r: 'koy_gunbatimi', cy: 0.695, pn: 'platform_4', toz: '#f0c090', ad: 'Gün Batımı Koyu', isi: [0.51, 0.44, 0.6] },
+  volkan: { f: 'y_volkan', r: 'volkan', cy: 0.675, pn: 'platform_3', toz: '#b8a090', ad: 'Volkan Adası' },
+  gece: { f: 'y_gece', r: 'gece', cy: 0.670, pn: 'platform_3', toz: '#c8d4e8', ad: 'Gece Koyu', isi: [0.68, 0.26, 0.4] },
+  magara: { f: 'y_magara', r: 'magara', cy: 0.650, pn: 'platform_3', toz: '#e0c890', ad: 'Hazine Mağarası', isi: [0.55, 0.12, 0.7] }
+};
+for (const k in YFON) Object.assign(YFON[k], { yeni: 1, dirt: ['200,170,120', '180,150,100', '150,120,80'] });
+const YSIRA = ['koy', 'col', 'seker', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'];   // 1-10 koy, 11-20 col, ... 71-80 magara, sonra basa doner
+function fonOf(L) { return FONYENI && !K ? YFON[YSIRA[Math.floor((L - 1) / 10) % YSIRA.length]] : fonEski(L); }
+function platAd(fo) { return fo.pn || (fo.f.startsWith('kar') ? 'platform_3' : fo.f.startsWith('sahil') ? 'platform_2' : 'platform_4'); }
+// resim fonun (cover, ortali) ekrandaki yeri: resimdeki (fx, fy) oranlari -> ekran pikseli
+function fonPx(fx, fy) { const W = innerWidth, H = innerHeight, s = Math.max(W / 768, H / 1376); return [(W - 768 * s) / 2 + fx * 768 * s, (H - 1376 * s) / 2 + fy * 1376 * s, s]; }
+function fonIsi(fo) {
+  let d = $('bgisi'); if (!d) { d = document.createElement('div'); d.id = 'bgisi'; $('bg').after(d); }
+  if (!fo || !fo.isi) { d.style.display = 'none'; return; }
+  const [x, y, s] = fonPx(fo.isi[0], fo.isi[1]), r = 260 * s * fo.isi[2];
+  Object.assign(d.style, { display: 'block', left: (x - r) + 'px', top: (y - r) + 'px', width: 2 * r + 'px', height: 2 * r + 'px' });
+}
 // v6.1: bolum tasarimindaki renkler artik boya degil; renk ailesine gore Adem'in kup modeline (orijinal rengiyle) ya da cam sekle donusur.
 // Sutun tepeleri cogunlukla cam tepe sekli (kure, piramit, koni, kristal...), govdenin bir kismi cam yigin sekli olur. Bolume gore sabit.
 const NOMETAL = { metal: 'tas', celik: 'tas' };   // v6.27: (Adem) metal kup ve sesi istemiyor
@@ -736,7 +762,7 @@ function uretBolum(L) {
     const op = tip === 0 ? { r1: OY[a], r2: OY[b], kat: ri(1, 2), desen: ri(0, 3) } : tip === 1 ? { sut: ri(2, 4) } : tip === 2 ? { kat: ri(2, 3), kay: ri(0, 2) } : tip === 3 ? { kay: ri(0, 2), tepe: sec(['krM', 'krT']) } : tip === 4 ? { kat: ri(1, 2), kay: ri(0, 2) } : { sut: ri(2, 3), kay: ri(0, 1) };
     return { ad: sec(USIF) + ' ' + ['Duvar', 'Tapınak', 'Raf', 'Pastane', 'Hediye Kulesi', 'Depo'][tip], ek: 3, uretim: 1, make: () => YAPI[['duvar', 'tapinak', 'raf', 'pastane', 'hediye', 'depo'][tip]](op) };
   }
-  if (Q.get('eski') !== '1') return uret2(L, d, fonOf(L).f === 'koy');   // v3.16: yeni uretici (eski kod asagida duruyor, ?eski=1)
+  if (Q.get('eski') !== '1') return uret2(L, d, fonEski(L).f === 'koy');   // v3.16: yeni uretici (eski kod asagida duruyor, ?eski=1)
   const KIRIK = [C.kir, C.tur, C.pem], SAGLAM = d > 0.45 ? [C.mav, C.sar, C.mor, 'tugla', 'altin'] : [C.mav, C.sar, C.yes, 'tugla'];
   // her kat (j) ve aynaya gore sutun (m) icin malzeme: saglam payi zorlukla artar; sag-sol simetrik kalir
   const ps = 0.18 + 0.5 * d, katR = [], memo = {};
@@ -932,7 +958,7 @@ function buildLevel() {
   if (TEMA_YAPI[1] === 'sirk') {   // dikdortgen masa: yapinin her yanindan ~yarim kup bosluk
     let mx = 0, mz = 0; for (const [i, , k, col] of list) { const o = olcu(col); mx = Math.max(mx, (Math.abs(i - ci) + o[0]) * S); mz = Math.max(mz, (Math.abs(k - ck) + o[2]) * S); }
     // v6.12: (Adem) bolum 166'da kalan bloklar genis platformda yatip kaliyordu: kenar daraldi, kare platform sadece donen bolumde
-    R = Math.max(3.6, mx + S * 0.5); RZ = Math.max(2.4, mz + S * 0.45); const kare = Y.don; if (kare) R = RZ = Math.max(R, RZ); const karli = fonOf(LV).f.startsWith('kar'); setSirk(R, RZ, kare || karli ? 'platform_3' : fonOf(LV).f.startsWith('sahil') ? 'platform_2' : 'platform_4');   // v6.6: Adem'in platformlari   // v6.5: yapinin her yaninda genis kenar; donen platform kare
+    R = Math.max(3.6, mx + S * 0.5); RZ = Math.max(2.4, mz + S * 0.45); const kare = Y.don; if (kare) R = RZ = Math.max(R, RZ); setSirk(R, RZ, kare ? 'platform_3' : platAd(fonOf(LV)));   // v6.6: Adem'in platformlari   // v6.5: yapinin her yaninda genis kenar; donen platform kare
     DIRT.scale.set(6.4, 5, 1);
   }
   stage.scale.set(R / R0, 1, RZ / R0);
@@ -947,7 +973,7 @@ function buildLevel() {
 }
 // v6.13: birden fazla ya da kayan platformlu bolum
 function buildMulti(Y, list, PD) {
-  const fo0 = fonOf(LV).f, pn0 = fo0.startsWith('kar') ? 'platform_3' : fo0.startsWith('sahil') ? 'platform_2' : 'platform_4', pn = MOD[pn0] ? pn0 : 'platform_sirk';
+  const pn0 = platAd(fonOf(LV)), pn = MOD[pn0] ? pn0 : 'platform_sirk';
   const info = PD.map(() => ({ i0: 1e9, i1: -1e9, k0: 1e9, k1: -1e9 }));
   TOPY = 0;
   for (const c of list) { const f = info[c[4]], o = olcu(c[3]); f.i0 = Math.min(f.i0, c[0] - o[0] + 0.5); f.i1 = Math.max(f.i1, c[0] + o[0] - 0.5); f.k0 = Math.min(f.k0, c[2] - o[2] + 0.5); f.k1 = Math.max(f.k1, c[2] + o[2] - 0.5); TOPY = Math.max(TOPY, (c[1] + o[1]) * S + ((PD[c[4]] && PD[c[4]].y) || 0)); }
@@ -1004,7 +1030,7 @@ function addCubes(Y, list, ctr) {
   syncMeshes();
   g = { don: Y.don || 0, L: LV, ad: Y.ad, total: cubes.length, left: cubes.length, shots: shotsFor(cubes.length, Y), max: shotsFor(cubes.length, Y), state: 'play', t: 0, busy: 0, quiet: 0, combo: null, armed: false, bonus: 0, gold: 0 };
   FUSE.length = 0;
-  if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2') + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; setPlat(tm[1]); setDirt(fo); setSea(fo); canliFon(fo); videoFon(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
+  if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + (fo.yeni ? 'yeni/' + fo.r + '.webp?v=1' : fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2')) + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; $('bg').classList.toggle('koyu', !!fo.yeni && LV % 5 === 0); setPlat(tm[1]); setDirt(fo); setSea(fo); if (fo.yeni) DIRT.visible = false; canliFon(fo.yeni ? { f: fo.f, vid: 1 } : fo); videoFon(fo); fonIsi(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
   const nm = $('nm'); nm.innerHTML = '<div class="rb1"><small>BÖLÜM ' + LV + '</small><b>' + Y.ad + '</b></div>'; nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
   hud(true);
 }
@@ -2182,7 +2208,7 @@ function pesEt() { if (g && (g.armed || g.state === 'lose')) { SV.dus = LV; ist(
 function merkezBagla() {
   M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, SURUM, ZOR_ODUL,
     ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
-    bolge: (L) => FONAD[fonOf(L).f] || ['', 'c'], bolumAdi: (L) => { try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
+    bolge: (L) => { const fo = fonOf(L); return FONAD[fo.f] || (fo.yeni ? [fo.ad, fo.f === 'y_buz' ? 'k' : 's'] : ['', 'c']); }, bolumAdi: (L) => { try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
 }
 // ================= v3.13: muzik =================
 // (Adem 11 Kas) kodla calinan eski notalar yerine Adem'in Gemini ile urettigi muzikler (ses/muzik/):
@@ -2545,13 +2571,16 @@ function fit() {
   const tops = [[-R, TOPY + 0.2, -RZ], [R, TOPY + 0.2, -RZ], [-R, TOPY + 0.2, RZ], [R, TOPY + 0.2, RZ]], bots = [[-R, -0.8, RZ], [R, -0.8, RZ]];
   const yOf = (p) => V.set(p[0], p[1], p[2]).project(cam).y;
   const place = (d, ty) => { tg.set(0, ty, 0); CTG.copy(tg); cam.position.copy(tg).addScaledVector(dir, d); cam.lookAt(tg); cam.updateMatrixWorld(true); };
+  const foY = fonOf(LV), ayak = foY && foY.yeni ? 1 - 2 * fonPx(0.5, foY.cy)[1] / H : null;
   let d = Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
   for (; d < 120; d += 0.25) {
     let lo = -10, hi = TOPY + 10;
-    for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); const top = Math.max(...tops.map(yOf)), bot = Math.min(...bots.map(yOf)); if ((top + bot) / 2 > 0.13) lo = ty; else hi = ty; }
+    // v3.19: resim fonda platform ayagi (0, GY, 0) resimdeki bos yuvarlak zeminin ortasina oturur (ekranda sabit nokta); kamera yapi sigana kadar geri cekilir
+    if (ayak != null) { for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); if (yOf([0, GY, 0]) > ayak) lo = ty; else hi = ty; } }
+    else for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); const top = Math.max(...tops.map(yOf)), bot = Math.min(...bots.map(yOf)); if ((top + bot) / 2 > 0.13) lo = ty; else hi = ty; }
     place(d, (lo + hi) / 2);
     const top = Math.max(...tops.map(yOf)), bot = Math.min(...bots.map(yOf)), side = Math.max(...tops.concat(bots).map((p) => Math.abs(V.set(p[0], p[1], p[2]).project(cam).x)));
-    if (top < 0.74 && bot > -0.46 && side < 0.92) break;   // v6.5: yapi ekrani daha cok doldurur
+    if (top < 0.74 && (ayak != null || bot > -0.46) && side < 0.92) break;   // v6.5: yapi ekrani daha cok doldurur
   }
   // top arabasi
   if (TC.gun) {
@@ -2563,7 +2592,7 @@ function fit() {
     TC.by = (lo + hi) / 2; TC.holder.position.y = TC.by;
     const ph = Math.max(0.2, (TC.by - GY) / TC.k); TC.pad.scale.y = ph; TC.pad.position.y = -ph / 2; TC.rim2.position.y = -ph + 0.12;
   }
-  cam.userData.base = cam.position.clone(); tilkiYer();
+  cam.userData.base = cam.position.clone(); tilkiYer(); if (FONYENI) fonIsi(fonOf(LV));
 }
 addEventListener('resize', fit); fit();
 
@@ -2619,6 +2648,7 @@ let last = 0, shake = 0, STARTT = 0;
 function frame(ts) {
   // v3.0: ana sayfa acikken ya da oyun duraklatilmisken sahne islemez ve cizilmez (telefon isinmasin); bolum kurulduktan sonraki ilk 2,5 sn haric (malzemeler derlensin)
   { const v = $('bgv'), dur = !!(M && M.durdur()); if (v && dur && !v.paused) v.pause(); else if (v && !dur && v.paused && $('bg').classList.contains('vid')) v.play().catch(() => {}); }   // v3.18: ana sayfa/duraklatma acikken fon videosu durur
+  { const gi = $('bgisi'); if (gi) gi.classList.toggle('dur', !!(M && M.durdur())); }   // v3.19: menu acikken fon parlamasi durur
   if (M && M.durdur() && performance.now() - STARTT > 2500) { last = 0; if (!TEST) requestAnimationFrame(frame); return; }
   const dt = Math.min(0.05, last ? (ts - last) / 1000 : 0.016); last = ts;
   if (HS > 0) { HS -= dt; if (HS <= 0) TS = 1; }

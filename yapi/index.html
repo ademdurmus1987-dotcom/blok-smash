@@ -13,6 +13,7 @@
 html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:var(--font);color:#2b1d5c;touch-action:none}
 #bg{position:fixed;inset:0;background:#7cc6ff center/cover no-repeat;transition:background-image .4s;filter:saturate(1.25) brightness(1.06) contrast(1.04)}
 #bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:none}#bg.vid video{display:block}#bg.vid{filter:none}
+#bg.koyu{filter:saturate(1.15) brightness(.74) contrast(1.06)}#bgisi{position:fixed;pointer-events:none;border-radius:50%;background:radial-gradient(circle,rgba(255,248,215,.5) 0,rgba(255,240,200,.18) 38%,rgba(255,240,200,0) 68%);animation:isi 7s ease-in-out infinite;will-change:transform,opacity}#bgisi.dur{animation-play-state:paused}@keyframes isi{0%,100%{transform:scale(.9);opacity:.45}50%{transform:scale(1.12);opacity:.9}}
 #bg:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(255,255,255,0) 40%,rgba(30,20,70,.1) 100%)}
 #canli{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none;filter:saturate(1.25) brightness(1.06) contrast(1.04)}
 #onfx{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:2}
@@ -206,6 +207,6 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
   addEventListener('pointerup', birak, true); addEventListener('pointercancel', birak, true);
 })();
 </script>
-<script type="module" src="oyun.js?v=79"></script>
+<script type="module" src="oyun.js?v=80"></script>
 </body>
 </html>
