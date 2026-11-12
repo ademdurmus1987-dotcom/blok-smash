@@ -31,7 +31,7 @@ const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, bl
 // ---------------- olculer ----------------
 const S = 1.55;          // kup kenari (iri)
 const R0 = 6.1;          // platform modelinin yaricapi
-let R = R0, RZ = R0, TOPY = 6;   // R: platformun yarim genisligi (x), RZ: yarim derinligi (z)              // bu bolumdeki yaricap: yapinin hemen disi, itilen kup kenardan dussun
+let R = R0, RZ = R0, RZB = R0, TOPY = 6;   // v3.19: RZB: platformlarin arkaya uzanimi (cok platformda arkadakiler)   // R: platformun yarim genisligi (x), RZ: yarim derinligi (z)              // bu bolumdeki yaricap: yapinin hemen disi, itilen kup kenardan dussun
 let GY = -4.0;           // v6.19: korsan modunda deniz seviyesi hedefe gore degisir (sal alcak, kule yuksek)         // zemin: platform kisa bir direk ustunde durur, dusen kupler direk dibindeki zeminde yuvarlanir
 const PT = 1.1;          // platform tablasinin kalinligi (ust yuzey y=0)
 const POFI = new THREE.Vector3(1.35, GY, 9.6);   // v5.4: Pofi top arabasinin yaninda; ikisi birlikte ortada   // v5.3: Pofi ortada (Adem: kenarda durmasin)
@@ -940,7 +940,7 @@ function kolaFis(c) {
   if (AC) { out(); play('yersu', 0.3, 1.6 + Math.random() * 0.2); }
 }
 function buildLevel() {
-  clearLevel();
+  clearLevel(); RZB = 0;
   const Y = levelOf(LV), made = Y.make(), list = convertLevel(made, LV);
   list.forEach((c, n) => { c[4] = made[n][4] || 0; });
   if (!K) kolaKoy(list, LV);
@@ -975,15 +975,28 @@ function buildLevel() {
 function buildMulti(Y, list, PD) {
   const pn0 = platAd(fonOf(LV)), pn = MOD[pn0] ? pn0 : 'platform_sirk';
   const info = PD.map(() => ({ i0: 1e9, i1: -1e9, k0: 1e9, k1: -1e9 }));
-  TOPY = 0;
-  for (const c of list) { const f = info[c[4]], o = olcu(c[3]); f.i0 = Math.min(f.i0, c[0] - o[0] + 0.5); f.i1 = Math.max(f.i1, c[0] + o[0] - 0.5); f.k0 = Math.min(f.k0, c[2] - o[2] + 0.5); f.k1 = Math.max(f.k1, c[2] + o[2] - 0.5); TOPY = Math.max(TOPY, (c[1] + o[1]) * S + ((PD[c[4]] && PD[c[4]].y) || 0)); }
-  R = 0; RZ = 0;
+  for (const c of list) { const f = info[c[4]], o = olcu(c[3]); f.i0 = Math.min(f.i0, c[0] - o[0] + 0.5); f.i1 = Math.max(f.i1, c[0] + o[0] - 0.5); f.k0 = Math.min(f.k0, c[2] - o[2] + 0.5); f.k1 = Math.max(f.k1, c[2] + o[2] - 0.5); }
   PD.forEach((d, n) => {
     const f = info[n]; f.ci = (f.i0 + f.i1) / 2; f.ck = (f.k0 + f.k1) / 2;
     const mx = (f.i1 - f.i0) / 2 * S + S / 2, mz = (f.k1 - f.k0) / 2 * S + S / 2;
     f.r = Math.max(2.2, mx + S * 0.5); f.rz = Math.max(1.9, mz + S * 0.45);
-    R = Math.max(R, Math.abs(d.x || 0) + f.r + (d.kay ? d.kay.a : 0)); RZ = Math.max(RZ, Math.abs(d.z || 0) + f.rz);
   });
+  // v3.19: (Adem) resim fonda ana platform (ortadaki) zemin alaninin tam ortasinda; digerleri yan yana degil, onun ARKASINDA ve biraz yukarida
+  // (bot testi: arkaya dizince 4. bolum belirgin zorlasti; zorluk degismesin diye yalniz &dizi=arka ile karsilastirma icin acik)
+  if (FONYENI && Q.get('dizi') === 'arka' && PD.length > 1) {
+    let m = 0; PD.forEach((d, n) => { if (Math.abs(d.x || 0) < Math.abs(PD[m].x || 0) - 0.01) m = n; });
+    const hy = PD.map(() => 0); for (const c of list) hy[c[4]] = Math.max(hy[c[4]], (c[1] + olcu(c[3])[1]) * S);   // her platformdaki yapinin yuksekligi
+    let zb = -info[m].rz, yb = 0, hb = hy[m]; const yeni = PD.map((d) => ({ ...d }));
+    Object.assign(yeni[m], { x: 0, z: 0, y: 0 });
+    // arkadaki, ondeki yapinin yarisindan biraz yukarida durur: ust kismi her zaman gorunur, nisan alinabilir
+    PD.forEach((d, n) => { if (n === m) return; const z = zb - 1.1 - info[n].rz; yb = Math.max(yb + 1.5, yb + hb * 0.55); Object.assign(yeni[n], { x: 0, z, y: yb }); zb = z - info[n].rz; hb = hy[n]; });
+    PD = yeni;
+  }
+  TOPY = 0;
+  for (const c of list) TOPY = Math.max(TOPY, (c[1] + olcu(c[3])[1]) * S + ((PD[c[4]] && PD[c[4]].y) || 0));
+  R = 0; RZ = 0; RZB = 0;
+  PD.forEach((d, n) => { const f = info[n]; R = Math.max(R, Math.abs(d.x || 0) + f.r + (d.kay ? d.kay.a : 0)); RZ = Math.max(RZ, Math.abs(d.z || 0) + f.rz); RZB = Math.max(RZB, -(d.z || 0) + f.rz); });
+  if (FONYENI) RZ = Math.max(...PD.map((d, n) => (d.z || 0) + info[n].rz));   // on kenar: yalniz ana platform (araba, engel, atis kenari buna gore)
   setSirk(info[0].r, info[0].rz, pn);
   platShapes(platBody, info[0].r, info[0].rz); platBody.quaternion.set(0, 0, 0, 1); platBody.angularVelocity.set(0, 0, 0); PANG = 0;
   PD.forEach((d, n) => {
@@ -2568,7 +2581,7 @@ function fit() {
     dir = new THREE.Vector3(Math.sin(CAZ) * Math.cos(pitch), Math.sin(pitch), Math.cos(CAZ) * Math.cos(pitch)), thx = Math.tan(cam.fov * Math.PI / 360) * cam.aspect;
   const V = new THREE.Vector3(), tg = new THREE.Vector3();
   const yD = levelOf(LV), reach = yD && yD.don ? Math.hypot(R, RZ) : RZ;   // donen platformda kose disari tasar
-  const tops = [[-R, TOPY + 0.2, -RZ], [R, TOPY + 0.2, -RZ], [-R, TOPY + 0.2, RZ], [R, TOPY + 0.2, RZ]], bots = [[-R, -0.8, RZ], [R, -0.8, RZ]];
+  const tops = [[-R, TOPY + 0.2, -(FONYENI ? Math.max(RZ, RZB) : RZ)], [R, TOPY + 0.2, -(FONYENI ? Math.max(RZ, RZB) : RZ)], [-R, TOPY + 0.2, RZ], [R, TOPY + 0.2, RZ]], bots = [[-R, -0.8, RZ], [R, -0.8, RZ]];
   const yOf = (p) => V.set(p[0], p[1], p[2]).project(cam).y;
   const place = (d, ty) => { tg.set(0, ty, 0); CTG.copy(tg); cam.position.copy(tg).addScaledVector(dir, d); cam.lookAt(tg); cam.updateMatrixWorld(true); };
   const foY = fonOf(LV), ayak = foY && foY.yeni ? 1 - 2 * fonPx(0.5, foY.cy)[1] / H : null;
