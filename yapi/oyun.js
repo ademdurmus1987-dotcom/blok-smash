@@ -41,7 +41,7 @@ const GONE_Y = -0.45;    // bunun altina inen kup platformdan dusmus sayilir
 // ---------------- cizim ----------------
 const glc = $('gl');
 const ren = new THREE.WebGLRenderer({ canvas: glc, antialias: true, alpha: true, preserveDrawingBuffer: TEST }); ren.setClearColor(0, 0);
-ren.setPixelRatio(Math.min(Math.min(innerWidth, innerHeight) < 600 ? 1.5 : 2, devicePixelRatio || 1));   // v6.29: (Adem: telefon cok isiniyor) telefonda en cok 1.5 (2 yerine %44 daha az piksel)
+ren.setPixelRatio(Math.min(Math.min(innerWidth, innerHeight) < 600 ? 1.25 : 2, devicePixelRatio || 1));   // v3.18: (Adem: telefon cok isiniyor) 1.5 -> 1.25   // v6.29: (Adem: telefon cok isiniyor) telefonda en cok 1.5 (2 yerine %44 daha az piksel)
 ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.32;   // v6.1: daha parlak
 ren.shadowMap.enabled = true; ren.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
@@ -2603,6 +2603,7 @@ function isitma() {
 let last = 0, shake = 0, STARTT = 0;
 function frame(ts) {
   // v3.0: ana sayfa acikken ya da oyun duraklatilmisken sahne islemez ve cizilmez (telefon isinmasin); bolum kurulduktan sonraki ilk 2,5 sn haric (malzemeler derlensin)
+  { const v = $('bgv'), dur = !!(M && M.durdur()); if (v && dur && !v.paused) v.pause(); else if (v && !dur && v.paused && $('bg').classList.contains('vid')) v.play().catch(() => {}); }   // v3.18: ana sayfa/duraklatma acikken fon videosu durur
   if (M && M.durdur() && performance.now() - STARTT > 2500) { last = 0; if (!TEST) requestAnimationFrame(frame); return; }
   const dt = Math.min(0.05, last ? (ts - last) / 1000 : 0.016); last = ts;
   if (HS > 0) { HS -= dt; if (HS <= 0) TS = 1; }

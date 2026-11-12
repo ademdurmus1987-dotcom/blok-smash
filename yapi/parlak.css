@@ -12,8 +12,6 @@
 .lvp b{color:#ffe14a!important}
 #prog{box-shadow:0 0 0 2px var(--altin3),0 4px 0 #050a30,inset 0 3px 4px rgba(0,0,0,.5)!important;height:14px!important;border-radius:8px!important}
 #pb{position:relative;background:linear-gradient(180deg,#d4ff9a 0%,#6ee03a 45%,#3fb82a 55%,#2f9a1e 100%)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.65),0 0 10px rgba(140,240,90,.7)!important;overflow:hidden}
-#pb:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.28) 0 6px,transparent 6px 12px);animation:pbkay .8s linear infinite}
-@keyframes pbkay{to{background-position:17px 0}}
 .ib{position:relative;overflow:hidden;width:56px!important;height:56px!important;box-shadow:0 0 0 2px var(--altin3),0 6px 0 var(--lac3),0 10px 16px rgba(6,10,50,.45),inset 0 3px 0 rgba(255,255,255,.4),inset 0 -4px 0 rgba(0,0,0,.2)!important}
 .ib:before{content:"";position:absolute;left:14%;top:6%;width:72%;height:40%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));pointer-events:none}
 .ib svg{position:relative;filter:drop-shadow(0 2px 0 #0c1c58) drop-shadow(0 0 1px #0c1c58)!important}
@@ -21,7 +19,6 @@
 
 /* "Dokun ve ates et!" */
 #hint{overflow:hidden;background:linear-gradient(180deg,#7a5cff 0%,#4a2ad8 48%,#3a1cbc 52%,#2e129e 100%)!important;border:3px solid #fff!important;-webkit-text-stroke:2.5px #1a0a66;paint-order:stroke fill;text-shadow:0 3px 0 #1a0a66!important;box-shadow:0 0 0 3px #1a0a66,0 6px 0 #1a0a66,0 10px 18px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.4)!important;font-size:21px!important}
-#hint:after{content:"";position:absolute;top:-20%;bottom:-20%;left:-40%;width:26%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-18deg);animation:mparla 2.8s ease-in-out infinite}
 #hint:before{filter:drop-shadow(0 2px 0 rgba(0,0,0,.4))}
 
 /* bolum adi seridi */
@@ -38,13 +35,10 @@
 .gb .hl,.gt .hl{background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0))!important}
 .gb i,.gt i{filter:drop-shadow(0 3px 0 rgba(0,0,0,.45)) drop-shadow(0 0 4px rgba(255,255,255,.35))!important}
 .gb .n,.gt .n{box-shadow:0 3px 0 #6a0a22,inset 0 2px 0 rgba(255,255,255,.5);-webkit-text-stroke:1.5px #6a0a22!important;paint-order:stroke fill;font-size:16px!important}
-.gb:after,.gt:after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:300% 100%;animation:ggpar 3.2s ease-in-out infinite;pointer-events:none}
-@keyframes ggpar{0%,60%{background-position:120% 0}100%{background-position:-60% 0}}
 
 /* ---------- kartlar ---------- */
 .card{box-shadow:0 10px 0 #4a1f6e,0 22px 44px rgba(0,0,0,.45),inset 0 5px 0 #fff,inset 0 -6px 0 rgba(160,100,40,.15)!important}
 .card .rib{-webkit-text-stroke:3px #8a3a00!important;text-shadow:0 4px 0 #8a3a00,0 8px 10px rgba(0,0,0,.25)!important;box-shadow:0 7px 0 #4a1f6e,0 12px 16px rgba(0,0,0,.3),inset 0 4px 0 rgba(255,255,255,.65),inset 0 -5px 0 rgba(0,0,0,.12)!important;overflow:hidden}
-.card .rib:after{content:"";position:absolute;top:-20%;bottom:-20%;left:-40%;width:22%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);transform:skewX(-18deg);animation:mparla 2.6s ease-in-out infinite}
 .card h2{background:linear-gradient(180deg,#8a4cf0 0%,#5a24b8 60%,#3a0d7e 100%);-webkit-background-clip:text;background-clip:text;color:transparent!important;filter:drop-shadow(0 2px 0 #fff) drop-shadow(0 3px 0 rgba(74,31,110,.35));font-size:30px!important}
 .btn{position:relative;overflow:hidden;background:linear-gradient(180deg,#a4f86a 0%,#58d436 48%,#35ac22 52%,#2f9a1e 100%)!important;-webkit-text-stroke:2.5px #1f5e14!important;box-shadow:0 7px 0 #17520f,0 12px 18px rgba(0,0,0,.3),inset 0 4px 0 rgba(255,255,255,.55),inset 0 -5px 0 rgba(0,0,0,.12)!important}
 .btn.o{background:linear-gradient(180deg,#ffd76a 0%,#ffae2e 48%,#f58a12 52%,#e87a08 100%)!important;-webkit-text-stroke-color:#8a3a00!important;box-shadow:0 7px 0 #8a3a00,0 12px 18px rgba(0,0,0,.3),inset 0 4px 0 rgba(255,255,255,.55)!important}
@@ -77,14 +71,13 @@
 .m-seri,.m-zor{box-shadow:0 4px 0 rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.3)}
 
 /* ---------- v3.17: gercekci 3B ikonlar (Gemini), ust cubuk sigdirma, 3B kabartma yazilar ---------- */
-img.i3{display:block;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+img.i3{display:inline-block;width:1.25em;height:1.25em;vertical-align:middle;object-fit:contain;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
 .m-yb .m-yk{display:grid;place-items:center}
 .m-yb .m-yk img.i3{position:relative;width:54px;height:54px;margin-top:-2px;filter:drop-shadow(0 4px 3px rgba(0,0,0,.45))!important;transition:transform .2s}
 .m-yb:active .m-yk img.i3{transform:scale(.9)}
 .m-hap img.i3{width:30px;height:30px;margin:0 -1px 0 -3px;flex:none}
 .m-yuv{display:grid!important;place-items:center;padding:0!important}
-.m-yuv img.i3{width:30px;height:30px;animation:dislidon 12s linear infinite}
-@keyframes dislidon{to{transform:rotate(360deg)}}
+.m-yuv img.i3{width:30px;height:30px}
 .o-sahne img.o-sn{position:relative;width:150px;height:150px;filter:drop-shadow(0 8px 4px rgba(90,50,10,.35));animation:osal .5s ease-in-out 3,mzip .5s cubic-bezier(.2,1.6,.4,1) both}
 .gb i,.gt i{display:grid!important;place-items:center;width:100%;height:100%}
 .gb img.i3,.gt img.i3{width:44px;height:44px;filter:drop-shadow(0 3px 2px rgba(0,0,0,.5))}
@@ -113,13 +106,18 @@ img.i3{display:block;pointer-events:none;-webkit-user-drag:none;filter:drop-shad
 .card .rib.r{text-shadow:0 1px 0 #6a0a22,0 2px 0 #6a0a22,0 3px 0 #6a0a22,0 4px 0 #6a0a22,0 5px 0 #6a0a22,0 6px 1px rgba(0,0,0,.4),0 9px 12px rgba(0,0,0,.3)!important}
 .card .rib.ys{text-shadow:0 1px 0 #0c2a78,0 2px 0 #0c2a78,0 3px 0 #0c2a78,0 4px 0 #0c2a78,0 5px 0 #0c2a78,0 6px 1px rgba(0,0,0,.4),0 9px 12px rgba(0,0,0,.3)!important}
 #nm b{text-shadow:0 1px 0 #6a0a22,0 2px 0 #6a0a22,0 3px 0 #6a0a22,0 4px 0 #6a0a22,0 5px 0 #6a0a22,0 6px 1px rgba(0,0,0,.4),0 10px 14px rgba(0,0,0,.35)!important}
-/* renk gecisli 3B: parlak ust, koyu alt + kontur + yigin golge */
-.topc b,.lvp b,.card h2,.m-oyna b,.stars+h2{background:linear-gradient(180deg,#ffffff 0%,#fff6c8 38%,#ffd23a 62%,#ff9a12 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;
-  -webkit-text-stroke:0!important;text-shadow:none!important;display:inline-block;
-  filter:drop-shadow(2px 0 0 var(--k3,#0c1c58)) drop-shadow(-2px 0 0 var(--k3,#0c1c58)) drop-shadow(0 2px 0 var(--k3,#0c1c58)) drop-shadow(0 -2px 0 var(--k3,#0c1c58)) drop-shadow(0 1px 0 var(--k3,#0c1c58)) drop-shadow(0 1px 0 var(--k3,#0c1c58)) drop-shadow(0 2px 0 var(--k3,#0c1c58)) drop-shadow(0 4px 4px rgba(0,0,0,.4))!important}
-.topc b{display:block!important;box-shadow:none!important;border-radius:0!important;font-size:36px!important;line-height:1.15!important}
+/* v3.18: renk gecisli yazi (background-clip:text) Adem'in telefonunda yazinin yerine beyaz kutu cizdi. Duz renk + kontur + katman katman 3B golge (her tarayicida calisir). */
+.topc b,.lvp b,.card h2,.m-oyna b{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;filter:none!important;
+  -webkit-text-stroke:var(--ks,3px) var(--k3,#0c1c58)!important;paint-order:stroke fill;
+  text-shadow:0 1px 0 var(--k3,#0c1c58),0 2px 0 var(--k3,#0c1c58),0 3px 0 var(--k3,#0c1c58),0 4px 0 var(--k3,#0c1c58),0 5px 1px rgba(0,0,0,.45),0 8px 10px rgba(0,0,0,.35)!important}
+.topc b{display:block!important;box-shadow:none!important;border-radius:0!important;font-size:36px!important;line-height:1.15!important;color:#ffe14a!important}
 .topc{padding-bottom:4px!important}
-.lvp b{--k3:#0b1242}
-.card h2{--k3:#4a1f6e;font-size:31px!important}
-.m-oyna b{--k3:#17520f;background:linear-gradient(180deg,#ffffff 0%,#ffffff 45%,#e4ffd0 70%,#b8f08c 100%)!important}
-.m-oynak.zor .m-oyna b{--k3:#3a0d5e;background:linear-gradient(180deg,#ffffff 0%,#ffffff 45%,#f0dcff 70%,#d8a8ff 100%)!important}
+.lvp b{--k3:#0b1242;--ks:2px;color:#ffe14a!important}
+.card h2{--k3:#4a1f6e;--ks:2px;color:#ffffff!important;font-size:31px!important}
+.m-oyna b{--k3:#17520f;color:#ffffff!important}
+.m-oynak.zor .m-oyna b{--k3:#3a0d5e}
+
+/* v3.18 isinma: parilti seridi 'left' yerine transform ile kayar (her karede sayfa yeniden boyanmaz), bekleme uzun */
+@keyframes mparla{0%,78%{transform:translateX(0) skewX(-18deg)}100%{transform:translateX(620%) skewX(-18deg)}}
+.m-btn:after,.btn:after{will-change:transform;animation-duration:4.5s!important}
+.gb:not(.bas):not(.salla):not(.sec),.gt:not(.bas):not(.salla){animation:none!important}
