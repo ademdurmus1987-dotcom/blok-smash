@@ -768,6 +768,7 @@ function uretBolum(L) {
 }
 // hareketli engeller: top yolunda donen kurek, sallanan kalkan, kayan tahta. 1-3 yok; 4, 7, 10 tanitim; sonra sansla.
 function engelOf(L, Y) {
+  if (Q.get('engel') === 'kapi') return [{ t: 'kapi' }];   // deneme: ?engel=kapi her bolumde kapi koyar
   if (L < 4) return [];
   if (L === 4) return [{ t: 'kurek' }]; if (L === 7) return [{ t: 'kalkan' }]; if (L === 10) return [{ t: 'kayan' }];
   const r = mul32(L * 104729 + 7), d = zorluk(L); if (r() > 0.38 + 0.35 * d) return [];
@@ -817,6 +818,13 @@ const ENGTAH = canvasTex(256, 64, (x, w, h) => {
 });
 const ENGM = { tahta: new THREE.MeshStandardMaterial({ map: ENGTAH, roughness: 0.72 }), kirmizi: new THREE.MeshStandardMaterial({ color: '#e8333f', roughness: 0.35, emissive: '#5a0010', emissiveIntensity: 0.25 }),
   beyaz: new THREE.MeshStandardMaterial({ color: '#fff6e8', roughness: 0.4 }), altin: new THREE.MeshStandardMaterial({ color: '#ffc531', roughness: 0.28, metalness: 0.65, emissive: '#6a4200', emissiveIntensity: 0.35 }) };
+const KAPIEN = 508 / 512, KAPITEX = PTL.load('engel/kapi.webp?v=1'); KAPITEX.colorSpace = THREE.SRGBColorSpace; KAPITEX.anisotropy = 8;
+ENGM.kapi = new THREE.MeshStandardMaterial({ map: KAPITEX, roughness: 0.6, metalness: 0.15 }); ENGM.demir = new THREE.MeshStandardMaterial({ color: '#4a4f58', roughness: 0.45, metalness: 0.7 });
+function kapiSekil(w, h) {   // kemerli ust, resmin dis cizgisi; doku merkezden olculur
+  const hw = w / 2, hh = h / 2, ar = h * 0.1, s = new THREE.Shape();
+  s.moveTo(-hw, -hh); s.lineTo(hw, -hh); s.lineTo(hw, hh - ar); s.quadraticCurveTo(hw * 0.92, hh, 0, hh); s.quadraticCurveTo(-hw * 0.92, hh, -hw, hh - ar); s.lineTo(-hw, -hh);
+  KAPITEX.repeat.set(1 / w, 1 / h); KAPITEX.offset.set(0.5, 0.5); return s;
+}
 function engTemizle() { for (const e of ENG) { world.removeBody(e.body); scene.remove(e.grp); } ENG.length = 0; }
 function engMesh(grp, geo, mat, x, y, z, rz) { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); if (rz) m.rotation.z = rz; m.castShadow = true; grp.add(m); return m; }
 function engKutu(body, hx, hy, hz, x, y, rz) { const q = new CANNON.Quaternion(); q.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), rz || 0); body.addShape(new CANNON.Box(new CANNON.Vec3(hx, hy, hz)), new CANNON.Vec3(x, y, 0), q); }
@@ -843,6 +851,12 @@ function engKur(L, Y) {
       engMesh(grp, new THREE.SphereGeometry(0.3, 16, 12), ENGM.altin, 0, -lr, 0.16); engMesh(grp, new THREE.SphereGeometry(0.22, 16, 12), ENGM.altin, 0, 0, 0);
       engKutu(body, 1.3, 1.3, 0.16, 0, -lr);
       E.a = Math.asin(Math.min(0.9, (R * 0.72) / lr)); E.w = (1.05 + 0.5 * d) * hz;
+    } else if (e.t === 'kapi') {
+      // v3.19: dev kapi (Gemini resminden kalin 3B levha): ayakta durur, aralikla yukari kalkip acilir, inince topu durdurur
+      const bw = e.gen || (R * 2 + 0.9), bh = TOPY + 0.7, ge = new THREE.ExtrudeGeometry(kapiSekil(bw * 0.97, bh * 0.97), { depth: 0.42, bevelEnabled: true, bevelSize: 0.05, bevelThickness: 0.06, bevelSegments: 2, curveSegments: 10 });
+      ge.translate(0, 0, -0.21); engMesh(grp, ge, [ENGM.kapi, ENGM.demir], 0, 0, 0);
+      engKutu(body, bw / 2, bh / 2, 0.27, 0, 0);
+      E.y0 = bh / 2 - 0.2; E.a = bh + 0.5; E.w = (0.85 + 0.4 * d) * hz;
     } else {
       const bw = 2.7, bh = 1.9; engMesh(grp, new THREE.BoxGeometry(bw, bh, 0.32), ENGM.tahta, 0, 0, 0);
       engMesh(grp, new THREE.BoxGeometry(0.22, bh + 0.1, 0.38), ENGM.kirmizi, -bw / 2, 0, 0); engMesh(grp, new THREE.BoxGeometry(0.22, bh + 0.1, 0.38), ENGM.kirmizi, bw / 2, 0, 0);
@@ -858,12 +872,13 @@ function engKur(L, Y) {
 }
 function engKare(t) {
   for (const E of ENG) {
-    const b = E.body; let x = E.x0, th = 0, vx = 0, wz = 0;
-    if (E.t === 'kurek') { th = E.ters * E.w * t; wz = E.ters * E.w; }
+    const b = E.body; let x = E.x0, th = 0, vx = 0, wz = 0, y = E.y0, vy = 0;
+    if (E.t === 'kapi') { const sn = Math.sin(E.w * t) * 1.7, k = Math.max(-1, Math.min(1, sn)); y = E.y0 + E.a * (0.5 + 0.5 * k); vy = Math.abs(sn) < 1 ? E.a * 0.85 * E.w * Math.cos(E.w * t) : 0; }
+    else if (E.t === 'kurek') { th = E.ters * E.w * t; wz = E.ters * E.w; }
     else if (E.t === 'kalkan') { th = E.a * Math.sin(E.w * t); wz = E.a * E.w * Math.cos(E.w * t); }
     else { x = E.x0 + E.a * Math.sin(E.w * t); vx = E.a * E.w * Math.cos(E.w * t); }
-    b.position.set(x, E.y0, E.z0); b.quaternion.setFromAxisAngle(QZ, th); b.velocity.set(vx, 0, 0); b.angularVelocity.set(0, 0, wz); b.aabbNeedsUpdate = true;
-    E.grp.position.set(x, E.y0, E.z0); E.grp.rotation.set(0, 0, th);
+    b.position.set(x, y, E.z0); b.quaternion.setFromAxisAngle(QZ, th); b.velocity.set(vx, vy, 0); b.angularVelocity.set(0, 0, wz); b.aabbNeedsUpdate = true;
+    E.grp.position.set(x, y, E.z0); E.grp.rotation.set(0, 0, th);
   }
 }
 const QZ = new CANNON.Vec3(0, 0, 1);
