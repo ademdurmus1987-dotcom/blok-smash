@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=4';
 import { kaleYapi, hazineYapi } from './kale.js?v=1';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=14';
+import { merkezKur } from './merkez.js?v=15';
 import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=4';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
@@ -29,7 +29,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v4.6', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v4.7', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -126,15 +126,20 @@ const MFILE = { kup: 'kup_metal', metal: 'kup_metal', ahsap: 'kup_ahsap', kirmiz
 const V1FILE = new Set(['kup', 'sandik', 'fici', 'platform_ahsap', 'platform_tas']);   // ilk Tripo modelleri (?v=1)
 const NEWM = new Set(['kola', 'kup', 'metal', 'ahsap', 'kirmizi', 'sandik', 'platform_sirk', 'top', 'topcu', 'fici', 'tugla', 'tas', 'buz', 'altin', 'ahsapmetal', 'piramitTas', 'kabak', 'celik', 'bomba', 'hediye', 'yildiz', 'jole', 'cam', 'buz2', 'ahsap2', 'buzDikey', 'alevUzun', 'morDikey']);
 const GLBP = {};   // ayni dosya iki anahtarda (kup, celik) bir kez yuklenir
-const modelReady = Promise.all(Object.keys(MFILE).map((n) => new Promise((res) => {
-  const url = 'model/' + MFILE[n] + '.glb?v=' + (V1FILE.has(MFILE[n]) ? 1 : 2);
-  (GLBP[url] || (GLBP[url] = new Promise((ok) => new GLTFLoader().load(url, ok, undefined, () => ok(null))))).then((gl) => {
-    if (!gl) return res();
-    let m = null; gl.scene.updateMatrixWorld(true); gl.scene.traverse((o) => { if (o.isMesh && !m) m = o; });
-    if (m) { const geo = m.geometry.clone().applyMatrix4(m.matrixWorld); geo.computeBoundingBox(); MOD[n] = { geo, mat: m.material }; if (!m.material.envMap && !/^platform|^topcu$/.test(n)) { m.material.envMap = NENV; m.material.envMapIntensity = 1; } }   // v6.4: renk degismez; sadece Tripo onizlemesindeki gibi notr (beyaz-gri) ortam isigi
-    res();
-  });
-})));
+// v4.7: modeller artik acilista hepsi birden degil, bolum hangi modelleri kullaniyorsa o bolum acilmadan once yuklenir (modelYukle / gerekliModel / start)
+const MYUK = {}, MHAZIR = new Set();
+function modelYukle(keys) {
+  return Promise.all(keys.filter((n) => MFILE[n]).map((n) => MYUK[n] || (MYUK[n] = new Promise((res) => {
+    const url = 'model/' + MFILE[n] + '.glb?v=' + (V1FILE.has(MFILE[n]) ? 1 : 2);
+    (GLBP[url] || (GLBP[url] = new Promise((ok) => new GLTFLoader().load(url, ok, undefined, () => ok(null))))).then((gl) => {
+      if (gl) {
+        let m = null; gl.scene.updateMatrixWorld(true); gl.scene.traverse((o) => { if (o.isMesh && !m) m = o; });
+        if (m) { const geo = m.geometry.clone().applyMatrix4(m.matrixWorld); geo.computeBoundingBox(); MOD[n] = { geo, mat: m.material }; if (!m.material.envMap && !/^platform|^topcu$/.test(n)) { m.material.envMap = NENV; m.material.envMapIntensity = 1; } }   // v6.4: renk degismez; sadece Tripo onizlemesindeki gibi notr (beyaz-gri) ortam isigi
+      }
+      MHAZIR.add(n); res();
+    });
+  }))));
+}
 // kup modeli: kenari S olan, merkezi orijinde bir kupe olceklenir
 function fitCube(n) {
   const M = MOD[n]; if (!M) return null; if (M.cube) return M.cube;
@@ -1627,8 +1632,9 @@ const TC = { by: GY, holder: new THREE.Group(), gun: null, muzzle: new THREE.Vec
 // v3.2: (Adem 11 Kas) kamera tam onden: platform ve top arabasi dumduz karsida (eskiden 0.36 rad yandan)
 TC.holder.position.set(-POFI.x, GY, POFI.z); scene.add(TC.holder);
 function makeCannon() {
-  const M = MOD.topcu; if (!M || TC.gun) return;
-  if (!window.KORSAN) { topArabasiKur(); return; }
+  const M = MOD.topcu; if (TC.gun) return;
+  if (!window.KORSAN) { topArabasiKur(); return; }   // v4.7: Yapi'da araba kodla kurulur, eski top_arabasi.glb indirilmez
+  if (!M) return;
   const g = M.geo.clone(), b = g.boundingBox, c = b.getCenter(new THREE.Vector3()), z = b.getSize(new THREE.Vector3()), sc = 4.2 / z.x;
   g.translate(-c.x, -b.min.y, -c.z); g.scale(sc, sc, sc); g.computeBoundingBox();
   // namlu ucu: govdenin ust kismindaki (y > %60) noktalarin iki x ucundan hangisi daha yuksekse namlu odur (ayaklar alcakta)
@@ -1955,8 +1961,9 @@ const PARFILE = new Set(['kup', 'kup_metal', 'kup_ahsap', 'kup_kirmizi', 'kup_ta
   'buz_kup_2', 'buz_dikey_kup', 'alev_tas_uzun_kup', 'mor_dikey_kup']);   // sandik.glb ve ahsap_kup_2.glb ic ice yuzeyli, duzgun kesilmedi: eski efekt
 const PAR = {};
 let PARN = 0;   // sahnedeki gercek parca sayisi (telefon yorulmasin)
-function loadPieces() {
-  for (const f of PARFILE) {
+function loadPieces(keys) {   // v4.7: yalniz verilen model anahtarlarinin parcalari (bos ise hepsi)
+  const fs = keys ? new Set(keys.map((k) => MFILE[k]).filter((f) => PARFILE.has(f))) : PARFILE;
+  for (const f of fs) {
     if (PAR[f] !== undefined) continue; PAR[f] = null;
     new GLTFLoader().load('model/parcali/' + f + '_parcali.glb?v=1', (gl) => {
       const L = [];
@@ -2749,10 +2756,12 @@ function ayarDegis(k) {
   if (k === 'ses') { SV.sessiz = !SV.sessiz; save(); if (SV.sessiz) { if (AC) AC.suspend(); if (MZ) MZ.el.pause(); if (SR) SR.el.pause(); } else { sesAc(); muzikBasla(); } }
   else if (k === 'muzik') { SV.muziksiz = !SV.muziksiz; save(); if (SV.muziksiz) muzikDur(); else muzikBasla(); }
   else if (k === 'titresim') { SV.titresimsiz = !SV.titresimsiz; save(); buzz(40); }
+  else if (k === 'fps') { SV.fps = !SV.fps; save(); fpsGoster(); }   // v4.7: gelistirici FPS sayaci
 }
 // bolum kartinda 'Oyna': bolum kurulur (zaten taze kuruluysa yalniz kamera donusu ve bolum adi tekrarlanir),
 // secilen guclendiriciler odenir ve sirayla uygulanir
 function oyna(L, sec) {
+  { const ks = gerekliModel(L); if (!ks.every((k) => MHAZIR.has(k) || !MFILE[k])) { modelYukle(ks).then(() => oyna(L, sec)); return; } }   // v4.7: modeller inmeden bolum kurulmaz
   if (L !== LV || !g || g.state !== 'play' || g.armed) start(L);
   else { CAMI = 0; STARTT = performance.now(); const nm = $('nm'); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1; if (TK.t && TK.gor) TK.t.oyna('selam', 1.4); }
   muzikBasla(); ggKur();
@@ -2771,7 +2780,7 @@ function devamEt() {
 // bolumden vazgecme (tekrar dene, ana sayfa): seri biter, bu bolum artik 'ilk denemede' sayilmaz
 function pesEt() { if (g && (g.armed || g.state === 'lose')) { SV.dus = LV; ist().seri = 0; save(); } }
 function merkezBagla() {
-  M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, SURUM, ZOR_ODUL,
+  M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, hazirla: (L) => { const ks = gerekliModel(L); modelYukle(ks).then(() => loadPieces(ks)); }, SURUM, ZOR_ODUL,
     ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
     bolge: (L) => { const fo = fonOf(L); return FONAD[fo.f] || (fo.yeni ? [fo.ad, fo.f === 'y_buz' ? 'k' : 's'] : ['', 'c']); }, bolumAdi: (L) => { try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
 }
@@ -3227,7 +3236,16 @@ function isitma() {
 }
 // ---------------- dongu ----------------
 let last = 0, shake = 0, STARTT = 0;
+// v4.7: gelistirici FPS sayaci (Ayarlar > Gelistirici > FPS sayaci); kapaliyken hicbir is yapmaz
+const FPS = { el: null, n: 0, t: 0 };
+function fpsGoster() {
+  if (SV.fps && !FPS.el) { FPS.el = document.createElement('div'); FPS.el.style.cssText = 'position:fixed;left:6px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:99999;padding:2px 7px;border-radius:6px;background:rgba(0,0,0,.6);color:#7cff7c;font:700 12px/1.3 monospace;pointer-events:none'; FPS.el.textContent = 'FPS ..'; FPS.n = 0; FPS.t = 0; document.body.appendChild(FPS.el); }
+  else if (!SV.fps && FPS.el) { FPS.el.remove(); FPS.el = null; }
+}
+function fpsSay(ts) { if (!FPS.el) return; FPS.n++; if (!FPS.t) FPS.t = ts; const d = ts - FPS.t; if (d >= 500) { FPS.el.textContent = 'FPS ' + Math.round(FPS.n * 1000 / d); FPS.n = 0; FPS.t = ts; } }
+fpsGoster();
 function frame(ts) {
+  fpsSay(ts);
   // v3.0: ana sayfa acikken ya da oyun duraklatilmisken sahne islemez ve cizilmez (telefon isinmasin); bolum kurulduktan sonraki ilk 2,5 sn haric (malzemeler derlensin)
   { const v = $('bgv'), dur = !!(M && M.durdur()); if (v && dur && !v.paused) v.pause(); else if (v && !dur && v.paused && $('bg').classList.contains('vid')) v.play().catch(() => {}); }   // v3.18: ana sayfa/duraklatma acikken fon videosu durur
   { const gi = $('bgisi'); if (gi) gi.classList.toggle('dur', !!(M && M.durdur())); }   // v3.19: menu acikken fon parlamasi durur
@@ -3256,7 +3274,26 @@ function sahneBos() {
   for (const c of cubes) if (!c.out && (c.landed || c.fuse != null || (c.body.world && c.body.mass > 0 && c.body.sleepState === 0))) return false;
   return true;
 }
+// v4.7: bolumun kullandigi modeller (bolum dizilisi tohumdan, her seferinde ayni cikar). Korsan ve ?test modunda eskisi gibi hepsi.
+function gerekliModel(L) {
+  if (K || TEST) return Object.keys(MFILE);
+  const s = new Set(['top', 'kup']);
+  if (!KAIDE) { s.add('platform_sirk'); s.add('platform_3'); s.add(platAd(fonOf(L))); }   // kaide kapaliysa (?kaide=0) eski platform modelleri
+  try {
+    const list = convertLevel(levelOf(L).make(), L);
+    for (const c of list) { const col = NOMETAL[c[3]] || c[3]; if (MFILE[col]) s.add(col); }
+    if (kolaVar(L)) s.add('kola');
+  } catch (e) { return Object.keys(MFILE); }
+  return [...s];
+}
+let STARTN = 0;
 function start(L) {
+  L = Math.max(1, Math.floor(+L) || 1); const n = ++STARTN, ks = gerekliModel(L);
+  const bitti = () => { if (n !== STARTN) return; start0(L); loadPieces(ks);
+    setTimeout(() => { if (n === STARTN) { const s2 = gerekliModel(L + 1); modelYukle(s2).then(() => loadPieces(s2)); } }, 2500); };   // sonraki bolum arkada hazirlanir, gecis beklemesiz olur
+  if (ks.every((k) => MHAZIR.has(k) || !MFILE[k])) bitti(); else modelYukle(ks).then(bitti);
+}
+function start0(L) {
   ggIade();
   LV = Math.max(1, Math.floor(+L) || 1); SV.L = LV; gorevKaydet(); save(); CAMI = 0; closeModal();   /* v3.21: (Adem) bolum acilinca kamera donmez, platform sabit gelir */ $('praise').innerHTML = '';
   setPofiCol(POFICOL[(LV - 1) % POFICOL.length]); buildLevel();
@@ -3274,14 +3311,15 @@ if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MO
   clearLevel, addCubes, hud, setPlat, sfx, play, chime, splash, ripple, bubble, foam, seaY, burst, confetti, modal, closeModal, start, buzz, spr, fx, trunkTip, wakeAll, FOAMT, SOFT, canvasTex, floatText, screenAt,
   get AC() { return AC; } });
 // v3.0: acilis ekranindaki yukleme cubugu (index.html'deki BSYUK)
+const L0 = Math.floor(+(Q.get('sv') || SV.L || 1)) || 1, modelReady = modelYukle(gerekliModel(L0));   // v4.7: acilista yalniz kayitli bolumun modelleri
 { let n = 0; const P5 = [faceReady, pofiReady, texReady, modelReady]; for (const p of P5) p.then(() => { n++; if (window.BSYUK) window.BSYUK(0.15 + 0.75 * n / P5.length); }); }
 Promise.all([faceReady, pofiReady, texReady, modelReady, K ? K.yukle() : 0]).then(() => {
   makeCannon(); fit();
   if (!K && !TEST) merkezBagla();
   for (const k in KMAT) delete KMAT[k];
-  start(Math.floor(+(Q.get('sv') || SV.L || 1)) || 1);
+  start(L0);
   if (M && !Q.has('sv')) M.ac({ ilk: true });
-  loadPieces();   // v6.16
+  if (K || TEST) loadPieces();   // v6.16 (v4.7: oyunda parcalar bolume gore, start icinde)
   avgIsit();
   if (window.BSYUK) window.BSYUK(1); if (window.BSACILIS) window.BSACILIS(); else { const l = $('load'); setTimeout(() => { l.style.opacity = 0; setTimeout(() => l.remove(), 550); }, 350); }   // v3.14: acilis videosu kendi kapanir
   if (!TEST) requestAnimationFrame(frame); else frame(16);

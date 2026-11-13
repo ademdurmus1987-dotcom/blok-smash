@@ -1,5 +1,5 @@
 // Blok Smash service worker: once ag, olmazsa onbellek. Boylece telefonda eski kod takili kalmaz.
-const CACHE = 'bloksmash-v42';
+const CACHE = 'bloksmash-v43';
 self.addEventListener('install', e => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(
   caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())
@@ -8,6 +8,8 @@ self.addEventListener('fetch', e => {
   const r = e.request;
   if (r.method !== 'GET' || new URL(r.url).origin !== location.origin || r.headers.has('range') || /\.(mp4|webm)$/.test(new URL(r.url).pathname)) return;
   // v3.6: GitHub Pages dosyalari 10 dk tarayici onbelleginde kaliyordu (telefonda eski surum aciliyordu): her seferinde sunucuya sorulur (degismediyse 304, hizli)
+  // v4.7: oyunda kullanilmayan kaynak/arac dosyalari onbellege hic alinmaz (yalniz agdan)
+  if (/\/yapi\/model\/kaynak\/|\/ses\/aday\/|\/(ses-sec|araclar_ikon)\/|\/simge\/ham\.png$/.test(new URL(r.url).pathname)) return;
   e.respondWith(fetch(r.url, { cache: 'no-cache', credentials: 'same-origin' }).then(res => {
     if (res.ok) { const c = res.clone(); caches.open(CACHE).then(ca => ca.put(r, c)); }
     return res;
