@@ -29,7 +29,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v4.8', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v4.9', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -3207,7 +3207,7 @@ let EKS = 0;
 function ekranSars() {
   const T = Math.min(1, shake / 0.6), a = 10 * T * T, t = performance.now() / 1000, f = FP > 0.01 ? FP * 0.0035 : 0;
   if (a < 0.08 && f < 0.0005) { if (EKS) { EKS = 0; for (const id of ['bg', 'canli', 'gl', 'onfx']) { const e = $(id); if (e) e.style.transform = ''; } } return; }
-  const x = (Math.sin(t * 31) + 0.5 * Math.sin(t * 47 + 1.3)) / 1.5 * a, y = (Math.sin(t * 37 + 2.1) + 0.5 * Math.sin(t * 53)) / 1.5 * a, sc = 1 + (a >= 0.08 ? 0.025 : 0) + f;
+  const x = (Math.sin(t * 31) + 0.5 * Math.sin(t * 47 + 1.3)) / 1.5 * a, y = (Math.sin(t * 37 + 2.1) + 0.5 * Math.sin(t * 53)) / 1.5 * a, sc = 1 + a * 0.0025 + f;   /* v4.9: (Adem 14 Kas: atista ekran titriyor) kucuk sarsintida bile ekran birden %2,5 buyuyordu; buyutme artik sarsintiyla orantili */
   const tr = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + sc.toFixed(4) + ')'; EKS = 1;
   for (const id of ['bg', 'canli', 'gl', 'onfx']) { const e = $(id); if (e) e.style.transform = tr; }
 }
@@ -3217,7 +3217,7 @@ function impactK(b, e) {
   wakeAll(); g.busy = 2.5;
   const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); HIS.vurus(p, b.dir, malzOf(c && c.kind), s);
   withS(Math.min(1.3, 0.75 + 0.3 * s), 1.04 - 0.1 * Math.min(1, s), () => sfx('hit'));
-  buzz([Math.round(40 + 16 * s), 26, 34], 0); shake = Math.max(shake, 0.05 + 0.12 * s * s); FP = Math.min(4, FP + 1.2 * s);   /* v3.21: vurus sarsintisi hafif */ hitstop(0.07 * Math.min(1, s));
+  buzz([Math.round(40 + 16 * s), 26, 34], 0); if (s > 0.7) { shake = Math.max(shake, 0.12 * s * s); hitstop(0.05 * Math.min(1, s)); }   /* v4.9: (Adem 14 Kas: atista ekran titriyor) siradan vuruslarda ekran sarsintisi, yakinlasma ve donma yok; yalniz cok sert vurusta hafif */
 }
 // kirilan kavanoz parcalarinin malzemeleri ilk kirilista derleniyordu (200 ms takilma): yuklenince bir kez gorunmez yerde derle
 function isitmaParca(L) {
