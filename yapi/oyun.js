@@ -13,7 +13,8 @@ import { sekilKur, YAPI } from './sekil.js?v=3';   // v3.1: kodla cizilen 3B sek
 import { merkezKur } from './merkez.js?v=11';
 import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=2';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
-import { sesSinirKur } from './fx/ses.js?v=1';   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { sesSinirKur } from './fx/ses.js?v=1';
+import { hisKur } from './fx/his.js?v=1';   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -1651,7 +1652,7 @@ function impact(b, e) {
   if (KAL()) { impactK(b, e); return; }
   buzz([40, 30, 25], 0);   // v6.8: (Adem) kupe carpinca titresim
   wakeAll(); g.busy = 2.5; shake = Math.min(0.5, shake + 0.3);
-  const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); burst(p, '#fff3a0', 12, 8); sfx('hit');
+  const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); HIS.vurus(p, b.dir, malzOf(b.hc && b.hc.kind), 1); sfx('hit');   // v4.2: malzemenin kendi kivilcimi/kiymigi
 }
 // v5.3: atis guclendi. Top kupe degdigi an cevresindeki kupler (yaklasik 1.6 kup yaricap) top yonunde itilir;
 // itis kupun merkezinin ustunden uygulandigi icin kup sadece kaymaz, devrilir. Agir malzeme (celik, tugla) daha az etkilenir.
@@ -1741,7 +1742,7 @@ function fragPieces(c, p, q, dir) {
     const off = it.c.clone().multiply(sc).applyQuaternion(q), grp = m; grp.position.copy(p).add(off); grp.quaternion.copy(q); scene.add(grp); PARN++;
     const ol = off.length() || 1, v = off.clone().multiplyScalar((1.2 + Math.random() * 2.2) / ol).addScaledVector(dd, 1.8 + Math.random() * 2.6);
     v.y += 1.2 + Math.random() * 2.4;
-    const w = rndV(9), hs = Math.min(it.hs * Math.max(sc.x, sc.y, sc.z), S * 0.45) * 0.6, life = 2.2 + Math.random() * 0.7, st = {};
+    const w = rndV(9), hs = Math.min(it.hs * Math.max(sc.x, sc.y, sc.z), S * 0.45) * 0.6, life = (c.landed ? HIS.kalis(malzOf(c.kind)) : 2.2) + Math.random() * 0.7, st = {};   // v4.2: yere dusenin parcalari yerde birkac saniye kalir
     fx(grp, life, (o, kk, dt) => {
       if (st.in) softPiece(o, v, w, st, hs, dt);
       else { v.y -= 24 * dt; o.position.addScaledVector(v, dt); o.rotation.x += w.x * dt; o.rotation.y += w.y * dt; o.rotation.z += w.z * dt; }
@@ -1875,6 +1876,7 @@ const PRC = Q.get('fx') === '0' ? null : parcacikKur(scene, SOFT);
 function spr(col, add, op) { const v = PRC && PRC.al(col, add, op); if (v) return v; const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: col, transparent: true, opacity: op, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); return m; }
 if (Q.has('olc')) window.__olc = () => ({ cagri: ren.info.render.calls, parca: PRC ? PRC.say() : -1, fx: FX.length, program: ren.info.programs.length, geo: ren.info.memory.geometries });   // v4.0: olcum (yalniz ?olc)
 if (Q.has('olc')) window.__fxDene = () => { const p = new THREE.Vector3(0, 3, 2); burst(p, '#ff3030', 30, 2); const a = spr('#ffd040', true, 1); a.position.set(0, 6, 2); a.scale.setScalar(3); fx(a, 5, () => {}); splash(-3, 3, 1.4, true); };
+const HIS = hisKur({ THREE, spr: (c, a, o) => spr(c, a, o), fx: (o, l, u) => fx(o, l, u) });
 function sprBirak(o) { if (o.isPar) PRC.birak(o); else { scene.remove(o); if (o.material) o.material.dispose(); } }
 function fx(o, life, upd) { FX.push({ o, life, max: life, upd }); }
 function updateFX(dt) {
@@ -2248,12 +2250,18 @@ const V = new THREE.Vector3(), V2 = new THREE.Vector3();
 let lastFl = 0;
 function screenAt(p, dy) { V.copy(p); V.y += dy || 0; V.project(cam); return [(V.x + 1) / 2 * innerWidth, (1 - V.y) / 2 * innerHeight]; }
 // kup gitti (dustu, kirildi ya da patladi): sayilir, ozel kuplerin odulu verilir; remove ise sahneden hemen kalkar
+let PB = { n: 0, x: 0, y: 0, t: 0 };
+function puanBirik(at) {
+  PB.n++; PB.x += at[0]; PB.y += at[1];
+  if (!PB.t) PB.t = setTimeout(() => { const n = PB.n; if (n) floatText('+' + n, Math.max(40, Math.min(innerWidth - 40, PB.x / n)), PB.y / n, 'mini'); PB = { n: 0, x: 0, y: 0, t: 0 }; }, 160);
+}
 function knock(c, remove) {
   c.gone = true; g.left--; gorevArt('blok', 1); if (M) ist().blok = (ist().blok || 0) + 1; if (g.combo) { g.combo.n++; g.combo.t = 0; if (!g.combo.at) g.combo.at = screenAt(c.body.position, 0.3); }
   const p = c.body.position, at = screenAt(p, 0.3);
   if (c.kind === 'hediye') { g.shots += 2; floatText('+2 Top', at[0], at[1], 'blue'); burst(new THREE.Vector3().copy(p), '#ffd23f', 16, 6); sfx('bonus'); }
   else if (c.kind === 'altin' || c.kind === 'kkA') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
   else if (c.kind === 'yildiz') { g.bonus++; floatText('+1 ★', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#c58bff', 20, 7); sfx('bonus'); }
+  else puanBirik(at);   // v4.2: dusen her blok kucuk "+n" (ayni anda dusenler tek yazida toplanir)
 
   if (c.kind === 'kola') kolaFis(c);
   sfx('pop', g.combo ? g.combo.n : 1); hud();
@@ -2309,7 +2317,7 @@ function updateCubes(dt) {
   if (g.combo) { g.combo.t += dt; const n = g.combo.n;
     const lv = n >= 24 ? 3 : n >= 12 ? 2 : n >= 5 ? 1 : 0;
     if (n > (g.combo.fl || 0) && g.combo.t > 0.35) { const at = g.combo.at || [innerWidth / 2, innerHeight * 0.45]; g.combo.fl = n; }
-    if (lv > g.combo.shown) { g.combo.shown = lv; praise(['', 'Süper!', 'Harika!', 'Efsane!'][lv], n + ' blok', lv === 3); }
+    if (lv > g.combo.shown) { g.combo.shown = lv; shake = Math.max(shake, 0.12 + 0.1 * lv); praise(['', 'Süper!', 'Harika!', 'Efsane!'][lv], n + ' blok', lv === 3); }
     if (g.combo.t > 3) g.combo = null; }
   if (g.state === 'play') {
     if (g.left <= 0) { g.state = 'win'; confetti(); sfx('win'); praise('Harika!', 'Yapı yıkıldı', true); const g0 = g; setTimeout(() => { if (g === g0 && g.state === 'win') win(); }, 1600); }
@@ -2359,6 +2367,7 @@ for (const k in SFILES) { if (SFILES[k] === undefined) continue; const n = SFILE
 function decodeAll() { for (const f in RAW) RAW[f].then((ab) => { if (ab && !BUF[f]) AC.decodeAudioData(ab.slice(0), (b) => { BUF[f] = b; }, () => {}); }); }
 const MATSND = { kola: 'metal', ahsap: 'tahta', sandik: 'tahta', ahsapmetal: 'tahta', kirmizi: 'tahta', hediye: 'tahta', kabak: 'tahta', recel: 'cam', tas: 'tas', tugla: 'tas', piramitTas: 'tas', metal: 'metal', celik: 'metal', altin: 'metal', fici: 'metal', yildiz: 'metal', cam: 'cam', buz: 'buz', jole: 'cam', buz2: 'buz', buzDikey: 'buz', ahsap2: 'tahta', alevUzun: 'tas', morDikey: 'tahta' };
 for (const k in SEK.TUR) { const t = SEK.TUR[k]; if (t.kir) KIRILGAN.add(k); if (t.yuzer) FLOAT.add(k); MATSND[k] = t.ses; }   // v3.1
+function malzOf(kind) { return !kind ? 'tahta' : kind.startsWith('g_') ? 'cam' : kind === 'jole' ? 'jole' : MATSND[kind] || 'tahta'; }   // v4.2: gorsel malzeme (metal ayri)
 function matSnd(kind) { if (!kind) return 'tahta'; if (kind.startsWith('g_')) return 'cam'; const mt = MATSND[kind] || 'tahta'; return mt === 'metal' ? 'tas' : mt; }
 const LAST = {}, GAP = { tik: 0.2, atis: 0.06, vurus: 0.06, tahta: 0.05, tas: 0.05, metal: 0.07, cam: 0.06, buz: 0.06, yer: 0.07, patlama: 0.12, pop: 0.09, dusme: 0.07 };
 let voices = [];
@@ -2995,7 +3004,7 @@ function ekranSars() {
 function impactK(b, e) {
   const c = b.hc, vn = e && e.contact ? Math.abs(e.contact.getImpactVelocityAlongNormal()) : 45, mp = MAT_P[matSnd(c ? c.kind : null)] || MAT_P.tahta, s = Math.min(1.4, vn / 70) * mp.w;
   wakeAll(); g.busy = 2.5;
-  const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); burst(p, '#fff3a0', 12, 8);
+  const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); HIS.vurus(p, b.dir, malzOf(c && c.kind), s);
   withS(Math.min(1.3, 0.75 + 0.3 * s), 1.04 - 0.1 * Math.min(1, s), () => sfx('hit'));
   buzz([Math.round(40 + 16 * s), 26, 34], 0); shake = Math.max(shake, 0.05 + 0.12 * s * s); FP = Math.min(4, FP + 1.2 * s);   /* v3.21: vurus sarsintisi hafif */ hitstop(0.07 * Math.min(1, s));
 }
