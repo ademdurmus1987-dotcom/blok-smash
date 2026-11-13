@@ -794,7 +794,8 @@ function uretBolum(L) {
 }
 // hareketli engeller: top yolunda donen kurek, sallanan kalkan, kayan tahta. 1-3 yok; 4, 7, 10 tanitim; sonra sansla.
 function engelOf(L, Y) {
-  if (Q.get('engel') === 'kapi') return [{ t: 'kapi' }];   // deneme: ?engel=kapi her bolumde kapi koyar
+  { const qe = Q.get('engel'); if (qe === 'kapi' || qe === 'kapi2' || qe === 'giyotin') return [{ t: qe }]; }   // deneme: ?engel=kapi|kapi2|giyotin her bolumde
+  if (FONYENI && !K && L === 9) return [{ t: 'kapi2' }]; if (FONYENI && !K && L === 14) return [{ t: 'giyotin' }];   // v3.21: yalniz resim fonda tanitim bolumleri
   if (L < 4) return [];
   if (L === 4) return [{ t: 'kurek' }]; if (L === 7) return [{ t: 'kalkan' }]; if (L === 10) return [{ t: 'kayan' }];
   const r = mul32(L * 104729 + 7), d = zorluk(L); if (r() > 0.38 + 0.35 * d) return [];
@@ -851,7 +852,182 @@ function kapiSekil(w, h) {   // kemerli ust, resmin dis cizgisi; doku merkezden 
   s.moveTo(-hw, -hh); s.lineTo(hw, -hh); s.lineTo(hw, hh - ar); s.quadraticCurveTo(hw * 0.92, hh, 0, hh); s.quadraticCurveTo(-hw * 0.92, hh, -hw, hh - ar); s.lineTo(-hw, -hh);
   KAPITEX.repeat.set(1 / w, 1 / h); KAPITEX.offset.set(0.5, 0.5); return s;
 }
-function engTemizle() { for (const e of ENG) { world.removeBody(e.body); scene.remove(e.grp); } ENG.length = 0; }
+// ================= v3.21 (Adem) anahtarli kapi ve giyotin =================
+// Anahtarli kapi (?engel=kapi2; ?fon=yeni'de 9. bolum): arkada yuksek platformdaki yapi iki kanatli, tas cerceveli dev kapiyla ortulu.
+// Ondeki kucuk yapida altin ANAHTAR KUP var; kup dusunce/kirilinca anahtar yay cizip kilide ucar, bir tur doner, klik, kanatlar iki yana kayar.
+// Kapi kirilmaz; kapaliyken carpan top yavaslar ve kup kiramaz. Giyotin (?engel=giyotin; ?fon=yeni'de 14. bolum): ustten ve alttan dişli
+// celik ceneler ortada birlesip yapiyi orter; kapanmadan once kirmizi parlama + sing sesi; kapaliyken carpan top parcalanir.
+let AKUP = -1;
+function anahtarBolum(Y0) {
+  const m0 = Y0.make(), say = {}; for (const c of m0) say[c[4] || 0] = (say[c[4] || 0] || 0) + 1;
+  let pa = 0; for (const k in say) if (say[k] > (say[pa] || 0)) pa = +k;
+  const ana = m0.filter((c) => (c[4] || 0) === pa).map((c) => [c[0], c[1], c[2], c[3], 0]);
+  const sik = {}; for (const c of ana) if (typeof c[3] === 'string' && c[3] !== 'altin') sik[c[3]] = (sik[c[3]] || 0) + 1;
+  const rk = Object.keys(sik).sort((a, b) => sik[b] - sik[a]), r0 = rk[0] || 'tas', r1 = rk[1] || r0;
+  const on = []; for (let j = 0; j < 2; j++) for (let i = 0; i < 3; i++) for (let k = 0; k < 2; k++) on.push([i, j, k, (i + j) % 2 ? r1 : r0, 1]);
+  const ai = on.findIndex((c) => c[0] === 1 && c[1] === 1 && c[2] === 1); on[ai][3] = 'altin';
+  const Y = Object.assign({}, Y0, { anahtar: 1, don: 0, ek: (Y0.ek || 0) + 2, pl: [{ x: 0, z: 0 }, { x: 0, z: 0 }] });
+  Y.make = () => ana.map((c) => c.slice()).concat(on.map((c) => c.slice())); Y.anahtarI = ana.length + ai;
+  return Y;
+}
+function e2Ses(tip) {
+  if (!AC) return; const o = out(), t = AC.currentTime;
+  const ton = (f, v, d, ty, t0) => { const os = AC.createOscillator(), gg = AC.createGain(); os.type = ty || 'sine'; os.frequency.value = f; gg.gain.setValueAtTime(0.0001, t + (t0 || 0)); gg.gain.exponentialRampToValueAtTime(v, t + (t0 || 0) + 0.004); gg.gain.exponentialRampToValueAtTime(0.0001, t + (t0 || 0) + d); os.connect(gg); gg.connect(o); os.start(t + (t0 || 0)); os.stop(t + (t0 || 0) + d + 0.05); };
+  if (tip === 'klik') { ton(2400, 0.25, 0.05, 'square'); ton(1600, 0.2, 0.08, 'triangle', 0.07); ton(900, 0.15, 0.12, 'sine', 0.07); }
+  else if (tip === 'sing') { ton(2793, 0.12, 0.9); ton(4186, 0.06, 0.6); ton(3520, 0.05, 0.7, 'triangle'); }
+  else if (tip === 'kapan') { ton(140, 0.35, 0.25, 'square'); ton(1900, 0.08, 0.35); play('tas', 0.5, 0.7); }
+}
+function anahtarMesh(s) {
+  const g = new THREE.Group(), m = ENGM.altin;
+  const bow = new THREE.Mesh(new THREE.TorusGeometry(0.3 * s, 0.09 * s, 10, 24), m); bow.position.z = 0.55 * s; bow.rotation.y = Math.PI / 2; g.add(bow);
+  const sap = new THREE.Mesh(new THREE.CylinderGeometry(0.075 * s, 0.075 * s, 1.0 * s, 10), m); sap.rotation.x = Math.PI / 2; g.add(sap);
+  for (const [z, h] of [[-0.42, 0.26], [-0.25, 0.18]]) { const d = new THREE.Mesh(new THREE.BoxGeometry(0.07 * s, h * s, 0.1 * s), m); d.position.set(0, -h * s / 2, z * s); g.add(d); }
+  g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+  return g;
+}
+function kapiDoku() {
+  return PTD.kapi || (PTD.kapi = canvasTex(256, 512, (x, w, h) => {
+    const rk = ['#7a4a26', '#6c4021', '#85532b', '#71441f'];
+    for (let i = 0; i < 4; i++) { x.fillStyle = rk[i]; x.fillRect(i * 64, 0, 64, h); x.strokeStyle = 'rgba(40,20,6,.35)'; x.lineWidth = 1.5;
+      for (let k = 0; k < 6; k++) { const x0 = i * 64 + 6 + Math.random() * 52; x.beginPath(); x.moveTo(x0, 0); for (let y = 32; y <= h; y += 32) x.lineTo(x0 + (Math.random() - 0.5) * 5, y); x.stroke(); }
+      x.fillStyle = 'rgba(25,12,4,.7)'; x.fillRect(i * 64, 0, 4, h); }
+  }));
+}
+function kilitDoku() {
+  return PTD.kilit || (PTD.kilit = canvasTex(128, 160, (x, w, h) => {
+    const gg = x.createLinearGradient(0, 0, w, h); gg.addColorStop(0, '#fff3a8'); gg.addColorStop(0.5, '#f2bd3a'); gg.addColorStop(1, '#a8740e'); x.fillStyle = gg; x.fillRect(0, 0, w, h);
+    x.strokeStyle = '#7a4e08'; x.lineWidth = 8; x.strokeRect(4, 4, w - 8, h - 8);
+    x.fillStyle = '#2a1a06'; x.beginPath(); x.arc(w / 2, h * 0.42, 17, 0, 6.283); x.fill(); x.beginPath(); x.moveTo(w / 2 - 9, h * 0.45); x.lineTo(w / 2 + 9, h * 0.45); x.lineTo(w / 2 + 14, h * 0.75); x.lineTo(w / 2 - 14, h * 0.75); x.fill();
+    x.fillStyle = '#fff6c8'; for (const [a, b] of [[16, 16], [w - 16, 16], [16, h - 16], [w - 16, h - 16]]) { x.beginPath(); x.arc(a, b, 6, 0, 6.283); x.fill(); }
+  }));
+}
+// kapi: E.grp merkezi kapinin alt-orta noktasi; kanatlar E.sol / E.sag
+function kapi2Kur(E, grp, body) {
+  const q = PLS[0], w = 2 * q.r + 0.5, h = Math.max(3, TOPY - q.cy + 0.6), z = q.z + q.rz + 0.45, demir = ENGM.demir;
+  const tas = ptMat('#ffffff', 0.85, 0, { map: ptDoku('acik') }), ah = new THREE.MeshStandardMaterial({ map: kapiDoku(), roughness: 0.75 });
+  kapiDoku().repeat.set(1, 1);
+  E.x0 = 0; E.y0 = q.cy; E.z0 = z; E.w2 = w / 2; E.h = h; E.ky = h * 0.5;
+  const kanat = (sg) => {
+    const k = new THREE.Group(), ww = w / 2;
+    const lv = new THREE.Mesh(new THREE.BoxGeometry(ww, h, 0.36), ah); lv.position.set(sg * ww / 2, h / 2, 0); lv.castShadow = lv.receiveShadow = true; k.add(lv);
+    const uv = lv.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * ww / 2.4, uv.getY(i) * h / 4.8);
+    const st = []; for (const fy of [0.14, 0.5, 0.86]) { const b = new THREE.Mesh(new THREE.BoxGeometry(ww - 0.1, 0.26, 0.46), demir); b.position.set(sg * ww / 2, h * fy, 0); b.castShadow = true; k.add(b); for (let xx = 0.3; xx < ww - 0.15; xx += 0.55) st.push([sg * xx, h * fy, 0.24]); }
+    for (const fy of [0.32, 0.68]) for (let xx = 0.3; xx < ww - 0.15; xx += 0.9) st.push([sg * xx, h * fy, 0.19]);
+    k.add(ptDizi(new THREE.SphereGeometry(0.08, 8, 6), ptMat('#9aa2ac', 0.3, 0.8), st));
+    const ken = new THREE.Mesh(new THREE.BoxGeometry(0.16, h, 0.42), demir); ken.position.set(sg * 0.08, h / 2, 0); k.add(ken);
+    grp.add(k); return k;
+  };
+  E.sol = kanat(-1); E.sag = kanat(1);
+  const ck = 0.75, cer = [[-w / 2 - ck / 2, h / 2 + 0.1, ck, h + 0.2], [w / 2 + ck / 2, h / 2 + 0.1, ck, h + 0.2]];
+  for (const [x, y, ww, hh] of cer) { const p = new THREE.Mesh(new THREE.BoxGeometry(ww, hh, 0.8), tas); p.position.set(x, y, -0.05); p.castShadow = p.receiveShadow = true; grp.add(p); }
+  const ust = new THREE.Mesh(new THREE.BoxGeometry(w + 2 * ck + 0.3, 0.75, 0.9), tas); ust.position.set(0, h + 0.375, -0.05); ust.castShadow = true; grp.add(ust);
+  const esik = new THREE.Mesh(new THREE.BoxGeometry(w + 2 * ck, 0.2, 0.9), tas); esik.position.set(0, 0.1 - 0.2, -0.05); grp.add(esik);
+  grp.add(ptDizi(new THREE.BoxGeometry(0.95, 0.95, 0.95), demir, [[-w / 2 - ck / 2, h + 0.375, 0], [w / 2 + ck / 2, h + 0.375, 0], [-w / 2 - ck / 2, 0.25, 0], [w / 2 + ck / 2, 0.25, 0]]));
+  const kil = new THREE.Group(), pl = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.25, 0.16), [ENGM.altin, ENGM.altin, ENGM.altin, ENGM.altin, ptMat('#ffffff', 0.3, 0.5, { map: kilitDoku(), emissive: '#6a4200', emissiveIntensity: 0.3 }), ENGM.altin]);
+  kil.add(pl); const hl = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.07, 8, 20), ENGM.altin); hl.position.set(0, -0.85, 0.1); kil.add(hl);
+  kil.position.set(0, E.ky, 0.3); grp.add(kil); E.kil = kil;
+  engKutu(body, w / 2, h / 2, 0.3, 0, h / 2); body.position.set(0, q.cy, z); grp.position.set(0, q.cy, z);
+  E.durum = 'kapali'; E.kup = cubes[AKUP] || null;
+  if (E.kup) { const am = anahtarMesh(0.62); am.position.set(0, 0, S / 2 + 0.05); am.rotation.x = -Math.PI / 2; E.kup.mesh.add(am); E.kup.anahtar = E; E.km = am;
+    const par = spr('#ffd23f', true, 0.55); par.scale.setScalar(S * 1.9); par.userData.shared = 0; E.par = par; }
+}
+function anahtarUc(c) {
+  const E = c.anahtar; if (!E || E.durum !== 'kapali') return;
+  if (E.km) c.mesh.remove(E.km);
+  E.durum = 'uc'; E.ta = g.t; E.p0 = new THREE.Vector3().copy(c.body.position);
+  E.p1 = new THREE.Vector3(E.x0, E.y0 + E.ky, E.z0 + 1.1); E.pc = E.p0.clone().lerp(E.p1, 0.5); E.pc.y = Math.max(E.p0.y, E.p1.y) + 3.5;
+  E.key = anahtarMesh(1); scene.add(E.key); E.key.position.copy(E.p0); sfx('bonus'); burst(E.p0.clone(), '#ffd23f', 16, 6);
+}
+function kapi2Kare(E, t) {
+  if (E.par) { if (E.durum === 'kapali' && E.kup && !E.kup.gone) { E.par.visible = true; E.par.position.copy(E.kup.body.position); E.par.material.opacity = 0.35 + 0.2 * Math.sin(t * 4); } else E.par.visible = false; }
+  if (E.durum === 'kapali' || E.durum === 'acik') return;
+  const k = t - E.ta, a = E.key;
+  if (E.durum === 'uc') {
+    const u = Math.min(1, k / 1.1), e = u * u * (3 - 2 * u), v = 1 - e;
+    a.position.set(v * v * E.p0.x + 2 * v * e * E.pc.x + e * e * E.p1.x, v * v * E.p0.y + 2 * v * e * E.pc.y + e * e * E.p1.y, v * v * E.p0.z + 2 * v * e * E.pc.z + e * e * E.p1.z);
+    a.rotation.set(0, (1 - e) * Math.PI * 4, 0); a.scale.setScalar(0.7 + 0.3 * e);
+    if (u >= 1) { E.durum = 'gir'; E.ta = t; }
+  } else if (E.durum === 'gir') {
+    const u = Math.min(1, k / 0.3); a.position.z = E.p1.z - 0.75 * u; if (u >= 1) { E.durum = 'don'; E.ta = t; }
+  } else if (E.durum === 'don') {
+    const u = Math.min(1, k / 0.5); a.rotation.z = u * u * (3 - 2 * u) * Math.PI * 2;
+    if (u >= 1) { E.durum = 'ac'; E.ta = t; e2Ses('klik'); buzz(40); shake = Math.max(shake, 0.35); world.removeBody(E.body); E.bgit = 1;
+      const p = new THREE.Vector3(E.x0, E.y0 + E.ky, E.z0 + 0.4); burst(p, '#ffd23f', 28, 9); burst(p.clone().add(new THREE.Vector3(0, 0.6, 0)), '#fff2a0', 14, 6); }
+  } else if (E.durum === 'ac') {
+    const u = Math.min(1, k / 1.1), e = u * u * (3 - 2 * u), dx = E.w2 * 1.02 * e;
+    E.sol.position.x = -dx; E.sag.position.x = dx; const s = Math.max(0.001, 1 - e * 1.4); E.kil.scale.setScalar(s); a.scale.setScalar(s);
+    if (u >= 1) { E.durum = 'acik'; scene.remove(a); E.kil.visible = false; }
+  }
+}
+function giyotinKur(E, grp, body, d) {
+  const w = 2 * R + 0.8, zg = RZ + 1.0, ym = Math.min(TOPY / 2, 2.8), ht = TOPY + 0.5 - ym, hb = ym + 0.25, dis = 0.45, pit = 0.62;
+  E.x0 = 0; E.y0 = 0; E.z0 = zg; E.ym = ym; E.ht = ht; E.hb = hb; E.dis = dis;
+  E.To = 2.5 - 0.8 * d; E.Tc = 1.2 + 0.6 * d; E.P = E.To + 0.6 + 0.3 + E.Tc + 0.5;
+  const celik = new THREE.MeshStandardMaterial({ color: '#c3ccd6', roughness: 0.28, metalness: 0.75, emissive: '#ff1a1a', emissiveIntensity: 0 }), celik2 = celik.clone(); celik2.color.set('#7f8994'); E.cm = celik; E.cm2 = celik2;
+  const cene = (hh, ust) => {   // ust cene: disler asagi bakar (alt kenar y=0'da), alt cene: disler yukari
+    const s = new THREE.Shape(), n = Math.max(2, Math.round(w / pit)), p = w / n;
+    s.moveTo(-w / 2, ust ? hh : -hh); s.lineTo(w / 2, ust ? hh : -hh);
+    for (let i = 0; i <= 2 * n; i++) { const uc = (i % 2 === 1) === !!ust; s.lineTo(w / 2 - i * p / 2, uc ? (ust ? -dis : dis) : 0); }
+    s.lineTo(-w / 2, ust ? hh : -hh);
+    const ge = new THREE.ExtrudeGeometry(s, { depth: 0.3, bevelEnabled: true, bevelSize: 0.04, bevelThickness: 0.04, bevelSegments: 1 }); ge.translate(0, 0, -0.15);
+    const m = new THREE.Group(), me = new THREE.Mesh(ge, ust ? celik : celik2); me.castShadow = true; m.add(me);
+    for (const x of [-w / 3, 0, w / 3]) { const kb = new THREE.Mesh(new THREE.BoxGeometry(0.28, hh - 0.5, 0.42), ENGM.demir); kb.position.set(x, ust ? hh / 2 + 0.05 : -hh / 2 - 0.05, 0); m.add(kb); }
+    const bant = new THREE.Mesh(new THREE.BoxGeometry(w + 0.1, 0.28, 0.4), ENGM.altin); bant.position.y = ust ? hh - 0.3 : -hh + 0.3; m.add(bant);
+    const rv = []; for (let x = -w / 2 + 0.4; x < w / 2 - 0.2; x += 0.8) rv.push([x, ust ? hh - 0.3 : -hh + 0.3, 0.22]);
+    m.add(ptDizi(new THREE.SphereGeometry(0.08, 8, 6), ENGM.demir, rv));
+    grp.add(m); return m;
+  };
+  E.ust = cene(ht, 1); E.alt = cene(hb, 0);
+  const demir = ENGM.demir, ray = (x) => { const p = new THREE.Mesh(new THREE.BoxGeometry(0.4, TOPY + ht + 1.6 - GY, 0.55), demir); p.position.set(x, (GY + TOPY + ht + 1.6) / 2, 0); p.castShadow = true; grp.add(p); };
+  ray(-w / 2 - 0.22); ray(w / 2 + 0.22);
+  const ub = new THREE.Mesh(new THREE.BoxGeometry(w + 1.0, 0.5, 0.7), demir); ub.position.y = TOPY + ht + 1.6; grp.add(ub);
+  const kasa = new THREE.Mesh(new THREE.BoxGeometry(w + 0.9, -GY - 0.05, 0.75), ptMat('#3c434c', 0.5, 0.5)); kasa.position.y = GY / 2 - 0.05; kasa.castShadow = true; grp.add(kasa);
+  const ser = canvasTex(128, 32, (x, ww, hh) => { x.fillStyle = '#ffcc1a'; x.fillRect(0, 0, ww, hh); x.fillStyle = '#1a1a1a'; for (let i = -2; i < 10; i++) { x.beginPath(); x.moveTo(i * 16, hh); x.lineTo(i * 16 + 8, hh); x.lineTo(i * 16 + 16, 0); x.lineTo(i * 16 + 8, 0); x.fill(); } }, [w / 2, 1]);
+  const sm = new THREE.Mesh(new THREE.BoxGeometry(w + 0.92, 0.22, 0.77), new THREE.MeshStandardMaterial({ map: ser, roughness: 0.6 })); sm.position.y = -0.16; grp.add(sm);
+  engKutu(body, w / 2, ht / 2 + dis / 2, 0.25, 0, ht / 2 - dis / 2);
+  const b2 = new CANNON.Body({ mass: 0, type: CANNON.Body.KINEMATIC, material: PM.plat }); b2.collisionFilterGroup = 8; engKutu(b2, w / 2, hb / 2 + dis / 2, 0.25, 0, -hb / 2 + dis / 2); E.body2 = b2; body.collisionFilterMask = b2.collisionFilterMask = 2;
+  E.kir = 1; E.k = 1; E.dongu = -1;
+}
+// acik oran (1 acik, 0 kapali) ve evre
+function giyAcik(E, t) {
+  const f = t % E.P, a = E.To, b = a + 0.6, c = b + 0.3, e = c + E.Tc;
+  if (f < a) return [1, 'acik', f]; if (f < b) return [1, 'uyari', f];
+  if (f < c) { const u = (f - b) / 0.3; return [1 - u * u, 'kapan', f]; } if (f < e) return [0, 'kapali', f];
+  const u = (f - e) / 0.5; return [u * u * (3 - 2 * u), 'acil', f];
+}
+function giyotinKare(E, t) {
+  const [k, ev] = giyAcik(E, t), cyc = Math.floor(t / E.P), dt = Math.max(1e-3, t - (E.pt == null ? t - 0.016 : E.pt));
+  E.k = k; E.ev = ev;
+  if (ev === 'uyari' && E.dongu !== cyc) { E.dongu = cyc; e2Ses('sing'); }
+  if (ev === 'kapali' && E.kpn !== cyc) { E.kpn = cyc; e2Ses('kapan'); buzz(25); }
+  E.cm2.emissiveIntensity = E.cm.emissiveIntensity = ev === 'uyari' ? 0.35 + 0.35 * Math.sin(t * 40) : ev === 'kapan' ? 0.4 : 0;
+  const yu = E.ym + 0.2 + (1 - k) * 0 + k * (E.ht + 0.7), ya = E.ym - 0.2 - k * (E.hb + 0.5);
+  const vu = (yu - (E.pyu == null ? yu : E.pyu)) / dt, va = (ya - (E.pya == null ? ya : E.pya)) / dt; E.pyu = yu; E.pya = ya; E.pt = t;
+  E.ust.position.y = yu; E.alt.position.y = ya;
+  E.body.position.set(E.x0, yu, E.z0); E.body.velocity.set(0, vu, 0); E.body.aabbNeedsUpdate = true;
+  E.body2.position.set(E.x0, ya, E.z0); E.body2.velocity.set(0, va, 0); E.body2.aabbNeedsUpdate = true;
+  E.grp.position.set(E.x0, 0, E.z0);
+}
+function engCarp(E, ev) {
+  const b = balls.find((q) => q.body === ev.body); if (!b || b.eng || E.durum === 'acik' || E.durum === 'ac') return;
+  const p = new THREE.Vector3().copy(b.body.position);
+  if (E.kir) {   // giyotin: top parcalanir, atis bosa gider
+    b.eng = 1; b.hit = true; b.body.collisionFilterMask = 0; b.body.velocity.set(0, 0, 0); b.t = 99; b.mesh.visible = false;
+    burst(p, '#cfd6de', 18, 8); burst(p, '#ffcc66', 8, 5); sfx('metal'); e2Ses('kapan'); buzz(30); shake = Math.max(shake, 0.15); return;
+  }
+  b.eng = 1; b.yavas = 1; b.hit = true; burst(p, '#ffe0a0', 8, 5); sfx('kir', 'ahsap2'); buzz(20);
+}
+const ENGKART = { kapi2: ['Anahtarlı Kapı', '🔑', 'Önce altın anahtar küpü düşür: anahtar kilide uçar, kapı açılır. Sonra arkadaki yapıyı da yık!'],
+  giyotin: ['Giyotin', '⚔️', 'Çelik çeneler açılıp kapanır. Açıkken at! Kapalıyken çarpan top parçalanır. Kırmızı parlarsa kapanıyor.'] };
+function yeniEngel() {
+  if (K || TEST || Q.get('kart') === '0' || !g) return;
+  if (!SV.gor) SV.gor = [];
+  const e = ENG.find((q) => ENGKART[q.t] && !SV.gor.includes('e_' + q.t)); if (!e) return;
+  const [ad, ic, ne] = ENGKART[e.t]; SV.gor.push('e_' + e.t); save();
+  setTimeout(() => { modal('<div class="rib ys">YENİ ENGEL!</div><div style="font-size:72px;line-height:1.2;margin:8px 0">' + ic + '</div><h2>' + ad + '</h2><p>' + ne + '</p><button class="btn" id="yeok">Anladım!</button>');
+    sfx('bonus'); buzz(25); $('yeok').onclick = () => { sfx('tik'); closeModal(); }; }, 450);
+}
+function engTemizle() { for (const e of ENG) { if (!e.bgit) world.removeBody(e.body); if (e.body2) world.removeBody(e.body2); if (e.par) scene.remove(e.par); if (e.key) scene.remove(e.key); scene.remove(e.grp); } ENG.length = 0; }
 function engMesh(grp, geo, mat, x, y, z, rz) { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); if (rz) m.rotation.z = rz; m.castShadow = true; grp.add(m); return m; }
 function engKutu(body, hx, hy, hz, x, y, rz) { const q = new CANNON.Quaternion(); q.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), rz || 0); body.addShape(new CANNON.Box(new CANNON.Vec3(hx, hy, hz)), new CANNON.Vec3(x, y, 0), q); }
 function engKur(L, Y) {
@@ -883,6 +1059,8 @@ function engKur(L, Y) {
       ge.translate(0, 0, -0.21); engMesh(grp, ge, [ENGM.kapi, ENGM.demir], 0, 0, 0);
       engKutu(body, bw / 2, bh / 2, 0.27, 0, 0);
       E.y0 = bh / 2 - 0.2; E.a = bh + 0.5; E.w = (0.85 + 0.4 * d) * hz;
+    } else if (e.t === 'kapi2') { kapi2Kur(E, grp, body);
+    } else if (e.t === 'giyotin') { giyotinKur(E, grp, body, d);
     } else {
       const bw = 2.7, bh = 1.9; engMesh(grp, new THREE.BoxGeometry(bw, bh, 0.32), ENGM.tahta, 0, 0, 0);
       engMesh(grp, new THREE.BoxGeometry(0.22, bh + 0.1, 0.38), ENGM.kirmizi, -bw / 2, 0, 0); engMesh(grp, new THREE.BoxGeometry(0.22, bh + 0.1, 0.38), ENGM.kirmizi, bw / 2, 0, 0);
@@ -891,13 +1069,14 @@ function engKur(L, Y) {
       E.a = Math.max(1.6, R * 0.72); E.w = (1.1 + 0.6 * d) * hz;
     }
     // top carpinca: hizinin cogu gider, artik kup kirmaz
-    body.addEventListener('collide', (ev) => { const b = balls.find((q) => q.body === ev.body); if (!b || b.eng) return; b.eng = 1; b.yavas = 1; b.hit = true; burst(new THREE.Vector3().copy(b.body.position), '#ffe0a0', 8, 5); sfx('kir', 'ahsap2'); buzz(20); });
-    world.addBody(body); scene.add(grp); ENG.push(E);
+    body.addEventListener('collide', (ev) => engCarp(E, ev));
+    world.addBody(body); scene.add(grp); ENG.push(E); if (E.body2) { E.body2.addEventListener('collide', (ev) => engCarp(E, ev)); world.addBody(E.body2); }
   }
   engKare(0);
 }
 function engKare(t) {
   for (const E of ENG) {
+    if (E.t === 'kapi2') { kapi2Kare(E, t); continue; } if (E.t === 'giyotin') { giyotinKare(E, t); continue; }
     const b = E.body; let x = E.x0, th = 0, vx = 0, wz = 0, y = E.y0, vy = 0;
     if (E.t === 'kapi') { const sn = Math.sin(E.w * t) * 1.7, k = Math.max(-1, Math.min(1, sn)); y = E.y0 + E.a * (0.5 + 0.5 * k); vy = Math.abs(sn) < 1 ? E.a * 0.85 * E.w * Math.cos(E.w * t) : 0; }
     else if (E.t === 'kurek') { th = E.ters * E.w * t; wz = E.ters * E.w; }
@@ -941,7 +1120,8 @@ function kolaFis(c) {
 }
 function buildLevel() {
   clearLevel(); RZB = 0;
-  const Y = levelOf(LV), made = Y.make(), list = convertLevel(made, LV);
+  let Y = levelOf(LV); AKUP = -1; if (!K && engelOf(LV, Y).some((e) => e.t === 'kapi2')) { Y = anahtarBolum(Y); AKUP = Y.anahtarI; }   // v3.21: anahtarli kapi bolumu: arkada kapili yapi, onde anahtar kuplu kucuk yapi
+  const made = Y.make(), list = convertLevel(made, LV);
   list.forEach((c, n) => { c[4] = made[n][4] || 0; });
   if (!K) kolaKoy(list, LV);
   if (K) return K.kur(Y, list);   // v6.19: korsan hedefi (sal, gemi, kule) kendi platformunu kurar
@@ -981,6 +1161,7 @@ function buildMulti(Y, list, PD) {
     const mx = (f.i1 - f.i0) / 2 * S + S / 2, mz = (f.k1 - f.k0) / 2 * S + S / 2;
     f.r = Math.max(2.2, mx + S * 0.5); f.rz = Math.max(1.9, mz + S * 0.45);
   });
+  if (Y.anahtar) PD = [{ x: 0, z: -(info[1].rz + 1.7 + info[0].rz), y: 2 * S + 0.6 }, { x: 0, z: 0 }];   // v3.21: kapili yapi arkada ve yukarida, anahtar yapisi onde
   // v3.19: (Adem) resim fonda ana platform (ortadaki) zemin alaninin tam ortasinda; digerleri yan yana degil, onun ARKASINDA ve biraz yukarida
   // (bot testi: arkaya dizince 4. bolum belirgin zorlasti; zorluk degismesin diye yalniz &dizi=arka ile karsilastirma icin acik)
   if (FONYENI && Q.get('dizi') === 'arka' && PD.length > 1) {
@@ -2128,7 +2309,7 @@ let lastFl = 0;
 function screenAt(p, dy) { V.copy(p); V.y += dy || 0; V.project(cam); return [(V.x + 1) / 2 * innerWidth, (1 - V.y) / 2 * innerHeight]; }
 // kup gitti (dustu, kirildi ya da patladi): sayilir, ozel kuplerin odulu verilir; remove ise sahneden hemen kalkar
 function knock(c, remove) {
-  c.gone = true; g.left--; gorevArt('blok', 1); if (M) ist().blok = (ist().blok || 0) + 1; if (g.combo) { g.combo.n++; g.combo.t = 0; if (!g.combo.at) g.combo.at = screenAt(c.body.position, 0.3); }
+  c.gone = true; if (c.anahtar) anahtarUc(c); g.left--; gorevArt('blok', 1); if (M) ist().blok = (ist().blok || 0) + 1; if (g.combo) { g.combo.n++; g.combo.t = 0; if (!g.combo.at) g.combo.at = screenAt(c.body.position, 0.3); }
   const p = c.body.position, at = screenAt(p, 0.3);
   if (c.kind === 'hediye') { g.shots += 2; floatText('+2 Top', at[0], at[1], 'blue'); burst(new THREE.Vector3().copy(p), '#ffd23f', 16, 6); sfx('bonus'); }
   else if (c.kind === 'altin' || c.kind === 'kkA') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
@@ -2719,13 +2900,13 @@ function yeniSekil() {
   if (K || TEST || Q.get('kart') === '0' || !g) return;
   if (!SV.gor) SV.gor = [];
   const yeni = []; for (const c of cubes) { const a = aileOf(c.col); if (a && !SV.gor.includes(a) && !yeni.some((y) => y[0] === a)) yeni.push([a, c.col]); }
-  if (!yeni.length) return;
+  if (!yeni.length) return yeniEngel();
   const goster = (n) => {
     const [a, col] = yeni[n], [ad, ne] = AILE[a]; SV.gor.push(a); save();
     const pr = Math.min(2, ren.getPixelRatio()), px = Math.round(200 * ren.getPixelRatio());
     modal('<div class="rib ys">YENİ ŞEKİL!</div><div class="ysk"><span class="ysi"></span><canvas id="yscv" width="' + px + '" height="' + px + '"></canvas></div><h2>' + ad + '</h2><p>' + ne + '</p><button class="btn" id="ysok">Harika!</button>');
     $('card').classList.add('yskart'); prvGoster(col, $('yscv')); sfx('bonus'); buzz(25);
-    $('ysok').onclick = () => { sfx('tik'); PRV.on = false; $('card').classList.remove('yskart'); closeModal(); if (n + 1 < yeni.length) setTimeout(() => goster(n + 1), 180); };
+    $('ysok').onclick = () => { sfx('tik'); PRV.on = false; $('card').classList.remove('yskart'); closeModal(); if (n + 1 < yeni.length) setTimeout(() => goster(n + 1), 180); else yeniEngel(); };
   };
   setTimeout(() => goster(0), 450);
 }
@@ -2924,7 +3105,7 @@ function start(L) {
   if (KAL()) isitma();
 }
 if (!K) window.BSTUS = () => sfx('tik');   // v3.3: her dugmeye dokununca tus sesi (yapi/index.html)
-window.YP = { get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
+window.YP = { get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, get ENG() { return ENG; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
 if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MOD, PM, platBody, GB, cubes, balls, S, TC, KEEP, NENV, SV, save, $, Q, TEST,
   get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set GY(v) { GY = v; GB.position.y = v; }, get shake() { return shake; }, set shake(v) { shake = v; },
   set TOPY(v) { TOPY = v; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, LEG, DIRT, KIND, splashSnd: (v) => AC && (K ? play('su', v + 0.2) : splashSnd(v)), dongu, play: (k, v, r) => AC && play(k, v, r),
