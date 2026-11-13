@@ -11,7 +11,8 @@ import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Kors
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=3';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=11';
-import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=2';   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=2';
+import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -1851,27 +1852,32 @@ function updateBalls(dt) {
     // iz: arkasinda kuculen parlak toplar
     // v6.0: beyaz parlak iz - top hizliyken arkasinda ince bir isik cizgisi (araya ara noktalar eklenir ki kopuk gorunmesin)
     if (b.t < 1.2) { const pos = b.mesh.position, lp = b.lp || pos.clone(), n = Math.min(6, Math.ceil(lp.distanceTo(pos) / 0.25));
-      for (let j = 1; j <= n; j++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#e8e4dc', transparent: true, opacity: 0.35, depthWrite: false })); sp.position.lerpVectors(lp, pos, j / n); sp.scale.setScalar(BR * 1.3); scene.add(sp); b.trail.push({ m: sp, life: 0.2 }); }
+      for (let j = 1; j <= n; j++) { const sp = spr('#e8e4dc', false, 0.35); sp.position.lerpVectors(lp, pos, j / n); sp.scale.setScalar(BR * 1.3); b.trail.push({ m: sp, life: 0.2 }); }
       b.lp = pos.clone(); }
-    for (let j = b.trail.length - 1; j >= 0; j--) { const p = b.trail[j]; p.life -= dt; const k = Math.max(0, p.life / 0.2); p.m.scale.setScalar(BR * 1.3 * (1.6 - 0.6 * k)); p.m.material.opacity = 0.35 * k; if (p.life <= 0) { scene.remove(p.m); p.m.material.dispose(); b.trail.splice(j, 1); } }
+    for (let j = b.trail.length - 1; j >= 0; j--) { const p = b.trail[j]; p.life -= dt; const k = Math.max(0, p.life / 0.2); p.m.scale.setScalar(BR * 1.3 * (1.6 - 0.6 * k)); p.m.material.opacity = 0.35 * k; if (p.life <= 0) { sprBirak(p.m); b.trail.splice(j, 1); } }
     if (!b.pc && b.body.position.y > BR + 0.05) { b.pc = 1; b.body.collisionFilterMask = -1; }   // v6.12: (hata) top platformun icinden dusuyordu: platform hizasini asinca platforma carpar
     if (!b.sunk && b.body.position.y < GY + BR * 1.1) { b.sunk = 1; const bx = b.body.position.x, bz = b.body.position.z; b.zn = zoneAt(bx, bz); if (b.zn === 'su') { splash(bx, bz, 0.9, true); if (K) sfx('su', 0); else sfx('yer', 'su'); } else if (b.zn === 'cim') { groundFx(bx, bz, 0.6); sfx('yer', 'kum'); } else { softBurst(b.zn, bx, bz, 0.6, b.body.velocity); sfx('yer', b.zn); } world.removeBody(b.body); }   // v6.17
     if (b.sunk) { b.sunk += dt; b.mesh.position.y = GY + BR - Math.min(1, b.sunk / (b.zn === 'su' ? 0.9 : 0.5)) * BR * (b.zn === 'kum' ? 1.1 : b.zn === 'kar' ? 1.5 : 2.4); }
     else if (b.t > 1.2 && b.body.velocity.length() < 1.2) b.rest = (b.rest || 0) + dt;
     if (b.rest > 0.6) b.mesh.scale.setScalar(Math.max(0.001, 1 - (b.rest - 0.6) / 0.4));
-    if (b.body.position.y < -16 || b.t > 7 || b.sunk > 0.6 || b.rest > 1) { for (const p of b.trail) { scene.remove(p.m); p.m.material.dispose(); } world.removeBody(b.body); scene.remove(b.mesh); b.halo.material.dispose(); if (b.mesh.material !== TOPM) b.mesh.material.dispose(); balls.splice(i, 1); }
+    if (b.body.position.y < -16 || b.t > 7 || b.sunk > 0.6 || b.rest > 1) { for (const p of b.trail) sprBirak(p.m); world.removeBody(b.body); scene.remove(b.mesh); b.halo.material.dispose(); if (b.mesh.material !== TOPM) b.mesh.material.dispose(); balls.splice(i, 1); }
   }
 }
 
 // ---------------- v6.0 efektler: namlu parlamasi, duman, vurus parlamasi, kup parcalari, toz, konfeti ----------------
 const SOFT = canvasTex(64, 64, (x, w, h) => { const gg = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gg.addColorStop(0, 'rgba(255,255,255,1)'); gg.addColorStop(0.35, 'rgba(255,255,255,.75)'); gg.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gg; x.fillRect(0, 0, w, h); });
 const FX = [];
-function spr(col, add, op) { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: col, transparent: true, opacity: op, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); return m; }
+// v4.0 Faz 1A: parcaciklar havuzdan (tek cizim cagrisi); havuz doluysa ya da ?fx=0 ise eski Sprite yolu
+const PRC = Q.get('fx') === '0' ? null : parcacikKur(scene, SOFT);
+function spr(col, add, op) { const v = PRC && PRC.al(col, add, op); if (v) return v; const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: col, transparent: true, opacity: op, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); return m; }
+if (Q.has('olc')) window.__olc = () => ({ cagri: ren.info.render.calls, parca: PRC ? PRC.say() : -1, fx: FX.length, program: ren.info.programs.length, geo: ren.info.memory.geometries });   // v4.0: olcum (yalniz ?olc)
+if (Q.has('olc')) window.__fxDene = () => { const p = new THREE.Vector3(0, 3, 2); burst(p, '#ff3030', 30, 2); const a = spr('#ffd040', true, 1); a.position.set(0, 6, 2); a.scale.setScalar(3); fx(a, 5, () => {}); splash(-3, 3, 1.4, true); };
+function sprBirak(o) { if (o.isPar) PRC.birak(o); else { scene.remove(o); if (o.material) o.material.dispose(); } }
 function fx(o, life, upd) { FX.push({ o, life, max: life, upd }); }
 function updateFX(dt) {
   for (let i = FX.length - 1; i >= 0; i--) {
     const f = FX[i]; f.life -= dt; const k = 1 - Math.max(0, f.life) / f.max; f.upd(f.o, k, dt);
-    if (f.life <= 0) { if (!f.keep) { scene.remove(f.o); if (f.o.material && !f.o.userData.shared) f.o.material.dispose(); } FX.splice(i, 1); }
+    if (f.life <= 0) { if (!f.keep) { if (f.o.isPar) PRC.birak(f.o); else { scene.remove(f.o); if (f.o.material && !f.o.userData.shared) f.o.material.dispose(); } } FX.splice(i, 1); }
   }
 }
 const flashLight = new THREE.PointLight('#ffd6f0', 0, 16, 1.5); scene.add(flashLight);
@@ -2993,6 +2999,7 @@ function isitma() {
   const p = new THREE.Vector3(0, -80, 0);
   try { hitFlash(p); burst(p, '#fff3a0', 4, 2); shatter(p, '#cccccc', new THREE.Vector3(0, 1, 0), null, 4, null); splat(0, -80, 0, 1); } catch (e) {}
   scene.traverse((o) => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; for (const m of ms) for (const k of ['map', 'emissiveMap', 'normalMap', 'roughnessMap']) if (m[k] && m[k].isTexture) ren.initTexture(m[k]); });
+  if (PRC) PRC.kare();   // v4.0: parcacik golgelendiricisi de ilk darbeden once derlensin
   try { ren.compile(scene, cam); } catch (e) {}
   const sp = SPL.pop(); if (sp) scene.remove(sp.m);
 }
@@ -3016,7 +3023,7 @@ function frame(ts) {
   if (PRV.on) prvKare(dt);
   if (sahneBos()) { BOS++; if (BOS > 12) { ren.shadowMap.autoUpdate = false; if (BOS % 3) { if (!TEST) requestAnimationFrame(frame); return; } } }
   else { BOS = 0; ren.shadowMap.autoUpdate = true; }
-  ren.render(scene, cam); tilkiCiz();
+  if (PRC) PRC.kare(); ren.render(scene, cam); tilkiCiz();
   if (!TEST) requestAnimationFrame(frame);
 }
 let BOS = 0, CN = 0, CDT = 0;
