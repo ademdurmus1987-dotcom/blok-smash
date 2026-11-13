@@ -267,6 +267,7 @@ export function merkezKur(A) {
 
   // ---------------- bolum karti: guclendirici sec, oyna ----------------
   function bolumKarti(L) {
+    if (A.hazirla) A.hazirla(L);   // v4.7: kart okunurken bolumun modelleri arkada iner
     const s = A.ggSay(), sec = new Set(), zor = A.zor(L), st = (SV.yil || {})[L] || 0;
     const maliyet = () => { let m = 0; for (const k of sec) if (!(s[k] > 0)) m += A.GGT.find((t) => t.k === k).fiyat; return m; };
     // v3.2: (Adem 11 Kas) daha profesyonel bolum karti: sus cizgili baslik, uc yildiz yuvasi, hedef satiri, adli guclendiriciler
@@ -364,7 +365,7 @@ export function merkezKur(A) {
   // ---------------- ayarlar / duraklatma ----------------
   function ayarKarti(oyunda) {
     const sat = (id, ad, on) => '<div class="ay"><b>' + ad + '</b><button class="tg' + (on ? ' on' : '') + '" data-a="' + id + '" aria-label="' + ad + '"><i></i></button></div>';
-    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p></div>' +
+    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not" style="margin:12px 0 6px!important">Geliştirici</p>' + sat('fps', 'FPS sayacı', !!SV.fps) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p></div>' +
       (oyunda ? '<button class="m-btn" id="p-dv">Devam Et</button><button class="m-btn tur kck" id="p-yb">Yeniden Başla</button><button class="m-btn mavi kck" id="p-as">Ana Sayfa</button>' : '<button class="m-btn kck" id="p-dv">Tamam</button>'));
     durak = !!oyunda;
     for (const b of P.querySelectorAll('.tg')) b.onclick = () => { A.ayar(b.dataset.a); tik(); ayarKarti(oyunda); };
