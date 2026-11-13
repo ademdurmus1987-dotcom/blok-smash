@@ -1,4 +1,3 @@
-import { kutlamaOyna } from './kutlama.js?v=2';   // v4.5: hareketli kazanma girisi
 // Blok Smash v3.0 (10 Kas 2026) - MERKEZ: oyunun kabugu.
 // Adem'in referans videosundaki akis (acilis -> ana sayfa -> bolum karti -> oyun -> kazanma sahnesi -> ana sayfa), Blok Smash'in kendi
 // kimligiyle: Korsan Tilki, gun batimi denizi, lacivert + altin panolar, hazine haritasi.
@@ -394,8 +393,6 @@ export function merkezKur(A) {
   }
   // d: { L, st, kaz, once, kalan, bonus, zorB, yeniK, ilk }
   function kazan(d) {
-    // v4.5: (Adem) once hareketli kutlama (logo, altin borular, havai fisek, paralar sayaca ucar), sonra bu kart
-    if (!d.giris && !A.kutlamaYok) { kutlamaOyna({ altinOnce: d.once, kaz: d.kaz, ses: (k) => A.sfx(k), para: (r) => A.ses('para', 0.32, r), titret: (n) => A.buzz(n), sonra: () => kazan(Object.assign({}, d, { giris: 1 })) }); return; }
     const sn = SV.sn || 0, onceSn = d.ilk ? sn - 1 : sn, dolu = sn >= SANDIK_HEDEF, kaldi = Math.max(0, SANDIK_HEDEF - sn);
     KZ.className = 'on';
     KZ.innerHTML = '<canvas></canvas><div class="m-logo k-logo"><b>FOXI</b><span>SMASH</span></div><div class="k-ic"><h1>Tebrikler!</h1><div class="k-bol">Bölüm ' + d.L + ' tamam</div>' +
@@ -410,13 +407,12 @@ export function merkezKur(A) {
     for (let i = 0; i < d.st; i++) setTimeout(() => { if (KZ.classList.contains('on')) { A.sfx('bonus'); A.buzz(25); } }, 1400 + i * 250);
     setTimeout(() => { const c = $('k-snc'); if (c) c.style.width = Math.round(100 * Math.min(sn, SANDIK_HEDEF) / SANDIK_HEDEF) + '%'; }, 2300);
     let n = 0; const adim = Math.max(1, Math.round(d.kaz / 22));
-    if (d.giris) { const e = $('k-say'); if (e) { e.textContent = d.kaz; e.classList.add('pop'); } n = d.kaz; }   // paralar kutlamada sayaca ucti
-    else setTimeout(function say() { const e = $('k-say'); if (!e) return; n = Math.min(d.kaz, n + adim); e.textContent = n; A.ses('para', 0.3, 0.95 + 0.4 * n / Math.max(1, d.kaz));
+    setTimeout(function say() { const e = $('k-say'); if (!e) return; n = Math.min(d.kaz, n + adim); e.textContent = n; A.ses('para', 0.3, 0.95 + 0.4 * n / Math.max(1, d.kaz));
       if (n < d.kaz) setTimeout(say, 50); else e.classList.add('pop'); }, 1750);
     $('k-dv').onclick = () => {
       tik(); if (A.sarkiDur) A.sarkiDur(); const r = KZ.querySelector('.k-odul').getBoundingClientRect(); KZ.classList.add('cik');
       setTimeout(() => { KZ.className = ''; KZ.innerHTML = ''; if (fxDur) { fxDur(); fxDur = null; } }, 340);
-      ac(d.giris ? {} : { ucan: { x: r.left + r.width / 2, y: r.top + r.height / 2, n: Math.round(d.kaz / 8), eski: d.once, yeni: d.once + d.kaz } });
+      ac({ ucan: { x: r.left + r.width / 2, y: r.top + r.height / 2, n: Math.round(d.kaz / 8), eski: d.once, yeni: d.once + d.kaz } });
     };
   }
 
