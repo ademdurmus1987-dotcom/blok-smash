@@ -10,8 +10,9 @@ import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=4';
-import { kaleYapi, hazineYapi } from './kale.js?v=1';   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=11';
+import { kaleYapi, hazineYapi } from './kale.js?v=1';
+import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
+import { merkezKur } from './merkez.js?v=13';
 import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=3';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
@@ -268,6 +269,7 @@ function setDirt(fo) {
 }
 function setSirk(rx, rz, pn) {
   if (SIRK.mesh) { scene.remove(SIRK.mesh); SIRK.mesh.geometry.dispose(); SIRK.mesh = null; }
+  if (KAIDE) { const k = KAIDE.tabla(rx, rz); SIRK.mesh = new THREE.Mesh(k.geo, k.mat); SIRK.mesh.castShadow = SIRK.mesh.receiveShadow = true; scene.add(SIRK.mesh); return; }
   pn = MOD[pn] ? pn : 'platform_sirk'; const geo = fitPlatRect(pn, rx, rz); if (!geo) return;
   SIRK.mesh = new THREE.Mesh(geo, MOD[pn].mat); SIRK.mesh.castShadow = SIRK.mesh.receiveShadow = true; scene.add(SIRK.mesh);
 }
@@ -423,6 +425,8 @@ const NENV = (() => {
 // v3.1: (Adem 10 Kas 2026) kodla cizilen 3B sekiller (sekil.js): parlak oyuncak kup, tas kiris, mermer tambur, buz, ahsap dikme, kavanoz, raf.
 // KIND'e eklenir (sek: 1); olculeri kup kenari cinsinden SEK.TUR'da, govde ve malzemesi ilk kullanimda SEK.al(ad) ile kurulur.
 const SEK = sekilKur({ THREE, S, canvasTex, ENV });
+// v4.4: (Adem 13 Kas) kaide platform (turkuaz-bakir) ve yeni top; ?kaide=0 eski Tripo platformu ve eski top
+const KAIDE = Q.get('kaide') === '0' ? null : kaideKur({ THREE, canvasTex, ENV }); if (KAIDE) KAIDE.ayakBoya(LEG);
 for (const k in SEK.TUR) { const t = SEK.TUR[k]; KIND[k] = { mass: t.mass, f: t.f, r: t.r, sek: 1 }; if (t.carp) KIND[k].kir = t.carp; if (t.boom) { KIND[k].boom = t.boom; KIND[k].guc = t.guc; } }
 const SEKSH = {};
 function sekShape(k) { if (SEKSH[k]) return SEKSH[k]; const s = SEK.al(k); return (SEKSH[k] = s.sil ? new CANNON.Cylinder(s.r, s.r, s.h, 16) : new CANNON.Box(new CANNON.Vec3(s.w / 2, s.h / 2, s.d / 2))); }
@@ -1016,7 +1020,7 @@ function buildMulti(Y, list, PD) {
     if (n === 0) q = { body: platBody, mesh: SIRK.mesh, leg: LEG };
     else {
       const body = new CANNON.Body({ mass: 0, material: PM.plat }); body.collisionFilterGroup = 4; platShapes(body, f.r, f.rz); world.addBody(body);
-      const mesh = new THREE.Mesh(fitPlatRect(pn, f.r, f.rz), MOD[pn].mat); mesh.castShadow = mesh.receiveShadow = true; scene.add(mesh);
+      const kt = KAIDE && KAIDE.tabla(f.r, f.rz), mesh = kt ? new THREE.Mesh(kt.geo, kt.mat) : new THREE.Mesh(fitPlatRect(pn, f.r, f.rz), MOD[pn].mat); mesh.castShadow = mesh.receiveShadow = true; scene.add(mesh);
       const leg = LEG.clone(); leg.visible = true; scene.add(leg); q = { body, mesh, leg };
     }
     const yb = d.y || 0; Object.assign(q, { x, z, cx: x, r: f.r, rz: f.rz, kay: d.kay || null, ph: d.ph || 0, asn: d.asn || null, ah: 0, cy: yb, yb }); if (q.leg) legBoy(q.leg, yb);
@@ -1478,6 +1482,7 @@ function updateCannon(dt) {
 // araba geri kayar ve tekerlekler doner, namlu agzi kor gibi parlar; beklerken altin halkalarda isik gezinir, namlu nefes alir.
 // Eksenler eski modelle ayni: namlu +z, zemin y=0. Korsan eski modeli kullanir.
 function topArabasiKur() {
+  if (KAIDE && Q.get('top') !== 'eski') { const t = KAIDE.topModeli(); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; topSon(t.G, t.muzzleZ); return; }   // v4.4: yeni top
   const odunT = canvasTex(512, 512, (x, w, h) => {
     x.fillStyle = '#9a5a26'; x.fillRect(0, 0, w, h);
     for (let i = 0; i < 4; i++) { const y0 = i * h / 4; const gr = x.createLinearGradient(0, y0, 0, y0 + h / 4); gr.addColorStop(0, '#b87436'); gr.addColorStop(0.5, '#a3622a'); gr.addColorStop(1, '#8a4e1e'); x.fillStyle = gr; x.fillRect(0, y0 + 3, w, h / 4 - 6); x.fillStyle = '#4a2408'; x.fillRect(0, y0, w, 3); }
@@ -1519,8 +1524,11 @@ function topArabasiKur() {
   const muyl = add(new THREE.CylinderGeometry(0.12, 0.12, 1.12, 16), altin, 0, 0, 0, N); muyl.rotation.z = Math.PI / 2;
   const kor = new THREE.Mesh(new THREE.CircleGeometry(0.235, 32), new THREE.MeshBasicMaterial({ color: '#ff8a2a', transparent: true, opacity: 0 })); kor.position.z = 1.21; N.add(kor); TC.kor = kor;
   add(new THREE.CircleGeometry(0.24, 32), ic, 0, 0, 1.205, N);
+  topSon(G, 0.2 + 1.98);
+}
+function topSon(G, mz) {
   TC.gun = new THREE.Group(); TC.gun.add(G); TC.holder.add(TC.gun); TC.pro = true;
-  TC.muzzle.set(0, 1.3, 0.2 + 1.98); TC.h = 1.8; TC.w = 2.3; TC.info = { pro: true };
+  TC.muzzle.set(0, 1.3, mz); TC.h = 1.8; TC.w = 2.3; TC.info = { pro: true };
   TC.w0 = TC.w; const pad = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.9, 1, 64), new THREE.MeshStandardMaterial({ color: '#f4e8d6', roughness: 0.55 }));
   pad.receiveShadow = true; TC.holder.add(pad); TC.pad = pad;
   const gm = new THREE.MeshStandardMaterial({ color: '#e8b93a', roughness: 0.28, metalness: 0.55 });
@@ -2858,9 +2866,15 @@ function yeniSekil() {
   const goster = (n) => {
     const [a, col] = yeni[n], [ad, ne] = AILE[a]; SV.gor.push(a); save();
     const pr = Math.min(2, ren.getPixelRatio()), px = Math.round(200 * ren.getPixelRatio());
-    modal('<div class="rib ys">YENİ ŞEKİL!</div><div class="ysk"><span class="ysi"></span><canvas id="yscv" width="' + px + '" height="' + px + '"></canvas></div><h2>' + ad + '</h2><p>' + ne + '</p><button class="btn" id="ysok">Harika!</button>');
-    $('card').classList.add('yskart'); prvGoster(col, $('yscv')); sfx('bonus'); buzz(25);
-    $('ysok').onclick = () => { sfx('tik'); PRV.on = false; $('card').classList.remove('yskart'); closeModal(); if (n + 1 < yeni.length) setTimeout(() => goster(n + 1), 180); };
+    // v4.5: (Adem 13 Kas) "Yeni Blok!" karti: sahne kararir, baslik iner, blok isinlarin ortasinda doner, aciklama ve Devam Et
+    const E = document.createElement('div'); E.id = 'ysn';
+    E.innerHTML = '<div class="ysn-bas">Yeni Blok!</div><div class="ysn-ad">' + ad + '</div><div class="ysn-sah"><div class="ysn-isin"></div><div class="ysn-par"></div>' +
+      [[12, 18, 0], [80, 10, 0.5], [88, 64, 1], [8, 72, 0.3], [62, 86, 0.8]].map(([l, t, d]) => '<i class="ysn-ys" style="left:' + l + '%;top:' + t + '%;animation-delay:' + d + 's"></i>').join('') +
+      '<canvas id="yscv" width="' + px + '" height="' + px + '"></canvas></div><div class="ysn-ne">' + ne + '</div><button class="ysn-dv" id="ysok">Devam Et</button>';
+    document.body.appendChild(E); requestAnimationFrame(() => E.classList.add('on'));
+    prvGoster(col, $('yscv')); sfx('bonus'); buzz(25); setTimeout(() => { if (E.isConnected) sfx('bonus'); }, 320);
+    const kapa = () => { if (E.classList.contains('cik')) return; sfx('tik'); E.classList.add('cik'); setTimeout(() => { PRV.on = false; E.remove(); if (n + 1 < yeni.length) setTimeout(() => goster(n + 1), 180); }, 300); };
+    E.addEventListener('pointerdown', (ev) => { if (performance.now() - t0 > 900 || ev.target.id === 'ysok') kapa(); }); const t0 = performance.now();
   };
   setTimeout(() => goster(0), 450);
 }
