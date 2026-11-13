@@ -1,3 +1,4 @@
+import { kaleYapi, hazineYapi } from './kale.js?v=1';   // v4.3
 // v3.16 (Adem 12 Kas 2026): bolum dizilisi bastan. Ilk bolumler tek renk tek cesit; her yeni sekil ailesi bir bolumde tanitilir
 // (oyun.js ilk gorulen aileyi "Yeni sekil" kartiyla gosterir). Farkli platform sayisi, yukseklik ve hareketiyle farkli yerlesimler.
 // Hucre: [i, kat, k, tur, platform]. Genis parcanin i degeri orta noktasidir (tas4 0..3'u kaplar: i = 1.5). Havada hucre yok: her parca altindakine oturur.
@@ -5,6 +6,7 @@
 // ---------------- sekil aileleri: kartta gorunen ad ve aciklama ----------------
 export const AILE = {
   oy: ['Oyuncak Küp', 'Tek atışta kırılır. Hepsini platformdan düşür!'],
+  ks: ['Korsan Kalesi', 'Sandık, fıçı ve şişeler kırılır; taşlar ağırdır. TNT\'yi vur, kale çöksün!'],   // v4.3
   ahsapD: ['Tahta Direk', 'İki kat boyunda. Devrilince üstündekileri de düşürür.'],
   buzP: ['Buz Küp', 'Kaygandır, kolay kayar ve çarpınca çatlar.'],
   tas: ['Taş Kiriş', 'Ağır ve sağlam. Altındaki desteği vur!'],
@@ -33,7 +35,7 @@ export const AILE = {
 };
 export function aileOf(t) {
   if (typeof t !== 'string') return null;
-  const p = { oy: 'oy', jo: 'jo', hd: 'hd', kr: 'kr', kv: 'kv', mk: 'mk', kn: 'kn' }[t.slice(0, 2)];
+  const p = { oy: 'oy', ks: 'ks', jo: 'jo', hd: 'hd', kr: 'kr', kv: 'kv', mk: 'mk', kn: 'kn' }[t.slice(0, 2)];
   if (p && /^[a-z]{2}[A-Z]/.test(t)) return p;
   if (t === 'tas2' || t === 'tas4') return 'tas'; if (t === 'tug2' || t === 'tug3') return 'tug'; if (t === 'buzP' || t === 'buzP3') return 'buzP';
   if (t === 'cik2') return 'cik'; if (t === 'raf2' || t === 'raf3') return 'raf'; if (t === 'disk') return 'dalga';
@@ -66,10 +68,13 @@ const satranc = (a, b) => (i, j, k) => ((Math.round(i) + j + k) % 2 ? a : b);
 // ---------------- el yapimi 20 bolum ----------------
 export const BOLUMLER = [
   { ad: 'İlk Atış', make: () => D.duvar(5, 4, 2, 'oyK') },
+  // v4.3: (Adem 13 Kas) kale gorsellerinden: ayrintili sandik, tas kemer, fici, sise, mucevher, buz, TNT, sutunlar
+  { ad: 'Korsan Kalesi', ek: 4, make: () => kaleYapi() },
   { ad: 'Kırmızı Kule', make: () => D.kule(3, 6, 2, (i, j) => (j >= 4 ? 'oyM' : 'oyK')) },
   { ad: 'Tahta Kule', make: () => { const o = []; kutu(o, 0, 5, 0, 0, 0, 1, 'oyK'); kutu(o, 0, 5, 1, 1, 0, 1, (i) => (i % 2 ? null : 'ahsapD')); kutu(o, 0, 5, 1, 2, 0, 1, (i) => (i % 2 ? 'oyM' : null)); kutu(o, 0, 5, 3, 3, 0, 1, 'oyY'); kutu(o, 1, 4, 4, 4, 0, 1, (i) => (i === 1 || i === 4 ? 'ahsapD' : 'oyK')); kutu(o, 2, 3, 5, 5, 0, 1, 'oyK'); return o; } },
   { ad: 'İkiz Kuleler', pl: [{ x: -4.3, z: 0 }, { x: 4.3, z: 0 }], make: () => P(0, D.kule(3, 5, 1, sira(['oyK', 'oyM', 'oyY']))).concat(P(1, D.kule(3, 5, 1, sira(['oyY', 'oyM', 'oyK'])))) },
   { ad: 'Buz Duvarı', make: () => D.duvar(6, 5, 2, (i, j) => (j === 2 ? 'oyM' : 'buzP')) },
+  { ad: 'Hazine Kulesi', ek: 4, make: () => hazineYapi({ d: 2 }) },
   { ad: 'Taş Kemerler', pl: [{ x: 0, z: 0, asn: { a: 1.4, h: 0.85 } }], make: () => D.kemer(2, 2, 'oyK', 'tas4', 'buzP') },
   { ad: 'Mermer Tapınak', make: () => { const o = []; kutu(o, 0, 5, 0, 2, 0, 1, (i) => (i === 1 || i === 4 ? 'oyK' : 'mermer')); for (const i of [0.5, 2.5, 4.5]) kutu(o, i, i, 3, 3, 0, 1, 'tas2'); kutu(o, 1, 4, 4, 4, 0, 1, 'oyY'); kutu(o, 2, 3, 5, 5, 0, 1, 'oyK'); return o; } },
   { ad: 'Jöle Piramidi', make: () => D.piramit(6, 2, (i, j) => ['joP', 'joY', 'oyK', 'joP', 'joY', 'oyS'][j]) },

@@ -9,9 +9,10 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=3';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
+import { sekilKur, YAPI } from './sekil.js?v=4';
+import { kaleYapi, hazineYapi } from './kale.js?v=1';   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=11';
-import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=2';
+import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=3';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
 import { hisKur } from './fx/his.js?v=1';   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
@@ -768,7 +769,8 @@ const USIF = ['Taş', 'Ahşap', 'Kızıl', 'Altın', 'Gizli', 'Eski', 'Dev', 'Sa
 function uretBolum(L) {
   const r = mul32(L * 7919 + 13), d = zorluk(L), ri = (a, b) => a + Math.floor(r() * (b - a + 1)), sec = (a) => a[Math.floor(r() * a.length)];
   if (L % 3 === 2) {   // v3.1: her uc bolumde bir yeni yapilardan biri, her seferinde baska olcu ve renkte
-    const OY = ['oyK', 'oyY', 'oyM', 'oyS', 'oyP'], a = ri(0, 4), b = (a + ri(1, 4)) % 5, tip = Math.floor(L / 3) % 6;
+    const OY = ['oyK', 'oyY', 'oyM', 'oyS', 'oyP'], a = ri(0, 4), b = (a + ri(1, 4)) % 5, tip = Math.floor(L / 3) % 8;   // v4.3: 6 kale, 7 hazine kulesi
+    if (tip >= 6) { const op2 = { d: ri(1, 2), sise: sec(['ksSiseM', 'ksSiseB']), sise2: sec(['ksSiseY', 'ksSiseM']), fici: sec(['ksFici', 'ksFiciK']) }; return { ad: sec(USIF) + (tip === 6 ? ' Kale' : ' Hazine Kulesi'), ek: 4, uretim: 1, make: () => (tip === 6 ? kaleYapi : hazineYapi)(op2) }; }
     const op = tip === 0 ? { r1: OY[a], r2: OY[b], kat: ri(1, 2), desen: ri(0, 3) } : tip === 1 ? { sut: ri(2, 4) } : tip === 2 ? { kat: ri(2, 3), kay: ri(0, 2) } : tip === 3 ? { kay: ri(0, 2), tepe: sec(['krM', 'krT']) } : tip === 4 ? { kat: ri(1, 2), kay: ri(0, 2) } : { sut: ri(2, 3), kay: ri(0, 1) };
     return { ad: sec(USIF) + ' ' + ['Duvar', 'Tapınak', 'Raf', 'Pastane', 'Hediye Kulesi', 'Depo'][tip], ek: 3, uretim: 1, make: () => YAPI[['duvar', 'tapinak', 'raf', 'pastane', 'hediye', 'depo'][tip]](op) };
   }
