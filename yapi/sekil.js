@@ -3,6 +3,7 @@
 // seker kavanozlari, raf tahtalari ve dalgali porselen tamburlar. Hepsi gercek 3B: yuvarlak kenarli govde,
 // ustune boyanmis isik-golge, kabartma (bump) ve parlak yansima. Dosya indirmez, model beklemez.
 // Olculer kup kenari (S) cinsindendir: w genislik (x), h yukseklik (y), d derinlik (z).
+import { kaleKur } from './kale.js?v=1';   // v4.3: Korsan Kalesi blok seti
 export function sekilKur({ THREE, S, canvasTex, ENV }) {
   const col = (h) => new THREE.Color(h);
   const mix = (a, b, t) => '#' + col(a).lerp(col(b), t).getHexString();
@@ -467,6 +468,7 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
     kkL: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.6, r: 0.1, ses: 'tas', renk: '#7a4cc0', boom: 1.8, guc: 11, yap: () => kafaKup('l') },
     kemik: { w: 2, h: 1, d: 1, mass: 1.3, f: 0.65, r: 0.08, ses: 'tahta', renk: '#f1e6cf', kir: 1, carp: 9, yuzer: 1, yap: kemik }
   };
+  Object.assign(TUR, kaleKur({ THREE, S, canvasTex, ENV, kutu, torna, rng, acik, koyu }));   // v4.3
   const HAZIR = {};
   function al(k) { if (HAZIR[k]) return HAZIR[k]; const t = TUR[k], y = t.yap(); return (HAZIR[k] = Object.assign({ w: t.w * S, h: t.h * S, d: t.d * S, sil: t.sekil === 'sil', r: S * 0.47 }, y)); }
   return { TUR, al };

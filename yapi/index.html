@@ -59,6 +59,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
 .fl{position:fixed;z-index:6;pointer-events:none;font:400 30px/1 var(--disp);color:#fff;text-shadow:-2px 0 0 #2a1666,2px 0 0 #2a1666,0 -2px 0 #2a1666,0 2px 0 #2a1666,0 4px 0 #2a1666;animation:fl 1s cubic-bezier(.2,1.4,.4,1) forwards;white-space:nowrap}
 .fl.gold{color:#ffe14a}
 .fl.blue{color:#9fe6ff}
+.fl.mini{font-size:22px;color:#fff;animation-duration:.8s}
 @keyframes fl{0%{transform:translate(-50%,0) scale(.3);opacity:0}25%{transform:translate(-50%,-18px) scale(1.2);opacity:1}45%{transform:translate(-50%,-24px) scale(1)}100%{transform:translate(-50%,-70px) scale(.95);opacity:0}}
 .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(40,20,100,.45),rgba(10,5,40,.75));z-index:20;padding:22px}.modal.on{display:flex}
 .card{position:relative;width:100%;max-width:330px;background:linear-gradient(180deg,#fff8e8,#ffe2b0);border:5px solid #4a1f6e;border-radius:30px;box-shadow:0 9px 0 #4a1f6e,0 18px 40px rgba(0,0,0,.35),inset 0 4px 0 #fff;padding:58px 20px 20px;text-align:center;animation:cin .5s cubic-bezier(.3,1.6,.5,1)}
@@ -149,6 +150,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
 </style>
 <link rel="stylesheet" href="merkez.css?v=5">
 <link rel="stylesheet" href="parlak.css?v=3">
+<link rel="stylesheet" href="kutlama.css?v=2">
 </head>
 <body>
 <div id="bg"><video id="bgv" muted playsinline webkit-playsinline loop preload="auto" disablepictureinpicture></video></div>
@@ -207,6 +209,6 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
   addEventListener('pointerup', birak, true); addEventListener('pointercancel', birak, true);
 })();
 </script>
-<script type="module" src="oyun.js?v=83"></script>
+<script type="module" src="oyun.js?v=91"></script>
 </body>
 </html>
