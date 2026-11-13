@@ -29,7 +29,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v3.15', ZOR_ODUL = 20;
+const SURUM = 'v4.6', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
