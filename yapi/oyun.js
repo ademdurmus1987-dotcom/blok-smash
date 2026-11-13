@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=4';
 import { kaleYapi, hazineYapi } from './kale.js?v=1';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=15';
+import { merkezKur } from './merkez.js?v=16';
 import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=4';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
@@ -29,7 +29,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v4.7', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v4.8', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const zorMu = (L) => L >= 5 && L % 5 === 0;   // her 5. bolum 'zor bolum': mor dugme, +20 altin
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -2653,6 +2653,7 @@ function sfx(k, n) {
     voices = voices.filter((v) => v > now); if (voices.length >= 6 && k !== 'shoot' && k !== 'win' && k !== 'lose') return; voices.push(now + 0.15); sfxK(k, n); return; }
   const key = k === 'kir' ? matSnd(n) : k === 'shatter' ? 'tahta' : k;
   if (GAP[key] && LAST[key] && now - LAST[key] < GAP[key]) return; LAST[key] = now;
+  if (k === 'tik') { kabarcik(); return; }   // v4.8: tus sesi artik kabarcik (Adem'in secimi); GAP 0.2 sn ayni dokunusta iki kez calmasin
   voices = voices.filter((v) => v > now); if (voices.length >= 4 && k !== 'shoot' && k !== 'win' && k !== 'lose') return; voices.push(now + 0.15);
   if (k === 'shoot') play('atis', 0.7, 0.97 + Math.random() * 0.06);
   else if (k === 'yer') play('yer' + (n === 'su' || n === 'kar' ? n : 'kum'), 0.6, 0.95 + Math.random() * 0.1);
@@ -2782,6 +2783,7 @@ function pesEt() { if (g && (g.armed || g.state === 'lose')) { SV.dus = LV; ist(
 function merkezBagla() {
   M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, hazirla: (L) => { const ks = gerekliModel(L); modelYukle(ks).then(() => loadPieces(ks)); }, SURUM, ZOR_ODUL,
     ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
+    sesAg: () => (AC && !SV.sessiz ? (out(), { AC, out: MASTER }) : null),   // v4.8: kazanma sahnesinin kodla uretilen sesleri icin
     bolge: (L) => { const fo = fonOf(L); return FONAD[fo.f] || (fo.yeni ? [fo.ad, fo.f === 'y_buz' ? 'k' : 's'] : ['', 'c']); }, bolumAdi: (L) => { try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
 }
 // ================= v3.13: muzik =================
@@ -3304,6 +3306,12 @@ function start0(L) {
   if (KAL()) isitma();
 }
 if (!K) window.BSTUS = () => sfx('tik');   // v3.3: her dugmeye dokununca tus sesi (yapi/index.html)
+// v4.8: (Adem 14 Kas, test-his secimi 5-3-5) dugmeye parmak degdigi an: kabarcik sesi + guclu titresim (65 ms); efekt yapi/index.html'de
+if (!K) window.BSSES = () => { sesAc(); if (AC && !SV.sessiz) sfx('tik'); buzz(65, 70); };
+function kabarcik() {
+  const t = AC.currentTime, r = 1 + (Math.random() - 0.5) * 0.06;
+  tone('sine', 320 * r, 1100, t, 0.11, 0.6); tone('sine', 600 * r, 1500, t + 0.03, 0.07, 0.25);
+}
 window.YP = { get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, get ENG() { return ENG; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec) { let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } }, snap() { return glc.toDataURL('image/png'); } };
 if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MOD, PM, platBody, GB, cubes, balls, S, TC, KEEP, NENV, SV, save, $, Q, TEST,
   get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set GY(v) { GY = v; GB.position.y = v; }, get shake() { return shake; }, set shake(v) { shake = v; },

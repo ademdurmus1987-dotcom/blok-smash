@@ -150,7 +150,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
 </style>
 <link rel="stylesheet" href="merkez.css?v=5">
 <link rel="stylesheet" href="parlak.css?v=3">
-<link rel="stylesheet" href="kutlama.css?v=2">
+<link rel="stylesheet" href="kutlama.css?v=2"><link rel="stylesheet" href="kazan2.css?v=1"><link rel="stylesheet" href="dokun.css?v=1">
 </head>
 <body>
 <div id="bg"><video id="bgv" muted playsinline webkit-playsinline loop preload="auto" disablepictureinpicture></video></div>
@@ -202,13 +202,22 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
   function birak() { if (son) { son.classList.remove('bas'); son = null; } }
   addEventListener('pointerdown', function (e) {
     var b = e.target && e.target.closest && e.target.closest(S); if (!b || b.disabled) return;
-    birak(); son = b; b.classList.add('bas');
-    try { if (navigator.vibrate) navigator.vibrate(8); } catch (_) {}
-    if (window.BSTUS) window.BSTUS();
+    birak(); son = b; b.classList.remove('birak'); b.classList.add('bas'); efekt(b, e.clientX, e.clientY);
+    if (window.BSSES) window.BSSES(); else { try { if (navigator.vibrate) navigator.vibrate(8); } catch (_) {} if (window.BSTUS) window.BSTUS(); }
   }, { passive: true, capture: true });
-  addEventListener('pointerup', birak, true); addEventListener('pointercancel', birak, true);
+  addEventListener('pointerup', function () { if (son) { var b = son; b.classList.add('birak'); setTimeout(function () { b.classList.remove('birak'); }, 450); } birak(); }, true);
+  addEventListener('pointercancel', birak, true);
+  // v4.8: (Adem 14 Kas, secim "parilti + yildiz") dugmenin ustunden parilti gecer, parmagin degdigi yerden yildizciklar sacilir
+  function efekt(b, x, y) {
+    try {
+      var r = b.getBoundingClientRect(); if (r.width < 4) return;
+      var p = document.createElement('div'); p.className = 'bs-parla'; p.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px;border-radius:' + getComputedStyle(b).borderRadius;
+      document.body.appendChild(p); setTimeout(function () { p.remove(); }, 480);
+      for (var i = 0; i < 7; i++) { var s = document.createElement('div'), a = Math.random() * 6.28, d = 34 + Math.random() * 40; s.className = 'bs-yil'; s.style.left = x + 'px'; s.style.top = y + 'px'; s.style.setProperty('--x', Math.cos(a) * d + 'px'); s.style.setProperty('--y', Math.sin(a) * d + 'px'); document.body.appendChild(s); (function (s) { setTimeout(function () { s.remove(); }, 580); })(s); }
+    } catch (_) {}
+  }
 })();
 </script>
-<script type="module" src="oyun.js?v=92"></script>
+<script type="module" src="oyun.js?v=93"></script>
 </body>
 </html>

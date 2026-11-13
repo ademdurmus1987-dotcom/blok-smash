@@ -6,6 +6,7 @@
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
+import { kazanSahne } from './kazan2.js?v=1';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -394,6 +395,14 @@ export function merkezKur(A) {
   }
   // d: { L, st, kaz, once, kalan, bonus, zorB, yeniK, ilk }
   function kazan(d) {
+    // v4.8: (Adem 14 Kas) yeni sahne kazan2.js; eski sahne ?eskikazan=1 ile
+    if (!/[?&]eskikazan=1/.test(location.search)) {
+      if (fxDur) fxDur();
+      fxDur = kazanSahne(KZ, d, { sesAg: A.sesAg, ses: A.ses, buzz: A.buzz, tik, sarki: A.sarki ? () => A.sarki('kazan') : null, sarkiDur: A.sarkiDur, HEDEF: SANDIK_HEDEF, sn: SV.sn || 0,
+        bitir: (r) => { fxDur = null; KZ.classList.add('cik'); setTimeout(() => { KZ.className = ''; KZ.innerHTML = ''; }, 340);
+          ac({ ucan: { x: r.left + r.width / 2, y: r.top + r.height / 2, n: Math.round(d.kaz / 8), eski: d.once, yeni: d.once + d.kaz } }); } });
+      return;
+    }
     const sn = SV.sn || 0, onceSn = d.ilk ? sn - 1 : sn, dolu = sn >= SANDIK_HEDEF, kaldi = Math.max(0, SANDIK_HEDEF - sn);
     KZ.className = 'on';
     KZ.innerHTML = '<canvas></canvas><div class="m-logo k-logo"><b>FOXI</b><span>SMASH</span></div><div class="k-ic"><h1>Tebrikler!</h1><div class="k-bol">Bölüm ' + d.L + ' tamam</div>' +
