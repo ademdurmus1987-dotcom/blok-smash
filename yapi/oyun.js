@@ -12,7 +12,8 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=3';   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=11';
 import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=2';
-import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
+import { sesSinirKur } from './fx/ses.js?v=1';   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -252,6 +253,8 @@ const DIRT = (() => {
   m.rotation.x = -Math.PI / 2; m.position.y = GY + 0.015; scene.add(m); return m;   // v6.29: golge almaz (platform golgesi fonda koyu leke yapiyordu)
 })();
 const DIRTT = {};
+// v4.0: her ayagin dibine kendi toprak lekesi (DIRT ile ayni malzeme, fona gore rengi degisir); LEG.clone() ile kopyalara da gecer
+{ const lk = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), DIRT.material); lk.rotation.x = -Math.PI / 2; lk.position.y = GY + 0.016; lk.scale.set(5.6, 4.6, 1); lk.visible = false; lk.userData.leke = 1; LEG.add(lk); }
 function setDirt(fo) {
   TOZ = fo.toz;
   DIRT.material.map = DIRTT[fo.f] || (DIRTT[fo.f] = canvasTex(256, 256, (x, w, h) => {
@@ -2006,12 +2009,19 @@ function setSea(fo) {
   // v6.29: (Adem) fon videoysa 3B deniz cizilmez (videonun ustunde keskin kiyi cizgisi ve kumda kayan koyu leke yapiyordu); ayak kara/kuma hafif gomulur
   const kk = fo.f.startsWith('kar'), gom = OCC.mesh.visible, mu = LEG.userData.mm;
   mu.color.set(kk ? '#eef4ff' : '#d6b475'); mu.emissive.set(kk ? '#9db4d8' : '#8a6a3a');
-  const koy = fo.f === 'koy', suda = koy || (fo.f.startsWith('sahil') && !PLS.some((q) => q.leg && q.leg !== LEG));
-  setLeg(suda ? 1.2 : gom ? 0.3 : 0); for (const q of PLS) if (q.leg && q.leg !== LEG) { setLeg(koy ? 1.2 : gom ? 0.3 : 0, q.leg); for (const n of [2, 3, 4, 5, 6]) if (q.leg.children[n] && (koy || n < 5)) q.leg.children[n].visible = !koy; }
-  HAVUZ.visible = false; if (suda) { LEG.userData.mound.visible = false; LEG.userData.shade.visible = false; }
-  // v3.4: (Adem 11 Kas) su birikintisi begenilmedi: sahilde alt kaide yok, yalniz dikey direk suyun icine iner (yer alti gizli)
-  for (const k of ['base', 'ring', 'cap']) LEG.userData[k].visible = !suda;
-  DIRT.visible = !gom && fo.f !== 'koy';   // v6.26: video fonda on plandaki kum ve kiyiya vuran dalgalar videonun kendisi (3B kum ortmesin)
+  // v4.0: (Adem 13 Kas) sahil videosunda platform ayaklari kiyidaki islak kumda/dalgada: kuru kum yigini ve kaide yok (cok platformlu
+  // bolumde de), direk dogrudan suya/islak kuma girer. Eskiden yalniz tek platformda boyleydi, ikinci ayakta kuru kum tepecigi kaliyordu.
+  const koy = fo.f === 'koy', suda = koy || (fo.f.startsWith('sahil') && !!fo.vid) || (fo.f.startsWith('sahil') && !PLS.some((q) => q.leg && q.leg !== LEG));
+  const coklu = PLS.some((q) => q.leg && q.leg !== LEG) || PLS.some((q) => Math.abs(q.x || 0) > 0.5);
+  HAVUZ.visible = false;
+  for (const L of [LEG].concat(PLS.filter((q) => q.leg && q.leg !== LEG).map((q) => q.leg))) {
+    setLeg(suda ? 1.2 : gom ? 0.3 : 0, L);
+    for (const n of [2, 3, 4]) L.children[n].visible = !suda;   // v3.4: suda alt kaide yok, yalniz dikey direk suyun icine iner
+    if (suda) for (const n of [5, 6]) if (L.children[n]) L.children[n].visible = false;
+    // v4.0: (Adem: cimende ortada kel yer) toprak lekesi her ayagin kendi dibinde; cok platformda ortada bos leke kalmaz
+    const lk = L.children.find((o) => o.userData.leke); if (lk) lk.visible = !gom && !koy && coklu;
+  }
+  DIRT.visible = !gom && !koy && !coklu;   // v6.26: video fonda on plandaki kum ve kiyiya vuran dalgalar videonun kendisi (3B kum ortmesin)
 }
 // v6.27: (Adem) karda ve kumda kup gercekten icinde gorunsun: yerin altini gizleyen gorunmez derinlik duzlemi (kup yarisi gomulur)
 // ve kupun etrafinda kar/kum seti. Denizde bu duzlem yok: batan kup suyun altinda gorunur.
@@ -2352,10 +2362,13 @@ for (const k in SEK.TUR) { const t = SEK.TUR[k]; if (t.kir) KIRILGAN.add(k); if 
 function matSnd(kind) { if (!kind) return 'tahta'; if (kind.startsWith('g_')) return 'cam'; const mt = MATSND[kind] || 'tahta'; return mt === 'metal' ? 'tas' : mt; }
 const LAST = {}, GAP = { tik: 0.2, atis: 0.06, vurus: 0.06, tahta: 0.05, tas: 0.05, metal: 0.07, cam: 0.06, buz: 0.06, yer: 0.07, patlama: 0.12, pop: 0.09, dusme: 0.07 };
 let voices = [];
+// v4.0 Faz 1B: her kayitli ses sinirlayicidan gecer (ses/ klasoru, fx/ses.js); ?ses=eski ile eski hal
+const SSN = Q.get('ses') === 'eski' ? null : sesSinirKur(), ONEMLI = new Set(['kazan', 'kaybet', 'atis']);
 function play(k, vol, rate) {
   const n = SFILES[k], f = n ? k + Math.floor(Math.random() * n) : k, b = BUF[f]; if (!b) return;
-  const src = AC.createBufferSource(), g0 = AC.createGain(); src.buffer = b; src.playbackRate.value = (rate || (0.95 + Math.random() * 0.1)) * RS; g0.gain.value = vol * VS;
-  src.connect(g0); g0.connect(out()); src.start();
+  const iz = SSN ? SSN.izin(k, AC.currentTime, ONEMLI.has(k)) : { kis: 1 }; if (!iz) return;
+  const src = AC.createBufferSource(), g0 = AC.createGain(); src.buffer = b; src.playbackRate.value = (rate || (0.95 + Math.random() * 0.1)) * RS; g0.gain.value = vol * VS * iz.kis;
+  src.connect(g0); g0.connect(out()); src.start(); if (SSN) SSN.kaydet(k, src, g0);
 }
 // v6.6: (Adem) kayitli kazanma sesi kotuydu: yerine yumusak zil/arp sesi (sinus + hafif oktav, yavas giris, uzun sonum).
 function chime(notes, gap, vol, chord) {
