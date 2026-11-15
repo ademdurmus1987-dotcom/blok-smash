@@ -73,3 +73,35 @@ export async function dogrula(L0, L1, gecmis, opt = {}) {
   }
   return { sonuc, rapor };
 }
+
+// v5.1: kapali bloklari degistirilen kayitli bolumleri yeniden test eder (kapali_test.py).
+// isler: [{ L, Y, gecmis }]. Once kayitli (degistirilmis) bolum denenir; gecemezse ayni kurallarla yeni tohumla yeniden uretilir.
+// L <= 25 (elle yapilmis) icin Y verilmez: oyunun kendi bolumu (YP.lv) test edilir, yeniden uretilmez.
+export async function yenidenTest(isler, opt = {}) {
+  const out = [];
+  for (const is of isler) {
+    const L = is.L; let Y = is.Y, son = null, dn = -1, b = null, hatalar = [];
+    if (!Y) { const E = YP().lv(L); Y = Object.assign({}, E, { c: E.make(), el: 1 }); }
+    for (; dn < (Y.el ? 0 : (opt.maxDeneme || 12)); dn++) {
+      if (dn >= 0) { Y = bolumUret(L, is.gecmis || [], dn); if (!Y) { son = 'uretilemedi'; hatalar.push(son); continue; } }
+      YP().dene(L, Y); const top0 = YP().g.max;
+      const s = durgunluk();
+      if (s.dus) son = 'kendiliginden-dusen';
+      else if (s.kay > Math.max(1, Y.c.length * 0.05)) son = 'kayan-coken';
+      else {
+        b = bot(opt.sinir || 30); b.top0 = top0;
+        if (!b.kazandi) son = 'cozulemedi';
+        else if (b.atis > (opt.botMax || 28)) son = 'cok-top';
+        else son = null;
+      }
+      if (!son) break;
+      hatalar.push(son);
+    }
+    const r = { L, dn, son, hatalar, bot: b && b.atis };
+    if (!son && !Y.el) { Y.L = L; const eski = Y.top; Y.top = topHesap(Y, b.atis); Y.bot = b.atis; delete Y.L; r.top = [eski, Y.top]; r.Y = Y; }
+    if (Y.el) { r.top = [b && b.top0]; r.yetti = b ? b.atis <= (b.top0 || 0) : false; }
+    console.log('BOLUM', L, dn, son || 'ok', b && b.atis);
+    out.push(r);
+  }
+  return out;
+}

@@ -1,11 +1,12 @@
-import { kaleYapi, hazineYapi } from './kale.js?v=1';   // v4.3
+import { kaleYapi, hazineYapi } from './kale.js?v=2';   // v4.3
 // v3.16 (Adem 12 Kas 2026): bolum dizilisi bastan. Ilk bolumler tek renk tek cesit; her yeni sekil ailesi bir bolumde tanitilir
 // (oyun.js ilk gorulen aileyi "Yeni sekil" kartiyla gosterir). Farkli platform sayisi, yukseklik ve hareketiyle farkli yerlesimler.
 // Hucre: [i, kat, k, tur, platform]. Genis parcanin i degeri orta noktasidir (tas4 0..3'u kaplar: i = 1.5). Havada hucre yok: her parca altindakine oturur.
 
 // ---------------- sekil aileleri: kartta gorunen ad ve aciklama ----------------
 export const AILE = {
-  oy: ['Oyuncak Küp', 'Tek atışta kırılır. Hepsini platformdan düşür!'],
+  oy: ['Patili Oyuncak Küp', 'Tek atışta kırılır. Hepsini platformdan düşür!'],
+  ksDirek: ['Tahta Direk', 'İki kat boyunda, demir kuşaklı. Devrilince üstündekileri de düşürür.'],   // v5.1
   // v4.5: (Adem) Korsan Kalesi bloklarinin her biri kendi kartiyla tanitilir (renk cesitleri ayni karti paylasir)
   ksSandik: ['Sandık', 'Vurunca parçalanır. Köşelerindeki metal onu biraz ağırlaştırır.'],
   ksTNT: ['TNT', 'Vurunca patlar, çevresindeki her şeyi savurur!'],
@@ -59,8 +60,8 @@ export const AILE = {
   m_ada: ['İki Ada', 'Yapı iki adaya bölündü. Önce yüksek olanı temizle!']
 };
 // mekanik kartinda donen blok
-export const MEKBLOK = { domino: 'ksSutun', kopru: 'tas4', denge: 'ksKalas3', tnt: 'ksTNT', gemi: 'ksFici', hazine: 'ksYakut', magara: 'ksBuz', kemerSira: 'ksKemer', ada: 'ksSandik' };
-const KSA = { ksSandikM: 'ksSandik', ksSandikK: 'ksSandik', ksKalas1: 'ksKalas', ksKalas2: 'ksKalas', ksKalas3: 'ksKalas', ksTas2: 'ksTas', ksFiciK: 'ksFici', ksSiseM: 'ksSise', ksSiseY: 'ksSise', ksSiseB: 'ksSise', ksYakut: 'ksMucevher', ksElmas: 'ksMucevher' };
+export const MEKBLOK = { domino: 'ksSutun', kopru: 'ksTas4', denge: 'ksKalas3', tnt: 'ksTNT', gemi: 'ksFici', hazine: 'ksYakut', magara: 'ksBuz', kemerSira: 'ksKemer', ada: 'ksSandik' };
+const KSA = { ksSandikM: 'ksSandik', ksSandikK: 'ksSandik', ksKalas1: 'ksKalas', ksKalas2: 'ksKalas', ksKalas3: 'ksKalas', ksTas2: 'ksTas', ksFiciK: 'ksFici', ksSiseM: 'ksSise', ksSiseY: 'ksSise', ksSiseB: 'ksSise', ksYakut: 'ksMucevher', ksElmas: 'ksMucevher', ksTas3: 'ksTas', ksTas4: 'ksTas', ksBuz3: 'ksBuz' };
 export function aileOf(t) {
   if (typeof t !== 'string') return null;
   if (t.startsWith('ks')) return KSA[t] || (AILE[t] ? t : null);   // v4.5: kale blogu kendi turuyla (renk cesitleri birlikte)
@@ -94,36 +95,37 @@ const sira = (a) => (i, j) => a[j % a.length];
 const serit = (a) => (i, j) => a[Math.floor(j / 2) % a.length];
 const satranc = (a, b) => (i, j, k) => ((Math.round(i) + j + k) % 2 ? a : b);
 
-// ---------------- el yapimi 20 bolum ----------------
+// ---------------- el yapimi 25 bolum ----------------
+// v5.1 (Adem 15 Kas): kapali bloklar (kapali.js) kaliteli karsiliklariyla degistirildi; yapi ve olculer ayni, adlar yeni bloklara gore.
 export const BOLUMLER = [
-  { ad: 'İlk Atış', make: () => D.duvar(5, 4, 2, 'oyK') },
+  { ad: 'İlk Atış', make: () => D.duvar(5, 4, 2, sira(['oyK', 'oyT', 'oyS', 'oyY'])) },   // v5.1: patili kupler renk renk (her sira bir renk)
   // v4.3: (Adem 13 Kas) kale gorsellerinden: ayrintili sandik, tas kemer, fici, sise, mucevher, buz, TNT, sutunlar
   { ad: 'Korsan Kalesi', ek: 4, make: () => kaleYapi() },
   { ad: 'Kırmızı Kule', make: () => D.kule(3, 6, 2, (i, j) => (j >= 4 ? 'oyM' : 'oyK')) },
-  { ad: 'Tahta Kule', make: () => { const o = []; kutu(o, 0, 5, 0, 0, 0, 1, 'oyK'); kutu(o, 0, 5, 1, 1, 0, 1, (i) => (i % 2 ? null : 'ahsapD')); kutu(o, 0, 5, 1, 2, 0, 1, (i) => (i % 2 ? 'oyM' : null)); kutu(o, 0, 5, 3, 3, 0, 1, 'oyY'); kutu(o, 1, 4, 4, 4, 0, 1, (i) => (i === 1 || i === 4 ? 'ahsapD' : 'oyK')); kutu(o, 2, 3, 5, 5, 0, 1, 'oyK'); return o; } },
+  { ad: 'Tahta Kule', make: () => { const o = []; kutu(o, 0, 5, 0, 0, 0, 1, 'oyK'); kutu(o, 0, 5, 1, 1, 0, 1, (i) => (i % 2 ? null : 'ksDirek')); kutu(o, 0, 5, 1, 2, 0, 1, (i) => (i % 2 ? 'oyM' : null)); kutu(o, 0, 5, 3, 3, 0, 1, 'oyY'); kutu(o, 1, 4, 4, 4, 0, 1, (i) => (i === 1 || i === 4 ? 'ksDirek' : 'oyK')); kutu(o, 2, 3, 5, 5, 0, 1, 'oyK'); return o; } },
   { ad: 'İkiz Kuleler', pl: [{ x: -4.3, z: 0 }, { x: 4.3, z: 0 }], make: () => P(0, D.kule(3, 5, 1, sira(['oyK', 'oyM', 'oyY']))).concat(P(1, D.kule(3, 5, 1, sira(['oyY', 'oyM', 'oyK'])))) },
-  { ad: 'Buz Duvarı', make: () => D.duvar(6, 5, 2, (i, j) => (j === 2 ? 'oyM' : 'buzP')) },
+  { ad: 'Buz Duvarı', make: () => D.duvar(6, 5, 2, (i, j) => (j === 2 ? 'oyM' : 'ksBuz')) },
   { ad: 'Hazine Kulesi', ek: 4, make: () => hazineYapi({ d: 2 }) },
-  { ad: 'Taş Kemerler', pl: [{ x: 0, z: 0, asn: { a: 1.4, h: 0.85 } }], make: () => D.kemer(2, 2, 'oyK', 'tas4', 'buzP') },
-  { ad: 'Mermer Tapınak', make: () => { const o = []; kutu(o, 0, 5, 0, 2, 0, 1, (i) => (i === 1 || i === 4 ? 'oyK' : 'mermer')); for (const i of [0.5, 2.5, 4.5]) kutu(o, i, i, 3, 3, 0, 1, 'tas2'); kutu(o, 1, 4, 4, 4, 0, 1, 'oyY'); kutu(o, 2, 3, 5, 5, 0, 1, 'oyK'); return o; } },
-  { ad: 'Jöle Piramidi', make: () => D.piramit(6, 2, (i, j) => ['joP', 'joY', 'oyK', 'joP', 'joY', 'oyS'][j]) },
-  { ad: 'Hediye Tepesi', pl: [{ x: -5.2, z: 0 }, { x: 0, z: 0, y: 1.6 }, { x: 5.2, z: 0 }],
-    make: () => P(0, D.kule(2, 3, 1, sira(['hdY', 'oyY']))).concat(P(1, D.kule(2, 5, 1, sira(['hdK', 'hdM'])))).concat(P(2, D.kule(2, 3, 1, sira(['hdY', 'oyY'])))) },
-  { ad: 'Fıçılı Kale', pl: [{ x: 0, z: 0, kay: { a: 2.2, h: 0.8 } }], make: () => { const o = D.kale(2, 5, 2, 'oyM', 'oyK', 'oyS'); for (const c of o) if (c[0] === 3 && c[1] === 2) c[3] = 'fici'; return o; } },
-  { ad: 'Kristal Kule', don: 0.4, make: () => D.kule(3, 6, 3, (i, j) => (j % 3 === 2 ? 'oyP' : j % 2 ? 'krT' : 'krM')) },
-  { ad: 'Tuğla Duvar', make: () => D.orgu(7, 6, 2, 'tug2', (j) => (j % 2 ? 'oyK' : 'oyY')) },
-  { ad: 'Kavanoz Rafı', pl: [{ x: -4.4, z: 0 }, { x: 4.4, z: 0 }], make: () => { const yap = (n, a) => { const o = []; kutu(o, 0, 3, 0, 0, 0, 0, (i) => a[i % 3]); o.push([1.5, 2, 0, 'tas4', 0]); kutu(o, 0, 3, 3, 3, 0, 0, (i) => a[(i + 1) % 3]); kutu(o, 1, 2, 5, 5, 0, 0, 'oyS'); return P(n, o); }; return yap(0, ['kvP', 'kvT', 'kvM']).concat(yap(1, ['kvM', 'kvP', 'kvT'])); } },
-  { ad: 'Makaron Kulesi', pl: [{ x: 0, z: 0, asn: { a: 1.2, h: 0.9 } }], make: () => { const o = [], MK = ['mkP', 'mkY', 'mkM']; for (let n = 0; n < 11; n++) for (let i = 0; i < 3; i++) for (let k = 0; k < 2; k++) o.push([i, n * 0.5, k, MK[(n + i) % 3], 0]); kutu(o, 1, 1, 5.5, 5.5, 0, 1, 'oyK'); return o; } },
-  { ad: 'Çikolata Katları', pl: [{ x: 0, z: 0, kay: { a: 2, h: 0.9 } }], make: () => { const o = []; for (let j = 0; j < 6; j++) { if (j % 2) for (const i of [0.5, 2.5, 4.5]) kutu(o, i, i, j, j, 0, 1, 'cik2'); else kutu(o, 0, 5, j, j, 0, 1, (i) => (i % 2 ? 'oyS' : 'oyK')); } return o; } },
-  { ad: 'Konserve Piramidi', make: () => D.piramit(7, 2, (i, j) => (j % 2 ? 'knM' : 'knK')) },
-  { ad: 'Altın Hisar', don: 0.35, make: () => D.hisar(4, 5, (i, j) => (j === 4 ? 'oyS' : j % 2 ? 'oyP' : 'oyM'), 'altin') },
-  { ad: 'Kurabiye Basamakları', pl: [{ x: -4.2, z: 0 }, { x: 4.2, z: 0, y: 2 }], make: () => { const yap = (n, h) => { const o = []; for (let m = 0; m < h; m++) for (let i = 0; i < 3; i++) for (let k = 0; k < 2; k++) o.push([i, m * 0.5, k, 'kur', 0]); kutu(o, 0, 2, h * 0.5, h * 0.5, 0, 1, (i) => (i === 1 ? 'oyK' : 'oyY')); return P(n, o); }; return yap(0, 7).concat(yap(1, 5)); } },
-  { ad: 'Bomba Kalesi', make: () => { const o = D.kale(3, 6, 2, (i, j) => (j === 2 ? 'oyP' : 'oyM'), 'krM', 'oyS'); for (const c of o) if (c[0] === 3 && c[1] === 1 && c[2] === 0) c[3] = 'bomba'; return o; } },
+  { ad: 'Taş Kemerler', pl: [{ x: 0, z: 0, asn: { a: 1.4, h: 0.85 } }], make: () => D.kemer(2, 2, 'oyK', 'ksTas4', 'ksBuz') },
+  { ad: 'Fıçı Tapınağı', ek: 3, make: () => { const o = []; kutu(o, 0, 5, 0, 2, 0, 1, (i) => (i === 1 || i === 4 ? 'oyK' : 'ksFici'));   /* v5.1: mermer tambur yerine fici (ayni silindir) */ for (const i of [0.5, 2.5, 4.5]) kutu(o, i, i, 3, 3, 0, 1, 'ksTas2'); kutu(o, 1, 4, 4, 4, 0, 1, 'oyY'); kutu(o, 2, 3, 5, 5, 0, 1, 'oyK'); return o; } },
+  { ad: 'Pati Piramidi', ek: 7, make: () => D.piramit(6, 2, (i, j) => ['oyN', 'oyY', 'oyK', 'oyN', 'oyY', 'oyS'][j]) },
+  { ad: 'Sandık Tepesi', pl: [{ x: -5.2, z: 0 }, { x: 0, z: 0, y: 1.6 }, { x: 5.2, z: 0 }],
+    make: () => P(0, D.kule(2, 3, 1, sira(['ksSandik', 'oyY']))).concat(P(1, D.kule(2, 5, 1, sira(['ksSandikK', 'ksSandikM'])))).concat(P(2, D.kule(2, 3, 1, sira(['ksSandik', 'oyY'])))) },
+  { ad: 'Barut Kalesi', ek: 2, pl: [{ x: 0, z: 0, kay: { a: 2.2, h: 0.8 } }], make: () => { const o = D.kale(2, 5, 2, 'oyM', 'oyK', 'oyS'); for (const c of o) if (c[0] === 3 && c[1] === 2) c[3] = 'ksTNT'; return o; } },
+  { ad: 'Mücevher Kulesi', don: 0.4, make: () => D.kule(3, 6, 3, (i, j) => (j % 3 === 2 ? 'oyP' : j % 2 ? 'ksElmas' : 'ksYakut')) },
+  { ad: 'Taş Duvar', make: () => D.orgu(7, 6, 2, 'ksTas2', (j) => (j % 2 ? 'oyK' : 'oyY')) },
+  { ad: 'Şişe Rafı', ek: 2, pl: [{ x: -4.4, z: 0 }, { x: 4.4, z: 0 }], make: () => { const yap = (n, a) => { const o = []; kutu(o, 0, 3, 0, 1, 0, 0, (i) => a[i % 3]); o.push([1.5, 2, 0, 'ksTas4', 0]); kutu(o, 0, 3, 3, 4, 0, 0, (i) => a[(i + 1) % 3]); kutu(o, 1, 2, 5, 5, 0, 0, 'oyS'); return P(n, o); }; return yap(0, ['ksSiseM', 'ksSiseY', 'ksSiseB']).concat(yap(1, ['ksSiseB', 'ksSiseM', 'ksSiseY'])); } },
+  { ad: 'Kalas Kulesi', pl: [{ x: 0, z: 0, asn: { a: 1.2, h: 0.9 } }], make: () => { const o = [], MK = ['ksKalas1', 'ksKalas1', 'ksKalas1']; for (let n = 0; n < 11; n++) for (let i = 0; i < 3; i++) for (let k = 0; k < 2; k++) o.push([i, n * 0.5, k, MK[(n + i) % 3], 0]); kutu(o, 1, 1, 5.5, 5.5, 0, 1, 'oyK'); return o; } },
+  { ad: 'Kalas Katlar', ek: 2, pl: [{ x: 0, z: 0, kay: { a: 2, h: 0.9 } }], make: () => { const o = []; for (let j = 0; j < 6; j++) { if (j % 2) for (const i of [0.5, 2.5, 4.5]) { kutu(o, i, i, j, j, 0, 1, 'ksKalas2'); kutu(o, i, i, j + 0.5, j + 0.5, 0, 1, 'ksKalas2'); }   /* v5.1: cikolata yerine ust uste iki kalas (kirilir) */ else kutu(o, 0, 5, j, j, 0, 1, (i) => (i % 2 ? 'oyS' : 'oyK')); } return o; } },
+  { ad: 'Fıçı Piramidi', make: () => D.piramit(7, 2, (i, j) => (j % 2 ? 'ksFici' : 'ksFiciK')) },
+  { ad: 'Altın Hisar', don: 0.35, make: () => D.hisar(4, 5, (i, j) => (j === 4 ? 'oyS' : j % 2 ? 'oyP' : 'oyM'), 'oyA') },
+  { ad: 'Kalas Basamakları', pl: [{ x: -4.2, z: 0 }, { x: 4.2, z: 0, y: 2 }], make: () => { const yap = (n, h) => { const o = []; for (let m = 0; m < h; m++) for (let i = 0; i < 3; i++) for (let k = 0; k < 2; k++) o.push([i, m * 0.5, k, 'ksKalas1', 0]); kutu(o, 0, 2, h * 0.5, h * 0.5, 0, 1, (i) => (i === 1 ? 'oyK' : 'oyY')); return P(n, o); }; return yap(0, 7).concat(yap(1, 5)); } },
+  { ad: 'TNT Kalesi', make: () => { const o = D.kale(3, 6, 2, (i, j) => (j === 2 ? 'oyP' : 'oyM'), 'ksYakut', 'oyS'); for (const c of o) if (c[0] === 3 && c[1] === 1 && c[2] === 0) c[3] = 'ksTNT'; return o; } },
   { ad: 'Büyük Şenlik', pl: [{ x: -5.4, z: 0, kay: { a: 0.9, h: 1.2 } }, { x: 0, z: 0, y: 1.2 }, { x: 5.4, z: 0, ph: Math.PI, kay: { a: 0.9, h: 1.2 } }],
-    make: () => P(0, D.kule(2, 5, 1, sira(['joP', 'hdK', 'oyY']))).concat(P(1, D.piramit(4, 2, (i, j) => ['krM', 'buzP', 'hdM', 'altin'][j]))).concat(P(2, D.kule(2, 5, 1, sira(['joY', 'hdM', 'oyK'])))) },
-  { ad: 'Kuru Kafa Kulesi', make: () => { const o = D.kule(3, 6, 2, (i, j) => (j % 2 ? 'oyK' : 'kkK')); for (const c of o) if (c[1] === 5 && c[0] === 1) c[3] = 'kkA'; return o; } },
-  { ad: 'Kemik Duvarı', pl: [{ x: 0, z: 0, kay: { a: 1.8, h: 0.9 } }], make: () => D.orgu(6, 6, 2, 'kemik', (j) => (j % 4 === 1 ? 'kkA' : 'kkK')) },
-  { ad: 'Lanetli Mağara', pl: [{ x: -4.4, z: 0 }, { x: 4.4, z: 0, y: 1.4 }], make: () => { const yap = (n) => { const o = D.kemer(2, 1, 'kkK', 'tas4', 'kkK'); for (const c of o) if (c[1] === 0 && c[0] === 0) c[3] = 'kkL'; return P(n, o); }; return yap(0).concat(yap(1)); } }
+    make: () => P(0, D.kule(2, 5, 1, sira(['oyN', 'ksSandikK', 'oyY']))).concat(P(1, D.piramit(4, 2, (i, j) => ['ksYakut', 'ksBuz', 'ksSandikM', 'oyA'][j]))).concat(P(2, D.kule(2, 5, 1, sira(['oyY', 'ksSandikM', 'oyK'])))) },
+  { ad: 'Beyaz Pati Kulesi', ek: 2, make: () => { const o = D.kule(3, 6, 2, (i, j) => (j % 2 ? 'oyK' : 'oyB')); for (const c of o) if (c[1] === 5 && c[0] === 1) c[3] = 'oyA'; return o; } },
+  { ad: 'Altın Pati Duvarı', pl: [{ x: 0, z: 0, kay: { a: 1.8, h: 0.9 } }], make: () => D.orgu(6, 6, 2, 'ksTas2', (j) => (j % 4 === 1 ? 'oyA' : 'oyB')).flatMap((c) => (c[3] === 'ksTas2' ? [[c[0], c[1], c[2], 'ksKalas2', c[4]], [c[0], c[1] + 0.5, c[2], 'ksKalas2', c[4]]] : [c])) },   // v5.1: kemik kiris yerine ust uste iki kalas (kirilir)
+  { ad: 'TNT Mağarası', pl: [{ x: -4.4, z: 0 }, { x: 4.4, z: 0, y: 1.4 }], make: () => { const yap = (n) => { const o = D.kemer(2, 1, 'oyB', 'ksTas4', 'oyB'); for (const c of o) if (c[1] === 0 && c[0] === 0) c[3] = 'ksTNT'; return P(n, o); }; return yap(0).concat(yap(1)); } }
 ];
 
 // ---------------- 21+ bolum uretici ----------------

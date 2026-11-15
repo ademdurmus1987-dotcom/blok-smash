@@ -4,16 +4,18 @@
 // Hucre: [i, j, k, tur, platform]. i: parcanin orta noktasi (kup cinsinden), j: alt kenari, k: derinlik ortasi.
 
 import { kaleYapi, hazineYapi } from '../kale.js';
+import { kapaliMi, kapaliUygula } from '../kapali.js';   // v5.1: kapali bloklar uretilmez
 
 // ---------------- olculer (sekil.js ve kale.js TUR tablosuyla ayni) ----------------
 const OLCU = {
   tas2: [2, 1], tas4: [4, 1], buzP3: [3, 1], ahsapD: [1, 2], kvP: [1, 2], kvT: [1, 2], kvM: [1, 2], raf2: [2, 0.5], raf3: [3, 0.5], disk: [1, 0.5],
   cik2: [2, 1], tug2: [2, 1], tug3: [3, 1], kur: [1, 0.5], mkP: [1, 0.5], mkY: [1, 0.5], mkM: [1, 0.5], kemik: [2, 1],
-  ksKalas1: [1, 0.5], ksKalas2: [2, 0.5], ksKalas3: [3, 0.5], ksTas2: [2, 1], ksKemer: [3, 2], ksSutun: [1, 2], ksMorSutun: [1, 2]
+  ksKalas1: [1, 0.5], ksKalas2: [2, 0.5], ksKalas3: [3, 0.5], ksTas2: [2, 1], ksKemer: [3, 2], ksSutun: [1, 2], ksMorSutun: [1, 2],
+  ksTas3: [3, 1], ksTas4: [4, 1], ksBuz3: [3, 1], ksDirek: [1, 2]
 };
 export const olcu = (t) => OLCU[t] || [1, 1];
 // sert (topla kirilmaz, agir) ve patlayan turler: zorluk ve top hesabinda kullanilir
-export const SERT = new Set(['ksTas', 'ksTas2', 'ksKemer', 'ksYildiz', 'ksSutun', 'tas2', 'tas4', 'tug2', 'tug3', 'mermer', 'kkA', 'altin']);
+export const SERT = new Set(['ksTas3', 'ksTas4', 'oyA', 'ksTas', 'ksTas2', 'ksKemer', 'ksYildiz', 'ksSutun', 'tas2', 'tas4', 'tug2', 'tug3', 'mermer', 'kkA', 'altin']);
 export const PATLAR = new Set(['ksTNT', 'kkL', 'fici', 'bomba']);
 
 // ---------------- tohum ----------------
@@ -32,11 +34,12 @@ const acik = (ad, L) => !(ad in TANIT) || L >= TANIT[ad];
 // ---------------- malzeme rolleri ----------------
 const R = {
   govde: [['ksSandik', 'ksSandikM'], ['ksSandik', 'ksSandikK'], ['ksSandikM', 'ksSandikK'], ['oyK', 'oyS'], ['oyM', 'oyP'], ['oyY', 'oyK'], ['hdK', 'hdM'], ['hdY', 'hdK'],
-    ['joP', 'joY'], ['joT', 'joP'], ['knK', 'knM'], ['kkK'], ['ksKaro', 'ksSandik'], ['krM', 'krT'], ['ksBuz', 'buzP'], ['oyS', 'hdY']],
+    ['joP', 'joY'], ['joT', 'joP'], ['knK', 'knM'], ['kkK'], ['ksKaro', 'ksSandik'], ['krM', 'krT'], ['ksBuz', 'buzP'], ['oyS', 'hdY'],
+    ['oyT', 'oyN'], ['oyB', 'oyM'], ['oyY', 'oyT'], ['oyN', 'oyP'], ['oyK', 'oyB'], ['ksSandik', 'oyM'], ['ksBuz', 'oyN']],   // v5.1: patili kup renkleri
   sert: [['ksTas'], ['ksYildiz'], ['mermer'], ['kkA'], ['ksTas', 'ksYildiz']],
   kiris2: ['ksTas2', 'tas2', 'tug2', 'cik2', 'kemik', 'raf2', 'ksKalas2'],
-  kiris3: ['ksKalas3', 'raf3', 'tug3', 'buzP3'],
-  dik: ['ksSutun', 'ksMorSutun', 'ahsapD', 'kvP', 'kvT', 'kvM'],
+  kiris3: ['ksKalas3', 'raf3', 'tug3', 'buzP3', 'ksTas3', 'ksBuz3'],
+  dik: ['ksSutun', 'ksMorSutun', 'ksDirek', 'ahsapD', 'kvP', 'kvT', 'kvM'],
   tepe: ['ksYakut', 'ksElmas', 'ksSiseM', 'ksSiseY', 'ksSiseB', 'krM', 'krT', 'ksYildiz'],
   ince: ['ksKalas1', 'kur', 'mkP', 'mkY', 'mkM', 'disk'],
   patlar: ['ksTNT', 'kkL', 'fici', 'bomba'],
@@ -46,7 +49,7 @@ const R = {
 // bir turun tanitimi henuz yapilmadiysa kullanilmaz
 const AILEOF = { raf2: 'raf', raf3: 'raf', disk: 'dalga', dalga: 'dalga', buzP3: 'buzP3', tug3: 'tug3' };
 function palet(r, L, d) {
-  const ok = (t) => !AILEOF[t] || acik(AILEOF[t], L);
+  const ok = (t) => !kapaliMi(t) && (!AILEOF[t] || acik(AILEOF[t], L));
   const sec = (a) => { const b = a.filter((x) => (Array.isArray(x) ? x.every(ok) : ok(x))); return b[Math.floor(r() * b.length)]; };
   const P = { govde: sec(R.govde), sert: sec(R.sert), kiris2: sec(R.kiris2), kiris3: sec(R.kiris3), dik: sec(R.dik), tepe: sec(R.tepe), ince: sec(R.ince), patlar: sec(R.patlar.slice(0, d > 0.6 ? 4 : 3)), cam: R.cam, buz: R.buz };
   P.g = (n) => P.govde[n % P.govde.length];
@@ -361,6 +364,7 @@ export function bolumUret(L, gecmis, deneme = 0, ayar = {}) {
     if (Y.c.length < Math.min(30, 14 + 26 * d) || Y.c.length > (ayar.max || 80)) continue;
     const tb = TANITIM.find((x) => x[0] === L && x[1] === 'blok');
     if (tb && !tanitimKoy(Y, tb[2])) continue;
+    Y.c = kapaliUygula(Y.c);   // v5.1: arketiplerin dogrudan yazdigi kapali bloklar karsiligina doner
     const s = imza(Y); Y.imza = s;
     if (!tan && gecmis.slice(-10).some((g) => g.imza && yakin(g.imza, s))) continue;
     return Y;

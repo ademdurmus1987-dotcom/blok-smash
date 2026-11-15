@@ -1,0 +1,659 @@
+{
+"ksSandik": {
+"ad": "Sandık",
+"karar": "KALSIN",
+"not": "3B çerçeve, X tahta, köşebent+perçin",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 7.5
+},
+"ksSandikM": {
+"ad": "Mor Sandık",
+"karar": "KALSIN",
+"not": "3B çerçeve, X tahta, köşebent+perçin",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 7.5
+},
+"ksSandikK": {
+"ad": "Kırmızı Sandık",
+"karar": "KALSIN",
+"not": "3B çerçeve, X tahta, köşebent+perçin",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 7.5
+},
+"ksTNT": {
+"ad": "TNT",
+"karar": "KALSIN",
+"not": "3B çerçeve, köşebent+perçin",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 7.5
+},
+"ksKalas1": {
+"ad": "Tahta Kalas",
+"karar": "KALSIN",
+"not": "kıymık kırılma eklendi",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 8.0
+},
+"ksKalas2": {
+"ad": "Tahta Kalas",
+"karar": "KALSIN",
+"not": "kıymık kırılma eklendi",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 8.0
+},
+"ksKalas3": {
+"ad": "Tahta Kalas",
+"karar": "KALSIN",
+"not": "kıymık kırılma eklendi",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 8.0
+},
+"ksTas": {
+"ad": "Taş Blok",
+"karar": "KALSIN",
+"not": "tek tek yontma taş, harç, moloz+toz",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 6.5
+},
+"ksTas2": {
+"ad": "Taş Blok 2",
+"karar": "KALSIN",
+"not": "tek tek yontma taş, harç, moloz+toz",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 6.5
+},
+"ksTas3": {
+"ad": "Taş Blok 3 (yeni)",
+"karar": "KALSIN",
+"not": "tek tek yontma taş, harç, moloz+toz",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+}
+},
+"ksTas4": {
+"ad": "Taş Blok 4 (yeni)",
+"karar": "KALSIN",
+"not": "tek tek yontma taş, harç, moloz+toz",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+}
+},
+"ksKemer": {
+"ad": "Taş Kemer",
+"karar": "KALSIN",
+"not": "moloz+toz kırılma",
+"puan": 8.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 7.5
+},
+"ksFici": {
+"ad": "Fıçı",
+"karar": "KALSIN",
+"not": "kıymık kırılma",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 8.5
+},
+"ksFiciK": {
+"ad": "Kırmızı Fıçı",
+"karar": "KALSIN",
+"not": "kıymık kırılma",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 8.5
+},
+"ksSiseM": {
+"ad": "Mor Şişe",
+"karar": "KALSIN",
+"not": "cam kırığı + parıltı",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 8.5
+},
+"ksSiseY": {
+"ad": "Yeşil Şişe",
+"karar": "KALSIN",
+"not": "cam kırığı + parıltı",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 8.5
+},
+"ksSiseB": {
+"ad": "Mavi Şişe",
+"karar": "KALSIN",
+"not": "cam kırığı + parıltı",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 8.5
+},
+"ksYakut": {
+"ad": "Yakut",
+"karar": "KALSIN",
+"not": "10 yüzey, koyu renk, iç parıltı, kıvılcım",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 6.0
+},
+"ksElmas": {
+"ad": "Elmas",
+"karar": "KALSIN",
+"not": "10 yüzey, koyu renk, iç parıltı, kıvılcım",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 6.0
+},
+"ksKaro": {
+"ad": "Mücevher Karosu",
+"karar": "KALSIN",
+"not": "",
+"puan": 8.0,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 7.5
+},
+"ksBuz": {
+"ad": "Buz Blok",
+"karar": "KALSIN",
+"not": "kalın pah, clearcoat, kristal kırılma",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0,
+"malzeme": 1,
+"isik": 1,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 6.5
+},
+"ksBuz3": {
+"ad": "Uzun Buz (yeni)",
+"karar": "KALSIN",
+"not": "kristal kırılma",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0,
+"malzeme": 1,
+"isik": 1,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+}
+},
+"ksYildiz": {
+"ad": "Yıldız Blok",
+"karar": "KALSIN",
+"not": "kabartma 3B altın yıldız",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+},
+"once": 7.5
+},
+"ksSutun": {
+"ad": "Taş Sütun",
+"karar": "KALSIN",
+"not": "moloz+toz kırılma",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+},
+"once": 8.0
+},
+"ksMorSutun": {
+"ad": "Mor Sütun",
+"karar": "KALSIN",
+"not": "altın halkalar",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+},
+"once": 6.5
+},
+"ksDirek": {
+"ad": "Tahta Direk (yeni)",
+"karar": "KALSIN",
+"not": "demir kuşak + perçin",
+"puan": 9.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 1
+}
+},
+"oyK": {
+"ad": "Patili Küp Kırmızı",
+"karar": "KALSIN",
+"not": "Tripo modeli, clearcoat, altın pati, LOD",
+"puan": 9.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 7.5
+},
+"oyT": {
+"ad": "Patili Küp Turuncu",
+"karar": "KALSIN",
+"not": "Tripo modeli, clearcoat, altın pati, LOD",
+"puan": 9.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+}
+},
+"oyS": {
+"ad": "Patili Küp Sarı",
+"karar": "KALSIN",
+"not": "Tripo modeli, clearcoat, altın pati, LOD",
+"puan": 9.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 7.5
+},
+"oyY": {
+"ad": "Patili Küp Yeşil",
+"karar": "KALSIN",
+"not": "Tripo modeli, clearcoat, altın pati, LOD",
+"puan": 9.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 7.5
+},
+"oyM": {
+"ad": "Patili Küp Mavi",
+"karar": "KALSIN",
+"not": "Tripo modeli, clearcoat, altın pati, LOD",
+"puan": 9.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 7.5
+},
+"oyP": {
+"ad": "Patili Küp Mor",
+"karar": "KALSIN",
+"not": "Tripo modeli, clearcoat, altın pati, LOD",
+"puan": 9.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+},
+"once": 7.5
+},
+"oyN": {
+"ad": "Patili Küp Pembe",
+"karar": "KALSIN",
+"not": "Tripo modeli, clearcoat, altın pati, LOD",
+"puan": 9.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+}
+},
+"oyB": {
+"ad": "Patili Küp Beyaz",
+"karar": "KALSIN",
+"not": "Tripo modeli, clearcoat, altın pati, LOD",
+"puan": 9.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+}
+},
+"oyA": {
+"ad": "Patili Küp Altın",
+"karar": "KALSIN",
+"not": "Tripo modeli, clearcoat, altın pati, LOD",
+"puan": 9.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 1,
+"renk": 1,
+"rol": 1,
+"kirilma": 1,
+"perf": 0.5
+}
+}
+}

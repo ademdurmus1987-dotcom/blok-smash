@@ -9,12 +9,15 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=4';
-import { kaleYapi, hazineYapi } from './kale.js?v=1';
+import { sekilKur, YAPI } from './sekil.js?v=5';
+import { patiYukle } from './pati.js?v=1';   // v5.1: Adem'in patili oyuncak kupu
+import { kapaliHucre, kapaliMi } from './kapali.js?v=1';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
+import { ornekKur } from './ornek.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
+import { kaleYapi, hazineYapi } from './kale.js?v=2';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=19';
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
-import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=5';
+import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=6';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
 import { hisKur } from './fx/his.js?v=1';   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
@@ -30,13 +33,13 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v4.9', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v5.1', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const zorMu = (L) => L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0);   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
 // 26-TOPLAM arasi bolumler bir kez uretilip (yapi/uretici) fizikle test edildi ve yapi/bolumler/*.json'a kaydedildi; oyun sirasinda bolum uretilmez.
 // yapi/bolumler.json: toplam bolum sayisi, parca boyu, bolum adlari. Parcalar ilk gerektiginde indirilir. ?uret=eski eski uretici (deneme).
 const BV = { toplam: 2000, el: 25, parca: 100, ad: [], p: new Map(), yuk: new Map(), Y: new Map() };
-try { const a = await (await fetch('bolumler.json?v=1')).json(); Object.assign(BV, a); } catch (e) {}
+try { const a = await (await fetch('bolumler.json?v=2')).json(); Object.assign(BV, a); } catch (e) {}
 const TOPLAM = () => BV.toplam;
 const bvNo = (L) => Math.floor((L - 1) / BV.parca);
 function bolumYukle(L) {
@@ -452,6 +455,8 @@ const NENV = (() => {
 // v3.1: (Adem 10 Kas 2026) kodla cizilen 3B sekiller (sekil.js): parlak oyuncak kup, tas kiris, mermer tambur, buz, ahsap dikme, kavanoz, raf.
 // KIND'e eklenir (sek: 1); olculeri kup kenari cinsinden SEK.TUR'da, govde ve malzemesi ilk kullanimda SEK.al(ad) ile kurulur.
 const SEK = sekilKur({ THREE, S, canvasTex, ENV });
+const ORNEK = ornekKur({ THREE, scene, S });
+let PATI = null; const patiReady = patiYukle({ THREE, S, ENV, GLTFLoader }).then((p) => { PATI = p; if (p) SEK.patiAyar(p); });
 // v4.4: (Adem 13 Kas) kaide platform (turkuaz-bakir) ve yeni top; ?kaide=0 eski Tripo platformu ve eski top
 const KAIDE = Q.get('kaide') === '0' ? null : kaideKur({ THREE, canvasTex, ENV }); if (KAIDE) KAIDE.ayakBoya(LEG);
 for (const k in SEK.TUR) { const t = SEK.TUR[k]; KIND[k] = { mass: t.mass, f: t.f, r: t.r, sek: 1 }; if (t.carp) KIND[k].kir = t.carp; if (t.boom) { KIND[k].boom = t.boom; KIND[k].guc = t.guc; } }
@@ -1164,12 +1169,15 @@ function kolaFis(c) {
   fx(pf, 0.25, (o, k) => { o.scale.setScalar(0.6 + k * 1.6); o.material.opacity = 0.8 * (1 - k); });
   if (AC) { out(); play('yersu', 0.3, 1.6 + Math.random() * 0.2); }
 }
+// v5.1: kapali blok gelirse (eski onbellek, elle yapilmis bolum) yerine karsiligi; iki hucreye bolunen ekleri sona eklenir (sira numaralari kaymaz)
+function kapaliKur(list) { const ek = []; for (let n = 0; n < list.length; n++) { const r = kapaliHucre(list[n]); list[n] = r[0]; if (r[1]) ek.push(r[1]); } for (const c of ek) list.push(c); return list; }
 function buildLevel() {
   clearLevel(); RZB = 0; DENGEVAR = false;   // v5.0: tahterevalli her fonda (PLS[0].den)
   let Y = levelOf(LV); AKUP = -1; if (!K && engelOf(LV, Y).some((e) => e.t === 'kapi2')) { Y = anahtarBolum(Y); AKUP = Y.anahtarI; }   // v3.21: anahtarli kapi bolumu: arkada kapili yapi, onde anahtar kuplu kucuk yapi
   const made = Y.make(), list = convertLevel(made, LV);
   list.forEach((c, n) => { c[4] = made[n][4] || 0; });
-  if (!K) kolaKoy(list, LV);
+  if (!K) kapaliKur(list);   // v5.1
+  if (!K && !kapaliMi('kola')) kolaKoy(list, LV);
   if (K) return K.kur(Y, list);   // v6.19: korsan hedefi (sal, gemi, kule) kendi platformunu kurar
   let PD = Y.pl || [{ x: 0, z: 0 }];
   // v3.10: (Adem 11 Kas) asansor platform: 5. bolumden sonra her 4 bolumde bir (5, 9, 13...) platform yavasca iner ve kalkar
@@ -1258,6 +1266,7 @@ function addCubes(Y, list, ctr) {
     const mesh = sk ? new THREE.Mesh(sk.geo, sk.mat) : gl ? makeGlass(gl) : kp ? new THREE.Mesh(kp, MOD[col].mat) : isE ? makeJar() : mg ? new THREE.Mesh(mg, kd ? MOD[col].mat : kupModelMat(col)) : new THREE.Mesh(isF ? FICIGEO : CUBEGEO, kd ? kindMat(col) : kupMat(col)); mesh.castShadow = !gl; mesh.receiveShadow = col !== 'cam' && !gl; scene.add(mesh);
     if (!sk && !gl && !isE && (mg || kp)) { mesh.castShadow = false; const d = kp ? MOD[col].dim : null, sp = new THREE.Mesh(SHBOX, GOLGEM); sp.scale.set(d ? d.w * 0.94 : S * 0.96, d ? d.h : S * 0.98, d ? d.d * 0.94 : S * 0.96); sp.castShadow = true; sp.frustumCulled = false; mesh.add(sp); }   // v2.0: golge gecisinde 5-10 bin ucgen yerine 12 ucgen
     const c = { body, mesh, col, kind: kd ? col : null, gone: false, out: false, h: ghh, pi: pn || 0, sek: sk };
+    if (sk && !K) { mesh.layers.set(1); mesh.castShadow = false; c.ik = col; ORNEK.tanim(col, sk); }   // v5.1: kodla cizilen bloklar instancing ile (ornek.js)
     // kirilan/patlayan: carpisma olayi adimin icinde gelir, isi adimdan sonra yapilir (FUSE)
     if (kd && (kd.kir || kd.boom)) body.addEventListener('collide', (e) => {
       if (!g || !g.armed || c.out || c.fuse != null || (c.gone && !kd.esya)) return;   // dusen kavanoz yerde de kirilir
@@ -1909,7 +1918,7 @@ function breakBlock(c, dir, n) {
   if (!c.gone) knock(c, true); else { c.out = true; world.removeBody(c.body); scene.remove(c.mesh); }
   // v6.16: Blender ile parcalanmis gercek parcalar (Adem'in modeli, kendi dokusuyla); yoksa eski efekt
   const real = realPieces(c, p, q, d, c.landed ? 6 : 99) || fragPieces(c, p, q, d);   // v3.21: Blender parcasi yoksa sekil kendi yuzeyinden parcalara ayrilir
-  shatter(p, bColor(c), d, bMat(c), real ? Math.round((n || 14) * 0.3) : n, real ? null : bChunk(c)); sfx('kir', c.kind);
+  shatter(p, bColor(c), d, bMat(c), real ? Math.round((n || 14) * 0.3) : Math.round((n || 14) * 0.6), real ? null : bChunk(c)); malzemeFx(c, p, d); sfx('kir', c.kind);
 }
 // ---------------- v3.21: (Adem) gercekci kirilma ----------------
 // Kodla cizilen sekiller ve parcali dosyasi olmayan modeller: seklin kendi geometrisi rastgele 6-9 bolgeye (Voronoi) ayrilir, her parca
@@ -2171,6 +2180,27 @@ function shatter(p, col, dir, mat0, cnt, chunkMat) {
     const m = spr(col, false, 0.32), v = new THREE.Vector3((Math.random() - 0.5) * 2.2, 0.4 + Math.random() * 1, (Math.random() - 0.5) * 2.2); m.position.copy(p); const s0 = 0.5 + Math.random() * 0.4;
     fx(m, 0.7, (o, k, dt) => { o.position.addScaledVector(v, dt); v.multiplyScalar(1 - dt * 2); o.scale.setScalar(s0 * (1 + k * 1.8)); o.material.opacity = 0.32 * (1 - k); });
   }
+}
+// v5.1: (Adem) her malzeme kendine gore parcalanir: tahta kiymik, tas moloz + kalin toz, cam kirik + parilti, buz kristal + kiragi,
+// mucevher parlak kivilcim, patili kup altin parilti. Hepsi paylasilan geometri, malzeme bir kez kurulur (telefon yorulmasin).
+const MFX = (() => {
+  const kiymik = new THREE.BoxGeometry(0.16, 0.12, 1), moloz = new THREE.DodecahedronGeometry(0.6, 0), kirik = new THREE.CylinderGeometry(0.6, 0.6, 0.06, 3), kristal = new THREE.OctahedronGeometry(0.55); kristal.scale(0.7, 1.5, 0.7);
+  const M = {}, mat = (k, o) => M[k] || (M[k] = new THREE.MeshStandardMaterial(Object.assign({ roughness: 0.5, envMap: ENV, envMapIntensity: 0.6 }, o)));
+  return { kiymik, moloz, kirik, kristal, mat };
+})();
+function malzemeFx(c, p, dir) {
+  if (PARN > 150 || !c.kind) return; const T = SEK.TUR[c.kind]; if (!T) return;
+  const ses = T.ses, renk = T.renk, par = (n, col, add, s0, ust) => { for (let i = 0; i < n; i++) { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: STAR, color: col, transparent: true, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); m.position.copy(p);
+    const v = new THREE.Vector3((Math.random() - 0.5) * 7, (ust || 2) + Math.random() * 4, (Math.random() - 0.5) * 7).addScaledVector(dir, 1.5), sc = s0 * (0.6 + Math.random() * 0.6);
+    fx(m, 0.5 + Math.random() * 0.35, (o, k, dt) => { v.y -= 9 * dt; o.position.addScaledVector(v, dt); o.material.rotation += dt * 5; o.scale.setScalar(sc * (k < 0.25 ? k / 0.25 : 1 - (k - 0.25) / 0.75 * 0.7)); o.material.opacity = 1 - k * k; }); } };
+  if (c.pati) { par(6, '#ffd65a', true, 0.45); par(3, '#ffffff', true, 0.3); return; }
+  if (/^ks(Yakut|Elmas)$/.test(c.kind)) { par(9, renk, true, 0.55, 3); par(4, '#ffffff', true, 0.35, 3); for (let i = 0; i < 5; i++) piece(new THREE.Mesh(MFX.kristal, MFX.mat('m' + renk, { color: renk, emissive: renk, emissiveIntensity: 0.4, roughness: 0.08, metalness: 0.2, flatShading: true })), p, dir, S * (0.1 + Math.random() * 0.08), 8, 1.2); return; }
+  if (ses === 'tahta') { for (let i = 0; i < 7; i++) piece(new THREE.Mesh(MFX.kiymik, MFX.mat('t' + renk, { color: renk, roughness: 0.75 })), p, dir, S * (0.22 + Math.random() * 0.18), 7, 1.3 + Math.random() * 0.4); return; }
+  if (ses === 'tas') { for (let i = 0; i < 6; i++) piece(new THREE.Mesh(MFX.moloz, MFX.mat('s' + renk, { color: renk, roughness: 0.95, flatShading: true })), p, dir, S * (0.1 + Math.random() * 0.12), 6, 1.4 + Math.random() * 0.5);
+    for (let i = 0; i < 4; i++) { const m = spr('#d8d4e4', false, 0.5), v = new THREE.Vector3((Math.random() - 0.5) * 2.6, 0.6 + Math.random() * 1.2, (Math.random() - 0.5) * 2.6); m.position.copy(p); const s0 = 0.8 + Math.random() * 0.5;
+      fx(m, 1.0, (o, k, dt) => { o.position.addScaledVector(v, dt); v.multiplyScalar(1 - dt * 2); o.scale.setScalar(s0 * (1 + k * 2.2)); o.material.opacity = 0.45 * (1 - k); }); } return; }
+  if (ses === 'cam') { for (let i = 0; i < 8; i++) piece(new THREE.Mesh(MFX.kirik, MFX.mat('c' + renk, { color: renk, transparent: true, opacity: 0.75, roughness: 0.05, metalness: 0.1, envMapIntensity: 1.4, side: THREE.DoubleSide })), p, dir, S * (0.1 + Math.random() * 0.12), 9, 1.0 + Math.random() * 0.4); par(6, '#ffffff', true, 0.35); return; }
+  if (ses === 'buz') { for (let i = 0; i < 7; i++) piece(new THREE.Mesh(MFX.kristal, MFX.mat('b', { color: '#a8e4ff', transparent: true, opacity: 0.85, roughness: 0.05, emissive: '#1a6ad8', emissiveIntensity: 0.25, flatShading: true })), p, dir, S * (0.1 + Math.random() * 0.1), 8, 1.2 + Math.random() * 0.4); par(6, '#e8fbff', true, 0.4); }
 }
 // v6.5: (Adem) dusen blok zeminde sekmez: fona gore kara gomulur (kar tozu), kuma oturur (kum sicramasi) ya da cimene/topraga
 // saplanir (toprak ve cimen parcalari). Fizikten cikar, yavasca batar, sonra zemine girip kaybolur.
@@ -2485,7 +2515,7 @@ function knock(c, remove) {
   c.gone = true; if (c.anahtar) anahtarUc(c); g.left--; gorevArt('blok', 1); if (M) ist().blok = (ist().blok || 0) + 1; if (g.combo) { g.combo.n++; g.combo.t = 0; if (!g.combo.at) g.combo.at = screenAt(c.body.position, 0.3); }
   const p = c.body.position, at = screenAt(p, 0.3);
   if (c.kind === 'hediye') { g.shots += 2; floatText('+2 Top', at[0], at[1], 'blue'); burst(new THREE.Vector3().copy(p), '#ffd23f', 16, 6); sfx('bonus'); }
-  else if (c.kind === 'altin' || c.kind === 'kkA') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
+  else if (c.kind === 'altin' || c.kind === 'kkA' || c.kind === 'oyA') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
   else if (c.kind === 'yildiz') { g.bonus++; floatText('+1 ★', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#c58bff', 20, 7); sfx('bonus'); }
   else puanBirik(at);   // v4.2: dusen her blok kucuk "+n" (ayni anda dusenler tek yazida toplanir)
 
@@ -3141,7 +3171,7 @@ if ($('re')) $('re').onclick = () => start(LV);
 $('home').onclick = () => { if (K) location.href = '../'; else if (M) { if (g && g.state === 'play') { sfx('tik'); M.duraklat(); } } else start(LV); };
 
 // dokunma: once kuplere, yoksa yapinin onundeki dikey duzleme nisan alinir
-const ray = new THREE.Raycaster(), NDC = new THREE.Vector2(), AIMPL = new THREE.Plane(new THREE.Vector3(0, 0, 1), -0.0);
+const ray = new THREE.Raycaster(); ray.layers.enableAll(); const NDC = new THREE.Vector2(), AIMPL = new THREE.Plane(new THREE.Vector3(0, 0, 1), -0.0);
 function aimAt(cx, cy) {
   NDC.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(NDC, cam);
   const hits = ray.intersectObjects(cubes.filter((c) => !c.gone).map((c) => c.mesh), true);
@@ -3306,7 +3336,7 @@ function frame(ts) {
   if (sahneBos()) { BOS++; if (BOS > 12) { ren.shadowMap.autoUpdate = false; if (BOS % 3) { if (!TEST) requestAnimationFrame(frame); return; } } }
   else { BOS = 0; ren.shadowMap.autoUpdate = true; }
   if (HIZLI) return;   // v5.0: dogrulayici (YP.run(sn, true)): fizik var, cizim yok
-  if (PRC) PRC.kare(); ren.render(scene, cam); tilkiCiz();
+  if (PRC) PRC.kare(); ORNEK.guncelle(cubes); ren.render(scene, cam); tilkiCiz();
   if (!TEST) requestAnimationFrame(frame);
 }
 let BOS = 0, CN = 0, CDT = 0, HIZLI = false;
@@ -3323,9 +3353,9 @@ function gerekliModel(L) {
   const s = new Set(['top', 'kup']);
   if (!KAIDE) { s.add('platform_sirk'); s.add('platform_3'); s.add(platAd(fonOf(L))); }   // kaide kapaliysa (?kaide=0) eski platform modelleri
   try {
-    const list = convertLevel(levelOf(L).make(), L);
+    const list = convertLevel(levelOf(L).make(), L); if (!K) kapaliKur(list);
     for (const c of list) { const col = NOMETAL[c[3]] || c[3]; if (MFILE[col]) s.add(col); }
-    if (kolaVar(L)) s.add('kola');
+    if (kolaVar(L) && !kapaliMi('kola')) s.add('kola');
   } catch (e) { return Object.keys(MFILE); }
   return [...s];
 }
@@ -3355,7 +3385,7 @@ function kabarcik() {
   const t = AC.currentTime, r = 1 + (Math.random() - 0.5) * 0.06;
   tone('sine', 320 * r, 1100, t, 0.11, 0.6); tone('sine', 600 * r, 1500, t + 0.03, 0.07, 0.25);
 }
-window.YP = { get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, get ENG() { return ENG; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec, hz) { HIZLI = !!hz; let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } HIZLI = false; }, lv: (L) => levelOf(L), engelOf, BV, dene(L, v) { DENE = { L, Y: Object.assign({ veri: 1, engel: v.engel || [], make: () => v.c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) }, v) }; BV.Y.delete(L); UCACHE.delete(L); start0(L); }, get GONE() { return cubes.filter((c) => c.gone).length; }, snap() { return glc.toDataURL('image/png'); } };
+window.YP = { THREE, KIND, SEK, MOD, GLASS, get PATI() { return PATI; }, ORNEK, get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, get ENG() { return ENG; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec, hz) { HIZLI = !!hz; let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } HIZLI = false; }, lv: (L) => levelOf(L), engelOf, BV, dene(L, v) { DENE = { L, Y: Object.assign({ veri: 1, engel: v.engel || [], make: () => v.c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) }, v) }; BV.Y.delete(L); UCACHE.delete(L); start0(L); }, get GONE() { return cubes.filter((c) => c.gone).length; }, snap() { return glc.toDataURL('image/png'); } };
 if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MOD, PM, platBody, GB, cubes, balls, S, TC, KEEP, NENV, SV, save, $, Q, TEST,
   get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set GY(v) { GY = v; GB.position.y = v; }, get shake() { return shake; }, set shake(v) { shake = v; },
   set TOPY(v) { TOPY = v; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, LEG, DIRT, KIND, splashSnd: (v) => AC && (K ? play('su', v + 0.2) : splashSnd(v)), dongu, play: (k, v, r) => AC && play(k, v, r),
@@ -3364,7 +3394,7 @@ if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MO
 // v3.0: acilis ekranindaki yukleme cubugu (index.html'deki BSYUK)
 const L0 = Math.min(K ? 1e9 : TOPLAM(), Math.floor(+(Q.get('sv') || SV.L || 1)) || 1), modelReady = bolumYukle(L0).then(() => modelYukle(gerekliModel(L0)));   // v5.0: once bolum parcasi   // v4.7: acilista yalniz kayitli bolumun modelleri
 { let n = 0; const P5 = [faceReady, pofiReady, texReady, modelReady]; for (const p of P5) p.then(() => { n++; if (window.BSYUK) window.BSYUK(0.15 + 0.75 * n / P5.length); }); }
-Promise.all([faceReady, pofiReady, texReady, modelReady, K ? K.yukle() : 0]).then(() => {
+Promise.all([faceReady, pofiReady, texReady, modelReady, patiReady, K ? K.yukle() : 0]).then(() => {
   makeCannon(); fit();
   if (!K && !TEST) merkezBagla();
   for (const k in KMAT) delete KMAT[k];
