@@ -9,15 +9,16 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=6';
+import { sekilKur, YAPI } from './sekil.js?v=7';
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=1';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
-import { ornekKur } from './ornek.js?v=2';   // v5.1: bloklar tur basina tek InstancedMesh
-import { kaleYapi, hazineYapi } from './kale.js?v=3';
+import { ornekKur } from './ornek.js?v=3';
+import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
+import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=19';
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
-import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=7';
+import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
 import { hisKur } from './fx/his.js?v=1';   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
@@ -71,7 +72,7 @@ const GONE_Y = -0.45;    // bunun altina inen kup platformdan dusmus sayilir
 // ---------------- cizim ----------------
 const glc = $('gl');
 const ren = new THREE.WebGLRenderer({ canvas: glc, antialias: true, alpha: true, preserveDrawingBuffer: TEST }); ren.setClearColor(0, 0);
-ren.setPixelRatio(Math.min(Math.min(innerWidth, innerHeight) < 600 ? 1.25 : 2, devicePixelRatio || 1));   // v3.18: (Adem: telefon cok isiniyor) 1.5 -> 1.25   // v6.29: (Adem: telefon cok isiniyor) telefonda en cok 1.5 (2 yerine %44 daha az piksel)
+ren.setPixelRatio(Math.min(Math.min(innerWidth, innerHeight) < 600 ? (CILA ? 1.75 : 1.25) : 2, devicePixelRatio || 1));   // v5.3: (Adem: sekiller kalitesiz) 1.25 bloklari bulanik ve tirtikli gosteriyordu; kontur cizimleri kalkti, yerine cozunurluk   // v3.18: (Adem: telefon cok isiniyor) 1.5 -> 1.25   // v6.29: (Adem: telefon cok isiniyor) telefonda en cok 1.5 (2 yerine %44 daha az piksel)
 ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.12;   // v6.1: daha parlak · v5.2: (Adem: referans kalitesi) 1.32 renkleri pastele kaydiriyordu
 ren.shadowMap.enabled = true; ren.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
@@ -455,8 +456,8 @@ const NENV = (() => {
 // v3.1: (Adem 10 Kas 2026) kodla cizilen 3B sekiller (sekil.js): parlak oyuncak kup, tas kiris, mermer tambur, buz, ahsap dikme, kavanoz, raf.
 // KIND'e eklenir (sek: 1); olculeri kup kenari cinsinden SEK.TUR'da, govde ve malzemesi ilk kullanimda SEK.al(ad) ile kurulur.
 const SEK = sekilKur({ THREE, S, canvasTex, ENV });
-const ORNEK = ornekKur({ THREE, scene, S });
-let PATI = null; const patiReady = patiYukle({ THREE, S, ENV, GLTFLoader }).then((p) => { PATI = p; if (p) SEK.patiAyar(p); });
+const ORNEK = ornekKur({ THREE, scene, S, kontur: CILA ? 0 : 0.04, rim: CILA ? 0.1 : 0.28 });   // v5.3: cila setinde siyah kontur yok, kenar parlamasi hafif
+let PATI = null; const patiReady = (CILA ? Promise.resolve(null) : patiYukle({ THREE, S, ENV, GLTFLoader })).then((p) => { PATI = p; if (p) SEK.patiAyar(p); });
 // v4.4: (Adem 13 Kas) kaide platform (turkuaz-bakir) ve yeni top; ?kaide=0 eski Tripo platformu ve eski top
 const KAIDE = Q.get('kaide') === '0' ? null : kaideKur({ THREE, canvasTex, ENV }); if (KAIDE) KAIDE.ayakBoya(LEG);
 for (const k in SEK.TUR) { const t = SEK.TUR[k]; KIND[k] = { mass: t.mass, f: t.f, r: t.r, sek: 1 }; if (t.carp) KIND[k].kir = t.carp; if (t.boom) { KIND[k].boom = t.boom; KIND[k].guc = t.guc; } }
@@ -3334,12 +3335,19 @@ function frame(ts) {
   // v6.29: (Adem: telefon cok isiniyor) hicbir sey kipirdamiyorsa golge haritasi yeniden cizilmez ve sahne saniyede 20 kez cizilir
   if (PRV.on) prvKare(dt);
   if (sahneBos()) { BOS++; if (BOS > 12) { ren.shadowMap.autoUpdate = false; if (BOS % 3) { if (!TEST) requestAnimationFrame(frame); return; } } }
-  else { BOS = 0; ren.shadowMap.autoUpdate = true; }
+  else { BOS = 0; ren.shadowMap.autoUpdate = true; prOlc(dt); }
   if (HIZLI) return;   // v5.0: dogrulayici (YP.run(sn, true)): fizik var, cizim yok
   if (PRC) PRC.kare(); ORNEK.guncelle(cubes); ren.render(scene, cam); tilkiCiz();
   if (!TEST) requestAnimationFrame(frame);
 }
 let BOS = 0, CN = 0, CDT = 0, HIZLI = false;
+// v5.3: cozunurluk 1.25 -> 1.75 oldu. Telefon bunu kaldiramiyorsa (hareketli sahnede ortalama 45 FPS alti) kendiliginden bir kademe duser: 1.75 -> 1.5 -> 1.25
+const PRO = { n: 0, t: 0 };
+function prOlc(dt) {
+  if (TEST || !CILA) return; PRO.n++; PRO.t += dt; if (PRO.n < 150) return;
+  const ort = PRO.t / PRO.n, pr = ren.getPixelRatio(); PRO.n = 0; PRO.t = 0;
+  if (ort > 1 / 45 && pr > 1.3) { ren.setPixelRatio(pr > 1.6 ? 1.5 : 1.25); ren.setSize(innerWidth, innerHeight, false); }
+}
 function sahneBos() {
   if (ENG.length || GGA.length || PRV.on) return false;
   if (CAMI > 0 || K || TEST || !g || g.don || balls.length || FX.length || parts.length || DEB.length || shake > 0 || HS > 0 || FP > 0.01 || flashLight.intensity > 0 || TC.rec > 0 || Math.abs(TC.aimYaw - TC.yaw) > 1e-3 || PF.holder.visible || (TK.t && TK.gor)) return false;

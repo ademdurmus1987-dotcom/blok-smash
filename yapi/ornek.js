@@ -3,7 +3,7 @@
 // fizik, nisan (raycast), kirilma parcalari ve olcek/konum animasyonlari onlari kullanmaya devam eder; her karede matrisleri
 // instance tamponuna kopyalanir. Turun dusuk ucgenli surumu (lod) varsa: arkada kalan (onunde baska blok olan) bloklar ve
 // cok kalabalik bolumde hepsi dusuk surumle cizilir.
-export function ornekKur({ THREE, scene, S, kontur = 0.04 }) {
+export function ornekKur({ THREE, scene, S, kontur = 0.04, rim = 0.28 }) {
   const T = new Map(), ONZ = new Map();
   // v5.2: koyu kontur (ters kabuk): blogun dusuk surumu normali yonunde biraz sisirilip arka yuzu koyu renkle cizilir.
   // Referans gorsellerdeki gibi her blok fonun ve komsusunun onunde net ayrilir. Tur basina +1 cizim.
@@ -33,8 +33,8 @@ export function ornekKur({ THREE, scene, S, kontur = 0.04 }) {
   function rimEkle(m) {
     if (!m || m.userData.rim || !(m.isMeshStandardMaterial)) return; m.userData.rim = 1;
     const eski = m.onBeforeCompile;
-    m.onBeforeCompile = (sh, r) => { if (eski) eski(sh, r); sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n  totalEmissiveRadiance += vec3(1.0, 0.93, 0.8) * pow(1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0), 3.0) * 0.28;'); };
-    m.customProgramCacheKey = () => 'rim1'; m.needsUpdate = true;
+    m.onBeforeCompile = (sh, r) => { if (eski) eski(sh, r); sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n  totalEmissiveRadiance += vec3(1.0, 0.93, 0.8) * pow(1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0), 3.0) * ' + rim.toFixed(2) + ';'); };
+    m.customProgramCacheKey = () => 'rim' + rim; m.needsUpdate = true;
   }
   // tur kaydi (bir kez): o = { geo, mat, lod?, golgeKutu?, esik? }
   function tanim(k, o) { if (T.has(k)) return; T.set(k, { o, im: [null, null], n: [0, 0], gk: null }); for (const m of [].concat(o.mat)) rimEkle(m); }

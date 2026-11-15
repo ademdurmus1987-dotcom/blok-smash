@@ -54,3 +54,15 @@
 - Sandık için LOD (şu an ~4 bin üçgen; arka sırada basit kutu yeterli).
 - Taş kemeri de tek tek taşlardan kurmak (şu an doku).
 - Elle yapılmış 14, 20, 22. bölümleri bot değişiklikten önce de çözemiyordu (bot sınırı, yapı değil); telefonda denenip gerekirse top eklenebilir.
+
+## v5.3 (15 Kas 2026 gece) — "cila" seti: oyun kamerasina gore yeniden cizim
+Adem: "sekiller kalitesiz, cok basit duruyor; referansla fark cok fazla". Yakin planda bloklar iyiydi; sorun telefondaki oyun goruntusuydu.
+- [x] Cozunurluk: telefonda 1.25 -> 1.75 (bloklar bulanik ve tirtikliydi). Hareketli sahnede ortalama 45 FPS altina duserse kendiliginden 1.5, sonra 1.25 (`prOlc`).
+- [x] Siyah kontur kalkti (dusuk cozunurlukte karalama gibi duruyordu), kenar parlamasi 0.28 -> 0.10 (yan yuzler soluk gorunuyordu).
+- [x] `yapi/cila.js` (yeni): patili kup (temiz yuvarlak govde + ice gomuk pano + kabarik pati; sari/turuncuda krem pati, siyah cizgi yok),
+      buz (doygun mavi, capraz parlak serit), tas (ton farkli pahli taslar), yildiz blok, mucevher (yuzey yuzey parlak).
+      Isik-golge dokuya islendi: karsidan bakinca da hacimli. Patili kup icin Tripo modeli artik yuklenmiyor (acilis hizlandi).
+- [x] Geri donus: adrese `?cila=0` eklenince v5.2 gorunumu (kontur, 1.25, Tripo patili kup) aynen gelir.
+- [x] Surum: oyun.js?v=99, sekil 7, ornek 3, cila 1, bolum 8, CACHE v50. Once/sonra: `uretici/rapor/katalog/cila_once_sonra.jpg`
+- Denenmedi: gercek telefonda isinma. Fazla isinirsa oyun.js'te `CILA ? 1.75` degerini 1.5 yap.
+- Siradaki adaylar (dokunulmadi): tas sutun, kemer, fici (uzaktan koyu), sandik X tahtalari (kalinlastirma `kutu`yu bozuyor, ayri geometri gerek).

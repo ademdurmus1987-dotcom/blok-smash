@@ -1,4 +1,4 @@
-import { kaleYapi, hazineYapi } from './kale.js?v=3';   // v4.3
+import { kaleYapi, hazineYapi } from './kale.js?v=4';   // v4.3
 // v3.16 (Adem 12 Kas 2026): bolum dizilisi bastan. Ilk bolumler tek renk tek cesit; her yeni sekil ailesi bir bolumde tanitilir
 // (oyun.js ilk gorulen aileyi "Yeni sekil" kartiyla gosterir). Farkli platform sayisi, yukseklik ve hareketiyle farkli yerlesimler.
 // Hucre: [i, kat, k, tur, platform]. Genis parcanin i degeri orta noktasidir (tas4 0..3'u kaplar: i = 1.5). Havada hucre yok: her parca altindakine oturur.

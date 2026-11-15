@@ -3,7 +3,8 @@
 // seker kavanozlari, raf tahtalari ve dalgali porselen tamburlar. Hepsi gercek 3B: yuvarlak kenarli govde,
 // ustune boyanmis isik-golge, kabartma (bump) ve parlak yansima. Dosya indirmez, model beklemez.
 // Olculer kup kenari (S) cinsindendir: w genislik (x), h yukseklik (y), d derinlik (z).
-import { kaleKur } from './kale.js?v=3';   // v4.3: Korsan Kalesi blok seti
+import { kaleKur } from './kale.js?v=4';
+import { CILA, cilaKur } from './cila.js?v=1';   // v5.3: oyun kamerasina gore yeniden cizilen bloklar (?cila=0 eski gorunum)   // v4.3: Korsan Kalesi blok seti
 export function sekilKur({ THREE, S, canvasTex, ENV }) {
   const col = (h) => new THREE.Color(h);
   const mix = (a, b, t) => '#' + col(a).lerp(col(b), t).getHexString();
@@ -86,7 +87,8 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
   }
 
   const PT = { p: null };
-  function patiKup(renk, eski, amb) { const P = PT.p; if (!P) return oyuncak(eski, amb); return { geo: P.geoOf(renk, false), lod: P.geoOf(renk, true), konturGeo: P.kabuk, esik: P.ESIK, golgeKutu: 1, mat: P.MAT[renk], parca: P.PARCA[renk], pati: renk }; }
+  const CL = CILA ? cilaKur({ THREE, S, canvasTex, ENV, kutu, torna, rng, acik, koyu }) : null;
+  function patiKup(renk, eski, amb) { if (CL) return CL.patiKup(renk); const P = PT.p; if (!P) return oyuncak(eski, amb); return { geo: P.geoOf(renk, false), lod: P.geoOf(renk, true), konturGeo: P.kabuk, esik: P.ESIK, golgeKutu: 1, mat: P.MAT[renk], parca: P.PARCA[renk], pati: renk }; }
 
   // ---------------- tas kiris ----------------
   function tasYuz(wS, hS, amblem, tohum, renk) {
@@ -477,6 +479,7 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
     kemik: { w: 2, h: 1, d: 1, mass: 1.3, f: 0.65, r: 0.08, ses: 'tahta', renk: '#f1e6cf', kir: 1, carp: 9, yuzer: 1, yap: kemik }
   };
   Object.assign(TUR, kaleKur({ THREE, S, canvasTex, ENV, kutu, torna, rng, acik, koyu }));   // v4.3
+  if (CL) for (const k in CL.yeni) if (TUR[k]) TUR[k].yap = CL.yeni[k];   // v5.3
   const HAZIR = {};
   function al(k) { if (HAZIR[k]) return HAZIR[k]; const t = TUR[k], y = t.yap(); return (HAZIR[k] = Object.assign({ w: t.w * S, h: t.h * S, d: t.d * S, sil: t.sekil === 'sil', r: S * 0.47 }, y)); }
   function patiAyar(p) { PT.p = p; for (const k in HAZIR) if (k.startsWith('oy')) delete HAZIR[k]; }
