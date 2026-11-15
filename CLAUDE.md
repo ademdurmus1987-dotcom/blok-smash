@@ -11,6 +11,7 @@ Sahibi Adem; kod yazmaz, sonuçları telefonda dener. Yanıtlar Türkçe.
 ## Skill'ler (`.claude/skills/`)
 - `threejs-game-director` ve kardeşleri (gameplay-systems, aaa-graphics-builder, game-ui-designer, debug-profiler, qa-release): bölüm tasarımı, oyun hissi, görsel cila, performans, test.
 - `motion-design`: animasyon zamanlaması ve yumuşatma. `ui-ux-pro-max`: arayüz. `balance-check`: zorluk eğrisi ve altın ekonomisi.
+- awesome-gamedev-agent-skills'ten: `threejs-scene-setup`, `threejs-materials-lighting`, `threejs-gltf-loading` (Three.js r187 belgelerine göre), `game-feel` (sarsıntı, vuruş donması, esneme), `physics-tuning` (cannon fiziği: titreme, içinden geçme), `performance-optimization`, `audio-design`, `save-systems` (localStorage kayıt sürümü), `create-game-assets` (ikon/doku tutarlılığı). Repodaki Three.js sürümü farklı olabilir; API'yi kullanmadan önce `three.module.min.js` sürümüne bak.
 - Bu skill'lerin "yeni Vite/TypeScript projesi kur", "scaffold kopyala", "npm install" adımları bu projede UYGULANMAZ. Mevcut yapıyı değiştirmeden ilkelerini ve kontrol listelerini kullan.
 - 3D model, görsel ve ses üreten API skill'leri (Tripo, Gemini, ElevenLabs) kurulu değil; API anahtarı gerektirirler.
 
