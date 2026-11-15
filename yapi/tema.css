@@ -1,0 +1,96 @@
+/* Foxi Smash v5.0 (Adem 15 Kas 2026) - KORSAN TEMA katmani.
+   ui-ux-pro-max skill'inin onerileriyle (oyun: canli, tok, "oyuncak gibi" 3B yuzeyler; altin + mor vurgular; buyuk dokunma alanlari,
+   4.5:1 yazi kontrasti, gorunur odak halkasi, azaltilmis hareket destegi) acilis, ana sayfa, harita, bolum karti ve kazanma ekrani
+   korsan tilki temasina giydirildi: gemi tahtasi cerceveler, altin percinler, kirmizi bayrak seritler, parsomen hazine haritasi.
+   Yalniz gorunum degisir; butun id/class ve oyun mantigi ayni kalir. Eski gorunume donmek icin index.html'den bu dosyanin satiri silinir. */
+
+:root{
+  --tah1:#b8743a;--tah2:#8a4f22;--tah3:#5e3212;--tah4:#3a1c08;      /* gemi tahtasi */
+  --bay1:#e8413c;--bay2:#a8182a;--bay3:#5a0c18;                     /* korsan bayragi kirmizisi */
+  --tahta:repeating-linear-gradient(180deg,transparent 0 44px,rgba(40,16,2,.5) 44px 46px,rgba(255,210,150,.12) 46px 47px),
+          repeating-linear-gradient(92deg,rgba(255,220,170,.06) 0 2px,transparent 2px 9px,rgba(40,16,0,.07) 9px 11px,transparent 11px 23px),
+          linear-gradient(180deg,var(--tah1) 0%,var(--tah2) 55%,var(--tah3) 100%);
+  /* dort kose altin percin */
+  --percin:radial-gradient(circle at 14px 14px,#fff6c8 0 2px,#ffcf3e 3px 5px,#8a5200 6px 7px,transparent 8px),
+           radial-gradient(circle at calc(100% - 14px) 14px,#fff6c8 0 2px,#ffcf3e 3px 5px,#8a5200 6px 7px,transparent 8px),
+           radial-gradient(circle at 14px calc(100% - 14px),#fff6c8 0 2px,#ffcf3e 3px 5px,#8a5200 6px 7px,transparent 8px),
+           radial-gradient(circle at calc(100% - 14px) calc(100% - 14px),#fff6c8 0 2px,#ffcf3e 3px 5px,#8a5200 6px 7px,transparent 8px);
+}
+
+/* ================= ACILIS EKRANI ================= */
+#load h1.m-logo.a-logo{display:block!important;position:absolute;left:16px;right:auto;top:calc(var(--sat) + 12px);z-index:3;margin:0;font-size:clamp(30px,9vw,40px);text-align:left;animation:tLogo .8s cubic-bezier(.2,1.5,.4,1) .3s both}
+#load .a-alt{width:min(82vw,350px);padding:14px 16px 12px;border-radius:22px;background:var(--percin),var(--tahta);border:3px solid var(--altin2);box-shadow:0 0 0 3px var(--tah4),0 10px 22px rgba(0,0,0,.5),inset 0 2px 0 rgba(255,230,180,.35)}
+#load .a-cub{height:24px;border-radius:13px;background:#2a1204;border:3px solid var(--tah4);box-shadow:inset 0 3px 6px rgba(0,0,0,.6)}
+#load .a-cub i{position:relative;min-width:24px;background:repeating-linear-gradient(115deg,rgba(255,255,255,.28) 0 8px,transparent 8px 16px),linear-gradient(180deg,#fff2a8,#ffc12e 50%,#e08a08);background-size:32px 100%,100% 100%;box-shadow:inset 0 2px 0 rgba(255,255,255,.6);animation:tSerit .8s linear infinite}
+#load .a-cub i:after{content:"";position:absolute;right:1px;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fffbd6 0 18%,#ffd84a 30%,#d88a00 75%);box-shadow:0 0 0 2px #8a5200,0 0 8px #ffe27a}
+#load .a-yaz{color:#fff6dc;text-shadow:0 2px 0 var(--tah4),0 0 6px rgba(0,0,0,.6)}
+#load .a-ses,#mfoxi .fv-ses,#mfoxi .fv-gec{display:inline-flex;align-items:center;gap:7px;min-height:44px}
+.t-ik{width:20px;height:20px;flex:none}
+@keyframes tLogo{from{opacity:0;transform:translateY(-20px) scale(.8)}to{opacity:1;transform:none}}
+@keyframes tSerit{to{background-position:32px 0,0 0}}
+
+/* ================= ANA SAYFA ================= */
+/* alt menu: gemi guvertesi tahtasi */
+.m-alt{background:var(--tahta);border-top:4px solid var(--altin2);box-shadow:0 -3px 0 var(--tah4),0 -8px 18px rgba(0,0,0,.4)}
+.m-alt button{border-right:2px solid rgba(255,220,170,.14);border-left:2px solid rgba(30,10,0,.35)}
+.m-alt button.on{background:radial-gradient(120% 90% at 50% 0%,#ffe9a8 0%,#e8a33a 55%,#b8641c 100%);box-shadow:inset 0 3px 0 rgba(255,255,255,.45)}
+.m-alt button.on:before{background:#ffd98a}
+.m-alt span{color:#fff;text-shadow:0 2px 0 var(--tah4)}
+/* sayfa basliklari (Harita, Magaza): kirmizi bayrak serit */
+.m-sb{position:relative;display:table;margin:12px auto 10px;padding:7px 26px 9px;font-size:26px;color:#fff;border-radius:10px;background:linear-gradient(180deg,var(--bay1),var(--bay2));border:3px solid var(--bay3);box-shadow:0 4px 0 var(--bay3),0 8px 14px rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.35);-webkit-text-stroke:1.2px var(--bay3);text-shadow:0 3px 0 var(--bay3)}
+.m-sb:before,.m-sb:after{content:"";position:absolute;top:10px;width:22px;height:100%;background:var(--bay2);border:3px solid var(--bay3);z-index:-1}
+.m-sb:before{left:-16px;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,40% 50%)}
+.m-sb:after{right:-16px;clip-path:polygon(0 0,100% 0,60% 50%,100% 100%,0 100%)}
+
+/* ================= ACILIR KARTLAR (bolum karti, gunluk odul, gorevler, ayarlar...) ================= */
+.p-kart{background:var(--percin),var(--tahta);border:4px solid var(--altin2);box-shadow:0 0 0 3px var(--tah4),0 10px 0 rgba(20,8,0,.6),0 22px 44px rgba(0,0,0,.55),inset 0 3px 0 rgba(255,230,180,.35);padding-top:4px}
+.p-bas{text-align:center;padding:0 46px 12px}
+.p-bas h2{position:relative;display:inline-block;margin-top:-22px;padding:7px 22px 9px;border-radius:10px;font-size:24px;color:#fff;background:linear-gradient(180deg,var(--bay1),var(--bay2));border:3px solid var(--bay3);box-shadow:0 4px 0 var(--bay3),0 8px 12px rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.35);-webkit-text-stroke:1.2px var(--bay3);text-shadow:0 3px 0 var(--bay3)}
+.p-x{border-color:var(--altin1);box-shadow:0 0 0 3px var(--tah4),0 4px 0 #5a0c18,0 6px 10px rgba(0,0,0,.4)}
+.p-ic{border-color:var(--tah4);box-shadow:inset 0 4px 0 #fff,inset 0 0 26px rgba(160,96,30,.28),0 3px 0 rgba(255,220,160,.25)}
+/* bolum karti: hazine haritasi parsomeni, pusula filigrani */
+.bk{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23b07c34' stroke-opacity='.16' stroke-width='1.6'%3E%3Ccircle cx='50' cy='50' r='44'/%3E%3Ccircle cx='50' cy='50' r='36' stroke-dasharray='2 4'/%3E%3C/g%3E%3Cg fill='%23b07c34' fill-opacity='.13'%3E%3Cpath d='M50 4l7 46h-14zM50 96l-7-46h14zM4 50l46-7v14zM96 50l-46 7v-14z'/%3E%3C/g%3E%3C/svg%3E") 50% 62%/78% no-repeat,radial-gradient(130% 80% at 50% 0%,#fffef8 0%,#fff4da 55%,#f2d29a 100%)!important}
+.bk-hd i{background:none;box-shadow:none;width:24px;height:24px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 4l16 16M20 4L4 20' stroke='%23d81e36' stroke-width='4.5' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+.p-zor{background:linear-gradient(180deg,#c48cff,#7c3aed);border-color:#2a0c5e;color:#fff;box-shadow:0 3px 0 #2a0c5e;text-shadow:0 2px 0 #2a0c5e}
+
+/* ================= HAZINE HARITASI ================= */
+#s-harita .m-kay{border-color:var(--tah3);box-shadow:0 0 0 3px var(--altin2),0 0 0 6px var(--tah4),0 8px 0 rgba(0,0,0,.3),inset 0 0 46px rgba(120,64,14,.55);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 640'%3E%3Cg fill='none' stroke='%23387fb0' stroke-opacity='.45' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M150 120q10-8 20 0t20 0'/%3E%3Cpath d='M230 250q10-8 20 0t20 0'/%3E%3Cpath d='M120 380q10-8 20 0t20 0'/%3E%3Cpath d='M250 520q10-8 20 0t20 0'/%3E%3Cpath d='M20 230q8-6 16 0t16 0'/%3E%3Cpath d='M348 470q8-6 16 0t16 0'/%3E%3C/g%3E%3Cg%3E%3Cellipse cx='34' cy='96' rx='30' ry='12' fill='%23e8c477'/%3E%3Cellipse cx='34' cy='93' rx='22' ry='7' fill='%237cb342'/%3E%3Cpath d='M36 92q-2-22 4-36' stroke='%238a5a22' stroke-width='4' fill='none'/%3E%3Cpath d='M40 56q-16-4-22 6q12-6 22-6zM40 56q14-8 22 0q-12-3-22 0zM40 56q-6 12-2 18q0-10 2-18z' fill='%232e8b3a'/%3E%3C/g%3E%3Cg%3E%3Cellipse cx='366' cy='330' rx='32' ry='13' fill='%23e8c477'/%3E%3Cellipse cx='366' cy='327' rx='24' ry='8' fill='%237cb342'/%3E%3Cpath d='M362 326q2-20-6-32' stroke='%238a5a22' stroke-width='4' fill='none'/%3E%3Cpath d='M356 294q-14 0-20 10q12-8 20-10zM356 294q14-6 22 2q-12-2-22-2z' fill='%232e8b3a'/%3E%3Cpath d='M380 324l6-10 6 10z' fill='%23a03a1a'/%3E%3C/g%3E%3Cg transform='translate(30 560)'%3E%3Cpath d='M-18 0h36l-6 10h-24z' fill='%236a3a14'/%3E%3Cpath d='M0 0v-30' stroke='%236a3a14' stroke-width='3'/%3E%3Cpath d='M2-28q14 10 0 24z' fill='%23fff6dc' stroke='%236a3a14' stroke-width='1.5'/%3E%3Cpath d='M-2-26q-12 8 0 20z' fill='%23fff6dc' stroke='%236a3a14' stroke-width='1.5'/%3E%3Cpath d='M0-30h8l-2 3 2 3h-8z' fill='%23d81e36'/%3E%3C/g%3E%3Cg transform='translate(362 104)' fill='none' stroke='%238a5a22' stroke-opacity='.55'%3E%3Ccircle r='24' stroke-width='2'/%3E%3Ccircle r='18' stroke-width='1' stroke-dasharray='2 3'/%3E%3Cpath d='M0-28l5 23h-10zM0 28l-5-23h10z' fill='%23a03a1a' fill-opacity='.6' stroke='none'/%3E%3Cpath d='M-28 0l23-5v10zM28 0l-23 5v-10z' fill='%238a5a22' fill-opacity='.45' stroke='none'/%3E%3C/g%3E%3C/svg%3E") 0 0/100% auto repeat-y,
+    radial-gradient(circle at 20% 12%,rgba(160,110,50,.2) 0 9%,transparent 10%),radial-gradient(circle at 82% 46%,rgba(160,110,50,.16) 0 12%,transparent 13%),
+    linear-gradient(180deg,#f8e2b0,#efd198);background-attachment:local}
+/* duraklar: acilmis = altin cerceveli, gecilmis = altin para, kilitli = tas */
+.h-n{border-color:#ffe48a;box-shadow:0 0 0 3px var(--tah3),0 6px 0 rgba(60,30,0,.5),0 10px 14px rgba(60,30,0,.3),inset 0 4px 0 rgba(255,255,255,.45),inset 0 -5px 0 rgba(0,0,0,.18);-webkit-text-stroke:1px rgba(40,16,0,.6);paint-order:stroke fill}
+.h-n:has(i){background:radial-gradient(circle at 42% 32%,#fffbd6 0 12%,#ffd84a 40%,#e08a08 80%,#b06000)!important;color:#fff}
+.h-n.kilit{background:radial-gradient(circle at 45% 32%,#e6dccb,#b3a690 55%,#8a7c64)!important;border-color:#f3ead8;box-shadow:0 0 0 3px #6a5c46,0 5px 0 rgba(60,40,10,.4),inset 0 -5px 0 rgba(0,0,0,.15)}
+.h-n.cur{border-color:#fff;box-shadow:0 0 0 4px var(--altin2),0 0 0 7px var(--tah4),0 0 26px 8px rgba(255,214,90,.75),0 8px 0 rgba(60,30,0,.45),inset 0 4px 0 rgba(255,255,255,.5)}
+.h-n.cur:after{content:"";position:absolute;inset:-14px;border-radius:50%;border:3px dashed rgba(216,30,54,.75);animation:tDon 6s linear infinite;pointer-events:none}
+.h-tilki{border-color:var(--altin2);box-shadow:0 0 0 2px var(--tah4),0 4px 0 rgba(0,0,0,.3)}
+/* bolge tabelalari: tahta levha */
+.h-b{background:var(--tahta);border:2.5px solid var(--tah4);border-radius:7px;box-shadow:0 3px 0 var(--tah4),0 6px 10px rgba(0,0,0,.25),inset 0 2px 0 rgba(255,230,180,.3);text-shadow:0 2px 0 var(--tah4)}
+@keyframes tDon{to{transform:rotate(360deg)}}
+
+/* ================= KAZANMA EKRANI (Adem'in sectigi: dev yildizlar + havai fisek gecesi) ================= */
+/* gece limani: ufukta deniz, ay ve demirli korsan gemisi; havai fisekler ustte patlamaya devam eder */
+#mkazan .k2-gok{background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='xMidYMax meet'%3E%3Cg fill='%2308041c'%3E%3Cpath d='M250 96h86l-10 14h-64z'/%3E%3Cpath d='M268 96V40M300 96V30M322 96V52' stroke='%2308041c' stroke-width='3'/%3E%3Cpath d='M270 44q18 14 0 40zM302 34q22 18 0 50zM324 56q12 10 0 30z'/%3E%3Cpath d='M300 30h12l-3 4 3 4h-12z' fill='%23d81e36'/%3E%3C/g%3E%3C/svg%3E") 50% 100%/100% auto no-repeat,
+  linear-gradient(180deg,transparent 0 84%,rgba(20,40,110,.0) 84%,rgba(30,60,150,.55) 86%,#0a1440 100%),
+  radial-gradient(circle at 18% 16%,#fff8d8 0 3.2%,rgba(255,240,180,.25) 4%,transparent 9%),
+  radial-gradient(ellipse at 50% 110%,#ff8a3a55,#0000 50%),
+  linear-gradient(#050018,#1a0a50 60%,#3a1260)}
+/* "BOLUM N" levhasi: kirmizi korsan bayragi */
+#mkazan .k2-levha{background:linear-gradient(180deg,var(--bay1),var(--bay2));border-color:var(--altin2);box-shadow:0 0 0 3px var(--bay3),0 6px 0 #3a0610,0 10px 14px #0008,inset 0 2px 0 #ffffff50}
+/* odul paneli: altin percinli gemi sandigi kapagi + kutlayan Foxi */
+#mkazan .k2-panel{background:var(--percin),var(--tahta);border:4px solid var(--altin2);box-shadow:0 0 0 3px var(--tah4),0 0 30px #ffcf2e77,0 12px 18px #000a,inset 0 3px 0 rgba(255,230,180,.35);padding-top:12px;overflow:visible}
+#mkazan .k2-panel:after{content:"";position:absolute;left:-14px;top:-40px;width:74px;height:74px;border-radius:50%;background:url(../karakter/tilki_avatar.webp?v=1) 50% 12%/138% no-repeat,radial-gradient(circle at 50% 30%,#8fdcff,#1b6fc0);border:4px solid var(--altin2);box-shadow:0 0 0 3px var(--tah4),0 6px 10px rgba(0,0,0,.45);animation:tFoxi 1.4s ease-in-out infinite;transform-origin:50% 100%}
+#mkazan .k2-satir div{background:rgba(40,14,0,.55);border:2px solid rgba(255,214,120,.35);color:#fff6dc}
+@keyframes tFoxi{0%,100%{transform:rotate(-8deg) translateY(0)}50%{transform:rotate(6deg) translateY(-6px)}}
+
+/* ================= ERISILEBILIRLIK (skill kontrol listesi) ================= */
+/* klavye / erisim aygitlari icin gorunur odak halkasi */
+button:focus-visible,[role=button]:focus-visible{outline:3px solid #ffe27a;outline-offset:3px}
+/* telefonda "hareketi azalt" aciksa surekli donen/nabiz atan susler durur, gecisler kisalir */
+@media (prefers-reduced-motion:reduce){
+  .h-n.cur,.h-n.cur:after,.h-tilki,#mkazan .k2-panel:after,#load .a-cub i,.m-btn:after,#mkazan .k2-devam::after{animation:none!important}
+  #mpop.on,#load h1.m-logo.a-logo{animation-duration:.01s!important}
+}

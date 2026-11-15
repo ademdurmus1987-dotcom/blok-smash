@@ -87,7 +87,7 @@ export function merkezKur(A) {
   // v3.14: (Adem 11 Kas) Foxi'nin karsilama sarkisi (Gemini videosu, sesli): 'Welcome to Foxy Smash, let's go...'
   // Ana sayfada Foxi'ye dokununca tam ekran oynar; bitince ya da 'Gec' ile kapanir. (v3.15: acilis ekrani da bu video, index.html)
   const FV = document.createElement('div'); FV.id = 'mfoxi';
-  FV.innerHTML = '<video playsinline webkit-playsinline preload="none" poster="../karakter/foxi_sarki.jpg?v=1"></video><button class="fv-ses">🔊 Sesi aç</button><button class="fv-gec">Geç ✕</button>';
+  FV.innerHTML = '<video playsinline webkit-playsinline preload="none" poster="../karakter/foxi_sarki.jpg?v=1"></video><button class="fv-ses"><svg class="t-ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Sesi aç</button><button class="fv-gec" aria-label="Geç">Geç<svg class="t-ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>';
   document.body.append(M, KZ, P, FV);
   // kartlar ve merkez oyun alanina dokunus gecirmesin
   for (const e of [M, P, KZ, FV]) for (const ev of ['pointerdown', 'pointerup', 'pointermove']) e.addEventListener(ev, (x) => x.stopPropagation());

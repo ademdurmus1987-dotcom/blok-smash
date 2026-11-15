@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=4';
 import { kaleYapi, hazineYapi } from './kale.js?v=1';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=16';
+import { merkezKur } from './merkez.js?v=17';
 import { BOLUMLER, uret2, AILE, aileOf } from './bolum.js?v=4';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
@@ -3071,7 +3071,11 @@ function yeniSekil() {
     const kapa = () => { if (E.classList.contains('cik')) return; sfx('tik'); E.classList.add('cik'); setTimeout(() => { PRV.on = false; E.remove(); if (n + 1 < yeni.length) setTimeout(() => goster(n + 1), 180); else yeniEngel(); }, 300); };
     E.addEventListener('pointerdown', (ev) => { if (performance.now() - t0 > 900 || ev.target.id === 'ysok') kapa(); }); const t0 = performance.now();
   };
-  setTimeout(() => goster(0), 450);
+  // v5.0: (ilk acilista) "Yeni Blok!" karti ana sayfanin ustunde cikiyordu: ana sayfa / bolum karti kapanana kadar bekler.
+  // Bu arada baska bolum baslarsa (g degisirse) bu bekleme iptal olur, kart yeni bolumle gelir.
+  const g0 = g, bekle = () => { if (g !== g0) return; const mz = $('merkez'), mp = $('mpop');
+    if ((mz && mz.classList.contains('on')) || (mp && mp.classList.contains('on'))) { setTimeout(bekle, 400); return; } goster(0); };
+  setTimeout(bekle, 450);
 }
 function ggOnce() {
   if (K || TEST || Q.get('gg') === '0') { ggHud(); return; }
