@@ -50,6 +50,7 @@ function palet(r, L, d) {
   const sec = (a) => { const b = a.filter((x) => (Array.isArray(x) ? x.every(ok) : ok(x))); return b[Math.floor(r() * b.length)]; };
   const P = { govde: sec(R.govde), sert: sec(R.sert), kiris2: sec(R.kiris2), kiris3: sec(R.kiris3), dik: sec(R.dik), tepe: sec(R.tepe), ince: sec(R.ince), patlar: sec(R.patlar.slice(0, d > 0.6 ? 4 : 3)), cam: R.cam, buz: R.buz };
   P.g = (n) => P.govde[n % P.govde.length];
+  { const tb = TANITIM.find((x) => x[0] === L && x[1] === 'blok'); const t3 = tb && { raf: 'raf3', tug3: 'tug3', buzP3: 'buzP3' }[tb[2]]; if (t3) P.kiris3 = t3; }   // tanitim bolumunde yeni 3'luk parca kullanilir
   return P;
 }
 
@@ -231,7 +232,7 @@ export const ARKETIP = {
       let j = 0;
       for (let n = 0; n < H; n++) {
         for (let i = 0; i < W; i++) for (let k = 0; k < D; k++) y.koy(i, j, k, cm[(i + n) % 2]);
-        j += 1; if (n % 2 === 1) { const t = W === 3 ? 'ksKalas3' : 'ksKalas2'; for (let k = 0; k < D; k++) y.koy((W - 1) / 2, j, k, t); j += 0.5; }
+        j += 1; if (n % 2 === 1) { const t = W === 3 ? P.kiris3 : 'ksKalas2'; for (let k = 0; k < D; k++) y.koy((W - 1) / 2, j, k, t); j += olcu(t)[1]; }
       }
       y.koy((W - 1) / 2, j, 0, sec(r, ['ksYakut', 'ksElmas']));
       return { y };
@@ -280,11 +281,11 @@ export const ARKETIP = {
     } },
   raflar: { ad: ['Raflar', 'Kiler', 'Dükkân Rafı'], ipucu: 'Rafın ayağını kır, üstündekiler aşağı döker.', mek: null,
     kur(r, d, P, L) {
-      const y = new Yapi(), kat = ri(r, 2, 4), W = 3 * ri(r, 1, 2), raf = acik('raf', L) ? 'raf3' : 'ksKalas3', D = ri(r, 1, 2);
+      const y = new Yapi(), kat = ri(r, 2, 4), W = 3 * ri(r, 1, 2), raf = P.kiris3, D = ri(r, 1, 2);
       let j = 0;
       for (let f = 0; f < kat; f++) {
         for (let k = 0; k < D; k++) for (let i = 0; i < W; i++) y.koy(i, j, k, (i + f) % 3 === 1 ? P.sert[0] : P.g(i + f));
-        j += 1; for (let k = 0; k < D; k++) for (let i = 1; i < W; i += 3) y.koy(i, j, k, raf); j += 0.5;
+        j += 1; for (let k = 0; k < D; k++) for (let i = 1; i < W; i += 3) y.koy(i, j, k, raf); j += olcu(raf)[1];
       }
       for (let i = 0; i < W; i++) y.koy(i, j, 0, i % 3 === 1 ? P.tepe : sec(r, ['kvP', 'kvT', 'kvM']));
       // arkada ikinci raf (kayan)
@@ -367,7 +368,8 @@ export function bolumUret(L, gecmis, deneme = 0, ayar = {}) {
   return null;
 }
 // tanitilan blok bu bolumde yoksa uygun bir parca onunla degistirilir (ayni olcu)
-const TANBLOK = { raf: [['ksKalas3', 'tug3', 'buzP3'], 'raf3'], tug3: [['ksKalas3', 'raf3', 'buzP3'], 'tug3'], buzP3: [['ksKalas3', 'tug3', 'raf3'], 'buzP3'], dalga: [['oyK', 'oyM', 'oyY', 'oyS', 'oyP', 'hdK', 'hdM', 'hdY', 'ksSandik', 'ksSandikM', 'ksSandikK', 'knK', 'knM', 'joP', 'joY', 'joT', 'kkK', 'ksKaro'], 'dalga'] };
+const TANBLOK = { raf: [['ksKalas3'], 'raf3'], tug3: [['buzP3'], 'tug3'], buzP3: [['tug3'], 'buzP3'],   // ayni olcu (3x0.5 / 3x1)
+  dalga: [['oyK', 'oyM', 'oyY', 'oyS', 'oyP', 'hdK', 'hdM', 'hdY', 'ksSandik', 'ksSandikM', 'ksSandikK', 'knK', 'knM', 'joP', 'joY', 'joT', 'kkK', 'ksKaro'], 'dalga'] };
 function tanitimKoy(Y, ad) {
   const [kay, hed] = TANBLOK[ad] || [[], ad];
   if (Y.c.some((c) => c[3] === hed || (ad === 'dalga' && c[3] === 'disk'))) return true;

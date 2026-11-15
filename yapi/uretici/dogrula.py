@@ -42,7 +42,12 @@ async def main():
             k0 = min(bl); veri = {'ilk': k0, 'b': [bl[k] for k in range(k0, max(bl) + 1)]}
             json.dump(veri, open(pyol(n), 'w'), ensure_ascii=False, separators=(',', ':'))
             rp = os.path.join(KOK, 'yapi/uretici/rapor', 'p%02d.json' % n); os.makedirs(os.path.dirname(rp), exist_ok=True)
-            json.dump(dict(r['rapor'], ilk=ilk, son=son, sure=round(time.time() - t0)), open(rp, 'w'), ensure_ascii=False)
+            yeni = dict(r['rapor'], ilk=ilk, son=son, sure=round(time.time() - t0))
+            if os.path.exists(rp) and (ilk > max(AYAR['el'] + 1, n * PARCA + 1) or son < (n + 1) * PARCA):   # parcanin bir kismi yeniden: sayilar eklenir
+                es = json.load(open(rp)); yeni['test'] += es['test']; yeni['yeniden'] += es['yeniden']
+                for k, v in es.get('hata', {}).items(): yeni['hata'][k] = yeni['hata'].get(k, 0) + v
+                yeni['ilk'], yeni['son'] = es.get('ilk', ilk), es.get('son', son)
+            json.dump(yeni, open(rp, 'w'), ensure_ascii=False)
             print(ilk, son, r['rapor'], round(time.time() - t0), 's', flush=True)
             L = son + 1
         await b.close()

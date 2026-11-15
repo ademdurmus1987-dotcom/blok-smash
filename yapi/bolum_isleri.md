@@ -25,12 +25,10 @@ Bitenler:
 - [x] "Yeni Mekanik!" kartı, yapı ipucu (ilk karşılaşmada), final sahnesi (final.js/final.css), haritada Hazine Adası (merkez.js)
 - [x] sw.js CACHE v47, oyun.js?v=96, merkez.js?v=18, bolum.js?v=5
 
-Sürmekte:
-- [ ] Tam doğrulama koşusu: iki süreç (26-1000 ve 1001-2000). Ara kayıtta ~1800 bölüm tamamlandı (2309 deneme test edildi, 635'i yeniden üretildi; en sık hata: çözülemedi). Kayıtlı parçalar: p00-p07, p10-p18. Eksik: p08, p09, p19 (yarım).
+- [x] Tam doğrulama koşusu bitti: 26-2000 arası 1975 bölüm kayıtlı, hepsi testten geçti (2760 deneme, 775 yeniden üretim; en sık hata: çözülemedi 650+). p00 tanıtım düzeltmesiyle, 1001-1010 sınır düzeltmesiyle yeniden test edildi. Son 5 kuralı ihlali: 0. Rapor: yapi/uretici/rapor/ozet.md
+- Not: kayıtlı JSON esastır. arketip.js sonradan değiştiği için aynı tohumla yeniden üretim bugünkü kayıttan farklı çıkabilir; yalnız yeni bölümler (toplam artınca) üretilir.
 
 Sırada:
-1. Koşu bitince `p00` (26-100) yeniden: 67. bölüm düzeltmesi (buzP3 tanıtımında yalnız en üstteki 3'lük parça değişir) → `python3 yapi/uretici/dogrula.py 26 100`
-2. `p10` (1001-1100) yeniden: iki süreç sınırında son-10 geçmişi için → `python3 yapi/uretici/dogrula.py 1001 1100`
-3. `node yapi/uretici/birlestir.mjs` (adlar + rapor/ozet.md), `node yapi/uretici/denge_kontrol.mjs` (rapor/denge.md)
-4. Ekran görüntüleri: önce (`?uret=eski`) ve sonra; 1-25, 26-60, 100..1000 her 50, 770-800; önce/sonra tabloları
-5. Normal kipte deneme (kayıt korunuyor mu, 780'den devam), final sahnesi ekran görüntüsü (`BSFINAL()`), main'e birleştirme
+1. Önce/sonra ekran görüntüleri ve tablolar (1-25, 26-60, 100..1000 her 50, 770-800); imza karşılaştırması
+2. `node yapi/uretici/denge_kontrol.mjs` (rapor/denge.md) ve gerekirse top ayarı
+3. Normal kipte deneme (kayıt korunuyor mu, 780'den devam), final sahnesi ekran görüntüsü, main'e birleştirme

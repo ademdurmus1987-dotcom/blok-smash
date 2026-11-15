@@ -5,48 +5,49 @@ Tarih: 2026-11-15
 | | |
 |---|---|
 | Bölüm aralığı | 26-2000 |
-| Kayıtlı bölüm | 75 |
-| Test edilen deneme | 109 |
-| Yeniden üretilen | 35 |
-| Hatalı kalan | 1 (67) |
-| Farklı imza | 71 |
-| Farklı kaba görünüm (arketip, platform, boy, en, hareket) | 55 |
+| Kayıtlı bölüm | 1975 |
+| Test edilen deneme | 2760 |
+| Yeniden üretilen | 775 |
+| Hatalı kalan | 0 |
+| Farklı imza | 1169 |
+| Farklı kaba görünüm (arketip, platform, boy, en, hareket) | 167 |
 | Arka arkaya/son 5 kuralı ihlali | 0 |
 
 ## Hatalar (yeniden üretme nedeni)
 
-- cozulemedi: 19
-- kendiliginden-dusen: 12
-- kayan-coken: 3
-- cok-top: 1
+- cozulemedi: 658
+- cok-top: 66
+- kendiliginden-dusen: 51
 
 ## Arketip dağılımı
 
-- kale: 7
-- ucKule: 7
-- inceKule: 7
-- merdiven: 7
-- raflar: 6
-- piramit: 6
-- asansor: 6
-- korsanKale: 5
-- camKule: 4
-- kopru: 4
-- denge: 4
-- tnt: 3
-- gemi: 3
-- domino: 2
-- donen: 2
-- hazine: 1
-- magara: 1
+- ucKule: 137
+- inceKule: 136
+- kale: 133
+- merdiven: 132
+- camKule: 127
+- asansor: 127
+- tnt: 127
+- donen: 125
+- denge: 120
+- piramit: 113
+- raflar: 105
+- korsanKale: 95
+- gemi: 91
+- magara: 91
+- kopru: 84
+- hazine: 83
+- domino: 65
+- kemerSira: 51
+- ikiAda: 33
 
 ## En sık imzalar
 
-- 2 × `camKule|1|9|3|2|ks|1|yok`
-- 2 × `kale|1|7|7|2|ks+buz|1|yok`
-- 2 × `inceKule|1|10|3|2|oy+kk|1|yok`
-- 2 × `korsanKale|1|8|7|1|ks|1|yok`
-- 1 × `kale|1|7|7|1|ks+kr|1|yok`
-- 1 × `raflar|1|5|6|2|ks+kv|1|yok`
-- 1 × `ucKule|3|5|2|1|ks+kr|1|yuksek`
-- 1 × `korsanKale|1|7|5|2|ks|1|yok`
+- 43 × `magara|1|5|8|2|ks+buz|1|yok`
+- 39 × `korsanKale|1|8|7|1|ks|1|yok`
+- 29 × `korsanKale|1|7|5|2|ks|1|yok`
+- 28 × `magara|1|6|8|2|ks+buz|1|yok`
+- 22 × `camKule|1|9|3|2|ks|1|yok`
+- 19 × `camKule|1|7|3|2|ks+kr|1|yok`
+- 18 × `korsanKale|1|8|7|2|ks|1|yok`
+- 15 × `magara|1|6|5|2|ks+buz|1|yok`
