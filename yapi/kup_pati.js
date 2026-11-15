@@ -4,7 +4,6 @@
 // Pati izi govdeden ayri 5 ada (4 parmak + taban yastigi) oldugu icin en buyuk bagli parca govde sayilir.
 // Kullanim: kupHazirla(THREE, mesh.geometry); mesh.material = [govdeMalzemesi, altinMalzeme];
 export function kupHazirla(THREE, G) {
-export function kupHazirla(THREE, G) {
   const P = G.attributes.position, N = G.attributes.normal, n = new THREE.Vector3(), m = new THREE.Vector3();
   // egik kupu hizala: kaplayan kutunun hacmini en kucuk yapan donus (kaba arama + inceltme)
   const S = []; for (let i = 0; i < P.count; i += Math.max(1, Math.floor(P.count / 600))) S.push(new THREE.Vector3().fromBufferAttribute(P, i));

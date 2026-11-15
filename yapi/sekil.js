@@ -3,7 +3,7 @@
 // seker kavanozlari, raf tahtalari ve dalgali porselen tamburlar. Hepsi gercek 3B: yuvarlak kenarli govde,
 // ustune boyanmis isik-golge, kabartma (bump) ve parlak yansima. Dosya indirmez, model beklemez.
 // Olculer kup kenari (S) cinsindendir: w genislik (x), h yukseklik (y), d derinlik (z).
-import { kaleKur } from './kale.js?v=1';   // v4.3: Korsan Kalesi blok seti
+import { kaleKur } from './kale.js?v=2';   // v4.3: Korsan Kalesi blok seti
 export function sekilKur({ THREE, S, canvasTex, ENV }) {
   const col = (h) => new THREE.Color(h);
   const mix = (a, b, t) => '#' + col(a).lerp(col(b), t).getHexString();
@@ -84,6 +84,9 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
     const mt = mat(map, { bumpMap: bump, bumpScale: 2.2, roughness: 0.36, envMapIntensity: 0.45, emissive: renk, emissiveIntensity: 0.14 });
     return { geo: kutu(S, S, S, S * 0.13, 3), mat: mt, parca: mat(null, { color: renk, roughness: 0.35 }) };
   }
+
+  const PT = { p: null };
+  function patiKup(renk, eski, amb) { const P = PT.p; if (!P) return oyuncak(eski, amb); return { geo: P.geoOf(renk, false), lod: P.geoOf(renk, true), esik: P.ESIK, golgeKutu: 1, mat: P.MAT[renk], parca: P.PARCA[renk], pati: renk }; }
 
   // ---------------- tas kiris ----------------
   function tasYuz(wS, hS, amblem, tohum, renk) {
@@ -426,11 +429,16 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
   // ---------------- tur tablosu ----------------
   // sekil: 'kutu' (dikdortgen carpisma) ya da 'sil' (dik silindir). kir: topla vurulunca / sert carpinca kirilir. ses: darbe sesi ailesi.
   const TUR = {
-    oyK: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#f0323c', kir: 1, yuzer: 1, yap: () => oyuncak('#dc1420', 'pati') },
-    oyY: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#22c244', kir: 1, yuzer: 1, yap: () => oyuncak('#10a52c', 'yildiz') },
-    oyM: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#2f7df2', kir: 1, yuzer: 1, yap: () => oyuncak('#1a58e2', 'elmas') },
-    oyS: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#ffc21f', kir: 1, yuzer: 1, yap: () => oyuncak('#f2a300', 'yildiz') },
-    oyP: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#a04cf0', kir: 1, yuzer: 1, yap: () => oyuncak('#8526dc', 'elmas') },
+    // v5.1: (Adem 15 Kas) eski oyuncak kupun yerine patili oyuncak kup (pati.js, model/kup_pati.glb); model gelmezse eski cizim
+    oyK: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#e3172b', kir: 1, yuzer: 1, yap: () => patiKup('kirmizi', '#dc1420', 'pati') },
+    oyY: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#17b245', kir: 1, yuzer: 1, yap: () => patiKup('yesil', '#10a52c', 'yildiz') },
+    oyM: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#1a64ec', kir: 1, yuzer: 1, yap: () => patiKup('mavi', '#1a58e2', 'elmas') },
+    oyS: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#f2b100', kir: 1, yuzer: 1, yap: () => patiKup('sari', '#f2a300', 'yildiz') },
+    oyP: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#8a2be2', kir: 1, yuzer: 1, yap: () => patiKup('mor', '#8526dc', 'elmas') },
+    oyT: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#ef5a0c', kir: 1, yuzer: 1, yap: () => patiKup('turuncu', '#ef5a0c', 'pati') },
+    oyN: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#ff3d9e', kir: 1, yuzer: 1, yap: () => patiKup('pembe', '#ff3d9e', 'pati') },
+    oyB: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#f3f0ea', kir: 1, yuzer: 1, yap: () => patiKup('beyaz', '#e8e4dc', 'pati') },
+    oyA: { w: 1, h: 1, d: 1, mass: 1.5, f: 0.6, r: 0.1, ses: 'metal', renk: '#f5b81c', sert: 1, yap: () => patiKup('altin', '#f2b51c', 'yildiz') },
     tas2: { w: 2, h: 1, d: 1, mass: 1.7, f: 0.7, r: 0.06, ses: 'tas', renk: '#4a6cdb', sert: 1, yap: () => tas(2, 11) },
     tas4: { w: 4, h: 1, d: 1, mass: 2.8, f: 0.7, r: 0.06, ses: 'tas', renk: '#4a6cdb', sert: 1, yap: () => tas(4, 23) },
     buzP: { w: 1, h: 1, d: 1, mass: 0.95, f: 0.14, r: 0.1, ses: 'buz', renk: '#39b4ff', kir: 1, carp: 7, yuzer: 1, yap: () => buz(1, 5) },
@@ -471,7 +479,8 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
   Object.assign(TUR, kaleKur({ THREE, S, canvasTex, ENV, kutu, torna, rng, acik, koyu }));   // v4.3
   const HAZIR = {};
   function al(k) { if (HAZIR[k]) return HAZIR[k]; const t = TUR[k], y = t.yap(); return (HAZIR[k] = Object.assign({ w: t.w * S, h: t.h * S, d: t.d * S, sil: t.sekil === 'sil', r: S * 0.47 }, y)); }
-  return { TUR, al };
+  function patiAyar(p) { PT.p = p; for (const k in HAZIR) if (k.startsWith('oy')) delete HAZIR[k]; }
+  return { TUR, al, patiAyar };
 }
 
 // ---------------- yapilar ----------------

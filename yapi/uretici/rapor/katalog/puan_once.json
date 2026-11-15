@@ -1,0 +1,1910 @@
+{
+"ksSandik": {
+"ad": "Sandık",
+"karar": "İYİLEŞTİR",
+"not": "X ve çerçeve boyalı, köşe düz küp",
+"puan": 7.5,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksSandikM": {
+"ad": "Mor Sandık",
+"karar": "İYİLEŞTİR",
+"not": "X ve çerçeve boyalı, köşe düz küp",
+"puan": 7.5,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksSandikK": {
+"ad": "Kırmızı Sandık",
+"karar": "İYİLEŞTİR",
+"not": "X ve çerçeve boyalı, köşe düz küp",
+"puan": 7.5,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksTNT": {
+"ad": "TNT",
+"karar": "İYİLEŞTİR",
+"not": "etiket iyi, kasa düz",
+"puan": 7.5,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksKalas1": {
+"ad": "Tahta Kalas",
+"karar": "KALSIN",
+"not": "temiz, okunur",
+"puan": 8.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksKalas2": {
+"ad": "Tahta Kalas",
+"karar": "KALSIN",
+"not": "temiz, okunur",
+"puan": 8.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksKalas3": {
+"ad": "Tahta Kalas",
+"karar": "KALSIN",
+"not": "temiz, okunur",
+"puan": 8.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksTas": {
+"ad": "Taş Blok",
+"karar": "İYİLEŞTİR",
+"not": "taşlar boyalı, siluet düz kutu",
+"puan": 6.5,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksTas2": {
+"ad": "Taş Blok",
+"karar": "İYİLEŞTİR",
+"not": "taşlar boyalı, siluet düz kutu",
+"puan": 6.5,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksKemer": {
+"ad": "Taş Kemer",
+"karar": "KALSIN",
+"not": "gerçek kemer boşluğu",
+"puan": 7.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksFici": {
+"ad": "Fıçı",
+"karar": "KALSIN",
+"not": "torna gövde + 3B çember",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 0.5
+}
+},
+"ksFiciK": {
+"ad": "Kırmızı Fıçı",
+"karar": "KALSIN",
+"not": "torna gövde + 3B çember",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 1,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 0.5
+}
+},
+"ksSiseM": {
+"ad": "Mor Şişe",
+"karar": "KALSIN",
+"not": "mantar tıpa, ışık şeridi",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksSiseY": {
+"ad": "Yeşil Şişe",
+"karar": "KALSIN",
+"not": "mantar tıpa, ışık şeridi",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksSiseB": {
+"ad": "Mavi Şişe",
+"karar": "KALSIN",
+"not": "mantar tıpa, ışık şeridi",
+"puan": 8.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksYakut": {
+"ad": "Yakut",
+"karar": "İYİLEŞTİR",
+"not": "az yüzey, soluk renk, iç parıltı yok",
+"puan": 6.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksElmas": {
+"ad": "Elmas",
+"karar": "İYİLEŞTİR",
+"not": "az yüzey, soluk renk, iç parıltı yok",
+"puan": 6.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksKaro": {
+"ad": "Mücevher Karosu",
+"karar": "KALSIN",
+"not": "çerçeveli taş okunur",
+"puan": 7.5,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksBuz": {
+"ad": "Buz Blok",
+"karar": "İYİLEŞTİR",
+"not": "soluk, pah zayıf",
+"puan": 6.5,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksYildiz": {
+"ad": "Yıldız Blok",
+"karar": "İYİLEŞTİR",
+"not": "yıldız boyalı, kabartma yok",
+"puan": 7.5,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksSutun": {
+"ad": "Taş Sütun",
+"karar": "KALSIN",
+"not": "başlıklı sütun",
+"puan": 8.0,
+"kart": {
+"tema": 1,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ksMorSutun": {
+"ad": "Mor Sütun",
+"karar": "İYİLEŞTİR",
+"not": "düz boru, başlık yok",
+"puan": 6.5,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"oyK": {
+"ad": "Oyuncak Küp (kırmızı)",
+"karar": "ÇIKAR",
+"not": "eski çizim → patili küp",
+"puan": 7.5,
+"kart": {
+"tema": 0.5,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"oyY": {
+"ad": "Oyuncak Küp (yeşil)",
+"karar": "ÇIKAR",
+"not": "eski çizim → patili küp",
+"puan": 7.5,
+"kart": {
+"tema": 0.5,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"oyM": {
+"ad": "Oyuncak Küp (mavi)",
+"karar": "ÇIKAR",
+"not": "eski çizim → patili küp",
+"puan": 7.5,
+"kart": {
+"tema": 0.5,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"oyS": {
+"ad": "Oyuncak Küp (sarı)",
+"karar": "ÇIKAR",
+"not": "eski çizim → patili küp",
+"puan": 7.5,
+"kart": {
+"tema": 0.5,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"oyP": {
+"ad": "Oyuncak Küp (mor)",
+"karar": "ÇIKAR",
+"not": "eski çizim → patili küp",
+"puan": 7.5,
+"kart": {
+"tema": 0.5,
+"siluet": 1,
+"pah": 1,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"tas2": {
+"ad": "Mavi Taş Kiriş",
+"karar": "ÇIKAR",
+"not": "→ ksTas2",
+"puan": 5.5,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"tas4": {
+"ad": "Mavi Taş Kiriş 4",
+"karar": "ÇIKAR",
+"not": "→ ksTas4",
+"puan": 5.5,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"buzP": {
+"ad": "Buz Küp (eski)",
+"karar": "ÇIKAR",
+"not": "→ ksBuz",
+"puan": 5.5,
+"kart": {
+"tema": 0.5,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"buzP3": {
+"ad": "Uzun Buz (eski)",
+"karar": "ÇIKAR",
+"not": "→ ksBuz3",
+"puan": 5.5,
+"kart": {
+"tema": 0.5,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"ahsapD": {
+"ad": "Tahta Direk (eski)",
+"karar": "ÇIKAR",
+"not": "→ ksDirek",
+"puan": 4.5,
+"kart": {
+"tema": 0.5,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"mermer": {
+"ad": "Mermer Sütun",
+"karar": "ÇIKAR",
+"not": "→ ksTas",
+"puan": 5.5,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"kvP": {
+"ad": "Reçel Kavanozu",
+"karar": "ÇIKAR",
+"not": "→ 2 şişe",
+"puan": 5.5,
+"kart": {
+"tema": 0,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"kvT": {
+"ad": "Reçel Kavanozu",
+"karar": "ÇIKAR",
+"not": "→ 2 şişe",
+"puan": 5.5,
+"kart": {
+"tema": 0,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"kvM": {
+"ad": "Reçel Kavanozu",
+"karar": "ÇIKAR",
+"not": "→ 2 şişe",
+"puan": 5.5,
+"kart": {
+"tema": 0,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"raf2": {
+"ad": "Raf Tahtası",
+"karar": "ÇIKAR",
+"not": "→ ksKalas",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"raf3": {
+"ad": "Raf Tahtası",
+"karar": "ÇIKAR",
+"not": "→ ksKalas",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"dalga": {
+"ad": "Taş Halka",
+"karar": "ÇIKAR",
+"not": "→ ksFici",
+"puan": 3.5,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0,
+"renk": 0.5,
+"rol": 0,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"disk": {
+"ad": "Taş Disk",
+"karar": "ÇIKAR",
+"not": "→ ksKalas1",
+"puan": 3.5,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0,
+"renk": 0.5,
+"rol": 0,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"joP": {
+"ad": "Jöle",
+"karar": "ÇIKAR",
+"not": "→ patili küp",
+"puan": 5.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"joY": {
+"ad": "Jöle",
+"karar": "ÇIKAR",
+"not": "→ patili küp",
+"puan": 5.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"joT": {
+"ad": "Jöle",
+"karar": "ÇIKAR",
+"not": "→ patili küp",
+"puan": 5.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"hdK": {
+"ad": "Hediye Kutusu",
+"karar": "ÇIKAR",
+"not": "→ sandık",
+"puan": 5.5,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"hdM": {
+"ad": "Hediye Kutusu",
+"karar": "ÇIKAR",
+"not": "→ sandık",
+"puan": 5.5,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"hdY": {
+"ad": "Hediye Kutusu",
+"karar": "ÇIKAR",
+"not": "→ sandık",
+"puan": 5.5,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"cik2": {
+"ad": "Çikolata",
+"karar": "ÇIKAR",
+"not": "→ ksTas2",
+"puan": 5.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"tug2": {
+"ad": "Tuğla",
+"karar": "ÇIKAR",
+"not": "→ ksTas2/3",
+"puan": 6.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"tug3": {
+"ad": "Tuğla",
+"karar": "ÇIKAR",
+"not": "→ ksTas2/3",
+"puan": 6.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 1,
+"isik": 0.5,
+"renk": 1,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"krM": {
+"ad": "Kristal Küp",
+"karar": "ÇIKAR",
+"not": "→ yakut/elmas",
+"puan": 5.0,
+"kart": {
+"tema": 0.5,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"krT": {
+"ad": "Kristal Küp",
+"karar": "ÇIKAR",
+"not": "→ yakut/elmas",
+"puan": 5.0,
+"kart": {
+"tema": 0.5,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"kur": {
+"ad": "Kurabiye",
+"karar": "ÇIKAR",
+"not": "→ ksKalas1",
+"puan": 5.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"mkP": {
+"ad": "Makaron",
+"karar": "ÇIKAR",
+"not": "→ ksKalas1",
+"puan": 5.0,
+"kart": {
+"tema": 0,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0.5
+}
+},
+"mkY": {
+"ad": "Makaron",
+"karar": "ÇIKAR",
+"not": "→ ksKalas1",
+"puan": 5.0,
+"kart": {
+"tema": 0,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0.5
+}
+},
+"mkM": {
+"ad": "Makaron",
+"karar": "ÇIKAR",
+"not": "→ ksKalas1",
+"puan": 5.0,
+"kart": {
+"tema": 0,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0.5
+}
+},
+"knK": {
+"ad": "Konserve",
+"karar": "ÇIKAR",
+"not": "→ fıçı",
+"puan": 6.0,
+"kart": {
+"tema": 0,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"knM": {
+"ad": "Konserve",
+"karar": "ÇIKAR",
+"not": "→ fıçı",
+"puan": 6.0,
+"kart": {
+"tema": 0,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 1,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"kkK": {
+"ad": "Kuru Kafa",
+"karar": "ÇIKAR",
+"not": "→ beyaz patili küp",
+"puan": 6.0,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"kkA": {
+"ad": "Altın Kuru Kafa",
+"karar": "ÇIKAR",
+"not": "→ altın patili küp",
+"puan": 6.0,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"kkL": {
+"ad": "Lanetli Kuru Kafa",
+"karar": "ÇIKAR",
+"not": "→ TNT",
+"puan": 6.0,
+"kart": {
+"tema": 1,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"kemik": {
+"ad": "Kemik Kiriş",
+"karar": "ÇIKAR",
+"not": "→ ksTas2 / 2 kalas",
+"puan": 5.5,
+"kart": {
+"tema": 0.5,
+"siluet": 1,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 1,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"sandik": {
+"ad": "sandik",
+"karar": "ÇIKAR",
+"not": "→ ksSandik (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"metal": {
+"ad": "metal",
+"karar": "ÇIKAR",
+"not": "→ ksTas (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"ahsap": {
+"ad": "ahsap",
+"karar": "ÇIKAR",
+"not": "→ ksSandik (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"kirmizi": {
+"ad": "kirmizi",
+"karar": "ÇIKAR",
+"not": "→ ksSandikK (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"tas": {
+"ad": "tas",
+"karar": "ÇIKAR",
+"not": "→ ksTas (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"ahsapmetal": {
+"ad": "ahsapmetal",
+"karar": "ÇIKAR",
+"not": "→ ksSandik (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"piramitTas": {
+"ad": "piramitTas",
+"karar": "ÇIKAR",
+"not": "→ ksTas (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"kabak": {
+"ad": "kabak",
+"karar": "ÇIKAR",
+"not": "→ ksFiciK (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"tugla": {
+"ad": "tugla",
+"karar": "ÇIKAR",
+"not": "→ ksTas (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"celik": {
+"ad": "celik",
+"karar": "ÇIKAR",
+"not": "→ ksTas (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"kola": {
+"ad": "kola",
+"karar": "ÇIKAR",
+"not": "→ ksSutun (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"buz": {
+"ad": "buz",
+"karar": "ÇIKAR",
+"not": "→ ksBuz (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"fici": {
+"ad": "fici",
+"karar": "ÇIKAR",
+"not": "→ ksTNT (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"bomba": {
+"ad": "bomba",
+"karar": "ÇIKAR",
+"not": "→ ksTNT (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"hediye": {
+"ad": "hediye",
+"karar": "ÇIKAR",
+"not": "→ ksSandikM (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"yildiz": {
+"ad": "yildiz",
+"karar": "ÇIKAR",
+"not": "→ ksYildiz (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"altin": {
+"ad": "altin",
+"karar": "ÇIKAR",
+"not": "→ oyA (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"jole": {
+"ad": "jole",
+"karar": "ÇIKAR",
+"not": "→ oyK (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"cam": {
+"ad": "cam",
+"karar": "ÇIKAR",
+"not": "→ ksSiseB (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"kup": {
+"ad": "kup",
+"karar": "ÇIKAR",
+"not": "→ oyB (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"buz2": {
+"ad": "buz2",
+"karar": "ÇIKAR",
+"not": "→ ksBuz (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"ahsap2": {
+"ad": "ahsap2",
+"karar": "ÇIKAR",
+"not": "→ ksSandik (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"buzDikey": {
+"ad": "buzDikey",
+"karar": "ÇIKAR",
+"not": "→ ksMorSutun (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"alevUzun": {
+"ad": "alevUzun",
+"karar": "ÇIKAR",
+"not": "→ ksSutun (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"morDikey": {
+"ad": "morDikey",
+"karar": "ÇIKAR",
+"not": "→ ksMorSutun (gerçekçi Tripo dokusu, 6-20 bin üçgen)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0.5,
+"detay": 0.5,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 0
+}
+},
+"g_kup": {
+"ad": "Cam kup",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_silindir": {
+"ad": "Cam silindir",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_altigen": {
+"ad": "Cam altigen",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_prizma": {
+"ad": "Cam prizma",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_kare": {
+"ad": "Cam kare",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_yivli": {
+"ad": "Cam yivli",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_L": {
+"ad": "Cam L",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_kemer": {
+"ad": "Cam kemer",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_buz": {
+"ad": "Cam buz",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_kure": {
+"ad": "Cam kure",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_kapsul": {
+"ad": "Cam kapsul",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_piramit": {
+"ad": "Cam piramit",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_koni": {
+"ad": "Cam koni",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_kubbe": {
+"ad": "Cam kubbe",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_kristal": {
+"ad": "Cam kristal",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_kama": {
+"ad": "Cam kama",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_cubuk": {
+"ad": "Cam cubuk",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_ince": {
+"ad": "Cam ince",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_mazgal": {
+"ad": "Cam mazgal",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+},
+"g_Y": {
+"ad": "Cam Y",
+"karar": "ÇIKAR",
+"not": "→ şişe/mücevher/buz (düz yarı saydam ilkel)",
+"puan": 4.0,
+"kart": {
+"tema": 0,
+"siluet": 0.5,
+"pah": 0,
+"detay": 0,
+"malzeme": 0.5,
+"isik": 0.5,
+"renk": 0.5,
+"rol": 0.5,
+"kirilma": 0.5,
+"perf": 1
+}
+}
+}
