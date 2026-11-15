@@ -1,0 +1,41 @@
+/* Foxi Smash v5.0: final sahnesi (final.js) ve haritadaki hazine adasi (merkez.js) */
+#final{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:calc(var(--sat,0px) + 34px) 18px calc(var(--sab,0px) + 22px);
+  background:radial-gradient(ellipse at 50% 42%,#3a2a8a 0,#1c1450 46%,#0c0a2a 100%);opacity:0;transition:opacity .45s;overflow:hidden;font-family:var(--disp)}
+#final.on{opacity:1}#final.cik{opacity:0}
+#final .f-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#final .f-isin{position:absolute;left:50%;top:44%;width:820px;height:820px;margin:-410px 0 0 -410px;border-radius:50%;pointer-events:none;
+  background:repeating-conic-gradient(rgba(255,214,90,.22) 0 9deg,rgba(255,214,90,0) 9deg 24deg);-webkit-mask:radial-gradient(circle,#000 10%,transparent 66%);mask:radial-gradient(circle,#000 10%,transparent 66%);animation:fdon 14s linear infinite}
+@keyframes fdon{to{transform:rotate(360deg)}}
+#final .f-bas{position:relative;text-align:center;line-height:1}
+#final .f-bas i{display:inline-block;font-style:normal;opacity:0;animation:fharf .5s cubic-bezier(.2,1.6,.4,1) forwards}
+#final .f-b1{font-size:38px;color:#fff;text-shadow:0 3px 0 #2a1666,0 0 2px #2a1666,-2px 0 0 #2a1666,2px 0 0 #2a1666}
+#final .f-b2{margin-top:6px;font-size:44px;color:#ffd83a;text-shadow:-3px 0 0 #4a1600,3px 0 0 #4a1600,0 -3px 0 #4a1600,0 3px 0 #4a1600,0 6px 0 #4a1600,0 10px 18px rgba(0,0,0,.4)}
+@keyframes fharf{0%{opacity:0;transform:translateY(-40px) scale(1.6) rotate(-10deg)}100%{opacity:1;transform:none}}
+#final .f-sahne{position:relative;flex:1;min-height:0;width:100%;max-width:380px;display:flex;align-items:flex-end;justify-content:center;margin-top:6px}
+#final .f-foxi{position:relative;height:100%;max-height:430px;width:auto;aspect-ratio:240/350;z-index:2;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45));animation:fgir .9s .5s cubic-bezier(.2,1.4,.4,1) both}
+#final .f-sandik{position:absolute;bottom:2%;left:50%;width:300px;height:90px;margin-left:-150px;border-radius:50%;z-index:1;
+  background:radial-gradient(ellipse at 50% 40%,#fff2a8 0,#ffc531 30%,#d88a00 62%,rgba(160,90,0,0) 72%);filter:blur(1px);animation:fpar 2.4s ease-in-out infinite}
+@keyframes fgir{0%{opacity:0;transform:translateY(80px) scale(.6)}100%{opacity:1;transform:none}}
+@keyframes fpar{50%{transform:scale(1.08);filter:blur(1px) brightness(1.2)}}
+#final .f-sat{position:relative;display:flex;gap:10px;margin-top:6px}
+#final .f-sat span{padding:7px 16px;border-radius:99px;background:rgba(20,12,60,.75);border:2px solid #ffd23f;color:#fff;font-size:18px}
+#final .f-sat b{color:#ffd83a;font-weight:400}
+#final .f-yakin{position:relative;margin-top:10px;padding:8px 18px;border-radius:14px;background:linear-gradient(180deg,#2fcf73,#14904a);border:3px solid #0a5a2c;color:#fff;font-size:19px;box-shadow:0 4px 0 #0a5a2c;animation:fsal 2.2s ease-in-out infinite}
+@keyframes fsal{50%{transform:scale(1.05)}}
+#final .f-dug{position:relative;display:flex;flex-direction:column;gap:10px;width:100%;max-width:330px;margin-top:14px}
+#final .f-btn{border:0;border-radius:18px;padding:12px 10px 13px;font:400 22px/1.1 var(--disp);color:#fff;cursor:pointer;
+  background:linear-gradient(180deg,#ffb52e,#e2740c);box-shadow:0 5px 0 #8a3a00,inset 0 2px 0 rgba(255,255,255,.45);text-shadow:0 2px 0 rgba(90,30,0,.6)}
+#final .f-btn small{display:block;margin-top:3px;font:600 13px/1.1 var(--font);opacity:.9}
+#final .f-btn.f-ana{background:linear-gradient(180deg,#5a7cff,#2a44c8);box-shadow:0 5px 0 #14246a,inset 0 2px 0 rgba(255,255,255,.4)}
+#final .f-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #8a3a00}
+/* bolum bandinda yapi ipucu (yeni yapi tipiyle ilk karsilasma) */
+#nm>i{display:block;margin:14px auto 0;max-width:300px;white-space:normal;padding:7px 14px;border-radius:12px;background:rgba(36,22,100,.88);border:2px solid #ffd23f;font:600 15px/1.25 var(--font);font-style:normal;color:#fff}
+#nm.ipu.on{animation:ban 4.2s cubic-bezier(.2,1.4,.4,1) forwards}
+/* haritada son bolum: hazine adasi */
+.h-ada{position:relative;height:230px;margin:6px 0 0}
+.h-ada .h-ada-c{position:absolute;left:50%;top:6px;width:250px;margin-left:-125px;text-align:center}
+.h-ada svg{width:250px;height:170px;display:block;filter:drop-shadow(0 6px 10px rgba(40,20,0,.35))}
+.h-ada b{display:block;font:400 21px/1.1 var(--disp);color:#fff;text-shadow:0 2px 0 #6a2a00,-1px 0 0 #6a2a00,1px 0 0 #6a2a00}
+.h-ada small{display:block;margin-top:2px;font:700 13px/1.2 var(--font);color:#5a2a00}
+.h-ada .h-n{position:absolute;left:50%;top:70px;transform:scale(1.25)}
+.h-ada-yol{height:40px;margin:0 auto;width:6px;background:repeating-linear-gradient(180deg,#a03a1a 0 6px,transparent 6px 18px);opacity:.6}

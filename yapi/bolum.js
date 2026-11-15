@@ -44,15 +44,29 @@ export const AILE = {
   kkK: ['Kuru Kafa', 'Korsanların simgesi! Vurunca takır takır kırılır.'],
   kkA: ['Altın Kuru Kafa', 'Ağır ve sağlam. Düşürürsen hazine senin!'],
   kkL: ['Lanetli Kuru Kafa', 'Gözleri yeşil yanar. Vurunca patlar, çevresini savurur!'],
-  kemik: ['Kemik Kiriş', 'Kocaman bir kemik. Üstündekileri taşır, sert vurunca kırılır.']
+  kemik: ['Kemik Kiriş', 'Kocaman bir kemik. Üstündekileri taşır, sert vurunca kırılır.'],
+  // v5.0: yeni bloklar ve mekanikler (26+ bolumlerde 5-8 bolumde bir tanitilir; m_ ile baslayanlar "Yeni Mekanik!" karti)
+  buzP3: ['Uzun Buz Kalas', 'Üç blok boyunda buz. Kaygandır, üstündekiler kolayca kayar.'],
+  tug3: ['Uzun Tuğla', 'Üç blok boyunda ve çok ağır. Altındaki desteği vur!'],
+  m_domino: ['Domino', 'Öndeki sütunu devir, arkadakileri sırayla yıkar!'],
+  m_kopru: ['Köprü', 'Taş tabliye iki platforma dayanır. Bir ayağı yık, köprü çöker!'],
+  m_denge: ['Tahterevalli', 'Platform ağırlığa göre eğilir. Bir tarafı boşalt, kalanlar kayar!'],
+  m_tnt: ['TNT Zinciri', 'Bir TNT patlayınca yanındakini de patlatır. En alttakini bul!'],
+  m_gemi: ['Korsan Gemisi', 'Direği vur, yelken güverteye devrilir!'],
+  m_hazine: ['Hazine Odası', 'Mücevherler duvarların arkasında. Önce ön duvarı kır!'],
+  m_magara: ['Buz Mağarası', 'Buz kaygandır: yandan vur, bloklar kayıp düşer!'],
+  m_kemerSira: ['Su Kemeri', 'Ortadaki kemeri vur, üst kat iki yana dağılır!'],
+  m_ada: ['İki Ada', 'Yapı iki adaya bölündü. Önce yüksek olanı temizle!']
 };
+// mekanik kartinda donen blok
+export const MEKBLOK = { domino: 'ksSutun', kopru: 'tas4', denge: 'ksKalas3', tnt: 'ksTNT', gemi: 'ksFici', hazine: 'ksYakut', magara: 'ksBuz', kemerSira: 'ksKemer', ada: 'ksSandik' };
 const KSA = { ksSandikM: 'ksSandik', ksSandikK: 'ksSandik', ksKalas1: 'ksKalas', ksKalas2: 'ksKalas', ksKalas3: 'ksKalas', ksTas2: 'ksTas', ksFiciK: 'ksFici', ksSiseM: 'ksSise', ksSiseY: 'ksSise', ksSiseB: 'ksSise', ksYakut: 'ksMucevher', ksElmas: 'ksMucevher' };
 export function aileOf(t) {
   if (typeof t !== 'string') return null;
   if (t.startsWith('ks')) return KSA[t] || (AILE[t] ? t : null);   // v4.5: kale blogu kendi turuyla (renk cesitleri birlikte)
   const p = { oy: 'oy', jo: 'jo', hd: 'hd', kr: 'kr', kv: 'kv', mk: 'mk', kn: 'kn' }[t.slice(0, 2)];
   if (p && /^[a-z]{2}[A-Z]/.test(t)) return p;
-  if (t === 'tas2' || t === 'tas4') return 'tas'; if (t === 'tug2' || t === 'tug3') return 'tug'; if (t === 'buzP' || t === 'buzP3') return 'buzP';
+  if (t === 'tas2' || t === 'tas4') return 'tas'; if (t === 'tug2') return 'tug'; if (t === 'tug3') return 'tug3'; if (t === 'buzP') return 'buzP'; if (t === 'buzP3') return 'buzP3';
   if (t === 'cik2') return 'cik'; if (t === 'raf2' || t === 'raf3') return 'raf'; if (t === 'disk') return 'dalga';
   return AILE[t] ? t : null;
 }
