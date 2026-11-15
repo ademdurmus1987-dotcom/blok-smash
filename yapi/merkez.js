@@ -249,21 +249,37 @@ export function merkezKur(A) {
   }
 
   // ---------------- hazine haritasi ----------------
+  let hOdak = 0;   // v5.0: final sahnesinden 'yildizlari tamamla': ilk eksik bolume kayar
+  const ADASVG = '<svg viewBox="0 0 250 170"><defs><radialGradient id="adK" cx=".5" cy=".4"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".7" stop-color="#e8b864"/><stop offset="1" stop-color="#c08a40"/></radialGradient>' +
+    '<radialGradient id="adP" cx=".5" cy=".5"><stop offset="0" stop-color="#fff6b0"/><stop offset=".5" stop-color="rgba(255,210,60,.6)"/><stop offset="1" stop-color="rgba(255,200,40,0)"/></radialGradient></defs>' +
+    '<ellipse cx="125" cy="146" rx="122" ry="20" fill="#3ec6e8" opacity=".85"/><ellipse cx="125" cy="146" rx="104" ry="13" fill="#9ff0ff" opacity=".7"/>' +
+    '<path d="M22 146C40 102 88 86 128 88s86 18 104 58z" fill="url(#adK)" stroke="#a8702c" stroke-width="3"/>' +
+    '<path d="M74 140c4-34 6-62 0-96" stroke="#7a4a1a" stroke-width="8" fill="none" stroke-linecap="round"/>' +
+    '<g fill="#2fae4a" stroke="#14682a" stroke-width="2"><path d="M74 44c-20-14-42-8-54 6 18-4 36-2 54-6z"/><path d="M74 44c10-20 34-26 52-16-18 2-36 8-52 16z"/><path d="M74 44c-6-20-24-30-42-28 16 8 30 16 42 28z"/><path d="M74 44c22-6 42 4 50 20-16-10-34-16-50-20z"/></g>' +
+    '<circle cx="125" cy="98" r="44" fill="url(#adP)"/>' +
+    '<g transform="translate(104 96)"><rect x="0" y="12" width="44" height="26" rx="4" fill="#b8641c" stroke="#5a2a00" stroke-width="3"/><path d="M0 14c0-14 44-14 44 0z" fill="#d8862c" stroke="#5a2a00" stroke-width="3"/>' +
+    '<rect x="18" y="16" width="8" height="10" rx="2" fill="#ffd23f" stroke="#5a2a00" stroke-width="2"/><circle cx="8" cy="6" r="4" fill="#ffd23f"/><circle cx="16" cy="2" r="4" fill="#ffe680"/><circle cx="30" cy="3" r="4" fill="#ffd23f"/><path d="M36 0l3 6 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1z" fill="#ff5a6e"/></g>' +
+    '<path d="M186 120l6-30 4 30z" fill="#e8302a"/><path d="M190 90v34" stroke="#6a3a10" stroke-width="3"/></svg>';
   function haritaCiz() {
-    const max = maxL(), son = Math.max(max + 7, 16), yil = SV.yil || {}, SAT = 98, UST = 26, Pf = profilOku(); let h = '', yol = '';
+    // v5.0: oyun A.toplam() bolum; en ustte son bolum buyuk bir hazine adasi
+    const TOP = A.toplam ? A.toplam() : 1e9, max = maxL(), son = Math.min(TOP, Math.max(max + 7, 16)), yil = SV.yil || {}, SAT = 98, ADA = TOP < 1e9 ? 270 : 0, UST = 26 + ADA, Pf = profilOku(); let h = '', yol = '';
     const xOf = (L) => 50 + 30 * Math.sin(L * 1.05), [tbg, tic] = avIc(Pf.av);
     for (let L = son; L >= 1; L--) {
+      if (L === TOP) continue;   // son bolum adada
       const bl = A.bolge(L), kilit = L > max, cur = L === max, st = yil[L] || 0, x = xOf(L), y = UST + (son - L) * SAT + 46;
-      yol += (yol ? ' L' : 'M') + x.toFixed(1) + ' ' + y;
+      yol += (yol ? ' L' : 'M') + x.toFixed(1) + ' ' + (y - (son === TOP ? SAT : 0));
       h += '<div class="h-s t-' + bl[1] + '"><button class="h-n' + (kilit ? ' kilit' : '') + (cur ? ' cur' : '') + (A.zor(L) && !kilit ? ' zor' : '') + '" data-l="' + L + '" style="left:' + x.toFixed(1) + '%">' + (kilit ? IK.kilit : L) +
         (st ? '<i>' + '★'.repeat(st) + '<u>' + '★'.repeat(3 - st) + '</u></i>' : '') + '</button>' +
         (cur ? '<span class="h-tilki" style="left:' + x.toFixed(1) + '%;background:' + tbg + '">' + tic + '</span>' : '') +
         ((L - 1) % 3 === 0 ? '<span class="h-b" style="' + (x > 50 ? 'left:5%' : 'right:5%') + '">' + bl[0] + '</span>' : '') + '</div>';
     }
-    const H = UST + son * SAT + 6;
+    if (ADA) { const ac = max >= TOP, st = yil[TOP] || 0;
+      h = '<div class="h-ada"><div class="h-ada-c">' + ADASVG + '<b>Hazine Adası</b><small>' + (ac ? TOP + '. bölüm · son macera!' : TOP + '. bölüm · ' + (TOP - max) + ' bölüm kaldı') + '</small>' +
+        '<button class="h-n' + (ac ? (max === TOP ? ' cur' : '') : ' kilit') + '" data-l="' + TOP + '">' + (ac ? TOP : IK.kilit) + (st ? '<i>' + '★'.repeat(st) + '<u>' + '★'.repeat(3 - st) + '</u></i>' : '') + '</button></div></div>' + (son < TOP ? '<div class="h-ada-yol"></div>' : '') + h; }
+    const H = UST + (son - (son === TOP ? 1 : 0)) * SAT + 6;
     $('h-yol').innerHTML = '<svg class="h-cizgi" viewBox="0 0 100 ' + H + '" preserveAspectRatio="none"><path d="' + yol + '" fill="none" stroke="#a03a1a" stroke-width="5" stroke-dasharray="3 13" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" opacity=".75"/></svg>' + h;
     for (const el of $('h-yol').querySelectorAll('.h-n')) el.onclick = () => { const L = +el.dataset.l; tik(); if (L > max) { salla(el); return; } bolumKarti(L); };
-    const c = $('h-yol').querySelector('.h-n.cur'); if (c) setTimeout(() => { const k = $('h-kay'); k.scrollTop = c.parentNode.offsetTop - k.clientHeight / 2 + 40; }, 0);
+    const c = $('h-yol').querySelector(hOdak ? '.h-n[data-l="' + hOdak + '"]' : '.h-n.cur'); hOdak = 0; if (c) setTimeout(() => { const k = $('h-kay'); k.scrollTop = c.parentNode.offsetTop - k.clientHeight / 2 + 40; }, 0);
   }
 
   // ---------------- bolum karti: guclendirici sec, oyna ----------------
@@ -442,7 +458,7 @@ export function merkezKur(A) {
   // ---------------- ac / kapat ----------------
   // o.ilk: oyun yeni acildi (gunluk odul karti cikar); o.ucan: kazanilan altinlar sayaca ucar
   function ac(o = {}) {
-    durak = false; sekme('ana', true); ciz(); acik = true; M.classList.remove('cik'); M.classList.add('on', 'gir'); setTimeout(() => M.classList.remove('gir'), 450);
+    durak = false; sekme('ana', true); ciz(); if (o.sekme) { hOdak = o.odak || 0; setTimeout(() => sekme(o.sekme), 30); }   /* v5.0: final sahnesinden haritaya */ acik = true; M.classList.remove('cik'); M.classList.add('on', 'gir'); setTimeout(() => M.classList.remove('gir'), 450);
     tilkiKur().then((t) => { if (t) { t.boyut(); if (o.ucan) t.t.oyna('sevin', 2.2); else t.t.oyna('selam', 1.6); } });
     A.muzikBasla();
     sira.length = 0;   // v3.15: karsilama sarkisi artik acilis ekraninin kendisi (index.html); burada yalniz Foxi'ye dokununca
