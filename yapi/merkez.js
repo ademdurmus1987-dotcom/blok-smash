@@ -458,7 +458,7 @@ export function merkezKur(A) {
   // ---------------- ac / kapat ----------------
   // o.ilk: oyun yeni acildi (gunluk odul karti cikar); o.ucan: kazanilan altinlar sayaca ucar
   function ac(o = {}) {
-    durak = false; sekme('ana', true); ciz(); if (o.sekme) { hOdak = o.odak || 0; setTimeout(() => sekme(o.sekme), 30); }   // v5.0: final sahnesinden haritaya acik = true; M.classList.remove('cik'); M.classList.add('on', 'gir'); setTimeout(() => M.classList.remove('gir'), 450);
+    durak = false; sekme('ana', true); ciz(); if (o.sekme) { hOdak = o.odak || 0; setTimeout(() => sekme(o.sekme), 30); }   /* v5.0: final sahnesinden haritaya */ acik = true; M.classList.remove('cik'); M.classList.add('on', 'gir'); setTimeout(() => M.classList.remove('gir'), 450);
     tilkiKur().then((t) => { if (t) { t.boyut(); if (o.ucan) t.t.oyna('sevin', 2.2); else t.t.oyna('selam', 1.6); } });
     A.muzikBasla();
     sira.length = 0;   // v3.15: karsilama sarkisi artik acilis ekraninin kendisi (index.html); burada yalniz Foxi'ye dokununca

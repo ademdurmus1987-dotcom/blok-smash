@@ -8,7 +8,7 @@ const KOK = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..
 const AYAR = JSON.parse(fs.readFileSync(path.join(KOK, 'yapi/bolumler.json'), 'utf8'));
 const B = {};
 for (const f of fs.readdirSync(path.join(KOK, 'yapi/bolumler'))) { const p = JSON.parse(fs.readFileSync(path.join(KOK, 'yapi/bolumler', f), 'utf8')); p.b.forEach((v, i) => { B[p.ilk + i] = v; }); }
-const EL = {}; if (process.argv[2] && fs.existsSync(process.argv[2])) for (const x of JSON.parse(fs.readFileSync(process.argv[2], 'utf8'))) EL[x.L] = x;
+const EL = {}; const ELF = process.argv[2] || path.join(KOK, 'yapi/uretici/rapor/el_1_25.json'); if (fs.existsSync(ELF)) for (const x of JSON.parse(fs.readFileSync(ELF, 'utf8'))) EL[x.L] = x;
 // hedefler (tasarim): top basina 3-5 blok; bot atisi <= top; zor bolumde top/blok en dar; altin: ilk kazanc 40-100 (+20 zor)
 const HEDEF = { blokTop: [1.9, 3.5], altin: [40, 120] };   // blok/top: elle yapilmis 1-25 olcumunun (ort. ~2,4) cevresi
 // insan tahmini: bot kadar dikkatsiz degil; blok basina ~0.26 atis, en az botun %60'i

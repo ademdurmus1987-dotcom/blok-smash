@@ -37,5 +37,5 @@
 .h-ada svg{width:250px;height:170px;display:block;filter:drop-shadow(0 6px 10px rgba(40,20,0,.35))}
 .h-ada b{display:block;font:400 21px/1.1 var(--disp);color:#fff;text-shadow:0 2px 0 #6a2a00,-1px 0 0 #6a2a00,1px 0 0 #6a2a00}
 .h-ada small{display:block;margin-top:2px;font:700 13px/1.2 var(--font);color:#5a2a00}
-.h-ada .h-n{position:absolute;left:50%;top:70px;transform:scale(1.25)}
+.h-ada .h-n{position:absolute;left:78%;top:78px;transform:scale(1.15)}
 .h-ada-yol{height:40px;margin:0 auto;width:6px;background:repeating-linear-gradient(180deg,#a03a1a 0 6px,transparent 6px 18px);opacity:.6}

@@ -28,7 +28,13 @@ Bitenler:
 - [x] Tam doğrulama koşusu bitti: 26-2000 arası 1975 bölüm kayıtlı, hepsi testten geçti (2760 deneme, 775 yeniden üretim; en sık hata: çözülemedi 650+). p00 tanıtım düzeltmesiyle, 1001-1010 sınır düzeltmesiyle yeniden test edildi. Son 5 kuralı ihlali: 0. Rapor: yapi/uretici/rapor/ozet.md
 - Not: kayıtlı JSON esastır. arketip.js sonradan değiştiği için aynı tohumla yeniden üretim bugünkü kayıttan farklı çıkabilir; yalnız yeni bölümler (toplam artınca) üretilir.
 
-Sırada:
-1. Önce/sonra ekran görüntüleri ve tablolar (1-25, 26-60, 100..1000 her 50, 770-800); imza karşılaştırması
-2. `node yapi/uretici/denge_kontrol.mjs` (rapor/denge.md) ve gerekirse top ayarı
-3. Normal kipte deneme (kayıt korunuyor mu, 780'den devam), final sahnesi ekran görüntüsü, main'e birleştirme
+- [x] Önce/sonra ekran görüntüleri ve tablolar: yapi/uretici/rapor/ab_26_60.jpg, ab_770_800.jpg, ab_100_1000.jpg, el_1_25.jpg
+- [x] Çeşitlilik karşılaştırması (rapor/cesitlilik.json): 26-1000'de önden siluet çeşidi 31 → 120, en sık tekrar eden imza 41 → 18, son 10 bölümde neredeyse aynı yapı %5,6 → %0
+- [x] balance-check: rapor/denge.md (top hesabı arketip.js topHesap; kayıtlıları top_ayar.mjs günceller)
+- [x] Normal kipte deneme: 780'de kayıtlı oyuncu 780'den devam ediyor, altın/yıldız korunuyor; final sahnesi (rapor/final_sahne.jpg) ve Hazine Adası (rapor/hazine_adasi.jpg)
+- [x] main'e birleştirildi
+
+## İş tamam. İleride yapılabilecekler
+
+- Bot (dogrula.js) kusursuz nişan alır ama yapıyı bilmez; bazı bölümlerde top sayısı cömert kalıyor (rapor/denge.md "fazla top"). Telefonda oynayınca zor/kolay hissi bildirilirse `topHesap` katsayıları değiştirilip `node yapi/uretici/top_ayar.mjs` ile kayıt güncellenir (fizik testi gerekmez).
+- Toplam bölüm sayısını artırmak için yukarıdaki 3 adım.

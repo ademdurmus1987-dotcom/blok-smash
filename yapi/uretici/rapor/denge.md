@@ -4,81 +4,50 @@
 - yapi/bolumler/p00.json, p06.json, p07.json (26-100, 700-800: kayıtlı bölümler)
 - yapi/oyun.js `win()` (altın: 10 + yıldız×10 + kalan top×5 (en çok 60), zor bölüm +20), `shotsFor()` (1-25)
 - yapi/uretici/arketip.js `zorluk()`, yapi/uretici/dogrula.js `topHesap()`
-- Tasarım hedefleri: GDD yok; hedefler bu işin şartnamesinden ve eski dengeden alındı: top başına 2,3-4,0 blok, top ≥ botun yuzde 70 kadari (bot kusursuz nişan alır ama yapıyı bilmez), ilk kazanç 40-120 altın (+20 zor).
+- Tasarım hedefleri: GDD yok; hedefler bu işin şartnamesinden ve eski dengeden alındı: top başına 1,9-3,5 blok (elle yapılmış 1-25 ölçümüne göre), top ≥ botun yuzde 70 kadari (bot kusursuz nişan alır ama yapıyı bilmez), ilk kazanç 40-120 altın (+20 zor).
 
 ### Health Summary: CONCERNS
 
 | Aralık | Bölüm | Ort. top | Blok/top | Zor bölüm blok/top | Normal blok/top | Ort. ilk altın | Ort. yıldız (tahmini) |
 |---|---|---|---|---|---|---|---|
-| 1-100 | 75 | 18.8 | 2.13 | 2.51 | 2.08 | 71 | 2.43 |
+| 1-100 | 100 | 18.4 | 2.28 | 2.60 | 2.23 | 67 | 2.33 |
 | 700-800 | 101 | 18.8 | 2.22 | 2.43 | 2.20 | 67 | 2.29 |
 
 ### Outliers Detected
 
 | Bölüm | Değer | Beklenen | Gerçek | Not |
 |---|---|---|---|---|
-| 26 | blok/top | 2.3-4 | 1.94 | fazla top (kolay) |
-| 27 | blok/top | 2.3-4 | 2.11 | fazla top (kolay) |
-| 29 | blok/top | 2.3-4 | 2.17 | fazla top (kolay) |
-| 31 | blok/top | 2.3-4 | 1.80 | fazla top (kolay) |
-| 33 | blok/top | 2.3-4 | 2.05 | fazla top (kolay) |
-| 36 | blok/top | 2.3-4 | 2.14 | fazla top (kolay) |
-| 38 | blok/top | 2.3-4 | 2.24 | fazla top (kolay) |
-| 39 | blok/top | 2.3-4 | 2.26 | fazla top (kolay) |
-| 41 | blok/top | 2.3-4 | 1.74 | fazla top (kolay) |
-| 42 | blok/top | 2.3-4 | 1.79 | fazla top (kolay) |
-| 43 | blok/top | 2.3-4 | 2.00 | fazla top (kolay) |
-| 44 | blok/top | 2.3-4 | 1.92 | fazla top (kolay) |
-| 45 | blok/top | 2.3-4 | 1.92 | fazla top (kolay) |
-| 46 | blok/top | 2.3-4 | 2.00 | fazla top (kolay) |
-| 47 | blok/top | 2.3-4 | 2.07 | fazla top (kolay) |
-| 48 | blok/top | 2.3-4 | 2.21 | fazla top (kolay) |
-| 49 | blok/top | 2.3-4 | 1.90 | fazla top (kolay) |
-| 51 | blok/top | 2.3-4 | 1.85 | fazla top (kolay) |
-| 53 | blok/top | 2.3-4 | 1.88 | fazla top (kolay) |
-| 54 | blok/top | 2.3-4 | 2.14 | fazla top (kolay) |
-| 55 | blok/top | 2.3-4 | 2.06 | fazla top (kolay) |
-| 56 | blok/top | 2.3-4 | 2.06 | fazla top (kolay) |
-| 57 | blok/top | 2.3-4 | 1.94 | fazla top (kolay) |
-| 59 | blok/top | 2.3-4 | 2.17 | fazla top (kolay) |
-| 62 | blok/top | 2.3-4 | 1.92 | fazla top (kolay) |
-| 63 | blok/top | 2.3-4 | 2.05 | fazla top (kolay) |
-| 64 | blok/top | 2.3-4 | 2.09 | fazla top (kolay) |
-| 65 | blok/top | 2.3-4 | 2.17 | fazla top (kolay) |
-| 66 | blok/top | 2.3-4 | 2.00 | fazla top (kolay) |
-| 68 | blok/top | 2.3-4 | 1.88 | fazla top (kolay) |
-| 69 | blok/top | 2.3-4 | 2.06 | fazla top (kolay) |
-| 71 | blok/top | 2.3-4 | 1.46 | fazla top (kolay) |
-| 72 | blok/top | 2.3-4 | 1.86 | fazla top (kolay) |
-| 73 | blok/top | 2.3-4 | 2.09 | fazla top (kolay) |
-| 74 | blok/top | 2.3-4 | 1.78 | fazla top (kolay) |
-| 75 | blok/top | 2.3-4 | 2.00 | fazla top (kolay) |
-| 76 | blok/top | 2.3-4 | 2.22 | fazla top (kolay) |
-| 77 | blok/top | 2.3-4 | 2.05 | fazla top (kolay) |
-| 78 | blok/top | 2.3-4 | 2.00 | fazla top (kolay) |
-| 79 | blok/top | 2.3-4 | 2.19 | fazla top (kolay) |
-| 81 | blok/top | 2.3-4 | 1.90 | fazla top (kolay) |
-| 82 | blok/top | 2.3-4 | 2.00 | fazla top (kolay) |
-| 83 | blok/top | 2.3-4 | 2.05 | fazla top (kolay) |
-| 85 | blok/top | 2.3-4 | 1.93 | fazla top (kolay) |
-| 86 | blok/top | 2.3-4 | 1.76 | fazla top (kolay) |
-| 87 | blok/top | 2.3-4 | 2.23 | fazla top (kolay) |
-| 88 | blok/top | 2.3-4 | 1.95 | fazla top (kolay) |
-| 89 | blok/top | 2.3-4 | 2.11 | fazla top (kolay) |
-| 91 | blok/top | 2.3-4 | 2.10 | fazla top (kolay) |
-| 92 | blok/top | 2.3-4 | 1.86 | fazla top (kolay) |
-| 93 | blok/top | 2.3-4 | 2.19 | fazla top (kolay) |
-| 94 | blok/top | 2.3-4 | 1.91 | fazla top (kolay) |
-| 95 | blok/top | 2.3-4 | 2.22 | fazla top (kolay) |
-| 96 | blok/top | 2.3-4 | 2.24 | fazla top (kolay) |
-| 97 | blok/top | 2.3-4 | 2.28 | fazla top (kolay) |
-| 98 | blok/top | 2.3-4 | 2.24 | fazla top (kolay) |
-| 99 | blok/top | 2.3-4 | 2.28 | fazla top (kolay) |
-| 701 | blok/top | 2.3-4 | 1.79 | fazla top (kolay) |
-| 702 | blok/top | 2.3-4 | 2.12 | fazla top (kolay) |
-| 703 | blok/top | 2.3-4 | 2.08 | fazla top (kolay) |
+| 31 | blok/top | 1.9-3.5 | 1.80 | fazla top (kolay) |
+| 41 | blok/top | 1.9-3.5 | 1.74 | fazla top (kolay) |
+| 42 | blok/top | 1.9-3.5 | 1.79 | fazla top (kolay) |
+| 51 | blok/top | 1.9-3.5 | 1.85 | fazla top (kolay) |
+| 53 | blok/top | 1.9-3.5 | 1.88 | fazla top (kolay) |
+| 68 | blok/top | 1.9-3.5 | 1.88 | fazla top (kolay) |
+| 71 | blok/top | 1.9-3.5 | 1.46 | fazla top (kolay) |
+| 72 | blok/top | 1.9-3.5 | 1.86 | fazla top (kolay) |
+| 74 | blok/top | 1.9-3.5 | 1.78 | fazla top (kolay) |
+| 86 | blok/top | 1.9-3.5 | 1.76 | fazla top (kolay) |
+| 92 | blok/top | 1.9-3.5 | 1.86 | fazla top (kolay) |
+| 701 | blok/top | 1.9-3.5 | 1.79 | fazla top (kolay) |
+| 724 | ilk kazanç altını | 40-120 | 30 |  |
+| 727 | blok/top | 1.9-3.5 | 1.78 | fazla top (kolay) |
+| 731 | blok/top | 1.9-3.5 | 1.87 | fazla top (kolay) |
+| 741 | blok/top | 1.9-3.5 | 1.84 | fazla top (kolay) |
+| 751 | blok/top | 1.9-3.5 | 1.56 | fazla top (kolay) |
+| 757 | ilk kazanç altını | 40-120 | 30 |  |
+| 761 | blok/top | 1.9-3.5 | 1.82 | fazla top (kolay) |
+| 765 | blok/top | 1.9-3.5 | 1.88 | fazla top (kolay) |
+| 769 | ilk kazanç altını | 40-120 | 30 |  |
+| 771 | blok/top | 1.9-3.5 | 1.82 | fazla top (kolay) |
+| 781 | blok/top | 1.9-3.5 | 1.80 | fazla top (kolay) |
+| 791 | blok/top | 1.9-3.5 | 1.76 | fazla top (kolay) |
+| 792 | blok/top | 1.9-3.5 | 1.88 | fazla top (kolay) |
+| 792 | ilk kazanç altını | 40-120 | 30 |  |
+| 794 | blok/top | 1.9-3.5 | 1.88 | fazla top (kolay) |
+| 794 | ilk kazanç altını | 40-120 | 30 |  |
+| 796 | ilk kazanç altını | 40-120 | 30 |  |
+| 800 | blok/top | 1.9-3.5 | 1.83 | fazla top (kolay) |
 
-(+67 satır daha)
 
 ### Progression Analysis (10 bölümlük döngü)
 

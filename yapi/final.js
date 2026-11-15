@@ -30,7 +30,7 @@ export function finalSahne({ toplam, eksik, ilkEksik, yildiz, ses, titret, harit
         const im = cx.getImageData(0, 0, cv.width, cv.height), d = im.data;
         for (let i = 0; i < d.length; i += 4) {
           const r = d[i], g = d[i + 1], b = d[i + 2], fz = g - Math.max(r, b);
-          if (fz > 28) { const a = Math.max(0, 1 - (fz - 28) / 40); d[i + 3] = 255 * a; d[i + 1] = Math.min(g, Math.max(r, b) + 10); }   // yesil fon ve kenar yesilligi
+          if (fz > 11) { const t = Math.min(1, (fz - 11) / 22), a = 1 - t * t * (3 - 2 * t); d[i + 3] = 255 * a; d[i + 1] = Math.min(g, Math.max(r, b) + 8); }   // yesil fon (merkez.js anasayfa ile ayni esik: 0.045-0.13)
         }
         cx.putImageData(im, 0, 0);
       } catch (e) { /* dosyadan acilinca (file://) piksel okunamaz: video oldugu gibi kalir */ }

@@ -12,8 +12,8 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=4';
 import { kaleYapi, hazineYapi } from './kale.js?v=1';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=18';
-import { finalSahne } from './final.js?v=1';   // v5.0: son bolum gecilince
+import { merkezKur } from './merkez.js?v=19';
+import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=5';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
@@ -3297,7 +3297,7 @@ function frame(ts) {
   if (K) K.kare(dt);   // v6.19: seyir, sallanan hedef, batma
   if (g && ENG.length) engKare(g.t);
   if (g) { g.t += dt; spin(dt); slide(dt); if (FONYENI) temaKare(); if (FONYENI || DENGEVAR) denge(dt); world.step(1 / 120, dt * TS, 8); if (SIRK.mesh) SIRK.mesh.quaternion.set(platBody.quaternion.x, platBody.quaternion.y, platBody.quaternion.z, platBody.quaternion.w); updateFuse(dt); updateDebris(dt); syncMeshes(); updateBalls(dt); ggKare(dt); updateCubes(dt); if (KM.bomba) KM.bomba.emissiveIntensity = 0.45 + 0.4 * Math.sin(g.t * 8); }
-  if (!HIZLI) { updatePofi(dt); updateCannon(dt); updateTilki(dt); } updateParts(dt); updateFX(dt); if (!HIZLI) { updSea(dt); CDT += dt; if (++CN % 2 === 0 || !sahneBos()) { canliKare(CDT); CDT = 0; } }   // v5.0: dogrulayicida yalniz fizik   /* v6.29: fondaki kus/koyun katmani boştayken saniyede 30 kez */ if (flashLight.intensity > 0) flashLight.intensity = Math.max(0, flashLight.intensity - dt * 400);
+  if (!HIZLI) { updatePofi(dt); updateCannon(dt); updateTilki(dt); } updateParts(dt); updateFX(dt); if (!HIZLI) { updSea(dt); CDT += dt; if (++CN % 2 === 0 || !sahneBos()) { canliKare(CDT); CDT = 0; } }   /* v5.0: dogrulayicida yalniz fizik */   /* v6.29: fondaki kus/koyun katmani boştayken saniyede 30 kez */ if (flashLight.intensity > 0) flashLight.intensity = Math.max(0, flashLight.intensity - dt * 400);
   if (shake > 0) shake = Math.max(0, shake - dt * 1.4); if (cam.userData.base && !CAMI) cam.position.copy(cam.userData.base); ekranSars();
   if (CAMI > 0 && cam.userData.base) { CAMI = Math.max(0, CAMI - dt); const k = CAMI / 1.6, a = 0.75 * k * k * (3 - 2 * k), b = cam.userData.base, dx = b.x - CTG.x, dz = b.z - CTG.z, c = Math.cos(a), sn = Math.sin(a); cam.position.set(CTG.x + dx * c + dz * sn, b.y + 2.2 * k * k, CTG.z - dx * sn + dz * c); cam.lookAt(CTG); if (CAMI === 0) { cam.position.copy(b); cam.lookAt(CTG); } }
   fovK(dt);
