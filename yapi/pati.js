@@ -9,7 +9,7 @@ import { kupHazirla } from './kup_pati.js?v=2';
 export const PATI_RENK = {
   kirmizi: { c: '#cc0e22', ad: 'Kırmızı' },
   turuncu: { c: '#e24a04', ad: 'Turuncu', kontur: 1 },
-  sari: { c: '#f7cd00', ad: 'Sarı', kontur: 1 },
+  sari: { c: '#f2b600', ad: 'Sarı', kontur: 1 },
   yesil: { c: '#0e9c38', ad: 'Yeşil' },
   mavi: { c: '#1452dc', ad: 'Mavi' },
   mor: { c: '#7622cf', ad: 'Mor' },

@@ -161,7 +161,10 @@ export function kaleKur(A) {
       }
     }
     const govde = std({ map: atlas, roughness: 0.6, emissive: koyu(renk, 0.75), emissiveIntensity: 0.14, envMapIntensity: 0.5 });
-    return { geo: topla(L), mat: [govde, KOSEBENT], parca: std({ color: renk, roughness: 0.7 }) };
+    // LOD (arka sirada, onunde baska blok olan sandik): kutu + kosebentler, ~1 bin ucgen
+    const LL = [[bolge(kutu(S * 0.99, S * 0.99, S * 0.99, S * 0.04, 1), 0, true), 0]];
+    for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) { const g = kutu(a, a, a, S * 0.03, 1); g.translate(sx * (H - a / 2 + e), sy * (H - a / 2 + e), sz * (H - a / 2 + e)); LL.push([g, 1]); }
+    return { geo: topla(L), lod: topla(LL), esik: 1e9, mat: [govde, KOSEBENT], parca: std({ color: renk, roughness: 0.7 }) };
   }
   // kosebent: fircalanmis koyu celik, kenarlarda parlak pah
   const KOSEBENT = std({ color: '#c4ccd8', metalness: 0.9, roughness: 0.3, envMapIntensity: 1.3, map: tex(64, 64, (x, w, h) => {

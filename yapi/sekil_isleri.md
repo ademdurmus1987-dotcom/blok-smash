@@ -32,8 +32,13 @@
 - [x] Kapalı bloklar: 84 tür (eski şekiller, Tripo GLB blokları, cam şekiller); 1628 kayıtlı bölüm + 1-25 değiştirildi
 - [x] Kalanların iyileştirilmesi (sandık, taş, buz, mücevher, yıldız, mor sütun, yeni direk) + malzemeye göre kırılma + rim
 - [x] Sürüm: oyun.js?v=97, bolum.js?v=6, sekil.js?v=5, kale.js?v=2, bolumler.json surum 2, sw.js CACHE v48
-- [ ] Fizik testi: `kapali_test.py` (bitince `node yapi/uretici/birlestir.mjs` ile bölüm adları ve özet)
-- [ ] Katalog (sonra) + 1/5/12/25/780 önce-sonra görüntüleri, main'e birleştirme
+- [x] Fizik testi: 1628 bölüm test edildi; 1440'ı değişmiş haliyle geçti, 188'i yeniden üretildi, çözülemeyen kalmadı (rapor/kapali_test.json). birlestir.mjs çalıştı.
+- [x] Elle yapılmış 1-25: kapalı bloklar değişti; 9, 10, 12, 15, 17, 23, 24 için küçük ayar (ek top / kırılan kalas). 14, 19, 20, 22'yi bot değişiklikten önce de çözemiyordu.
+- [x] Katalog önce/sonra ve puanlar: rapor/katalog/ (katalog_once.jpg, katalog_sonra.jpg, katalog_once_sonra.jpg, puan.md). Bölüm 1/5/12/25/780 önce-sonra: rapor/katalog/bolum_once_sonra.jpg
+- [x] Eski kayıtla deneme: 780'deki oyuncu 780'den devam ediyor, altını korunuyor, "görülen bloklar" listesinde kapalı blok olsa da hata yok.
+- [x] main'e birleştirildi
+
+## İş tamam.
 
 ## İleride yapılabilecekler
 

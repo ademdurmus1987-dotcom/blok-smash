@@ -6,7 +6,9 @@ from playwright.async_api import async_playwright
 KOK = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CHROME = os.environ.get('CHROME', '/opt/pw-browsers/chromium-1243/chrome-linux64/chrome')
 AYAR = json.load(open(os.path.join(KOK, 'yapi/bolumler.json'))); PARCA = AYAR['parca']; EL = AYAR['el']
-RAP = os.path.join(KOK, 'yapi/uretici/rapor/kapali_test.json')
+ARG = dict(a.split('=') for a in sys.argv[1:] if '=' in a)   # min=, max=, rapor=  (iki surec ayni anda ayri araliklarda calisabilir)
+LMIN, LMAX = int(ARG.get('min', 1)), int(ARG.get('max', 99999))
+RAP = os.path.join(KOK, 'yapi/uretici/rapor/' + ARG.get('rapor', 'kapali_test') + '.json')
 DEG = json.load(open(os.path.join(KOK, 'yapi/uretici/rapor/kapali_degisen.json')))['degisen']
 def pyol(n): return os.path.join(KOK, 'yapi/bolumler', 'p%02d.json' % n)
 def pno(L): return (L - 1) // PARCA
@@ -33,7 +35,7 @@ async def main():
             for x in range(max(EL + 1, L - 10), L):
                 y = Yof(x); g.append({'a': y['a'], 'imza': y['imza']})
             return g
-        bekle = [L for L in hedef if str(L) not in sonuc]
+        bekle = [L for L in hedef if str(L) not in sonuc and LMIN <= L <= LMAX]
         print('test edilecek', len(bekle), flush=True)
         i = 0
         while i < len(bekle):
@@ -42,14 +44,18 @@ async def main():
                 L = bekle[i]; i += 1
                 grup.append({'L': L} if L <= EL else {'L': L, 'Y': Yof(L), 'gecmis': gecmis(L)})
             t0 = time.time()
-            r = await pg.evaluate('(x) => DG.yenidenTest(x).then((o) => JSON.parse(JSON.stringify(o)))', grup)
+            r = await pg.evaluate('([x, d]) => DG.yenidenTest(x, { maxDeneme: d }).then((o) => JSON.parse(JSON.stringify(o)))', [grup, int(ARG.get('deneme', 12))])
             yaz = set()
             for x in r:
                 L = x['L']
                 if x.get('Y'):
                     Y = x.pop('Y'); Y.pop('kapali', None); Y['kapali'] = 1; v = yukle(pno(L)); v['b'][L - v['ilk']] = Y; yaz.add(pno(L))
                 sonuc[str(L)] = x
-            for n in yaz: json.dump(veri[n], open(pyol(n), 'w'), ensure_ascii=False, separators=(',', ':'))
+            for n in yaz:   # parca dosyasi diskten tazelenip yalniz bu surecin bolumleri yazilir
+                taze = json.load(open(pyol(n)))
+                for L2 in range(LMIN, LMAX + 1):
+                    if pno(L2) == n and str(L2) in sonuc and L2 - taze['ilk'] < len(taze['b']) and L2 - veri[n]['ilk'] >= 0: taze['b'][L2 - taze['ilk']] = veri[n]['b'][L2 - veri[n]['ilk']]
+                veri[n] = taze; json.dump(taze, open(pyol(n), 'w'), ensure_ascii=False, separators=(',', ':'))
             json.dump(sonuc, open(RAP, 'w'), ensure_ascii=False)
             print('grup', i, '/', len(bekle), round(time.time() - t0), 's', flush=True)
         await b.close()
