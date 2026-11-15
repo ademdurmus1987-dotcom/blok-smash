@@ -400,3 +400,13 @@ export function ornek(a, L, t = 0) {
   for (let n = 0; n < 30; n++) { const r = rngOf(L * 131 + t * 977 + n), d = zorluk(L), Y = arketipKur(a, r, d, L); if (Y && Y.c.length >= 14) { Y.a = a; Y.ad = ARKETIP[a].ad[0]; Y.engel = []; return Y; } }
   return null;
 }
+
+// ---------------- top sayisi (dogrulamadan sonra) ----------------
+// Temel: blok sayisi (hedef: top basina ~2,7-3,2 blok; agir taslar ve engel icin ek), zorlukla azalir; zor bolum dar, rahatlama bolumu bol.
+// Bot kusursuz nisan alir ama yapiyi bilmez: botun atisinin %70'inden az top verilmez. (denge_kontrol.mjs ile denetlenir)
+export function topHesap(Y, botAtis) {
+  const n = Y.c.length, sert = Y.c.filter((c) => SERT.has(c[3])).length, d = Y.d == null ? zorluk(Y.L || 100) : Y.d;
+  let t = (n / 2.9 + 3) * (1.1 - 0.25 * d) + sert / 6 + (Y.engel || []).length + (Y.pl && Y.pl.some((p) => p.kay || p.asn) ? 1 : 0) + (Y.don || Y.denge ? 1 : 0);
+  if (Y.zor) t *= 0.88; else if (Y.L % 10 === 1) t *= 1.12;
+  return Math.max(8, Math.min(30, Math.max(Math.round(t), Math.ceil(botAtis * 0.7))));
+}

@@ -1,7 +1,7 @@
 // Foxi Smash v5.0: bolum dogrulayici. Oyun ?test kipinde acilir (dogrula.py), bu modul sayfada calisir.
 // Her bolum: arketip.js ile uretilir -> oyunun kendi fizigiyle kurulur -> 1) kendi kendine durur mu (havada/coken blok)
 // 2) bot yapiyi kac topta yikar. Hatali cikan bolum yeni tohumla yeniden uretilir. Sonuc: kaydedilecek bolum verisi + rapor.
-import { bolumUret, imza, SERT } from './arketip.js?v=1';
+import { bolumUret, imza, topHesap } from './arketip.js?v=2';
 
 const YP = () => window.YP;
 const S = 1.55;
@@ -46,15 +46,6 @@ function bot(sinir) {
   return { atis: n + (P.g.state === 'win' ? 0 : 0), kazandi: P.g.state === 'win' || P.g.left <= 0, kalan: P.g.left };
 }
 // top sayisi: bot atislari + zorluga gore pay (bot kusursuz nisan alir, insan almaz)
-export function topHesap(Y, b) {
-  // temel: blok sayisi (eski oyunun dengesi: top basina ~3,5-4 blok), sert malzeme ve engel icin ek; zorlukla azalir.
-  // Bot kusursuz nisan alir ama verimsizdir (yapiyi bilmez): botun atisinin %70'inden az verilmez.
-  const n = Y.c.length, sert = Y.c.filter((c) => SERT.has(c[3])).length;
-  let t = (n / 3.4 + 4) * (1.15 - 0.3 * (Y.d || 0.5)) + sert / 5 + (Y.engel || []).length + (Y.pl && Y.pl.some((p) => p.kay || p.asn) ? 1 : 0);
-  if (Y.zor) t *= 0.9; else if (Y.d < 0.3) t *= 1.15;
-  return Math.max(8, Math.min(30, Math.max(Math.round(t), Math.ceil(b.atis * 0.7))));
-}
-
 export async function dogrula(L0, L1, gecmis, opt = {}) {
   const sonuc = [], rapor = { test: 0, yeniden: 0, hata: {} };
   for (let L = L0; L <= L1; L++) {
@@ -70,7 +61,7 @@ export async function dogrula(L0, L1, gecmis, opt = {}) {
         const b = bot(opt.sinir || 30);   // durgunluktan sonra yapi yerine oturdu: ayni kurulumda bot
         if (!b.kazandi) son = 'cozulemedi';
         else if (b.atis > (opt.botMax || 28)) son = 'cok-top';
-        else { Y.top = topHesap(Y, b); Y.bot = b.atis; son = null; }
+        else { Y.L = L; Y.top = topHesap(Y, b.atis); Y.bot = b.atis; delete Y.L; son = null; }
       }
       if (!son) break;
       rapor.hata[son] = (rapor.hata[son] || 0) + 1; rapor.yeniden++;
