@@ -1,4 +1,4 @@
-import { kaleYapi, hazineYapi } from './kale.js?v=2';   // v4.3
+import { kaleYapi, hazineYapi } from './kale.js?v=3';   // v4.3
 // v3.16 (Adem 12 Kas 2026): bolum dizilisi bastan. Ilk bolumler tek renk tek cesit; her yeni sekil ailesi bir bolumde tanitilir
 // (oyun.js ilk gorulen aileyi "Yeni sekil" kartiyla gosterir). Farkli platform sayisi, yukseklik ve hareketiyle farkli yerlesimler.
 // Hucre: [i, kat, k, tur, platform]. Genis parcanin i degeri orta noktasidir (tas4 0..3'u kaplar: i = 1.5). Havada hucre yok: her parca altindakine oturur.
@@ -125,7 +125,7 @@ export const BOLUMLER = [
     make: () => P(0, D.kule(2, 5, 1, sira(['oyN', 'ksSandikK', 'oyY']))).concat(P(1, D.piramit(4, 2, (i, j) => ['ksYakut', 'ksBuz', 'ksSandikM', 'oyA'][j]))).concat(P(2, D.kule(2, 5, 1, sira(['oyY', 'ksSandikM', 'oyK'])))) },
   { ad: 'Beyaz Pati Kulesi', ek: 2, make: () => { const o = D.kule(3, 6, 2, (i, j) => (j % 2 ? 'oyK' : 'oyB')); for (const c of o) if (c[1] === 5 && c[0] === 1) c[3] = 'oyA'; return o; } },
   { ad: 'Altın Pati Duvarı', pl: [{ x: 0, z: 0, kay: { a: 1.8, h: 0.9 } }], make: () => D.orgu(6, 6, 2, 'ksTas2', (j) => (j % 4 === 1 ? 'oyA' : 'oyB')).flatMap((c) => (c[3] === 'ksTas2' ? [[c[0], c[1], c[2], 'ksKalas2', c[4]], [c[0], c[1] + 0.5, c[2], 'ksKalas2', c[4]]] : [c])) },   // v5.1: kemik kiris yerine ust uste iki kalas (kirilir)
-  { ad: 'TNT Mağarası', pl: [{ x: -4.4, z: 0 }, { x: 4.4, z: 0, y: 1.4 }], make: () => { const yap = (n) => { const o = D.kemer(2, 1, 'oyB', 'ksTas4', 'oyB'); for (const c of o) if (c[1] === 0 && c[0] === 0) c[3] = 'ksTNT'; return P(n, o); }; return yap(0).concat(yap(1)); } }
+  { ad: 'TNT Mağarası', pl: [{ x: -4.4, z: 0 }, { x: 4.4, z: 0, y: 1.4 }], make: () => { const yap = (n) => { const o = D.kemer(2, 1, 'oyN', 'ksTas4', 'oyN'); for (const c of o) if (c[1] === 0 && c[0] === 0) c[3] = 'ksTNT'; return P(n, o); }; return yap(0).concat(yap(1)); } }
 ];
 
 // ---------------- 21+ bolum uretici ----------------

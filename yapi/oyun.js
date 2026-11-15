@@ -9,15 +9,15 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=5';
-import { patiYukle } from './pati.js?v=1';   // v5.1: Adem'in patili oyuncak kupu
+import { sekilKur, YAPI } from './sekil.js?v=6';
+import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=1';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
-import { ornekKur } from './ornek.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
-import { kaleYapi, hazineYapi } from './kale.js?v=2';
+import { ornekKur } from './ornek.js?v=2';   // v5.1: bloklar tur basina tek InstancedMesh
+import { kaleYapi, hazineYapi } from './kale.js?v=3';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=19';
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
-import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=6';
+import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=7';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
 import { hisKur } from './fx/his.js?v=1';   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
@@ -33,13 +33,13 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 const save = () => { try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v5.1', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v5.2', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const zorMu = (L) => L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0);   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
 // 26-TOPLAM arasi bolumler bir kez uretilip (yapi/uretici) fizikle test edildi ve yapi/bolumler/*.json'a kaydedildi; oyun sirasinda bolum uretilmez.
 // yapi/bolumler.json: toplam bolum sayisi, parca boyu, bolum adlari. Parcalar ilk gerektiginde indirilir. ?uret=eski eski uretici (deneme).
 const BV = { toplam: 2000, el: 25, parca: 100, ad: [], p: new Map(), yuk: new Map(), Y: new Map() };
-try { const a = await (await fetch('bolumler.json?v=2')).json(); Object.assign(BV, a); } catch (e) {}
+try { const a = await (await fetch('bolumler.json?v=3')).json(); Object.assign(BV, a); } catch (e) {}
 const TOPLAM = () => BV.toplam;
 const bvNo = (L) => Math.floor((L - 1) / BV.parca);
 function bolumYukle(L) {
@@ -72,12 +72,12 @@ const GONE_Y = -0.45;    // bunun altina inen kup platformdan dusmus sayilir
 const glc = $('gl');
 const ren = new THREE.WebGLRenderer({ canvas: glc, antialias: true, alpha: true, preserveDrawingBuffer: TEST }); ren.setClearColor(0, 0);
 ren.setPixelRatio(Math.min(Math.min(innerWidth, innerHeight) < 600 ? 1.25 : 2, devicePixelRatio || 1));   // v3.18: (Adem: telefon cok isiniyor) 1.5 -> 1.25   // v6.29: (Adem: telefon cok isiniyor) telefonda en cok 1.5 (2 yerine %44 daha az piksel)
-ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.32;   // v6.1: daha parlak
+ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.12;   // v6.1: daha parlak · v5.2: (Adem: referans kalitesi) 1.32 renkleri pastele kaydiriyordu
 ren.shadowMap.enabled = true; ren.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
 const cam = new THREE.PerspectiveCamera(40, 1, 0.5, 200);
-scene.add(new THREE.HemisphereLight(0xfffaf0, 0x7a8a6a, 1.6));
-const sun = new THREE.DirectionalLight(0xfff0d0, 2.6); sun.position.set(-8, 18, 10); sun.castShadow = true;
+scene.add(new THREE.HemisphereLight(0xfffaf0, 0x6a5a7a, 1.15));   // v5.2: ortam isigi azaldi, gunes artti: hacim ve golge belirgin
+const sun = new THREE.DirectionalLight(0xfff0d0, 3.2); sun.position.set(-8, 18, 10); sun.castShadow = true;
 sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 16, bottom: -14, near: 2, far: 60 }); sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.03;
 scene.add(sun);
 const rim = new THREE.DirectionalLight(0xcfe0ff, 0.9); rim.position.set(9, 6, -8); scene.add(rim);

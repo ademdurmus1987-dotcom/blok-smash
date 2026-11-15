@@ -59,7 +59,7 @@ function konturlu(THREE, G) {
   const ps = new Float32Array((n0 + pos.length / 3) * 3), ns = new Float32Array(ps.length);
   ps.set(src.attributes.position.array); ns.set(src.attributes.normal.array); ps.set(K.attributes.position.array, n0 * 3); ns.set(K.attributes.normal.array, n0 * 3);
   out.setAttribute('position', new THREE.BufferAttribute(ps, 3)); out.setAttribute('normal', new THREE.BufferAttribute(ns, 3));
-  out.addGroup(0, G.groups[0].count, 0); out.addGroup(G.groups[0].count, G.groups[1].count, 1); out.addGroup(n0, pos.length / 3, 2);
+  out.addGroup(0, G.groups[0].count, 0); out.addGroup(G.groups[0].count, G.groups[1].count, 1); out.addGroup(n0, pos.length / 3, 3);
   out.computeBoundingBox(); out.computeBoundingSphere(); return out;
 }
 
@@ -90,7 +90,22 @@ function patiKur(THREE, S, ENV, gl) {
   const sz = gv.getSize(new THREE.Vector3()), mc = gv.getCenter(new THREE.Vector3()), hedef = S * 0.985;
   G.translate(-mc.x, -mc.y, -mc.z); G.scale(hedef / sz.x, hedef / sz.y, hedef / sz.z);
   G.deleteAttribute('normal'); G.computeVertexNormals(); G.computeBoundingBox(); G.computeBoundingSphere();
-  const lod = sadele(THREE, G, S / 15), K = konturlu(THREE, G), KL = konturlu(THREE, lod);
+  // v5.2: on yuze pahli panel cercevesi (referanstaki oyuncak kup gibi): uzaktan da keskin kare okunur. Malzeme 2 = govdenin koyu tonu
+  let zon = -1e9; for (let i = 0; i < G.groups[0].count; i++) zon = Math.max(zon, P.getZ(I[i]));
+  const yuv = (sh, a, r) => { sh.moveTo(-a + r, -a); sh.lineTo(a - r, -a); sh.quadraticCurveTo(a, -a, a, -a + r); sh.lineTo(a, a - r); sh.quadraticCurveTo(a, a, a - r, a); sh.lineTo(-a + r, a); sh.quadraticCurveTo(-a, a, -a, a - r); sh.lineTo(-a, -a + r); sh.quadraticCurveTo(-a, -a, -a + r, -a); };
+  const cs = new THREE.Shape(); yuv(cs, S * 0.44, S * 0.12); const hp = new THREE.Path(); yuv(hp, S * 0.375, S * 0.08); cs.holes.push(hp);
+  const CER = new THREE.ExtrudeGeometry(cs, { depth: S * 0.012, bevelEnabled: true, bevelThickness: S * 0.016, bevelSize: S * 0.012, bevelSegments: 2, curveSegments: 4 });
+  CER.deleteAttribute('uv'); CER.translate(0, 0, zon - S * 0.012); CER.computeVertexNormals();
+  const CERL = new THREE.ExtrudeGeometry(cs, { depth: S * 0.012, bevelEnabled: true, bevelThickness: S * 0.016, bevelSize: S * 0.012, bevelSegments: 1, curveSegments: 2 });   // LOD icin hafif cerceve
+  CERL.deleteAttribute('uv'); CERL.translate(0, 0, zon - S * 0.012); CERL.computeVertexNormals();
+  const ekle = (g, C = CER) => { const a = g.index ? g.toNonIndexed() : g, b = C.index ? C.toNonIndexed() : C, n0 = a.attributes.position.count, nb = b.attributes.position.count;
+    const ps = new Float32Array((n0 + nb) * 3), ns = new Float32Array((n0 + nb) * 3); ps.set(a.attributes.position.array); ps.set(b.attributes.position.array, n0 * 3); ns.set(a.attributes.normal.array); ns.set(b.attributes.normal.array, n0 * 3);
+    const o = new THREE.BufferGeometry(); o.setAttribute('position', new THREE.BufferAttribute(ps, 3)); o.setAttribute('normal', new THREE.BufferAttribute(ns, 3));
+    for (const gr of a.groups) o.addGroup(gr.start, gr.count, gr.materialIndex); o.addGroup(n0, nb, 2); o.computeBoundingBox(); o.computeBoundingSphere(); return o; };
+  const lod0 = sadele(THREE, G, S / 15), K = ekle(konturlu(THREE, G)), KL = ekle(konturlu(THREE, lod0), CERL), lod = ekle(lod0, CERL);
+  const Gc = ekle(G);
+  // kontur kabugu: dusuk surumun yalniz govdesi (pati ve cerceve kabuga karismaz, kenar dogru sekilde sisirilir)
+  const kabuk = new THREE.BufferGeometry(); kabuk.setAttribute('position', lod0.attributes.position.clone()); kabuk.setIndex(Array.from(lod0.index.array.slice(0, lod0.groups[0].count))); kabuk.computeVertexNormals(); kabuk.scale(0.98, 0.98, 0.98);   // oluklarda kabuk disari tasmasin
   const ucgen = (g) => (g.index ? g.index.count : g.attributes.position.count) / 3;
 
   // malzemeler: parlak oyuncak plastik (clearcoat), metalik hafif isiltili altin pati; altin govdede gumus pati
@@ -102,11 +117,12 @@ function patiKur(THREE, S, ENV, gl) {
   for (const k in PATI_RENK) {
     const r = PATI_RENK[k];
     const govde = r.altin ? new THREE.MeshPhysicalMaterial({ color: r.c, metalness: 1, roughness: 0.28, clearcoat: 0.7, clearcoatRoughness: 0.1, envMap: ENV, envMapIntensity: 0.95, emissive: '#7a3c00', emissiveIntensity: 0.45 }) : plastik(r.c);
-    MAT[k] = r.kontur ? [govde, ALTIN, KONTUR] : [govde, r.altin ? GUMUS : ALTIN];
+    const cer = govde.clone(); cer.color = new THREE.Color(r.c).multiplyScalar(r.altin ? 0.75 : 0.62); cer.roughness = Math.min(1, (govde.roughness || 0.3) + 0.08);
+    MAT[k] = r.kontur ? [govde, ALTIN, cer, KONTUR] : [govde, r.altin ? GUMUS : ALTIN, cer];
   }
-  const geoOf = (k, dusuk) => (PATI_RENK[k].kontur ? (dusuk ? KL : K) : dusuk ? lod : G);
+  const geoOf = (k, dusuk) => (PATI_RENK[k].kontur ? (dusuk ? KL : K) : dusuk ? lod : Gc);
   // kirilinca: govde parcasi kendi renginde, kucuk pati parcalari altin
   const PARCA = {}; for (const k in PATI_RENK) PARCA[k] = MAT[k][0];
 
-  return { G, lod, K, MAT, PARCA, geoOf, bilgi, ucgen: { tam: ucgen(G), lod: ucgen(lod) }, ESIK };
+  return { G, lod, K, kabuk, MAT, PARCA, geoOf, bilgi, ucgen: { tam: ucgen(G), lod: ucgen(lod) }, ESIK };
 }

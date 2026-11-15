@@ -3,7 +3,7 @@
 // seker kavanozlari, raf tahtalari ve dalgali porselen tamburlar. Hepsi gercek 3B: yuvarlak kenarli govde,
 // ustune boyanmis isik-golge, kabartma (bump) ve parlak yansima. Dosya indirmez, model beklemez.
 // Olculer kup kenari (S) cinsindendir: w genislik (x), h yukseklik (y), d derinlik (z).
-import { kaleKur } from './kale.js?v=2';   // v4.3: Korsan Kalesi blok seti
+import { kaleKur } from './kale.js?v=3';   // v4.3: Korsan Kalesi blok seti
 export function sekilKur({ THREE, S, canvasTex, ENV }) {
   const col = (h) => new THREE.Color(h);
   const mix = (a, b, t) => '#' + col(a).lerp(col(b), t).getHexString();
@@ -86,7 +86,7 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
   }
 
   const PT = { p: null };
-  function patiKup(renk, eski, amb) { const P = PT.p; if (!P) return oyuncak(eski, amb); return { geo: P.geoOf(renk, false), lod: P.geoOf(renk, true), esik: P.ESIK, golgeKutu: 1, mat: P.MAT[renk], parca: P.PARCA[renk], pati: renk }; }
+  function patiKup(renk, eski, amb) { const P = PT.p; if (!P) return oyuncak(eski, amb); return { geo: P.geoOf(renk, false), lod: P.geoOf(renk, true), konturGeo: P.kabuk, esik: P.ESIK, golgeKutu: 1, mat: P.MAT[renk], parca: P.PARCA[renk], pati: renk }; }
 
   // ---------------- tas kiris ----------------
   function tasYuz(wS, hS, amblem, tohum, renk) {

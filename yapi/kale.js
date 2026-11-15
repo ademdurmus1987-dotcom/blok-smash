@@ -164,7 +164,7 @@ export function kaleKur(A) {
     // LOD (arka sirada, onunde baska blok olan sandik): kutu + kosebentler, ~1 bin ucgen
     const LL = [[bolge(kutu(S * 0.99, S * 0.99, S * 0.99, S * 0.04, 1), 0, true), 0]];
     for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) { const g = kutu(a, a, a, S * 0.03, 1); g.translate(sx * (H - a / 2 + e), sy * (H - a / 2 + e), sz * (H - a / 2 + e)); LL.push([g, 1]); }
-    return { geo: topla(L), lod: topla(LL), esik: 1e9, mat: [govde, KOSEBENT], parca: std({ color: renk, roughness: 0.7 }) };
+    return { geo: topla(L), lod: topla(LL), konturGeo: kutu(S * 1.02, S * 1.02, S * 1.02, S * 0.06, 1), esik: 1e9, mat: [govde, KOSEBENT], parca: std({ color: renk, roughness: 0.7 }) };
   }
   // kosebent: fircalanmis koyu celik, kenarlarda parlak pah
   const KOSEBENT = std({ color: '#c4ccd8', metalness: 0.9, roughness: 0.3, envMapIntensity: 1.3, map: tex(64, 64, (x, w, h) => {
@@ -241,7 +241,7 @@ export function kaleKur(A) {
       }
     }
     const m = std({ map: tasAtlas(tohum % 3), roughness: 0.82, envMapIntensity: 0.35, emissive: '#1a1830', emissiveIntensity: 0.12 });
-    return { geo: topla(L), mat: [m, HARC], parca: std({ color: TASR, roughness: 0.9 }) };
+    return { geo: topla(L), konturGeo: kutu(W * 0.995, Hh * 0.995, S * 0.995, S * 0.045, 1), mat: [m, HARC], parca: std({ color: TASR, roughness: 0.9 }) };   // kontur: tek pahli kutu (108 ucgen)
   }
   // ---------- 4) tas kemer (w3 x h2) ----------
   function kemer() {
@@ -272,21 +272,30 @@ export function kaleKur(A) {
     const L = [[torna(prof, 32), 0]];
     for (const yy of [-0.3, 0.3]) { const t = (yy / 0.96) + 0.5, rr = S * (0.4 + 0.07 * Math.sin(t * Pi)); const tr = new THREE.TorusGeometry(rr + S * 0.012, S * 0.035, 8, 40); tr.rotateX(Pi / 2); tr.scale(1, 1.6, 1); tr.translate(0, yy * S, 0); L.push([tr, 1]); }
     for (const yy of [-0.46, 0.46]) { const tr = new THREE.TorusGeometry(S * 0.37, S * 0.03, 8, 40); tr.rotateX(Pi / 2); tr.translate(0, yy * S, 0); L.push([tr, 1]); }
-    return { geo: topla(L), mat: [std({ map, roughness: 0.6, emissive: koyu(renk, 0.75), emissiveIntensity: 0.12 }), METAL], parca: std({ color: renk, roughness: 0.7 }) };
+    // v5.2: cember percinleri ve tahta kapak (ustten gorunen yuvarlak tahtalar + tapa)
+    for (const yy of [-0.3, 0.3]) { const t = (yy / 0.96) + 0.5, rr = S * (0.4 + 0.07 * Math.sin(t * Pi)) + S * 0.045; for (let i = 0; i < 8; i++) { const a = i / 8 * Pi * 2 + 0.2, p = new THREE.SphereGeometry(S * 0.026, 6, 3, 0, Pi * 2, 0, Pi / 2); p.rotateZ(-Pi / 2); p.rotateY(-a); p.translate(Math.cos(a) * rr, yy * S, Math.sin(a) * rr); L.push([p, 1]); } }
+    const kap = new THREE.CircleGeometry(S * 0.355, 24); kap.rotateX(-Pi / 2); kap.translate(0, S * 0.472, 0); L.push([kap, 2]);
+    const tapa = new THREE.CylinderGeometry(S * 0.06, S * 0.07, S * 0.04, 10); tapa.translate(S * 0.16, S * 0.49, 0); L.push([tapa, 1]);
+    const kapT = tex(256, 256, (x, w, h) => { const r = rng(tohum + 5); x.fillStyle = koyu(renk, 0.3); x.fillRect(0, 0, w, h); for (let i = 0; i < 5; i++) tahta(x, 0, i * h / 5, w, h / 5, koyu(renk, 0.08 + r() * 0.1), r, true, 4);
+      const g = x.createRadialGradient(w / 2, h / 2, w * 0.3, w / 2, h / 2, w * 0.5); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(40,10,0,.6)'); x.fillStyle = g; x.fillRect(0, 0, w, h); });
+    return { geo: topla(L), mat: [std({ map, roughness: 0.6, emissive: koyu(renk, 0.75), emissiveIntensity: 0.12 }), METAL, std({ map: kapT, roughness: 0.7 })], parca: std({ color: renk, roughness: 0.7 }) };
   }
 
   // ---------- 6) mantar tipali sise ----------
   const MANTAR = std({ roughness: 0.9, map: tex(64, 64, (x, w, h) => { x.fillStyle = '#c8945a'; x.fillRect(0, 0, w, h); const r = rng(5); for (let i = 0; i < 80; i++) { x.fillStyle = r() < 0.5 ? 'rgba(90,50,20,.3)' : 'rgba(255,230,190,.25)'; x.beginPath(); x.arc(r() * w, r() * h, 1 + r() * 2.5, 0, 6.283); x.fill(); } }) });
+  // v5.2: seffaf cam kabuk + icinde parlak renkli sivi + mantar tipa ve boyunda ip (Adem'in kale gorsellerindeki sise)
   function sise(renk) {
     const cam = [[S * 0.001, -S * 0.5, 0], [S * 0.3, -S * 0.5, 0.02], [S * 0.36, -S * 0.45, 0.06], [S * 0.37, -S * 0.1, 0.4], [S * 0.34, S * 0.06, 0.55], [S * 0.22, S * 0.18, 0.68], [S * 0.14, S * 0.24, 0.75], [S * 0.13, S * 0.34, 0.85], [S * 0.16, S * 0.36, 0.88], [S * 0.16, S * 0.4, 0.92], [S * 0.12, S * 0.41, 0.95]];
+    const siv = [[S * 0.001, -S * 0.46, 0], [S * 0.29, -S * 0.46, 0.05], [S * 0.33, -S * 0.42, 0.1], [S * 0.335, -S * 0.1, 0.5], [S * 0.31, S * 0.05, 0.9], [S * 0.001, S * 0.05, 1]];
     const mantar = new THREE.CylinderGeometry(S * 0.12, S * 0.105, S * 0.16, 16); mantar.translate(0, S * 0.42, 0);
-    // v4.3b: gorseldeki gibi renkli cam: govde renkli ve parlak, yanda dikey isik seridi, altta koyulasan renk, boyunda acik cam
-    const camT = tex(256, 128, (x, w, h) => {
-      let g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, koyu(renk, 0.5)); g.addColorStop(0.2, renk); g.addColorStop(0.6, koyu(renk, 0.12)); g.addColorStop(1, koyu(renk, 0.5)); x.fillStyle = g; x.fillRect(0, 0, w, h);
-      for (const [u, a, sw] of [[0.12, 0.85, 0.035], [0.17, 0.35, 0.02], [0.62, 0.25, 0.05]]) { g = x.createLinearGradient((u - sw) * w, 0, (u + sw) * w, 0); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,' + a + ')'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect((u - sw) * w, h * 0.12, sw * 2 * w, h * 0.8); }
+    const ip = new THREE.TorusGeometry(S * 0.145, S * 0.022, 6, 20); ip.rotateX(Pi / 2); ip.translate(0, S * 0.3, 0);
+    const camT = tex(256, 128, (x, w, h) => {   // cam: neredeyse saydam, dikey isik seritleri
+      x.fillStyle = 'rgba(230,245,255,0.18)'; x.fillRect(0, 0, w, h);
+      for (const [u, a, sw] of [[0.12, 0.95, 0.03], [0.17, 0.45, 0.018], [0.62, 0.35, 0.045]]) { const g = x.createLinearGradient((u - sw) * w, 0, (u + sw) * w, 0); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,' + a + ')'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect((u - sw) * w, h * 0.1, sw * 2 * w, h * 0.82); }
     });
-    const camM = std({ map: camT, roughness: 0.06, metalness: 0.05, envMapIntensity: 1.0, emissive: koyu(renk, 0.55), emissiveIntensity: 0.25 });
-    return { geo: topla([[torna(cam, 28), 0], [mantar, 1]]), mat: [camM, MANTAR], parca: std({ color: renk, roughness: 0.2, transparent: true, opacity: 0.8 }) };
+    const CAM = new THREE.MeshPhysicalMaterial({ map: camT, color: acik(renk, 0.55), transparent: true, depthWrite: false, roughness: 0.04, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.03, envMap: ENV, envMapIntensity: 1.1 });
+    const SIVI = std({ color: koyu(renk, 0.12), roughness: 0.12, emissive: renk, emissiveIntensity: 0.18, envMapIntensity: 0.7 });
+    return { konturYok: 1 /* saydam camin arkasindan kontur gorunmesin */, geo: topla([[torna(siv, 24), 0], [mantar, 1], [ip, 1], [torna(cam, 28), 2]]), mat: [SIVI, MANTAR, CAM], parca: std({ color: renk, roughness: 0.2, transparent: true, opacity: 0.8 }) };
   }
 
   // ---------- 7) yuzeyli mucevher ----------

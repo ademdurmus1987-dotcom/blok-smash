@@ -38,6 +38,15 @@
 - [x] Eski kayıtla deneme: 780'deki oyuncu 780'den devam ediyor, altını korunuyor, "görülen bloklar" listesinde kapalı blok olsa da hata yok.
 - [x] main'e birleştirildi
 
+## v5.2 (15 Kas 2026 akşam) — "referans kalitesi" turu
+- [x] Işık: pozlama 1.32 → 1.12, ortam ışığı 1.6 → 1.15, güneş 2.6 → 3.2 (renkler pastelden doygun hale, hacim ve gölge belirgin)
+- [x] Koyu kontur: ornek.js ters kabuk (tür başına +1 çizim). Patili küpte kabuk = düşük sürümün gövdesi, taş/sandıkta tek pahlı kutu, şişede kontur yok (saydam cam)
+- [x] Patili küpe ön yüzde pahlı panel çerçevesi (gövdenin koyu tonu)
+- [x] Beyaz küpün 6+ olduğu 113 bölümde beyaz yerine canlı renk (fizik aynı); 25. bölüm pembe
+- [x] Şişe: saydam cam + iç sıvı + mantar + ip. Fıçı: tahta kapak, tapa, perçinli çember
+- [x] Sürüm: oyun.js?v=98, sekil 6, kale 3, pati 2, ornek 2, bolum 7, bolumler.json surum 3, CACHE v49
+- Üçgen: 1/5/12/25/780 bölümde 71k-133k (önce 27k-69k); çizim 64-85 (önce 88-226). Orta seviye telefonda yeterli olmalı; telefonda takılma görülürse ilk ayar: ornek.js kontur kapatma (kontur: 0) ya da pati.js ESIK.
+
 ## İş tamam.
 
 ## İleride yapılabilecekler

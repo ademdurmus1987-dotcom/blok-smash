@@ -228,8 +228,8 @@
 "ksFici": {
 "ad": "Fıçı",
 "karar": "KALSIN",
-"not": "kıymık kırılma",
-"puan": 9.0,
+"not": "tahta kapak, perçinli çember",
+"puan": 9.5,
 "kart": {
 "tema": 1,
 "siluet": 1,
@@ -247,8 +247,8 @@
 "ksFiciK": {
 "ad": "Kırmızı Fıçı",
 "karar": "KALSIN",
-"not": "kıymık kırılma",
-"puan": 9.0,
+"not": "tahta kapak, perçinli çember",
+"puan": 9.5,
 "kart": {
 "tema": 1,
 "siluet": 1,
@@ -266,8 +266,8 @@
 "ksSiseM": {
 "ad": "Mor Şişe",
 "karar": "KALSIN",
-"not": "cam kırığı + parıltı",
-"puan": 9.0,
+"not": "saydam cam + iç sıvı + ip",
+"puan": 9.5,
 "kart": {
 "tema": 1,
 "siluet": 1,
@@ -285,8 +285,8 @@
 "ksSiseY": {
 "ad": "Yeşil Şişe",
 "karar": "KALSIN",
-"not": "cam kırığı + parıltı",
-"puan": 9.0,
+"not": "saydam cam + iç sıvı + ip",
+"puan": 9.5,
 "kart": {
 "tema": 1,
 "siluet": 1,
@@ -304,8 +304,8 @@
 "ksSiseB": {
 "ad": "Mavi Şişe",
 "karar": "KALSIN",
-"not": "cam kırığı + parıltı",
-"puan": 9.0,
+"not": "saydam cam + iç sıvı + ip",
+"puan": 9.5,
 "kart": {
 "tema": 1,
 "siluet": 1,
