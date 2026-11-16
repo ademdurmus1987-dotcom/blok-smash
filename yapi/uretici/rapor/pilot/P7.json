@@ -1,0 +1,201 @@
+{
+ "N": 7,
+ "ozet": {
+  "L": 7,
+  "n": 22,
+  "top": 15,
+  "R": 8.167,
+  "RZ": 5.95,
+  "pls": 3,
+  "tur": {
+   "plMenhir": 4,
+   "plMenhirT": 4,
+   "plLento": 5,
+   "ksSiseM": 1,
+   "ksElmas": 1,
+   "ksTas": 2,
+   "plSunak": 1,
+   "ksYakut": 2,
+   "ksSiseB": 1,
+   "plMenhirK": 1
+  }
+ },
+ "ortusme": {
+  "temas": 68,
+  "enDerin": 0,
+  "cift": "lento-3 / ust-elmas"
+ },
+ "durgunluk": {
+  "dus": 0,
+  "kay": 0,
+  "enCok": 0.006,
+  "enCokTur": "ksYakut"
+ },
+ "strateji": {
+  "atis": [
+   {
+    "ok": true,
+    "x": 288,
+    "y": 348,
+    "nisan": "dikili-0",
+    "hedef": "dikili-0",
+    "giden": 5
+   }
+  ],
+  "dikili0Devrildi": true,
+  "lentoDustu": [
+   2,
+   5
+  ],
+  "lentoKirildi": 1,
+  "sunak": [
+   3,
+   5
+  ],
+  "sunakYikildi": true
+ },
+ "bot": [
+  {
+   "atis": 10,
+   "kazandi": true,
+   "kalan": 0,
+   "verilen": 15,
+   "tohum": 12345
+  },
+  {
+   "atis": 13,
+   "kazandi": true,
+   "kalan": 0,
+   "verilen": 15,
+   "tohum": 777
+  },
+  {
+   "atis": 14,
+   "kazandi": true,
+   "kalan": 0,
+   "verilen": 15,
+   "tohum": 4242
+  }
+ ],
+ "botSinirsiz": {
+  "atis": 10,
+  "kazandi": true,
+  "kalan": 0,
+  "verilen": 999,
+  "iz": [
+   [
+    "topuk-tas",
+    3,
+    "topuk-yakut"
+   ],
+   [
+    "dikili-7",
+    2,
+    "dikili-7"
+   ],
+   [
+    "dikili-0",
+    1,
+    "dikili-0"
+   ],
+   [
+    "dikili-7",
+    3,
+    "dikili-7"
+   ],
+   [
+    "dikili-0",
+    1,
+    "dikili-0"
+   ],
+   [
+    "dikili-6",
+    0,
+    "dikili-6"
+   ],
+   [
+    "dikili-6",
+    3,
+    "dikili-6"
+   ],
+   [
+    "sunak-ayak-1",
+    2,
+    "sunak-ayak-1"
+   ],
+   [
+    "sunak-ayak-0",
+    2,
+    "sunak-ayak-0"
+   ],
+   [
+    "dikili-2",
+    5,
+    "dikili-2"
+   ]
+  ]
+ },
+ "ekran": {
+  "360x640": {
+   "dosya": "yapi/uretici/rapor/pilot/P7_360x640.jpg",
+   "cerceve": {
+    "x": [
+     -0.883,
+     0.887
+    ],
+    "y": [
+     -0.264,
+     0.532
+    ],
+    "icinde": true
+   }
+  },
+  "390x844": {
+   "dosya": "yapi/uretici/rapor/pilot/P7_390x844.jpg",
+   "cerceve": {
+    "x": [
+     -0.866,
+     0.873
+    ],
+    "y": [
+     -0.188,
+     0.454
+    ],
+    "icinde": true
+   }
+  },
+  "768x1024": {
+   "dosya": "yapi/uretici/rapor/pilot/P7_768x1024.jpg",
+   "cerceve": {
+    "x": [
+     -0.876,
+     0.88
+    ],
+    "y": [
+     -0.395,
+     0.662
+    ],
+    "icinde": true
+   }
+  }
+ },
+ "performans": {
+  "cizim": 71,
+  "ucgen": 32610
+ },
+ "kayit": {
+  "kazandi": true,
+  "kart": true,
+  "ayni": true,
+  "onceKayit": true,
+  "anahtarlar": [
+   "blokpop_yapi_v3"
+  ],
+  "tekrar": {
+   "ls": true,
+   "yeniden": "play/22"
+  }
+ },
+ "hatalar": [],
+ "sure": 167
+}
