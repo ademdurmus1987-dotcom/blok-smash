@@ -1,0 +1,272 @@
+{
+ "N": 1,
+ "ozet": {
+  "L": 1,
+  "n": 29,
+  "top": 25,
+  "R": 10.342,
+  "RZ": 7.65,
+  "pls": 7,
+  "tur": {
+   "ksSutun": 4,
+   "ksTas2": 4,
+   "ksTas": 3,
+   "ksSandik": 3,
+   "ksSandikM": 2,
+   "ksSandikK": 2,
+   "ksTNT": 1,
+   "plSutunK": 4,
+   "oyA": 1,
+   "plCati": 1,
+   "ksYakut": 1,
+   "ksElmas": 1,
+   "plTepe": 2
+  }
+ },
+ "ortusme": {
+  "temas": 110,
+  "enDerin": 0,
+  "cift": ""
+ },
+ "durgunluk": {
+  "dus": 0,
+  "kay": 0,
+  "enCok": 0.0104,
+  "enCokTur": "ksElmas"
+ },
+ "strateji": {
+  "atis": [
+   {
+    "ok": true,
+    "x": 234,
+    "y": 333,
+    "nisan": "orta-on-3",
+    "hedef": "orta-tnt",
+    "giden": 10
+   }
+  ],
+  "tntPatladi": true,
+  "ortaKusak": [
+   4,
+   8
+  ],
+  "kosk": [
+   6,
+   8
+  ],
+  "altKusak": [
+   0,
+   9
+  ],
+  "catiDustu": true
+ },
+ "bot": [
+  {
+   "atis": 21,
+   "kazandi": true,
+   "kalan": 0,
+   "verilen": 25,
+   "tohum": 12345
+  },
+  {
+   "atis": 21,
+   "kazandi": true,
+   "kalan": 0,
+   "verilen": 25,
+   "tohum": 777
+  },
+  {
+   "atis": 23,
+   "kazandi": true,
+   "kalan": 0,
+   "verilen": 25,
+   "tohum": 4242
+  }
+ ],
+ "botSinirsiz": {
+  "atis": 23,
+  "kazandi": true,
+  "kalan": 0,
+  "verilen": 999,
+  "iz": [
+   [
+    "sag-dikili",
+    2,
+    "sag-dikili"
+   ],
+   [
+    "sol-dikili",
+    2,
+    "sol-dikili"
+   ],
+   [
+    "alt-on-1",
+    1,
+    "alt-on-1"
+   ],
+   [
+    "alt-on-0",
+    1,
+    "alt-on-0"
+   ],
+   [
+    "alt-on-2",
+    1,
+    "alt-on-2"
+   ],
+   [
+    "alt-kose-0",
+    0,
+    "alt-kose-0"
+   ],
+   [
+    "alt-kose-1",
+    1,
+    "alt-kose-1"
+   ],
+   [
+    "alt-kose-0",
+    2,
+    "alt-sag-1"
+   ],
+   [
+    "alt-sol-1",
+    0,
+    "alt-sol-1"
+   ],
+   [
+    "alt-sol-1",
+    0,
+    "alt-sol-1"
+   ],
+   [
+    "alt-sag-0",
+    0,
+    "alt-sag-0"
+   ],
+   [
+    "alt-sag-0",
+    0,
+    "alt-sag-0"
+   ],
+   [
+    "orta-on-0",
+    1,
+    "orta-on-0"
+   ],
+   [
+    "alt-sol-1",
+    1,
+    "alt-sol-1"
+   ],
+   [
+    "alt-sol-0",
+    0,
+    "alt-sol-0"
+   ],
+   [
+    "alt-sag-0",
+    1,
+    "alt-sag-0"
+   ],
+   [
+    "alt-sol-0",
+    1,
+    "alt-sol-0"
+   ],
+   [
+    "orta-on-1",
+    1,
+    "orta-on-1"
+   ],
+   [
+    "orta-on-2",
+    1,
+    "orta-on-2"
+   ],
+   [
+    "orta-on-3",
+    1,
+    "orta-on-3"
+   ],
+   [
+    "orta-sol-1",
+    2,
+    "orta-sol-1"
+   ],
+   [
+    "orta-sag-1",
+    8,
+    "orta-sag-1"
+   ],
+   [
+    "kosk-altin",
+    2,
+    "kosk-altin"
+   ]
+  ]
+ },
+ "ekran": {
+  "360x640": {
+   "dosya": "yapi/uretici/rapor/pilot/P1_360x640.jpg",
+   "cerceve": {
+    "x": [
+     -0.774,
+     0.782
+    ],
+    "y": [
+     -0.15,
+     0.408
+    ],
+    "icinde": true
+   }
+  },
+  "390x844": {
+   "dosya": "yapi/uretici/rapor/pilot/P1_390x844.jpg",
+   "cerceve": {
+    "x": [
+     -0.779,
+     0.787
+    ],
+    "y": [
+     -0.099,
+     0.358
+    ],
+    "icinde": true
+   }
+  },
+  "768x1024": {
+   "dosya": "yapi/uretici/rapor/pilot/P1_768x1024.jpg",
+   "cerceve": {
+    "x": [
+     -0.782,
+     0.79
+    ],
+    "y": [
+     -0.253,
+     0.509
+    ],
+    "icinde": true
+   }
+  }
+ },
+ "performans": {
+  "cizim": 82,
+  "ucgen": 53646
+ },
+ "kayit": {
+  "kazandi": true,
+  "kart": true,
+  "ayni": true,
+  "onceKayit": true,
+  "anahtarlar": [
+   "blokpop_yapi_v3"
+  ],
+  "tekrar": {
+   "ls": true,
+   "yeniden": "play/29"
+  }
+ },
+ "hatalar": [],
+ "sure": 233
+}

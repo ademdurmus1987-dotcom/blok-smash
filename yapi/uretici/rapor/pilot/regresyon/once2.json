@@ -1,0 +1,161 @@
+{
+ "1": {
+  "L": 1,
+  "n": 40,
+  "top": 17,
+  "R": 4.65,
+  "RZ": 2.4,
+  "pls": 1,
+  "tur": {
+   "oyK": 10,
+   "oyT": 10,
+   "oyS": 10,
+   "oyY": 10
+  },
+  "durgun": {
+   "dus": 0,
+   "kay": 0,
+   "enCok": 0.0141,
+   "enCokTur": "oyY"
+  },
+  "bot": {
+   "atis": 11,
+   "kazandi": true,
+   "kalan": 0
+  },
+  "hatalar": [],
+  "sure": 45
+ },
+ "6": {
+  "L": 6,
+  "n": 60,
+  "top": 21,
+  "R": 5.425,
+  "RZ": 2.4,
+  "pls": 1,
+  "tur": {
+   "ksBuz": 48,
+   "oyM": 12
+  },
+  "durgun": {
+   "dus": 0,
+   "kay": 0,
+   "enCok": 0.0212,
+   "enCokTur": "ksBuz"
+  },
+  "bot": {
+   "atis": 18,
+   "kazandi": true,
+   "kalan": 0
+  },
+  "hatalar": [],
+  "sure": 41
+ },
+ "12": {
+  "L": 12,
+  "n": 56,
+  "top": 21,
+  "R": 8.4,
+  "RZ": 2.248,
+  "pls": 1,
+  "tur": {
+   "oyM": 28,
+   "oyK": 24,
+   "ksTNT": 2,
+   "oyS": 2
+  },
+  "durgun": {
+   "dus": 0,
+   "kay": 0,
+   "enCok": 0.0211,
+   "enCokTur": "oyK"
+  },
+  "bot": {
+   "atis": 16,
+   "kazandi": true,
+   "kalan": 0
+  },
+  "hatalar": [],
+  "sure": 37
+ },
+ "25": {
+  "L": 25,
+  "n": 28,
+  "top": 10,
+  "R": 8.275,
+  "RZ": 1.9,
+  "pls": 2,
+  "tur": {
+   "ksTNT": 2,
+   "oyN": 22,
+   "ksTas4": 4
+  },
+  "durgun": {
+   "dus": 0,
+   "kay": 0,
+   "enCok": 0.034,
+   "enCokTur": "oyN"
+  },
+  "bot": {
+   "atis": 9,
+   "kazandi": true,
+   "kalan": 0
+  },
+  "hatalar": [],
+  "sure": 35
+ },
+ "781": {
+  "L": 781,
+  "n": 35,
+  "top": 16,
+  "R": 3.6,
+  "RZ": 2.4,
+  "pls": 1,
+  "tur": {
+   "ksYakut": 16,
+   "ksElmas": 15,
+   "ksBuz3": 4
+  },
+  "durgun": {
+   "dus": 0,
+   "kay": 0,
+   "enCok": 0.0392,
+   "enCokTur": "ksElmas"
+  },
+  "bot": {
+   "atis": 5,
+   "kazandi": true,
+   "kalan": 0
+  },
+  "hatalar": [],
+  "sure": 30
+ },
+ "784": {
+  "L": 784,
+  "n": 39,
+  "top": 18,
+  "R": 6.2,
+  "RZ": 2.4,
+  "pls": 1,
+  "tur": {
+   "oyA": 8,
+   "oyY": 16,
+   "ksYakut": 8,
+   "oyK": 6,
+   "ksTNT": 1
+  },
+  "durgun": {
+   "dus": 0,
+   "kay": 0,
+   "enCok": 0.0208,
+   "enCokTur": "ksYakut"
+  },
+  "bot": {
+   "atis": 7,
+   "kazandi": true,
+   "kalan": 0
+  },
+  "hatalar": [],
+  "sure": 32
+ }
+}
