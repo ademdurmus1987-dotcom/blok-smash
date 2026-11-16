@@ -55,7 +55,7 @@
 - Zemin düzeltmesi (koy iskelesi batmaz, sahil kıyı çizgisi resme göre) main'de: oyun.js?v=100, CACHE v51. Bu dal main'e alınırken sürümler 101 / v52 yapılmalı.
 
 ## 17 Kas 2026: Blender bloklari ve P22 (v5.6)
-- Blender 5.3 kuruldu (`C:\Program Files\Blender Foundation\Blender 5.3lender.exe`). Uretim: `blender -b --python yapi/uretici/blender/pilot_bloklar.py` (tek model: `-- kup`).
+- Blender 5.3 kuruldu (`C:\Program Files\Blender Foundation\Blender 5.3\blender.exe`). Uretim: `blender -b --python yapi/uretici/blender/pilot_bloklar.py` (tek model: `-- kup`).
 - 5 model `yapi/model/pilot/pl_*.glb` (39-73 KB, 508-738 ucgen): patili kup, uzun kalas, kavanoz, tilki amblemli tas levha, bilezikli sutun. Sekil gercek geometri; ortam golgesi + yumusak isik Cycles ile hesaplanip 512'lik dokuya gomulu; renk kose renginde (tam beyaz = turun govde rengi).
 - Turler `pilot_sekil.js`: `plKupK/Y/M`, `plKalas`, `plKavanozT/M`, `plLevha`, `plSutun`. Model dosyasi yalniz o turu kullanan pilotta iner.
 - P22 Oyuncak Kale (`?pilot=22`): 55 parca, 24 top. Test (390x844): konsol hatasi yok, 3 sn kayma 0, atista kavanoz/kalas kiriliyor. Kazanilabilirlik (bot) testi yapilmadi.
