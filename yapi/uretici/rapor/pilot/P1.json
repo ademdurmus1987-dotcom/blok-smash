@@ -2,18 +2,18 @@
  "N": 1,
  "ozet": {
   "L": 1,
-  "n": 29,
-  "top": 25,
-  "R": 10.342,
-  "RZ": 7.65,
+  "n": 31,
+  "top": 16,
+  "R": 10.266,
+  "RZ": 8.15,
   "pls": 7,
   "tur": {
    "ksSutun": 4,
    "ksTas2": 4,
-   "ksTas": 3,
-   "ksSandik": 3,
-   "ksSandikM": 2,
-   "ksSandikK": 2,
+   "ksTas": 5,
+   "ksSandikK": 3,
+   "ksSandik": 1,
+   "ksSandikM": 3,
    "ksTNT": 1,
    "plSutunK": 4,
    "oyA": 1,
@@ -24,67 +24,67 @@
   }
  },
  "ortusme": {
-  "temas": 110,
+  "temas": 56,
   "enDerin": 0,
-  "cift": ""
+  "cift": "sag-tepe / sag-dikili"
  },
  "durgunluk": {
   "dus": 0,
   "kay": 0,
-  "enCok": 0.0104,
+  "enCok": 0.0093,
   "enCokTur": "ksElmas"
  },
  "strateji": {
   "atis": [
    {
     "ok": true,
-    "x": 234,
-    "y": 333,
-    "nisan": "orta-on-3",
+    "x": 255,
+    "y": 352,
+    "nisan": "alt-on-u1",
     "hedef": "orta-tnt",
-    "giden": 10
+    "giden": 13
    }
   ],
   "tntPatladi": true,
   "ortaKusak": [
-   4,
+   5,
    8
   ],
   "kosk": [
-   6,
+   7,
    8
   ],
   "altKusak": [
-   0,
-   9
+   1,
+   11
   ],
   "catiDustu": true
  },
  "bot": [
   {
-   "atis": 21,
+   "atis": 11,
    "kazandi": true,
    "kalan": 0,
-   "verilen": 25,
+   "verilen": 16,
    "tohum": 12345
   },
   {
-   "atis": 21,
+   "atis": 13,
    "kazandi": true,
    "kalan": 0,
-   "verilen": 25,
+   "verilen": 16,
    "tohum": 777
   },
   {
-   "atis": 23,
+   "atis": 11,
    "kazandi": true,
    "kalan": 0,
-   "verilen": 25,
+   "verilen": 16,
    "tohum": 4242
   }
  ],
  "botSinirsiz": {
-  "atis": 23,
+  "atis": 11,
   "kazandi": true,
   "kalan": 0,
   "verilen": 999,
@@ -100,108 +100,48 @@
     "sol-dikili"
    ],
    [
+    "alt-on-0",
+    2,
+    "alt-on-0"
+   ],
+   [
+    "alt-on-2",
+    2,
+    "alt-on-2"
+   ],
+   [
     "alt-on-1",
     1,
     "alt-on-1"
    ],
    [
-    "alt-on-0",
-    1,
-    "alt-on-0"
-   ],
-   [
-    "alt-on-2",
-    1,
-    "alt-on-2"
-   ],
-   [
     "alt-kose-0",
-    0,
-    "alt-kose-0"
+    3,
+    "alt-sol-0"
    ],
    [
     "alt-kose-1",
-    1,
-    "alt-kose-1"
-   ],
-   [
-    "alt-kose-0",
-    2,
-    "alt-sag-1"
-   ],
-   [
-    "alt-sol-1",
-    0,
-    "alt-sol-1"
-   ],
-   [
-    "alt-sol-1",
-    0,
-    "alt-sol-1"
-   ],
-   [
-    "alt-sag-0",
-    0,
+    3,
     "alt-sag-0"
    ],
    [
-    "alt-sag-0",
-    0,
-    "alt-sag-0"
-   ],
-   [
-    "orta-on-0",
+    "orta-kose-0",
     1,
-    "orta-on-0"
+    "orta-kose-0"
    ],
    [
-    "alt-sol-1",
-    1,
-    "alt-sol-1"
+    "orta-kose-1",
+    11,
+    "orta-kose-1"
    ],
    [
-    "alt-sol-0",
-    0,
-    "alt-sol-0"
-   ],
-   [
-    "alt-sag-0",
-    1,
-    "alt-sag-0"
-   ],
-   [
-    "alt-sol-0",
-    1,
-    "alt-sol-0"
-   ],
-   [
-    "orta-on-1",
-    1,
-    "orta-on-1"
-   ],
-   [
-    "orta-on-2",
-    1,
-    "orta-on-2"
-   ],
-   [
-    "orta-on-3",
-    1,
-    "orta-on-3"
-   ],
-   [
-    "orta-sol-1",
-    2,
-    "orta-sol-1"
-   ],
-   [
-    "orta-sag-1",
-    8,
-    "orta-sag-1"
+    "orta-sol-0",
+    3,
+    "orta-sol-0"
    ],
    [
     "kosk-altin",
-    2,
+    1,
     "kosk-altin"
    ]
   ]
@@ -211,12 +151,12 @@
    "dosya": "yapi/uretici/rapor/pilot/P1_360x640.jpg",
    "cerceve": {
     "x": [
-     -0.774,
-     0.782
+     -0.917,
+     0.906
     ],
     "y": [
-     -0.15,
-     0.408
+     -0.244,
+     0.502
     ],
     "icinde": true
    }
@@ -225,12 +165,12 @@
    "dosya": "yapi/uretici/rapor/pilot/P1_390x844.jpg",
    "cerceve": {
     "x": [
-     -0.779,
-     0.787
+     -0.925,
+     0.915
     ],
     "y": [
-     -0.099,
-     0.358
+     -0.178,
+     0.436
     ],
     "icinde": true
    }
@@ -239,34 +179,32 @@
    "dosya": "yapi/uretici/rapor/pilot/P1_768x1024.jpg",
    "cerceve": {
     "x": [
-     -0.782,
-     0.79
+     -0.924,
+     0.914
     ],
     "y": [
-     -0.253,
-     0.509
+     -0.378,
+     0.634
     ],
     "icinde": true
    }
   }
  },
  "performans": {
-  "cizim": 82,
-  "ucgen": 53646
+  "cizim": 77,
+  "ucgen": 47226
  },
  "kayit": {
-  "kazandi": true,
-  "kart": true,
+  "kazandi": false,
+  "ilkDenemeKalan": 1,
+  "kart": false,
   "ayni": true,
   "onceKayit": true,
   "anahtarlar": [
    "blokpop_yapi_v3"
   ],
-  "tekrar": {
-   "ls": true,
-   "yeniden": "play/29"
-  }
+  "tekrar": null
  },
  "hatalar": [],
- "sure": 233
+ "sure": 296
 }

@@ -129,15 +129,17 @@ async def pilot(b):
         await modul(pg)
         once = await pg.evaluate(LSJS)
         kz = await pg.evaluate('PT.botEkran(60, true)')
+        if not kz['kazandi']: kz2 = await pg.evaluate('PT.botEkran(60, true)'); kz['kazandi'] = kz2['kazandi']; kz['kalan_once'] = kz['kalan']   # kayit testi icin kazanmak sart (atis sayisi onemli degil)
         try: await pg.wait_for_selector('#p-tekrar', timeout=120000); kart = True
         except Exception: kart = False
         await pg.wait_for_timeout(2500)
+        kalanlar = await pg.evaluate("YP.cubes.filter((q) => !q.gone && !q.out).map((q) => q.pid + '@' + [q.body.position.x, q.body.position.y, q.body.position.z].map((v) => v.toFixed(2)))")
         sonra = await pg.evaluate(LSJS)
         tekrar = None
         if kart:
             await pg.evaluate("document.getElementById('p-tekrar').click()"); await pg.wait_for_timeout(2500)
             tekrar = {'ls': await pg.evaluate(LSJS) == once, 'yeniden': await pg.evaluate('YP.g.state + "/" + YP.g.left')}
-        R['kayit'] = {'kazandi': kz['kazandi'], 'kart': kart, 'ayni': once == sonra, 'onceKayit': json.loads(json.loads(once).get('blokpop_yapi_v3', 'null') or 'null') == KAYIT, 'anahtarlar': sorted(json.loads(sonra).keys()), 'tekrar': tekrar}
+        R['kayit'] = {'kalanlar': kalanlar, 'kazandi': kz['kazandi'], 'ilkDenemeKalan': kz.get('kalan_once', 0), 'kart': kart, 'ayni': once == sonra, 'onceKayit': json.loads(json.loads(once).get('blokpop_yapi_v3', 'null') or 'null') == KAYIT, 'anahtarlar': sorted(json.loads(sonra).keys()), 'tekrar': tekrar}
         await ctx.close()
         R['hatalar'] = [h for h in hatalar if 'GPU stall' not in h]; R['sure'] = round(time.time() - t0)
         json.dump(R, open(os.path.join(RAPOR, f'P{N}.json'), 'w'), ensure_ascii=False, indent=1)

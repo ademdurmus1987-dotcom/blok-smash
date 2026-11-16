@@ -153,14 +153,14 @@ export function strateji(N) {
     at('orta-tnt', 0); if (!gitti(byId('orta-tnt'))) at('orta-tnt', 0);
     P.run(3, true);
     const cati = byId('kosk-cati');
-    return { atis, tntPatladi: gitti(byId('orta-tnt')), ortaKusak: [o0.orta - kalan('orta'), top('orta')], kosk: [o0.kosk - kalan('kosk'), top('kosk')], altKusak: [o0.alt - kalan('alt'), top('alt')], catiDustu: gitti(cati) || cati.body.position.y < 3.1 + 2.0 - 0.5 };
+    return { atis, tntPatladi: gitti(byId('orta-tnt')), ortaKusak: [o0.orta - kalan('orta'), top('orta')], kosk: [o0.kosk - kalan('kosk'), top('kosk')], altKusak: [o0.alt - kalan('alt'), top('alt')], catiDustu: gitti(cati) || cati.body.position.y < byId('kosk-altin').body.position.y };
   }
   if (N === 7) {
     // on dikili tasa (dikili-0: iki yaninda lento var) tek atis
     const l0 = kalan('lento'), s0 = kalan('sunak'), dus = () => grup('lento').filter((c) => gitti(c) || c.body.position.y < 3.0).length;
     at('dikili-0', 0.3);
     P.run(3, true);
-    return { atis, dikili0Devrildi: gitti(byId('dikili-0')) || egim(byId('dikili-0')) > 45, lentoDustu: [dus(), top('lento')], lentoKirildi: l0 - kalan('lento'), sunak: [s0 - kalan('sunak'), top('sunak')], sunakTablaYerinde: !gitti(byId('sunak-tabla')) && byId('sunak-tabla').body.position.y > 2.0 };
+    return { atis, dikili0Devrildi: gitti(byId('dikili-0')) || egim(byId('dikili-0')) > 45, lentoDustu: [dus(), top('lento')], lentoKirildi: l0 - kalan('lento'), sunak: [s0 - kalan('sunak'), top('sunak')], sunakYikildi: gitti(byId('sunak-tabla')) || byId('sunak-tabla').body.position.y < 1.5 };
   }
   if (N === 13) {
     // ilk dominoya tek atis; zincir sonuna kadar gidiyor mu, TNT patliyor mu

@@ -2,47 +2,47 @@
  "N": 13,
  "ozet": {
   "L": 13,
-  "n": 22,
-  "top": 14,
-  "R": 11.297,
-  "RZ": 7.495,
+  "n": 23,
+  "top": 12,
+  "R": 10.931,
+  "RZ": 6.788,
   "pls": 3,
   "tur": {
    "plDomino": 10,
    "ksTNT": 1,
+   "ksTas2": 1,
    "ksSandik": 1,
-   "ksSandikK": 1,
-   "ksYakut": 1,
-   "ksElmas": 1,
-   "ksKalas2": 1,
    "ksSandikM": 1,
+   "ksKalas3": 1,
+   "ksYakut": 1,
    "ksYildiz": 1,
+   "ksElmas": 1,
+   "ksSiseM": 2,
    "ksFici": 1,
    "ksSiseB": 1,
-   "ksSiseM": 1,
    "ksSiseY": 1
   }
  },
  "ortusme": {
-  "temas": 41,
+  "temas": 52,
   "enDerin": 0,
-  "cift": "kule-sandikM / kule-kalas"
+  "cift": "kule-ksSandik / kule-kalas"
  },
  "durgunluk": {
   "dus": 0,
   "kay": 0,
-  "enCok": 0.0193,
-  "enCokTur": "ksYildiz"
+  "enCok": 0.01,
+  "enCokTur": "ksYakut"
  },
  "strateji": {
   "atis": [
    {
     "ok": true,
-    "x": 115,
-    "y": 396,
+    "x": 94,
+    "y": 369,
     "nisan": "domino-00",
     "hedef": "domino-00",
-    "giden": 14
+    "giden": 15
    }
   ],
   "domino": [
@@ -54,88 +54,78 @@
    "K",
    "K",
    "K",
+   70,
+   81,
    90,
-   73,
    90,
-   "K",
    "K",
    "K"
   ],
   "tntPatladi": true,
   "tntSn": 0,
   "kule": [
-   6,
-   8
+   8,
+   9
   ]
  },
  "bot": [
   {
-   "atis": 12,
-   "kazandi": true,
-   "kalan": 0,
-   "verilen": 14,
-   "tohum": 12345
-  },
-  {
    "atis": 11,
    "kazandi": true,
    "kalan": 0,
-   "verilen": 14,
+   "verilen": 12,
+   "tohum": 12345
+  },
+  {
+   "atis": 7,
+   "kazandi": true,
+   "kalan": 0,
+   "verilen": 12,
    "tohum": 777
   },
   {
    "atis": 8,
    "kazandi": true,
    "kalan": 0,
-   "verilen": 14,
+   "verilen": 12,
    "tohum": 4242
   }
  ],
  "botSinirsiz": {
-  "atis": 8,
+  "atis": 6,
   "kazandi": true,
   "kalan": 0,
   "verilen": 999,
   "iz": [
    [
-    "domino-00",
-    8,
-    "domino-00"
-   ],
-   [
-    "domino-00",
-    3,
-    "domino-00"
-   ],
-   [
     "yem-fici-0",
-    3,
+    2,
     "yem-fici-0"
    ],
    [
-    "domino-03",
-    3,
-    "domino-03"
+    "domino-00",
+    14,
+    "domino-00"
    ],
    [
     "domino-05",
-    1,
+    2,
+    "domino-04"
+   ],
+   [
+    "domino-05",
+    2,
     "domino-05"
    ],
    [
-    "domino-07",
-    1,
-    "domino-07"
-   ],
-   [
-    "domino-02",
-    1,
-    "domino-02"
-   ],
-   [
-    "kule-sandikM",
+    "domino-01",
     2,
-    "kule-sandikM"
+    "domino-01"
+   ],
+   [
+    "yem-sise-0",
+    1,
+    "yem-sise-0"
    ]
   ]
  },
@@ -144,12 +134,12 @@
    "dosya": "yapi/uretici/rapor/pilot/P13_360x640.jpg",
    "cerceve": {
     "x": [
-     -0.757,
-     0.749
+     -0.916,
+     0.915
     ],
     "y": [
-     -0.289,
-     0.56
+     -0.317,
+     0.638
     ],
     "icinde": true
    }
@@ -158,12 +148,12 @@
    "dosya": "yapi/uretici/rapor/pilot/P13_390x844.jpg",
    "cerceve": {
     "x": [
-     -0.751,
-     0.745
+     -0.923,
+     0.922
     ],
     "y": [
-     -0.206,
-     0.475
+     -0.232,
+     0.543
     ],
     "icinde": true
    }
@@ -172,20 +162,20 @@
    "dosya": "yapi/uretici/rapor/pilot/P13_768x1024.jpg",
    "cerceve": {
     "x": [
-     -0.747,
-     0.739
+     -0.77,
+     0.769
     ],
     "y": [
-     -0.431,
-     0.705
+     -0.378,
+     0.7
     ],
     "icinde": true
    }
   }
  },
  "performans": {
-  "cizim": 80,
-  "ucgen": 67038
+  "cizim": 78,
+  "ucgen": 63656
  },
  "kayit": {
   "kazandi": true,
@@ -197,9 +187,9 @@
   ],
   "tekrar": {
    "ls": true,
-   "yeniden": "play/22"
+   "yeniden": "play/23"
   }
  },
  "hatalar": [],
- "sure": 176
+ "sure": 221
 }

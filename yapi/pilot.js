@@ -49,6 +49,7 @@ export function pilotKur(A) {
     let n = k.sekil === 'disk' ? (k.n || 40) : k.sekil === 'cokgen' ? (k.n || 6) : 4, a0 = don;
     if (k.sekil === 'kare') { const rz = k.rz || r, dz = k.dz || 0; if (k.rz || k.dz) return [[r, rz + dz], [-r, rz + dz], [-r, -rz + dz], [r, -rz + dz]];   // dikdortgen (yarim genislik r, yarim derinlik rz, z kaymasi dz)
       const rr = r * Math.SQRT2; for (let i = 0; i < 4; i++) { const a = Pi / 4 + i * Pi / 2 + don; P.push([Math.cos(a) * rr, Math.sin(a) * rr]); } return P; }
+    if (k.sekil === 'eskenar' && k.rz) return [[r, 0], [0, k.rz], [-r, 0], [0, -k.rz]];   // uzatilmis eskenar dortgen: kose uzakliklari r (x) ve rz (z)
     if (k.sekil === 'eskenar') { const rr = r * Math.SQRT2; for (let i = 0; i < 4; i++) { const a = i * Pi / 2 + don; P.push([Math.cos(a) * rr, Math.sin(a) * rr]); } return P; }
     for (let i = 0; i < n; i++) { const a = a0 + i * 2 * Pi / n; P.push([Math.cos(a) * r, Math.sin(a) * r]); }
     return P;
@@ -135,12 +136,13 @@ export function pilotKur(A) {
   }
   function katGovde(body, k, P, ax, az, y0, y1) {
     const q = new CANNON.Quaternion();
-    if (k.sekil === 'kare' || k.sekil === 'eskenar') { q.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -((k.don || 0) + (k.sekil === 'eskenar' ? 45 : 0)) * D2R); body.addShape(new CANNON.Box(new CANNON.Vec3(k.r, (y1 - y0) / 2, k.rz || k.r)), new CANNON.Vec3(ax, (y0 + y1) / 2, az + (k.dz || 0)), q); }
+    if (k.sekil === 'kare' || (k.sekil === 'eskenar' && !k.rz)) { q.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -((k.don || 0) + (k.sekil === 'eskenar' ? 45 : 0)) * D2R); body.addShape(new CANNON.Box(new CANNON.Vec3(k.r, (y1 - y0) / 2, k.rz || k.r)), new CANNON.Vec3(ax, (y0 + y1) / 2, az + (k.dz || 0)), q); }
     else { const Pp = k.sekil === 'disk' ? cevre(Object.assign({}, k, { n: 20 })) : P; body.addShape(prizma(ccw(Pp), y0 - (y0 + y1) / 2, y1 - (y0 + y1) / 2), new CANNON.Vec3(ax, (y0 + y1) / 2, az)); }
   }
   function yeniGovde() { const b = new CANNON.Body({ mass: 0, material: A.PM.plat }); b.collisionFilterGroup = 4; return b; }
   const icinde = (P, x, z) => { let s = 0; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length], c = (b[0] - a[0]) * (z - a[1]) - (b[1] - a[1]) * (x - a[0]); if (c !== 0) { if (s && Math.sign(c) !== s) return false; s = Math.sign(c); } } return true; };
 
+  const LEKEMAT = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, map: A.canvasTex(64, 64, (x, w, h) => { const g = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); g.addColorStop(0, 'rgba(30,20,20,.5)'); g.addColorStop(0.55, 'rgba(30,20,20,.25)'); g.addColorStop(1, 'rgba(30,20,20,0)'); x.fillStyle = g; x.fillRect(0, 0, w, h); }) });
   // ---------- kopru ----------
   const TAHTA = A.canvasTex(256, 64, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#f0a050'); g.addColorStop(0.5, '#d9822a'); g.addColorStop(1, '#8a4a14'); x.fillStyle = g; x.fillRect(0, 0, w, h); x.strokeStyle = 'rgba(90,40,10,.35)'; x.lineWidth = 2; for (let i = 0; i < 6; i++) { x.beginPath(); x.moveTo(0, 8 + i * 9); for (let k = 0; k <= w; k += 16) x.lineTo(k, 8 + i * 9 + Math.sin(k * 0.05 + i) * 2); x.stroke(); } x.fillStyle = '#5a6070'; for (const cx of [14, w - 14]) { x.beginPath(); x.arc(cx, h / 2, 5, 0, 6.3); x.fill(); } });
   const TASK = A.canvasTex(256, 128, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#b4b9d2'); g.addColorStop(0.5, '#9299b8'); g.addColorStop(1, '#6a7094'); x.fillStyle = g; x.fillRect(0, 0, w, h); x.strokeStyle = 'rgba(40,36,90,.45)'; x.lineWidth = 3; for (let i = 1; i < 4; i++) { x.beginPath(); x.moveTo(i * w / 4, 0); x.lineTo(i * w / 4, h); x.stroke(); } x.fillStyle = 'rgba(255,255,255,.35)'; x.fillRect(0, 0, w, 6); });
@@ -181,7 +183,7 @@ export function pilotKur(A) {
 
   // ---------- bolum kurulumu ----------
   let KATLAR = [], CERCEVE = null;
-  const KUYRUK = [], PATLAYAN = [], EK = [], HEDEF = [0, 0], TUM = []; let GOLGE = false, D0 = 0;   // EK: pilotun kendi sahne nesneleri (ayaklar); her kurulumda silinir
+  const KUYRUK = [], PATLAYAN = [], EK = [], HEDEF = [0, 0], TUM = [], LEKE = []; let GOLGE = false, D0 = 0;   // EK: pilotun kendi sahne nesneleri (ayaklar); her kurulumda silinir
   function bilinmeyen() {
     A.bolumBasla(Y); A.g.state = 'bilgi';
     A.modal('<div class="rib r">Pilot ' + N + ' yok</div><p>Hazır pilotlar: ' + SIRA.join(', ') + '</p>' + SIRA.map((n) => '<button class="btn kck" data-p="' + n + '">Pilot ' + n + '</button>').join(''));
@@ -207,7 +209,7 @@ export function pilotKur(A) {
         let leg = null;
         if (ki === 0 && ada.ayak !== 0) {
           if (ilk) { leg = A.LEG; leg.visible = true; leg.position.set(ax, 0, az); A.legBoy(leg, alt + 0.75); }
-          else for (const e of ayakParca(ax, az, alt)) TUM.push(e);
+          else { for (const e of ayakParca(ax, az, alt)) TUM.push(e); LEKE.push([ax, az, Math.max(1.6, Math.min(2.6, k.r * 1.1))]); }
           body.addShape(new CANNON.Box(new CANNON.Vec3(0.55, (alt - A.GY) / 2, 0.55)), new CANNON.Vec3(ax, (alt + A.GY) / 2, az));
         }
         if (!ilk) A.world.addBody(body);
@@ -226,6 +228,11 @@ export function pilotKur(A) {
     // butun adalar, ayaklar ve kopruler tek mesh: malzeme basina bir cizim (11 ayri mesh 40+ cizim yapiyordu)
     { const ML = [], L = []; for (const [g, m] of TUM) { let i = ML.indexOf(m); if (i < 0) { i = ML.length; ML.push(m); } L.push([g, i]); }
       const tm = new THREE.Mesh(birlestirMat(L), ML); tm.receiveShadow = true; tm.castShadow = GOLGE; A.scene.add(tm); EK.push(tm); TUM.length = 0; if (window.PLT_DBG) window.PLT_DBG.plat = tm; }
+    // ek ayaklarin dibinde yumusak temas golgesi (ana ayaginki gibi): hepsi tek mesh, tek cizim
+    if (LEKE.length) {
+      const gs = LEKE.map(([x, z, r]) => { const g = new THREE.PlaneGeometry(r * 2, r * 2); g.rotateX(-Pi / 2); g.translate(x, A.GY + 0.03, z); return [g.toNonIndexed(), 0]; });
+      const m = new THREE.Mesh(birlestirMat(gs), LEKEMAT); m.renderOrder = 2; A.scene.add(m); EK.push(m); LEKE.length = 0;
+    }
     // parcalar
     let tepe = 0, rmax = 0;
     for (const p of B.parca) {
@@ -238,7 +245,15 @@ export function pilotKur(A) {
       const esik = p.kir != null ? p.kir : t.carp;
       if (esik) carpmaKir(c, esik);
       if (p.patlama) { c.patlama = p.patlama; PATLAYAN.push(c); }
-      if (p.patlarKir) c.pkir = 1;   // buyuk patlamada parcalanir (or. ince kosk sutunlari)
+      if (p.ezil) ezilKir(c, p.ezil);   // agir bir parca (devrilen dikili tas) ya da top carpinca ezilir
+      if (p.patlarKir) c.pkir = 1;   // ezilme: kutlesi 2.5'ten buyuk hareketli bir govde (devrilen dikili tas, top) esikten hizli carparsa parca kirilir (sunak)
+  function ezilKir(c, esik) {
+    c.body.addEventListener('collide', (e) => {
+      const g = A.g; if (!g || !g.armed || c.out || c.gone || c.kq || e.body.mass < 2.5) return;
+      if (Math.abs(e.contact.getImpactVelocityAlongNormal()) > esik) { c.kq = 1; KUYRUK.push(c); }
+    });
+  }
+  // buyuk patlamada parcalanir (or. ince kosk sutunlari)
       if (p.devril || t.devril) c.devril = p.devril || t.devril;
       if (p.merkez) c.merkez = p.merkez;
       if (t.yatik) c.yatik = 1;   // uzun tas: top degince kaymaz, devrilir
@@ -250,6 +265,7 @@ export function pilotKur(A) {
     { let s0 = 1e9, s1 = -1e9; const rx = Math.cos(ky), rz = -Math.sin(ky); for (const q of pts) { const d = q[0] * rx + q[2] * rz; s0 = Math.min(s0, d); s1 = Math.max(s1, d); } HEDEF[0] = rx * (s0 + s1) / 2; HEDEF[1] = rz * (s0 + s1) / 2; }   // kamera hedefi: yapinin ekrandaki yatay ortasi
     CERCEVE = pts; A.R = rmax; A.RZ = on; A.RZB = rmax; A.TOPY = tepe;   // RZ: kameraya dogru en on nokta (top arabasinin yeri buna gore)
     ortala(); A.TC.aimYaw = A.TC.yaw = Math.PI + A.CAZ;
+    if (A.TC.pad) { A.TC.pad.visible = false; if (A.TC.rim2) A.TC.rim2.visible = false; }   // yukseltilmis kamerada arabanin beyaz kaidesi gorunuyordu; normal bolumlerde gorunmez
     A.bolumBasla(Y);
     hoyuk();
   }

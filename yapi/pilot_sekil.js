@@ -99,18 +99,18 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
 
   // ---------- 1) ince kisa sutun ----------
   function sutunK() {
-    const R = 0.27, H = 2.0, h = H / 2;
-    const prof = [[0.001, -h, 0], [0.36, -h, 0.01], [0.36, -h + 0.16, 0.06], [0.31, -h + 0.22, 0.09], [R, -h + 0.3, 0.13], [R * 0.94, 0, 0.5], [R, h - 0.3, 0.87], [0.31, h - 0.22, 0.91], [0.36, h - 0.16, 0.94], [0.36, h, 0.99], [0.001, h, 1]];
+    const R = 0.33, H = 2.6, h = H / 2;
+    const prof = [[0.001, -h, 0], [0.43, -h, 0.01], [0.43, -h + 0.18, 0.06], [0.37, -h + 0.25, 0.09], [R, -h + 0.34, 0.13], [R * 0.94, 0, 0.5], [R, h - 0.34, 0.87], [0.37, h - 0.25, 0.91], [0.43, h - 0.18, 0.94], [0.43, h, 0.99], [0.001, h, 1]];
     const map = tex(256, 256, (x, w, hh) => {
       const r = rng(31); tasBoya(x, 0, 0, w, hh, '#a7acc6', r, { pah: 0.02 });
       for (let i = 0; i < 10; i++) { const X = (i + 0.5) * w / 10; x.fillStyle = 'rgba(30,26,80,.28)'; x.fillRect(X - 3, hh * 0.15, 6, hh * 0.7); x.fillStyle = 'rgba(255,255,255,.25)'; x.fillRect(X - 7, hh * 0.15, 3, hh * 0.7); }
       const g = x.createLinearGradient(0, 0, 0, hh); g.addColorStop(0, 'rgba(255,215,90,.9)'); g.addColorStop(0.1, 'rgba(255,190,40,.8)'); g.addColorStop(0.12, 'rgba(0,0,0,0)'); g.addColorStop(0.88, 'rgba(0,0,0,0)'); g.addColorStop(0.9, 'rgba(255,190,40,.8)'); g.addColorStop(1, 'rgba(200,120,0,.9)'); x.fillStyle = g; x.fillRect(0, 0, w, hh);
     });
-    return { geo: torna(prof, 20), mat: tasMat({ map, roughness: 0.6, metalness: 0.1, envMapIntensity: 0.5 }), parca: tasMat({ color: TAS }), r: 0.34 };
+    return { geo: torna(prof, 20), mat: tasMat({ map, roughness: 0.6, metalness: 0.1, envMapIntensity: 0.5 }), parca: tasMat({ color: TAS }), r: 0.41 };
   }
   // ---------- 2) cati tasi ----------
   function cati() {
-    const W = 2.9, H = 0.42, L = [];
+    const W = 3.4, H = 0.48, L = [];
     const govde = kutu(W, H * 0.62, W, 0.06, 2); govde.translate(0, -H * 0.19, 0); L.push([govde, 0]);
     const ust = kutu(W * 0.9, H * 0.38, W * 0.9, 0.08, 2); ust.translate(0, H * 0.31, 0); L.push([ust, 0]);
     const kor = kutu(W * 1.0, 0.07, W * 1.0, 0.025, 1); kor.translate(0, H * 0.13, 0); L.push([kor, 1]);   // altin korniz
@@ -167,14 +167,14 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
     return { geo: topla(L), mat: [std({ map, roughness: 0.4, envMapIntensity: 0.5, emissive: '#3a2a10', emissiveIntensity: 0.08 }), ALTIN], parca: std({ color: '#f0dfc0', roughness: 0.5 }) };
   }
   function domino() {
-    const W = 1.25, H = 2.8, D = 0.38, L = [[kutu(W, H, D, 0.09, 2), 0]];
+    const W = 1.5, H = 3.3, D = 0.44, L = [[kutu(W, H, D, 0.1, 2), 0]];
     // altin cerceve cizgisi ve noktalar (on ve arka yuz): ust yari 3, alt yari 5
     const bar = kutu(W * 0.78, 0.07, 0.04, 0.015, 1);
     for (const z of [1, -1]) {
       const b = bar.clone(); b.translate(0, 0, z * (D / 2 + 0.005)); L.push([b, 1]);
-      const nok = (px, py) => { const s = new THREE.SphereGeometry(0.11, 12, 6, 0, Pi * 2, 0, Pi / 2); s.rotateX(z * Pi / 2); s.scale(1, 1, 0.55); s.translate(px, py, z * (D / 2 - 0.01)); L.push([s, 1]); };
-      for (const [px, py] of [[-0.3, 0.45], [0, 0.7], [0.3, 0.95]]) nok(px, py);
-      for (const [px, py] of [[-0.3, -0.45], [0.3, -0.45], [0, -0.7], [-0.3, -0.95], [0.3, -0.95]]) nok(px, py);
+      const nok = (px, py) => { const s = new THREE.SphereGeometry(0.13, 12, 6, 0, Pi * 2, 0, Pi / 2); s.rotateX(z * Pi / 2); s.scale(1, 1, 0.55); s.translate(px, py, z * (D / 2 - 0.01)); L.push([s, 1]); };
+      for (const [px, py] of [[-0.36, 0.5], [0, 0.85], [0.36, 1.2]]) nok(px, py);
+      for (const [px, py] of [[-0.36, -0.5], [0.36, -0.5], [0, -0.85], [-0.36, -1.2], [0.36, -1.2]]) nok(px, py);
     }
     const map = tex(256, 512, (x, w, h) => {
       let g = x.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#3a5cf0'); g.addColorStop(0.45, '#1a3cc8'); g.addColorStop(1, '#0c2080'); x.fillStyle = g; x.fillRect(0, 0, w, h);
@@ -189,14 +189,15 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
   // ---------- tur tablosu (w, h, d: kup kenari S cinsinden) ----------
   const T = (w, h, d, o) => Object.assign({ w: w / S, h: h / S, d: d / S, f: 0.72, r: 0.05, ses: 'tas', sert: 1 }, o);
   const TUR = {
-    plSutunK: T(0.72, 2.0, 0.72, { temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 0.45, renk: '#a7acc6', sekil: 'sil', yap: sutunK }),
-    plCati: T(2.9, 0.42, 2.9, { temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 1.4, renk: TAS, carp: 6, yap: cati }),
+    plSutunK: T(0.86, 2.6, 0.86, { temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 0.45, renk: '#a7acc6', sekil: 'sil', yap: sutunK }),
+    plCati: T(3.4, 0.48, 3.4, { temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 1.4, renk: TAS, carp: 6, yap: cati }),
     plTepe: T(TEPE.b, TEPE.h, TEPE.b, { mass: 0.35, renk: TAS, yap: tepe, cs: tepeSekil }),
     plMenhir: T(1.3, 3.3, 0.75, { yatik: 1, temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 1.7, f: 0.75, renk: '#9097b6', carp: 6, devril: 3.6, yap: () => menhir(1.3, 3.3, 0.75, 21, '#9097b6') }),
+    plMenhirT: T(1.3, 4.2, 0.78, { yatik: 1, temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 2.1, f: 0.75, renk: '#8a92b2', carp: 6, devril: 3.4, yap: () => menhir(1.3, 4.2, 0.78, 33, '#8a92b2') }),
     plMenhirK: T(1.25, 2.5, 0.85, { yatik: 1, temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 1.3, f: 0.75, renk: '#8f9ab0', carp: 6, devril: 2.6, yap: () => menhir(1.25, 2.5, 0.85, 63, '#8f9ab0') }),
     plLento: T(2.45, 0.55, 0.8, { yatik: 1, temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 0.6, f: 0.7, renk: '#8c93b4', carp: 5, yap: lento }),
     plSunak: T(2.8, 0.4, 1.3, { temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 0.7, f: 0.7, renk: '#f0dfc0', carp: 4.5, yap: sunak }),
-    plDomino: T(1.25, 2.8, 0.38, { yatik: 1, mass: 0.6, f: 0.35, r: 0.02, renk: '#2244d8', carp: 5.5, yap: domino, temas: { plat: 0.95, kendi: 0 }, govde: { angularDamping: 0.01, linearDamping: 0.01, sleepSpeedLimit: 0.04, sleepTimeLimit: 1.2 } })
+    plDomino: T(1.5, 3.3, 0.44, { yatik: 1, mass: 0.85, f: 0.35, r: 0.02, renk: '#2244d8', carp: 5.5, yap: domino, temas: { plat: 0.95, kendi: 0 }, govde: { angularDamping: 0.01, linearDamping: 0.01, sleepSpeedLimit: 0.04, sleepTimeLimit: 1.2 } })
   };
   return { TUR };
 }

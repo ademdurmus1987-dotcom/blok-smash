@@ -2,100 +2,91 @@
  "N": 7,
  "ozet": {
   "L": 7,
-  "n": 23,
-  "top": 18,
-  "R": 8.781,
-  "RZ": 7.2,
+  "n": 22,
+  "top": 15,
+  "R": 8.167,
+  "RZ": 5.95,
   "pls": 3,
   "tur": {
-   "plMenhir": 8,
-   "plLento": 6,
+   "plMenhir": 4,
+   "plMenhirT": 4,
+   "plLento": 5,
+   "ksSiseM": 1,
+   "ksElmas": 1,
    "ksTas": 2,
    "plSunak": 1,
    "ksYakut": 2,
    "ksSiseB": 1,
-   "ksSiseM": 1,
-   "ksElmas": 1,
    "plMenhirK": 1
   }
  },
  "ortusme": {
-  "temas": 62,
+  "temas": 68,
   "enDerin": 0,
-  "cift": "sunak-tabla / sunak-ayak-0"
+  "cift": "lento-3 / ust-elmas"
  },
  "durgunluk": {
   "dus": 0,
   "kay": 0,
-  "enCok": 0.0102,
-  "enCokTur": "ksSiseM"
+  "enCok": 0.006,
+  "enCokTur": "ksYakut"
  },
  "strateji": {
   "atis": [
    {
     "ok": true,
-    "x": 202,
-    "y": 349,
+    "x": 288,
+    "y": 348,
     "nisan": "dikili-0",
     "hedef": "dikili-0",
-    "giden": 3
+    "giden": 5
    }
   ],
   "dikili0Devrildi": true,
   "lentoDustu": [
    2,
-   6
-  ],
-  "lentoKirildi": 2,
-  "sunak": [
-   0,
    5
   ],
-  "sunakTablaYerinde": true
+  "lentoKirildi": 1,
+  "sunak": [
+   3,
+   5
+  ],
+  "sunakYikildi": true
  },
  "bot": [
   {
-   "atis": 12,
+   "atis": 10,
    "kazandi": true,
    "kalan": 0,
-   "verilen": 18,
+   "verilen": 15,
    "tohum": 12345
+  },
+  {
+   "atis": 13,
+   "kazandi": true,
+   "kalan": 0,
+   "verilen": 15,
+   "tohum": 777
   },
   {
    "atis": 14,
    "kazandi": true,
    "kalan": 0,
-   "verilen": 18,
-   "tohum": 777
-  },
-  {
-   "atis": 12,
-   "kazandi": true,
-   "kalan": 0,
-   "verilen": 18,
+   "verilen": 15,
    "tohum": 4242
   }
  ],
  "botSinirsiz": {
-  "atis": 14,
+  "atis": 10,
   "kazandi": true,
   "kalan": 0,
   "verilen": 999,
   "iz": [
    [
     "topuk-tas",
-    2,
-    "topuk-tas"
-   ],
-   [
-    "dikili-7",
-    1,
-    "dikili-7"
-   ],
-   [
-    "dikili-0",
-    0,
-    "dikili-0"
+    3,
+    "topuk-yakut"
    ],
    [
     "dikili-7",
@@ -104,53 +95,43 @@
    ],
    [
     "dikili-0",
-    2,
+    1,
     "dikili-0"
    ],
    [
     "dikili-7",
-    1,
+    3,
     "dikili-7"
    ],
    [
-    "dikili-1",
-    0,
-    "dikili-1"
+    "dikili-0",
+    1,
+    "dikili-0"
    ],
    [
     "dikili-6",
-    1,
+    0,
     "dikili-6"
    ],
    [
-    "dikili-1",
-    4,
-    "dikili-1"
+    "dikili-6",
+    3,
+    "dikili-6"
+   ],
+   [
+    "sunak-ayak-1",
+    2,
+    "sunak-ayak-1"
    ],
    [
     "sunak-ayak-0",
-    4,
+    2,
     "sunak-ayak-0"
    ],
    [
-    "sunak-ayak-1",
-    1,
-    "sunak-ayak-1"
-   ],
-   [
-    "sunak-ayak-1",
-    2,
-    "sunak-ayak-1"
-   ],
-   [
-    "dikili-5",
-    2,
-    "dikili-5"
-   ],
-   [
-    "dikili-4",
-    1,
-    "dikili-4"
+    "dikili-2",
+    5,
+    "dikili-2"
    ]
   ]
  },
@@ -159,12 +140,12 @@
    "dosya": "yapi/uretici/rapor/pilot/P7_360x640.jpg",
    "cerceve": {
     "x": [
-     -0.708,
-     0.715
+     -0.883,
+     0.887
     ],
     "y": [
-     -0.236,
-     0.495
+     -0.264,
+     0.532
     ],
     "icinde": true
    }
@@ -173,12 +154,12 @@
    "dosya": "yapi/uretici/rapor/pilot/P7_390x844.jpg",
    "cerceve": {
     "x": [
-     -0.688,
-     0.711
+     -0.866,
+     0.873
     ],
     "y": [
-     -0.162,
-     0.423
+     -0.188,
+     0.454
     ],
     "icinde": true
    }
@@ -187,20 +168,20 @@
    "dosya": "yapi/uretici/rapor/pilot/P7_768x1024.jpg",
    "cerceve": {
     "x": [
-     -0.689,
-     0.715
+     -0.876,
+     0.88
     ],
     "y": [
-     -0.359,
-     0.614
+     -0.395,
+     0.662
     ],
     "icinde": true
    }
   }
  },
  "performans": {
-  "cizim": 73,
-  "ucgen": 35042
+  "cizim": 71,
+  "ucgen": 32610
  },
  "kayit": {
   "kazandi": true,
@@ -212,9 +193,9 @@
   ],
   "tekrar": {
    "ls": true,
-   "yeniden": "play/23"
+   "yeniden": "play/22"
   }
  },
  "hatalar": [],
- "sure": 186
+ "sure": 167
 }

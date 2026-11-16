@@ -15,16 +15,16 @@
   "durgun": {
    "dus": 0,
    "kay": 0,
-   "enCok": 0.0139,
+   "enCok": 0.0141,
    "enCokTur": "oyY"
   },
   "bot": {
-   "atis": 18,
+   "atis": 17,
    "kazandi": true,
    "kalan": 0
   },
   "hatalar": [],
-  "sure": 48
+  "sure": 44
  },
  "6": {
   "L": 6,
@@ -40,16 +40,16 @@
   "durgun": {
    "dus": 0,
    "kay": 0,
-   "enCok": 0.0217,
+   "enCok": 0.022,
    "enCokTur": "ksBuz"
   },
   "bot": {
-   "atis": 19,
+   "atis": 22,
    "kazandi": true,
    "kalan": 0
   },
   "hatalar": [],
-  "sure": 45
+  "sure": 47
  },
  "12": {
   "L": 12,
@@ -67,16 +67,16 @@
   "durgun": {
    "dus": 0,
    "kay": 0,
-   "enCok": 0.0216,
+   "enCok": 0.0255,
    "enCokTur": "oyK"
   },
   "bot": {
-   "atis": 16,
+   "atis": 19,
    "kazandi": true,
    "kalan": 0
   },
   "hatalar": [],
-  "sure": 37
+  "sure": 43
  },
  "25": {
   "L": 25,
@@ -97,12 +97,12 @@
    "enCokTur": "oyN"
   },
   "bot": {
-   "atis": 12,
+   "atis": 10,
    "kazandi": true,
    "kalan": 0
   },
   "hatalar": [],
-  "sure": 36
+  "sure": 39
  },
  "781": {
   "L": 781,
@@ -119,16 +119,16 @@
   "durgun": {
    "dus": 0,
    "kay": 0,
-   "enCok": 0.0418,
+   "enCok": 0.0415,
    "enCokTur": "ksElmas"
   },
   "bot": {
-   "atis": 7,
+   "atis": 6,
    "kazandi": true,
    "kalan": 0
   },
   "hatalar": [],
-  "sure": 29
+  "sure": 30
  },
  "784": {
   "L": 784,
@@ -147,15 +147,15 @@
   "durgun": {
    "dus": 0,
    "kay": 0,
-   "enCok": 0.0202,
+   "enCok": 0.02,
    "enCokTur": "ksYakut"
   },
   "bot": {
-   "atis": 8,
+   "atis": 15,
    "kazandi": true,
    "kalan": 0
   },
   "hatalar": [],
-  "sure": 31
+  "sure": 35
  }
 }
