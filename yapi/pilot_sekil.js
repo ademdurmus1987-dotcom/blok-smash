@@ -5,8 +5,11 @@
 //   plTepe    dikilitas sivri basligi (altin uclu)        plMenhir dikili tas (yontulmamis, yosunlu)   plMenhirK kisa dikili tas
 //   plLento   lento (iki dikili tasin ustune yatan tas)   plSunak  sunak tablasi (krem mermer, altin kakma)
 //   plDomino  domino tasi (lacivert cilali tas, altin noktalar)
+// v5.6 (17 Kas 2026): Blender'da uretilen oyuncak bloklar (model/pilot/*.glb): plKupK/Y/M patili kup, plKalas uzun kalas (3x1x1),
+//   plKavanozT/M cizgili kapakli kavanoz, plLevha tilki amblemli tas levha (2x1x1), plSutun bilezikli sutun (1x2).
 // carp: bu hizdan sert sabit yuzeye (platform, zemin) carpinca kirilir (pilot.js uygular; top degince kirilmaz, devrilir).
 import { mergeVertices } from '../BufferGeometryUtils.js';
+import { GLTFLoader } from '../GLTFLoader.js?v=2';   // v5.6: Blender bloklari (oyun.js ile ayni adres: ayni modul)
 
 export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
   const Pi = Math.PI;
@@ -186,8 +189,35 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
     return { geo: topla(L), mat: [std({ map, roughness: 0.22, envMapIntensity: 0.8, emissive: '#0a1a70', emissiveIntensity: 0.25 }), ALTIN], parca: std({ color: '#2244d8', roughness: 0.25 }) };
   }
 
-  // ---------- tur tablosu (w, h, d: kup kenari S cinsinden) ----------
+  // ---------- v5.6 (17 Kas 2026): Blender'da uretilen oyuncak bloklar (yapi/model/pilot/*.glb; kaynak: yapi/uretici/blender/pilot_bloklar.py) ----------
+  // Sekil gercek geometri (yuvarlak kenar, girintili pano, kabartma pati/tilki amblemi). Renk kose renginde; ortam golgesi ve yumusak isik
+  // Blender'da hesaplanip 512'lik tek dokuya gomulu (map = isik dokusu x kose rengi). Tam beyaz kose rengi "govde rengi" isaretidir:
+  // tek dosyadan uc renk kup, iki renk kavanoz cikar. Dosya yalniz o turu kullanan pilot bolumde iner (yukle).
   const T = (w, h, d, o) => Object.assign({ w: w / S, h: h / S, d: d / S, f: 0.72, r: 0.05, ses: 'tas', sert: 1 }, o);
+  const GLB = {}, GLBP = {};
+  const glbYukle = (ad) => GLBP[ad] || (GLBP[ad] = new Promise((ok) => new GLTFLoader().load('model/pilot/' + ad + '.glb?v=1', (gl) => {
+    let m = null; gl.scene.traverse((o) => { if (o.isMesh && !m) m = o; });
+    if (m) { const map = m.material && m.material.map || null; if (map) map.anisotropy = 8; GLB[ad] = { geo: m.geometry, map }; }
+    ok();
+  }, undefined, () => { console.warn('pilot: model yuklenemedi', ad); ok(); })));
+  // o: { govde: govde rengi (isaretli koseler), puruz, sil: silindir mi, olcu: [w, h, d] (dunya birimi) }
+  function blok(ad, renk, o) {
+    const [w, h, d] = o.olcu, G = GLB[ad], parca = std({ color: renk, roughness: o.puruz + 0.1 });
+    const kontur = o.sil ? new THREE.CylinderGeometry(w * 0.47, w * 0.47, h, 16) : kutu(w, h, d, S * 0.1, 1);   // koyu kontur sade govdeden (amblemin cevresinde cizgi olmasin)
+    if (!G) return { geo: o.sil ? new THREE.CylinderGeometry(w * 0.47, w * 0.47, h, 20) : kutu(w, h, d, S * 0.1, 2), mat: std({ color: renk, roughness: o.puruz }), parca };   // dosya gelmediyse sade govde (oyun durmasin)
+    let geo = G.geo;
+    if (o.govde) {
+      geo = G.geo.clone(); const c = geo.attributes.color, k = col(o.govde);
+      if (c) for (let i = 0; i < c.count; i++) if (c.getX(i) > 0.97 && c.getY(i) > 0.97 && c.getZ(i) > 0.97) c.setXYZ(i, k.r, k.g, k.b);
+    }
+    const mat = std({ map: G.map, vertexColors: !!geo.attributes.color, roughness: o.puruz, envMapIntensity: o.env || 0.55 });
+    return { geo, mat, parca, konturGeo: kontur, golgeKutu: 1 };
+  }
+  const KUPR = { K: '#e8242c', Y: '#22b84a', M: '#2276f0' }, KAVR = { T: '#12b8b0', M: '#9a3cf0' };
+  const kupTur = (r) => T(S, S, S, { mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', sert: 0, renk: KUPR[r], kir: 1, yuzer: 1, glb: 'pl_kup', yap: () => blok('pl_kup', KUPR[r], { govde: KUPR[r], puruz: 0.3, olcu: [S, S, S] }) });
+  // kavanoz kirilgan: top degince ya da sert carpinca tuzla buz (topKir: oyunun kendi carpisma kirilmasi, sise ile ayni yol)
+  const kavTur = (r) => T(S, S, S, { mass: 0.6, f: 0.5, r: 0.08, ses: 'cam', sert: 0, renk: KAVR[r], sekil: 'sil', kir: 1, topKir: 6.5, glb: 'pl_kavanoz', yap: () => blok('pl_kavanoz', KAVR[r], { govde: KAVR[r], puruz: 0.2, env: 0.8, sil: 1, olcu: [S, S, S] }) });
+  // ---------- tur tablosu (w, h, d: kup kenari S cinsinden) ----------
   const TUR = {
     plSutunK: T(0.86, 2.6, 0.86, { temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 0.45, renk: '#a7acc6', sekil: 'sil', yap: sutunK }),
     plCati: T(3.4, 0.48, 3.4, { temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 1.4, renk: TAS, carp: 6, yap: cati }),
@@ -197,7 +227,15 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
     plMenhirK: T(1.25, 2.5, 0.85, { yatik: 1, temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 1.3, f: 0.75, renk: '#8f9ab0', carp: 6, devril: 2.6, yap: () => menhir(1.25, 2.5, 0.85, 63, '#8f9ab0') }),
     plLento: T(2.45, 0.55, 0.8, { yatik: 1, temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 0.6, f: 0.7, renk: '#8c93b4', carp: 5, yap: lento }),
     plSunak: T(2.8, 0.4, 1.3, { temas: { grup: 'tas', plat: 0.8, kendi: 0.12 }, mass: 0.7, f: 0.7, renk: '#f0dfc0', carp: 4.5, yap: sunak }),
-    plDomino: T(1.5, 3.3, 0.44, { yatik: 1, mass: 0.85, f: 0.35, r: 0.02, renk: '#2244d8', carp: 5.5, yap: domino, temas: { plat: 0.95, kendi: 0 }, govde: { angularDamping: 0.01, linearDamping: 0.01, sleepSpeedLimit: 0.04, sleepTimeLimit: 1.2 } })
+    plDomino: T(1.5, 3.3, 0.44, { yatik: 1, mass: 0.85, f: 0.35, r: 0.02, renk: '#2244d8', carp: 5.5, yap: domino, temas: { plat: 0.95, kendi: 0 }, govde: { angularDamping: 0.01, linearDamping: 0.01, sleepSpeedLimit: 0.04, sleepTimeLimit: 1.2 } }),
+    // v5.6: Blender bloklari. Tahta hafif ve kirilir, tas agir ve serttir, kavanoz kirilgandir.
+    plKupK: kupTur('K'), plKupY: kupTur('Y'), plKupM: kupTur('M'),
+    plKalas: T(3 * S, S, S, { mass: 1.7, f: 0.62, r: 0.08, ses: 'tahta', sert: 0, renk: '#f08a24', kir: 1, yuzer: 1, glb: 'pl_kalas', yap: () => blok('pl_kalas', '#f08a24', { puruz: 0.42, olcu: [3 * S, S, S] }) }),
+    plKavanozT: kavTur('T'), plKavanozM: kavTur('M'),
+    plLevha: T(2 * S, S, S, { mass: 2.6, f: 0.72, r: 0.05, ses: 'tas', renk: '#5b6e9c', glb: 'pl_levha', yap: () => blok('pl_levha', '#5b6e9c', { puruz: 0.5, env: 0.4, olcu: [2 * S, S, S] }) }),
+    plSutun: T(S, 2 * S, S, { mass: 2.2, f: 0.7, r: 0.05, ses: 'tas', renk: '#f3e6cc', sekil: 'sil', glb: 'pl_sutun', yap: () => blok('pl_sutun', '#f3e6cc', { puruz: 0.38, sil: 1, olcu: [S, 2 * S, S] }) })
   };
-  return { TUR };
+  // bolumun kullandigi turlerin model dosyalarini indirir (pilot.js bolum kurulmadan once bekler)
+  const yukle = (turler) => Promise.all([...new Set(turler.map((k) => TUR[k] && TUR[k].glb).filter(Boolean))].map(glbYukle));
+  return { TUR, yukle };
 }

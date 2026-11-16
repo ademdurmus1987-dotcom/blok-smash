@@ -174,8 +174,38 @@ def p21():
     ada = [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'kare', 'r': 4.15, 'ust': 0, 'kal': 0.75}]}]
     return {'ad': 'Buz Sarayı', 'top': 0, 'kam': {'pitch': -8, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
 
-TOP = {1: 16, 7: 15, 13: 12, 21: 24}   # top sayilari (pilot_test bot sonucuna gore ayarlandi; bkz. yapi/pilot_isleri.md)
-B = {1: p1(), 7: p7(), 13: p13(), 21: p21()}
+# ---------------- P22 Oyuncak Kale (17 Kas: Blender'da uretilen 5 deneme blogu: patili kup, uzun kalas, kavanoz, tas levha, sutun) ----------------
+# Tek kare kaide, 5 genis x 3 derin, simetrik. On ve arka sira ayni (A), orta sira (B) kuplerle dolu.
+def p22():
+    L = []; G = 0.004; n = [0]
+    def Y(k): return k * (S + G)
+    def ek(t, i, k, kat, **kw):
+        n[0] += 1; L.append(P(t, i * S, k * S, y=Y(kat), id='s%d' % n[0], **kw))
+    KUP = ('plKupK', 'plKupY', 'plKupM')
+    def kup(i, k, kat, r): ek(KUP[r % 3], i, k, kat)
+    for k in (1, -1):                                   # A: on ve arka sira
+        for i in (-2, 2): ek('plSutun', i, k, 0, devril=3.0)
+        ek('plKalas', 0, k, 0)
+        kup(-1, k, 1, 0); ek('plKavanozT', 0, k, 1); kup(1, k, 1, 0)
+        ek('plLevha', -1.5, k, 2); kup(0, k, 2, 1); ek('plLevha', 1.5, k, 2)
+        ek('plKavanozM', -2, k, 3); ek('plKalas', 0, k, 3); ek('plKavanozM', 2, k, 3)
+        ek('plSutun', -1, k, 4, devril=3.0); kup(0, k, 4, 2); ek('plSutun', 1, k, 4, devril=3.0)
+        ek('plKavanozT', 0, k, 5)
+        ek('plKalas', 0, k, 6)
+    # B: orta sira
+    kup(-2, 0, 0, 2); ek('plKalas', 0, 0, 0); kup(2, 0, 0, 2)
+    for i in (-2, -1, 0, 1, 2): kup(i, 0, 1, abs(i) + 1)
+    ek('plLevha', -1.5, 0, 2); kup(0, 0, 2, 0); ek('plLevha', 1.5, 0, 2)
+    ek('plKalas', 0, 0, 3)
+    for i in (-1, 0, 1): kup(i, 0, 4, abs(i)); kup(i, 0, 5, abs(i) + 1)
+    ek('plKalas', 0, 0, 6)
+    # tepe: ortada tas levha, ustunde kavanoz
+    ek('plLevha', 0, 0, 7); ek('plKavanozM', 0, 0, 8)
+    ada = [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'kare', 'r': 4.15, 'ust': 0, 'kal': 0.75}]}]
+    return {'ad': 'Oyuncak Kale', 'top': 0, 'kam': {'pitch': -8, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
+
+TOP = {1: 16, 7: 15, 13: 12, 21: 24, 22: 24}   # top sayilari (pilot_test bot sonucuna gore ayarlandi; bkz. yapi/pilot_isleri.md)
+B = {1: p1(), 7: p7(), 13: p13(), 21: p21(), 22: p22()}
 for k, v in B.items(): v['top'] = TOP[k]
-json.dump({'surum': 2, 'bolumler': B}, open(OUT, 'w'), ensure_ascii=False, indent=1)
+json.dump({'surum': 2, 'bolumler': B}, open(OUT, 'w', encoding='utf-8', newline=chr(10)), ensure_ascii=False, indent=1)   # Windows'ta da UTF-8 ve LF (Turkce harfler bozulmasin)
 print('yazildi', OUT, {k: len(v['parca']) for k, v in B.items()})

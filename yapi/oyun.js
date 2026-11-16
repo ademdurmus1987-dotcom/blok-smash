@@ -32,7 +32,7 @@ const SKEY = K ? 'blokpop_korsan_v1' : 'blokpop_yapi_v3';
 // PILOT v5.4 (16 Kas 2026): ?pilot=N yeni bolum bicimi denemesi (yapi/pilot.js, pilot_sekil.js, pilot/pilot.json). Pilot kipte kayda HIC yazilmaz.
 // Geri donus: o uc dosya/klasor ve bu dosyadaki 'PILOT' isaretli satirlar silinir; eski oyun aynen kalir.
 const PILOTQ = !K && Q.has('pilot');   // PILOT
-const PLTM = PILOTQ ? await import('./pilot.js?v=1') : null; let PLT = null;   // PILOT
+const PLTM = PILOTQ ? await import('./pilot.js?v=2') : null; let PLT = null;   // PILOT
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 const save = () => { if (PILOTQ) return;   /* PILOT: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
