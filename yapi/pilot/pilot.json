@@ -860,7 +860,7 @@
    "ad": "Buz Sarayı",
    "top": 24,
    "kam": {
-    "pitch": 10,
+    "pitch": 4,
     "yaw": 0,
     "atis": 0.9,
     "genis": 0.95
@@ -872,8 +872,8 @@
      "z": 0,
      "katlar": [
       {
-       "sekil": "disk",
-       "r": 5.6,
+       "sekil": "kare",
+       "r": 4.15,
        "ust": 0,
        "kal": 0.75
       }

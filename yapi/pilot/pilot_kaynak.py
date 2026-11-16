@@ -171,8 +171,8 @@ def p21():
     # 5) tepe: uc uzun buz, ustunde kup ve elmas
     for k in (-1, 0, 1): ek('ksBuz3', 0, k, 5)
     ek('ksBuz', 0, 0, 6); ek('ksElmas', 0, 0, 7)
-    ada = [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'disk', 'r': 5.6, 'ust': 0, 'kal': 0.75}]}]
-    return {'ad': 'Buz Sarayı', 'top': 0, 'kam': {'pitch': 10, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
+    ada = [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'kare', 'r': 4.15, 'ust': 0, 'kal': 0.75}]}]
+    return {'ad': 'Buz Sarayı', 'top': 0, 'kam': {'pitch': 4, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
 
 TOP = {1: 16, 7: 15, 13: 12, 21: 24}   # top sayilari (pilot_test bot sonucuna gore ayarlandi; bkz. yapi/pilot_isleri.md)
 B = {1: p1(), 7: p7(), 13: p13(), 21: p21()}
