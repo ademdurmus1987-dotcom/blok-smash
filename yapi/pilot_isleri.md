@@ -45,3 +45,11 @@
 
 ## Geri dönüş
 `yapi/pilot.js`, `yapi/pilot_sekil.js`, `yapi/pilot/` silinir; `yapi/oyun.js`'te `PILOT` işaretli satırlar silinir (`let CPITCH`/`CAZ` tekrar `const` yapılabilir). `parcaKur`/`bolumBasla` bölünmesi kalabilir (eski davranışla aynı).
+
+## 17 Kas 2026: YÖN DEĞİŞTİ (Adem'in kararı) — önce bunu oku
+- P1, P7, P13 (ayrı adalar, taş çember, domino) Adem'in istediği görüntü değil; RAFA KALKTI. Altyapıları (pilot kipi, serbest yerleşim, kaide şekilleri, kayıtsız kip) kullanılmaya devam.
+- İstenen: Adem'in gönderdiği referans dizilimler gibi: TEK kaide (kare/yuvarlak/dikdörtgen), ekranı dolduran iri ve sıkı yapı, ÖNDEN bakış, 3-5 sıra derinlik, uzun kalas / dik sütun / yatık silindir / taşan kat, simetrik desen.
+- Kamera standardı: `kam: {pitch: -8, yaw: 0, genis: 0.95}` (kamera kaide hizasında; kaide üstü ince şerit, ayak görünür). Adem onayladı.
+- Örnek kabul edilen bölüm: P21 Buz Sarayı (`pilot_kaynak.py` içinde `p21`), `?pilot=21`. Kazanılabilirlik testi henüz yapılmadı.
+- Blok görünümü hedefi: temiz "oyuncak" tarzı (canlı düz renk, yuvarlak kenar, hafif parlama, belirgin amblem). Taş sütun ve tahta direk fazla dokulu; yenilenecek. Başka oyunun amblemleri kopyalanmaz: pati/tilki amblemi, korsan renkleri.
+- Zemin düzeltmesi (koy iskelesi batmaz, sahil kıyı çizgisi resme göre) main'de: oyun.js?v=100, CACHE v51. Bu dal main'e alınırken sürümler 101 / v52 yapılmalı.
