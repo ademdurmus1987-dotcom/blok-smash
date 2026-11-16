@@ -2307,13 +2307,18 @@ function rimOf(zn, c, x, z) {   // gomulen kupun etrafinda duzensiz kar/kum yigi
 }
 function updSea(dt) { SEA.t += dt; SEAMAT.uniforms.t.value = SEA.t; }
 function seaY(x, z) { return GY + 0.04 + 0.07 * Math.sin(x * 0.8 + SEA.t * 1.7) + 0.05 * Math.sin(z * 1.1 - SEA.t * 1.3); }
+const ZV = new THREE.Vector3();
+// zemindeki (x, z) noktasinin fon resmindeki yukseklik orani (0 ust, 1 alt); fon 9:16, ekrana 'cover' ve ortali oturur
+function fonFy(x, z) { const H = innerHeight, ih = Math.max(H, innerWidth * 16 / 9); ZV.set(x, GY, z).project(cam); return ((1 - ZV.y) / 2 * H - (H - ih) / 2) / ih; }
 function zoneAt(x, z) {
   if (K) return K.zone(x, z);
   const fo = fonOf(LV) || {}, f = fo.f || '';
   if (fo.yeni) return fo.hep || (fo.sy && z < ZW) ? 'su' : fo.zem || 'kum';   // v3.21: (Adem) resim fonlarda da suya dusen batar, kuma/kara dusen gomulur
   if (f.startsWith('kar')) return 'kar';
-  if (f === 'koy') return 'su';   // v3.16: korsan koyu videosu: platform denizde
-  if (f.startsWith('sahil')) return z < SEA.z0 - 0.18 * Math.sin(x * 0.45 + 1.3) ? 'su' : 'kum';
+  // v5.5 (Adem 16 Kas): zemin turu resimde gorunen yere gore: koyda alttaki tahta iskeleye dusen batmaz (kara gibi kirilir), denize dusen batar;
+  // sahilde resimdeki kiyi cizgisinin ustu deniz (batar), alti kum (saplanir). Eski hesap resimle uyusmuyordu (iskelede batiyor, denizde kuma saplaniyordu).
+  if (f === 'koy') return fonFy(x, z) > 0.8 ? 'cim' : 'su';
+  if (f.startsWith('sahil')) return fo.vid || !SEA.mesh ? (fonFy(x, z) < 0.6 ? 'su' : 'kum') : (z < SEA.z0 - 0.18 * Math.sin(x * 0.45 + 1.3) ? 'su' : 'kum');
   return 'cim';
 }
 // yuzenler (tahta, buz, fici, kabak) ve batanlar (tas, metal, altin, cam, jole)
@@ -3393,7 +3398,7 @@ function kabarcik() {
   const t = AC.currentTime, r = 1 + (Math.random() - 0.5) * 0.06;
   tone('sine', 320 * r, 1100, t, 0.11, 0.6); tone('sine', 600 * r, 1500, t + 0.03, 0.07, 0.25);
 }
-window.YP = { THREE, KIND, SEK, MOD, GLASS, get PATI() { return PATI; }, ORNEK, get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, get ENG() { return ENG; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec, hz) { HIZLI = !!hz; let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } HIZLI = false; }, lv: (L) => levelOf(L), engelOf, BV, dene(L, v) { DENE = { L, Y: Object.assign({ veri: 1, engel: v.engel || [], make: () => v.c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) }, v) }; BV.Y.delete(L); UCACHE.delete(L); start0(L); }, get GONE() { return cubes.filter((c) => c.gone).length; }, snap() { return glc.toDataURL('image/png'); } };
+window.YP = { zoneAt, fonFy, THREE, KIND, SEK, MOD, GLASS, get PATI() { return PATI; }, ORNEK, get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, get ENG() { return ENG; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec, hz) { HIZLI = !!hz; let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } HIZLI = false; }, lv: (L) => levelOf(L), engelOf, BV, dene(L, v) { DENE = { L, Y: Object.assign({ veri: 1, engel: v.engel || [], make: () => v.c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) }, v) }; BV.Y.delete(L); UCACHE.delete(L); start0(L); }, get GONE() { return cubes.filter((c) => c.gone).length; }, snap() { return glc.toDataURL('image/png'); } };
 if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MOD, PM, platBody, GB, cubes, balls, S, TC, KEEP, NENV, SV, save, $, Q, TEST,
   get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set GY(v) { GY = v; GB.position.y = v; }, get shake() { return shake; }, set shake(v) { shake = v; },
   set TOPY(v) { TOPY = v; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, LEG, DIRT, KIND, splashSnd: (v) => AC && (K ? play('su', v + 0.2) : splashSnd(v)), dongu, play: (k, v, r) => AC && play(k, v, r),
