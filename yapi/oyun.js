@@ -32,7 +32,7 @@ const SKEY = K ? 'blokpop_korsan_v1' : 'blokpop_yapi_v3';
 // PILOT v5.4 (16 Kas 2026): ?pilot=N yeni bolum bicimi denemesi (yapi/pilot.js, pilot_sekil.js, pilot/pilot.json). Pilot kipte kayda HIC yazilmaz.
 // Geri donus: o uc dosya/klasor ve bu dosyadaki 'PILOT' isaretli satirlar silinir; eski oyun aynen kalir.
 const PILOTQ = !K && Q.has('pilot');   // PILOT
-const PLTM = PILOTQ ? await import('./pilot.js?v=2') : null; let PLT = null;   // PILOT
+const PLTM = PILOTQ ? await import('./pilot.js?v=9') : null; let PLT = null;   // PILOT
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 const save = () => { if (PILOTQ) return;   /* PILOT: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
@@ -3427,11 +3427,24 @@ if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MO
   clearLevel, addCubes, hud, setPlat, sfx, play, chime, splash, ripple, bubble, foam, seaY, burst, confetti, modal, closeModal, start, buzz, spr, fx, trunkTip, wakeAll, FOAMT, SOFT, canvasTex, floatText, screenAt,
   get AC() { return AC; } });
 // v3.0: acilis ekranindaki yukleme cubugu (index.html'deki BSYUK)
+// PILOT v5.7 (17 Kas 2026): (Adem: top cisimlerin icinden geciyor) top 95 birim/sn ile bir fizik adiminda 0.8 birim ilerler (yaricapi 0.47).
+// Bir adimda merkezi parcanin icine girebiliyordu; ozellikle silindir govdelerde (sutun, kavanoz, fici) carpisma yanlis yonden cozulup top icinden geciyordu.
+// Her adimin sonunda topun onune isin atilir: sonraki adimda bir parcaya girecekse top o parcanin yuzeyine alinir; carpisma sonraki adimda, dogru yuzden cozulur.
+const CCD = { a: new CANNON.Vec3(), b: new CANNON.Vec3(), r: new CANNON.RaycastResult(), o: { collisionFilterMask: 1, skipBackfaces: true } };
+world.addEventListener('postStep', () => {
+  if (!PLT) return;
+  for (const b of balls) {
+    const bd = b.body; if (b.hit || !bd.world) continue; const v = bd.velocity, sp = v.length(); if (sp < 30) continue;
+    const k = (sp * world.dt + BR) / sp; CCD.a.copy(bd.position); CCD.b.set(bd.position.x + v.x * k, bd.position.y + v.y * k, bd.position.z + v.z * k); CCD.r.reset();
+    world.raycastClosest(CCD.a, CCD.b, CCD.o, CCD.r);
+    if (CCD.r.hasHit && CCD.r.distance > BR) { const d = (CCD.r.distance - BR + 0.03) / sp; bd.position.x += v.x * d; bd.position.y += v.y * d; bd.position.z += v.z * d; }
+  }
+});
 // PILOT: pilot.js'in kullandigi motor parcalari (yalniz ?pilot=N kipinde cagrilir)
 function pilotBag() {
   return { THREE, CANNON, scene, world, PM, platBody, GB, SIRK, LEG, legBoy, PLS, cubes, balls, S, KAIDE, SEK, KIND, SEKSH, MATSND, KIRILGAN, FLOAT, ORNEK, ren, cam, TC, Q, $, canvasTex, ENV,
     parcaKur, bolumBasla, fit, breakBlock, wakeAll, start, modal, closeModal, sfx, buzz, kamera(p, a) { CPITCH = p; CAZ = a; }, get CAZ() { return CAZ; },
-    get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
+    HAVUZ, setLeg, zoneAt, fonAd: () => (fonOf(LV) || {}).f || '', get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
 }
 if (PLTM) PLT = PLTM.pilotKur(pilotBag());   // PILOT
 const L0 = PLT ? PLT.L /* PILOT */ : Math.min(K ? 1e9 : TOPLAM(), Math.floor(+(Q.get('sv') || SV.L || 1)) || 1), modelReady = bolumYukle(L0).then(() => modelYukle(gerekliModel(L0)));   // v5.0: once bolum parcasi   // v4.7: acilista yalniz kayitli bolumun modelleri

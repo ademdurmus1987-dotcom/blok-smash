@@ -860,7 +860,7 @@
    "ad": "Buz Sarayı",
    "top": 24,
    "kam": {
-    "pitch": -8,
+    "pitch": 1,
     "yaw": 0,
     "atis": 0.9,
     "genis": 0.95
@@ -1355,7 +1355,7 @@
    "ad": "Oyuncak Kale",
    "top": 24,
    "kam": {
-    "pitch": -8,
+    "pitch": 1,
     "yaw": 0,
     "atis": 0.9,
     "genis": 0.95

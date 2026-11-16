@@ -172,7 +172,7 @@ def p21():
     for k in (-1, 0, 1): ek('ksBuz3', 0, k, 5)
     ek('ksBuz', 0, 0, 6); ek('ksElmas', 0, 0, 7)
     ada = [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'kare', 'r': 4.15, 'ust': 0, 'kal': 0.75}]}]
-    return {'ad': 'Buz Sarayı', 'top': 0, 'kam': {'pitch': -8, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
+    return {'ad': 'Buz Sarayı', 'top': 0, 'kam': {'pitch': 1, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
 
 # ---------------- P22 Oyuncak Kale (17 Kas: Blender'da uretilen 5 deneme blogu: patili kup, uzun kalas, kavanoz, tas levha, sutun) ----------------
 # Tek kare kaide, 5 genis x 3 derin, simetrik. On ve arka sira ayni (A), orta sira (B) kuplerle dolu.
@@ -202,7 +202,7 @@ def p22():
     # tepe: ortada tas levha, ustunde kavanoz
     ek('plLevha', 0, 0, 7); ek('plKavanozM', 0, 0, 8)
     ada = [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'kare', 'r': 4.15, 'ust': 0, 'kal': 0.75}]}]
-    return {'ad': 'Oyuncak Kale', 'top': 0, 'kam': {'pitch': -8, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
+    return {'ad': 'Oyuncak Kale', 'top': 0, 'kam': {'pitch': 1, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
 
 TOP = {1: 16, 7: 15, 13: 12, 21: 24, 22: 24}   # top sayilari (pilot_test bot sonucuna gore ayarlandi; bkz. yapi/pilot_isleri.md)
 B = {1: p1(), 7: p7(), 13: p13(), 21: p21(), 22: p22()}

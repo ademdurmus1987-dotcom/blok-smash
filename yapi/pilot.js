@@ -268,6 +268,7 @@ export function pilotKur(A) {
     ortala(); A.TC.aimYaw = A.TC.yaw = Math.PI + A.CAZ;
     if (A.TC.pad) { A.TC.pad.visible = false; if (A.TC.rim2) A.TC.rim2.visible = false; }   // yukseltilmis kamerada arabanin beyaz kaidesi gorunuyordu; normal bolumlerde gorunmez
     A.bolumBasla(Y);
+    ayakDibi();
     hoyuk();
   }
   // kamera hedefini yapinin ekrandaki yatay ortasina kaydir (perspektif yuzunden tek seferde olmaz: 3 tur)
@@ -283,6 +284,20 @@ export function pilotKur(A) {
   }
   addEventListener('resize', () => { if (CERCEVE) ortala(); });
   // karli fonda ana ayagin dibindeki kar yigini 22 ayri kure (22 cizim): pilotta tek mesh'e birlestirilir (gorunus ayni)
+  // v5.7 (Adem: kaide suya girmiyor, kuma batmiyor; daha gercekci dursun): pilotta ayak tabansiz, yerde duz kesilmis ince direkti (havada duruyordu).
+  // Referans oyunlardaki gibi: ince govde + yere basan genis taban (oyunun kendi ayak tabani: kaide, halka, baslik) + tabanin altinda yumusak temas golgesi.
+  // Su birikintisi, kum yigini, uzun direk ve adacik denendi; Adem begenmedi.
+  let AYAKG = null;
+  function ayakDibi() {
+    const L = A.LEG; if (!L.visible) return;
+    const kat = B.ada[0].katlar[0], alt = kat.ust - (kat.kal || 0.75);
+    A.setLeg(0, L); A.legBoy(L, alt + 0.75);
+    for (const n of [2, 3, 4]) if (L.children[n]) L.children[n].visible = true;
+    const md = L.userData.mound, sh = L.userData.shade; if (md) md.visible = false; if (sh) sh.visible = false; if (A.HAVUZ) A.HAVUZ.visible = false;
+    const g = new THREE.PlaneGeometry(8.4, 6.2); g.rotateX(-Pi / 2); g.translate(L.position.x, A.GY + 0.03, L.position.z + 0.25);
+    if (!AYAKG) AYAKG = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, map: A.canvasTex(128, 128, (x, w, h) => { const gr = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gr.addColorStop(0, 'rgba(45,28,12,.78)'); gr.addColorStop(0.42, 'rgba(45,28,12,.5)'); gr.addColorStop(0.75, 'rgba(45,28,12,.16)'); gr.addColorStop(1, 'rgba(45,28,12,0)'); x.fillStyle = gr; x.fillRect(0, 0, w, h); }) });
+    const m = new THREE.Mesh(g, AYAKG); m.renderOrder = 2; A.scene.add(m); EK.push(m);
+  }
   function hoyuk() {
     const md = A.LEG.userData.mound; if (!md || !md.visible || !md.children.length) return;
     md.updateMatrixWorld(true); const gs = [];
@@ -365,7 +380,7 @@ export function pilotKur(A) {
   function kaybet() { const g = A.g; A.sfx('lose'); kart('Toplar bitti!', true, '<h2>' + g.left + ' parça kaldı</h2><p>Deneme bölümü: ilerleme kaydedilmez.</p>'); }
 
   async function yukle() {
-    try { VERI = await (await fetch('pilot/pilot.json?v=2')).json(); } catch (e) { VERI = null; }
+    try { VERI = await (await fetch('pilot/pilot.json?v=3')).json(); } catch (e) { VERI = null; }
     B = VERI && VERI.bolumler && VERI.bolumler[N] || null;
     if (B) Y = { veri: 1, engel: [], ad: B.ad, top: B.top, make: () => [] };
     if (B && PS.yukle) await PS.yukle(B.parca.map((p) => p.t));   // v5.6: Blender bloklarinin model dosyalari

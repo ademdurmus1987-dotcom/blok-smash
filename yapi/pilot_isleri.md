@@ -60,3 +60,8 @@
 - Turler `pilot_sekil.js`: `plKupK/Y/M`, `plKalas`, `plKavanozT/M`, `plLevha`, `plSutun`. Model dosyasi yalniz o turu kullanan pilotta iner.
 - P22 Oyuncak Kale (`?pilot=22`): 55 parca, 24 top. Test (390x844): konsol hatasi yok, 3 sn kayma 0, atista kavanoz/kalas kiriliyor. Kazanilabilirlik (bot) testi yapilmadi.
 - Onizleme ve ekran goruntusu: `yapi/uretici/blender/onizleme/onizleme.png`, `yapi/uretici/rapor/pilot/P22_390x844.jpg`.
+
+## 17 Kas 2026 (aksam): Adem'in uc duzeltmesi (v5.7)
+- Kamera standardi artik `kam: {pitch: 1, yaw: 0, genis: 0.95}` (eski -8 asagida kaliyordu). P21 ve P22 guncellendi.
+- Top parcalarin icinden geciyordu: top 95 birim/sn ile bir fizik adiminda 0.8 birim gidip silindir govdenin (sutun, kavanoz) icine giriyor, carpisma kaciyordu. `oyun.js` icinde PILOT isaretli `CCD` (postStep): top bir sonraki adimda parcaya girecekse yuzeyine alinir. Yalniz pilot kipte acik; normal bolumlerde ayni hata olabilir ama denge testleri eski davranisa gore, orada acilmadi.
+- Kaide ayagi havada gorunuyordu (pilotta tabansiz, yerde duz kesilen ince direk): `pilot.js` `ayakDibi()` oyunun kendi ayak tabanini (kaide, halka, baslik) geri acar ve altina yumusak temas golgesi koyar; `yapi/referans/oyun` gorsellerindeki gibi. Su birikintisi, kum yigini, asagi uzayan direk ve kum adacigi denendi; Adem begenmedi.
