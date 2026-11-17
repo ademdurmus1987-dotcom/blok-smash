@@ -219,6 +219,13 @@ def aktar(ob, ad):
     bpy.ops.export_scene.gltf(**{k: v for k, v in ist.items() if k in var})
     print('  yazildi', yol, '%.1f KB' % (os.path.getsize(yol) / 1024))
 
+ONIZRENK = {'pl_kup': '#e8242c', 'pl_kavanoz': '#12b8b0', 'pl_sutun': '#f6ead2', 'pl_buz': '#46b4ff', 'pl_buz3': '#46b4ff', 'pl_elmas': '#2f8cff'}   # yalniz onizleme: govde isaretini oyundaki renge boyar
+def onizle_boya(ob, ad):
+    if ad not in ONIZRENK: return
+    k = renk(ONIZRENK[ad]); at = ob.data.color_attributes.get('Col')
+    for d in at.data:
+        c = d.color
+        if c[0] > 0.97 and c[1] > 0.97 and c[2] > 0.97: d.color = k
 def uret(ad, parcalar, puruz=0.34, keskin=62.0):
     print('==', ad)
     ob = nesne(ad, parcalar, keskin)
@@ -226,6 +233,7 @@ def uret(ad, parcalar, puruz=0.34, keskin=62.0):
     assert ucgen <= 830, (ad, ucgen)
     uv_ac(ob); img = pisir(ob, ad); malzeme(ob, ad, img, puruz); aktar(ob, ad)
     ob.hide_render = True   # sonraki modelin pisirmesinde golge yapmasin (hepsi ayni noktada duruyor)
+    onizle_boya(ob, ad)     # disa aktarimdan SONRA: dosyadaki isaret beyaz kalir
     return ob
 
 # ------------------------------------------------------------------ 1) amblemli kup (1x1x1)
@@ -404,28 +412,130 @@ def direk():
         o, u, v = yuz_cerceve(yon, d / 2 - gom + 0.016 * S); P += pati(o, u, v, 0.78 * S, 0.045 * S, KREM)
     return uret('pl_direk', P, 0.42)
 
+# ------------------------------------------------------------------ yardimcilar: serit, yildiz, yuvarlak kose dikdortgen (yuz duzleminde, S biriminde, saat yonunun tersine)
+def serit(p0, p1, w):
+    dx, dy = p1[0] - p0[0], p1[1] - p0[1]; L = math.hypot(dx, dy); nx, ny = -dy / L * w / 2, dx / L * w / 2
+    return [(p0[0] - nx, p0[1] - ny), (p1[0] - nx, p1[1] - ny), (p1[0] + nx, p1[1] + ny), (p0[0] + nx, p0[1] + ny)]
+def yildiz(cx, cy, r1, r2, n=4, faz=Pi / 2):
+    return [(cx + (r1 if i % 2 == 0 else r2) * math.cos(faz + Pi * i / n), cy + (r1 if i % 2 == 0 else r2) * math.sin(faz + Pi * i / n)) for i in range(2 * n)]
+def yuvdik(cx, cy, w, h, r, k=3):
+    P = []
+    for (ox, oy, a0) in ((w / 2 - r, -h / 2 + r, -Pi / 2), (w / 2 - r, h / 2 - r, 0), (-w / 2 + r, h / 2 - r, Pi / 2), (-w / 2 + r, -h / 2 + r, Pi)):
+        for i in range(k): a = a0 + (Pi / 2) * i / (k - 1); P.append((cx + ox + r * math.cos(a), cy + oy + r * math.sin(a)))
+    return P
+def SP(pts): return [(a * S, b * S) for a, b in pts]
+
+# ------------------------------------------------------------------ 7) buz kup (1x1x1) ve 8) uzun buz (3x1x1): parlak, yumusak koseli, yuzlerinde isik seritleri ve pirilti
+ISIK = renk('#effbff')
+def buz_yap(ad, wS):
+    w, a = wS * S * 0.998, S * 0.995; r = 0.13 * S; gom = 0.032 * S
+    bm = kutu_bm(w, a, a, r, 2)
+    for y in YON.values(): pano(bm, buyuk_yuz(bm, y), 0.06 * S, gom)
+    P = [bm_al(bm)]; bm.free()
+    hu = (w / S) / 2 - 0.19                       # panonun yatay yarim boyu (S)
+    for yon in ('on', 'arka', 'sag', 'sol', 'ust'):
+        uzak = (w if yon in ('sag', 'sol') else a) / 2 - gom
+        o, u, v = yuz_cerceve(yon, uzak); yari = hu if yon in ('on', 'arka', 'ust') else 0.31
+        x0 = -yari + 0.04                          # sol ust kosede iki capraz isik seridi, sag altta pirilti
+        P.append(kabartma(o, u, v, SP(serit((x0, 0.04), (x0 + 0.2, 0.25), 0.06)), [(1.0, -0.004), (0.9, 0.018 * S)], ISIK))
+        P.append(kabartma(o, u, v, SP(serit((x0 + 0.1, 0.0), (x0 + 0.2, 0.1), 0.035)), [(1.0, -0.004), (0.9, 0.01 * S)], ISIK))
+        P.append(kabartma(o, u, v, SP(yildiz(yari - 0.1, -0.17, 0.075, 0.022)), [(1.0, -0.004), (0.7, 0.016 * S)], ISIK))
+        if wS > 1: P.append(kabartma(o, u, v, SP(yildiz(0.1, 0.16, 0.05, 0.016)), [(1.0, -0.004), (0.7, 0.012 * S)], ISIK))
+    return uret(ad, P, 0.12)
+def buz(): return buz_yap('pl_buz', 1)
+def buz3(): return buz_yap('pl_buz3', 3)
+
+# ------------------------------------------------------------------ 9) sandik (1x1x1): cerceve, dik tahtalar, capraz destek tahtasi, civiler
+def sandik_govde(cerceve, tahta1, tahta2, planks=True):
+    a = S * 0.995; r = 0.09 * S; gom = 0.04 * S; kal = 0.105 * S
+    bm = kutu_bm(a, a, a, r, 2)
+    panolar = {ad: pano(bm, buyuk_yuz(bm, y), kal, gom) for ad, y in YON.items()}
+    tahta = set()
+    if planks:
+        for ad in ('on', 'arka', 'sag', 'sol', 'ust'):
+            f = panolar[ad]; n = f.normal.copy()
+            if ad != 'ust': ek = [e for e in f.edges if abs((e.verts[0].co - e.verts[1].co).normalized().y) < 0.1]
+            else: ek = [e for e in f.edges if abs((e.verts[0].co - e.verts[1].co).normalized().z) < 0.1]
+            bmesh.ops.subdivide_edges(bm, edges=ek, cuts=2, use_grid_fill=True); bm.normal_update()
+            d0 = f.calc_center_median().dot(n)
+            yz = [q for q in bm.faces if q.normal.dot(n) > 0.999 and abs(q.calc_center_median().dot(n) - d0) < 1e-4]
+            bmesh.ops.inset_individual(bm, faces=yz, thickness=0.016 * S, depth=0.0, use_even_offset=True)
+            for q in yz:
+                for vv in q.verts: vv.co += n * 0.014 * S
+                tahta.add(q)
+            bm.normal_update()
+    pn = set(panolar.values())
+    def sec(f):
+        if f in tahta:
+            c = f.calc_center_median(); return tahta2 if abs(c.x + c.z) < 0.12 * S or abs(c.x - c.z) < 0.12 * S else tahta1
+        return tahta1 if f in pn else cerceve
+    P = [bm_al(bm, sec)]; bm.free()
+    return P, a, gom
+def sandik():
+    CER = renk('#d8620e'); T1 = renk('#ff9f30'); T2 = renk('#ff9020'); DES = renk('#ffb24a'); CIVI = renk('#4a3a5c')
+    P, a, gom = sandik_govde(CER, T1, T2)
+    for yon in ('on', 'arka', 'sag', 'sol'):
+        o, u, v = yuz_cerceve(yon, a / 2 - gom + 0.014 * S)
+        P.append(kabartma(o, u, v, SP(serit((-0.29, -0.29), (0.29, 0.29), 0.2)), [(1.0, -0.004), (0.99, 0.034 * S)], DES))
+    for yon in ('on', 'arka'):
+        o, u, v = yuz_cerceve(yon, a / 2)
+        for sx in (-1, 1):
+            for sy in (-1, 1): P.append(kabartma(o, u, v, elips(sx * 0.395 * S, sy * 0.395 * S, 0.034 * S, 0.034 * S, 6), [(1.0, -0.004), (0.5, 0.024 * S)], CIVI))
+    return uret('pl_sandik', P, 0.44)
+
+# ------------------------------------------------------------------ 10) TNT (1x1x1): kirmizi sandik, dort yanda krem etiket uzerinde bomba amblemi
+def tnt():
+    CER = renk('#a8150f'); T1 = renk('#e5302a'); T2 = renk('#d8261f'); SIYAH = renk('#22202e'); FITIL = renk('#6a4422'); KIV = renk('#ffd23a')
+    P, a, gom = sandik_govde(CER, T1, T2, planks=False)
+    for yon in ('on', 'arka', 'sag', 'sol'):
+        o, u, v = yuz_cerceve(yon, a / 2 - gom); n = Vector(u).cross(Vector(v)); h1 = 0.026 * S
+        P.append(kabartma(o, u, v, SP(yuvdik(0, 0, 0.64, 0.56, 0.08)), [(1.0, -0.004), (0.97, h1)], KREM))
+        ob = tuple(Vector(o) + n * h1)
+        P.append(kabartma(ob, u, v, SP(elips(-0.06, -0.05, 0.16, 0.16, 10)), [(1.0, -0.004), (0.86, 0.03 * S), (0.5, 0.05 * S)], SIYAH))
+        P.append(kabartma(ob, u, v, SP(serit((0.05, 0.07), (0.14, 0.16), 0.04)), [(1.0, -0.004), (0.9, 0.02 * S)], FITIL))
+        P.append(kabartma(ob, u, v, SP(yildiz(0.17, 0.19, 0.085, 0.03)), [(1.0, -0.004), (0.7, 0.028 * S)], KIV))
+    return uret('pl_tnt', P, 0.4)
+
+# ------------------------------------------------------------------ 11) mucevher (cap 1, boy 1): kesme tas; yuzeyler keskin, renk turden (elmas mavi, yakut kirmizi)
+def elmas():
+    n = 10; st = 2 * Pi / n; R = 0.47 * S
+    halka = [(0.11 * S, -0.43 * S, 0.0), (R, -0.04 * S, 0.0), (R, 0.05 * S, 0.0), (0.37 * S, 0.24 * S, 0.5), (0.25 * S, 0.37 * S, 0.0)]
+    bm = bmesh.new(); H = []
+    for (rr, y, kay) in halka: H.append([bm.verts.new((rr * math.cos((j + kay) * st), y, -rr * math.sin((j + kay) * st))) for j in range(n)])
+    c, gl, gu, cm, tb = H
+    for j in range(n):
+        k = (j + 1) % n
+        bm.faces.new([c[j], c[k], gl[k], gl[j]]); bm.faces.new([gl[j], gl[k], gu[k], gu[j]])
+        bm.faces.new([gu[j], gu[k], cm[j]]); bm.faces.new([cm[j - 1], gu[j], cm[j]])
+        bm.faces.new([cm[j], tb[k], tb[j]]); bm.faces.new([cm[j - 1], cm[j], tb[j]])
+    bm.faces.new(c[::-1]); bm.faces.new(tb)
+    bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+    P = [bm_al(bm)]; bm.free()
+    return uret('pl_elmas', P, 0.08, keskin=8.0)
+
 # ------------------------------------------------------------------ onizleme (Blender icinde bakmak icin; oyunda kullanilmaz)
-def onizle(obs):
+def onizle(obs, dosya):
     sc = bpy.context.scene
-    x = -(len(obs) - 1) * 1.3
-    for ob in obs: ob.location = (x + 0, 0, 0); x += 2.6
-    obs[1].location.z = -2.4; obs[1].location.x = -2.2; obs[3].location.z = -2.4; obs[3].location.x = 2.6
-    obs[0].location.x = -3.6; obs[2].location.x = -1.2; obs[4].location.x = 3.9; obs[4].location.z = 0.6; obs[5].location.x = 1.5; obs[5].location.z = 0.6
-    for ob in obs: ob.rotation_euler = (0, 0, math.radians(-28)); ob.hide_render = False
-    cam = bpy.data.cameras.new('kam'); cam.type = 'ORTHO'; cam.ortho_scale = 12.5; co = bpy.data.objects.new('kam', cam); sc.collection.objects.link(co)
-    co.location = (0, -20, 5.2); co.rotation_euler = (math.radians(77), 0, 0); sc.camera = co
+    satir = [obs[i:i + 4] for i in range(0, len(obs), 4)]
+    for ri, sat in enumerate(satir):
+        en = [max(o.dimensions.x, o.dimensions.y) for o in sat]; x = -(sum(en) + 0.9 * (len(sat) - 1)) / 2
+        for o, e in zip(sat, en): o.location = (x + e / 2, 0, -ri * 3.6); x += e + 0.9
+    for ob in obs: ob.rotation_euler = (0, 0, math.radians(-24)); ob.hide_render = False
+    orta = -(len(satir) - 1) * 1.8 + 0.6
+    cam = bpy.data.cameras.new('kam'); cam.type = 'ORTHO'; cam.ortho_scale = max(12.5, 3.9 * len(satir) + 2); co = bpy.data.objects.new('kam', cam); sc.collection.objects.link(co)
+    co.location = (0, -20, orta + 4.6); co.rotation_euler = (math.radians(77), 0, 0); sc.camera = co
     gn = bpy.data.lights.new('gunes', 'SUN'); gn.energy = 2.2; gn.angle = math.radians(12); go = bpy.data.objects.new('gunes', gn); sc.collection.objects.link(go); go.rotation_euler = (math.radians(50), 0, math.radians(35))
-    sc.render.engine = 'CYCLES'; sc.cycles.samples = 48; sc.render.resolution_x = 1100; sc.render.resolution_y = 760; sc.render.film_transparent = False
-    sc.render.filepath = os.path.join(ONIZ, 'onizleme.png'); sc.render.image_settings.file_format = 'PNG'
+    sc.render.engine = 'CYCLES'; sc.cycles.samples = 48; sc.render.resolution_x = 1100; sc.render.resolution_y = int(760 * max(1, len(satir) / 2)); sc.render.film_transparent = False
+    sc.render.filepath = os.path.join(ONIZ, dosya); sc.render.image_settings.file_format = 'PNG'
     bpy.ops.render.render(write_still=True); print('onizleme', sc.render.filepath)
 
 def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dunya()
     ist = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk}
+    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk, 'buz': buz, 'buz3': buz3, 'sandik': sandik, 'tnt': tnt, 'elmas': elmas}
     obs = [f() for k, f in hepsi.items() if not ist or k in ist]
-    if len(obs) == 6: onizle(obs)
+    if len(obs) > 1: onizle(obs, 'onizleme.png' if not ist else 'onizleme_secili.png')   # hepsi uretilince ana onizleme, secili uretimde ayri dosya
     print('BITTI')
 
 main()

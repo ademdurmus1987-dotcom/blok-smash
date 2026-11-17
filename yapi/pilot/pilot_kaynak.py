@@ -156,21 +156,21 @@ def p21():
     # 2) ic dolgu 3x3x2: altta buz + ortada TNT, ustte sandik koseler + buz + altin
     for i in (-1, 0, 1):
         for k in (-1, 0, 1):
-            ek('ksTNT' if (i, k) == (0, 0) else 'ksBuz', i, k, 0)
-            ek('oyA' if (i, k) == (0, 0) else ('ksSandik' if i and k else 'ksBuz'), i, k, 1)
+            ek('plTNT' if (i, k) == (0, 0) else 'plBuz', i, k, 0)
+            ek('oyA' if (i, k) == (0, 0) else ('plSandik' if i and k else 'plBuz'), i, k, 1)
     # 3) buz cati (kat 2): ortada x boyunca 5 uzun buz, yanlarda z boyunca uzun buz, koselerde kup
-    for k in (-2, -1, 0, 1, 2): ek('ksBuz3', 0, k, 2)
+    for k in (-2, -1, 0, 1, 2): ek('plBuz3', 0, k, 2)
     for i in (-2, 2):
-        ek('ksBuz3', i, 0, 2, ry=90)
-        for k in (-2, 2): ek('ksBuz', i, k, 2)
+        ek('plBuz3', i, 0, 2, ry=90)
+        for k in (-2, 2): ek('plBuz', i, k, 2)
     # 4) ust kosk (kat 3-4): koselerde tahta direk, kenarlarda ve ortada buz
     for i in (-1, 0, 1):
         for k in (-1, 0, 1):
             if i and k: ek('plDirek', i, k, 3)
-            else: ek('ksBuz', i, k, 3); ek('ksBuz', i, k, 4)
+            else: ek('plBuz', i, k, 3); ek('plBuz', i, k, 4)
     # 5) tepe: uc uzun buz, ustunde kup ve elmas
-    for k in (-1, 0, 1): ek('ksBuz3', 0, k, 5)
-    ek('ksBuz', 0, 0, 6); ek('ksElmas', 0, 0, 7)
+    for k in (-1, 0, 1): ek('plBuz3', 0, k, 5)
+    ek('plBuz', 0, 0, 6); ek('plElmas', 0, 0, 7)
     ada = [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'kare', 'r': 4.15, 'ust': 0, 'kal': 0.75}]}]
     return {'ad': 'Buz Sarayı', 'top': 0, 'kam': {'pitch': 1, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
 

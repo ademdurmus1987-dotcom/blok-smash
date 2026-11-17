@@ -73,3 +73,11 @@
 - P23 Fener Kulesi (`?pilot=23`): yuvarlak kaide, 4x4 taban, 58 parca, 24 top. Ekran: `yapi/uretici/rapor/pilot/P23_390x844.jpg`.
 - Test (390x844): P21, P22, P23 konsol hatasiz, 3 sn kayma 0; `?sv=6` hatasiz. Kazanilabilirlik (bot) testi yok: top sayilari tahmin.
 - Pilot kartindaki sira artik 21, 22, 23 (1, 7, 13 rafta, adresle acilir).
+
+## 17 Kas 2026 (gece, Opus): P21'in eski bloklari yenilendi (v5.9)
+- Blender betigine 5 yeni blok: `pl_buz` (1x1), `pl_buz3` (3x1), `pl_sandik` (capraz destekli), `pl_tnt` (bomba etiketli), `pl_elmas` (kesme tas). 96-612 ucgen, 20-67 KB.
+- Turler `pilot_sekil.js`: `plBuz`, `plBuz3`, `plSandik`, `plTNT` (oyunun kendi patlama yolu: boom 1.9, guc 11), `plElmas` / `plYakut` (ayni dosya, mavi / kirmizi). Davranis eski ks turleriyle ayni.
+- Buz parlak ve hafif saydam denendi: karli fonda soluk kaldi. Saydamlik kaldirildi, yansima kisildi, renk canli mavi (#2a8ef4).
+- P21 Buz Sarayi artik tamamen yeni tarzda (yalniz ortadaki altin patili kup `oyA` eski, o zaten oyuncak tarzi). Ekran: `yapi/uretici/rapor/pilot/P21_390x844.jpg`.
+- Test (390x844): P21 atista buz kiriliyor, TNT patliyor (cevresindeki 8 buzu kirdi), mucevher kiriliyor; konsol hatasi yok. Sandiklar sutunlarin arkasinda kaldigi icin dogrudan vurulamadi (kirilma yolu patili kupla ayni). P22, P23, `?sv=6` hatasiz.
+- Not: betigin tamami yeniden calistirilinca `pl_kup.glb` ve `pl_direk.glb` bayt olarak degisebiliyor (gorunum ayni); gereksizse `git checkout` ile geri alinir.

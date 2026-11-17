@@ -32,7 +32,7 @@ const SKEY = K ? 'blokpop_korsan_v1' : 'blokpop_yapi_v3';
 // PILOT v5.4 (16 Kas 2026): ?pilot=N yeni bolum bicimi denemesi (yapi/pilot.js, pilot_sekil.js, pilot/pilot.json). Pilot kipte kayda HIC yazilmaz.
 // Geri donus: o uc dosya/klasor ve bu dosyadaki 'PILOT' isaretli satirlar silinir; eski oyun aynen kalir.
 const PILOTQ = !K && Q.has('pilot');   // PILOT
-const PLTM = PILOTQ ? await import('./pilot.js?v=10') : null; let PLT = null;   // PILOT
+const PLTM = PILOTQ ? await import('./pilot.js?v=13') : null; let PLT = null;   // PILOT
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 const save = () => { if (PILOTQ) return;   /* PILOT: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
@@ -2214,7 +2214,7 @@ function malzemeFx(c, p, dir) {
     const v = new THREE.Vector3((Math.random() - 0.5) * 7, (ust || 2) + Math.random() * 4, (Math.random() - 0.5) * 7).addScaledVector(dir, 1.5), sc = s0 * (0.6 + Math.random() * 0.6);
     fx(m, 0.5 + Math.random() * 0.35, (o, k, dt) => { v.y -= 9 * dt; o.position.addScaledVector(v, dt); o.material.rotation += dt * 5; o.scale.setScalar(sc * (k < 0.25 ? k / 0.25 : 1 - (k - 0.25) / 0.75 * 0.7)); o.material.opacity = 1 - k * k; }); } };
   if (c.pati) { par(6, '#ffd65a', true, 0.45); par(3, '#ffffff', true, 0.3); return; }
-  if (/^ks(Yakut|Elmas)$/.test(c.kind)) { par(9, renk, true, 0.55, 3); par(4, '#ffffff', true, 0.35, 3); for (let i = 0; i < 5; i++) piece(new THREE.Mesh(MFX.kristal, MFX.mat('m' + renk, { color: renk, emissive: renk, emissiveIntensity: 0.4, roughness: 0.08, metalness: 0.2, flatShading: true })), p, dir, S * (0.1 + Math.random() * 0.08), 8, 1.2); return; }
+  if (/^(ks|pl)(Yakut|Elmas)$/.test(c.kind)) { par(9, renk, true, 0.55, 3); par(4, '#ffffff', true, 0.35, 3); for (let i = 0; i < 5; i++) piece(new THREE.Mesh(MFX.kristal, MFX.mat('m' + renk, { color: renk, emissive: renk, emissiveIntensity: 0.4, roughness: 0.08, metalness: 0.2, flatShading: true })), p, dir, S * (0.1 + Math.random() * 0.08), 8, 1.2); return; }
   if (ses === 'tahta') { for (let i = 0; i < 7; i++) piece(new THREE.Mesh(MFX.kiymik, MFX.mat('t' + renk, { color: renk, roughness: 0.75 })), p, dir, S * (0.22 + Math.random() * 0.18), 7, 1.3 + Math.random() * 0.4); return; }
   if (ses === 'tas') { for (let i = 0; i < 6; i++) piece(new THREE.Mesh(MFX.moloz, MFX.mat('s' + renk, { color: renk, roughness: 0.95, flatShading: true })), p, dir, S * (0.1 + Math.random() * 0.12), 6, 1.4 + Math.random() * 0.5);
     for (let i = 0; i < 4; i++) { const m = spr('#d8d4e4', false, 0.5), v = new THREE.Vector3((Math.random() - 0.5) * 2.6, 0.6 + Math.random() * 1.2, (Math.random() - 0.5) * 2.6); m.position.copy(p); const s0 = 0.8 + Math.random() * 0.5;

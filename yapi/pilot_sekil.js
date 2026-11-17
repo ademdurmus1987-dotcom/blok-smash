@@ -7,6 +7,7 @@
 //   plDomino  domino tasi (lacivert cilali tas, altin noktalar)
 // v5.6 (17 Kas 2026): Blender'da uretilen oyuncak bloklar (model/pilot/*.glb): plKupK/Y/M patili kup, plKalas uzun kalas (3x1x1),
 //   plKavanozT/M cizgili kapakli kavanoz, plLevha tilki amblemli tas levha (2x1x1), plSutun / plSutunG bilezikli sutun (1x2, krem / gri tas), plDirek kusakli tahta direk (1x2).
+// v5.9: plBuz / plBuz3 buz (1x1, 3x1), plSandik capraz destekli sandik, plTNT bomba etiketli TNT, plElmas / plYakut kesme mucevher.
 // carp: bu hizdan sert sabit yuzeye (platform, zemin) carpinca kirilir (pilot.js uygular; top degince kirilmaz, devrilir).
 import { mergeVertices } from '../BufferGeometryUtils.js';
 import { GLTFLoader } from '../GLTFLoader.js?v=2';   // v5.6: Blender bloklari (oyun.js ile ayni adres: ayni modul)
@@ -210,13 +211,15 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
       geo = G.geo.clone(); const c = geo.attributes.color, k = col(o.govde);
       if (c) for (let i = 0; i < c.count; i++) if (c.getX(i) > 0.97 && c.getY(i) > 0.97 && c.getZ(i) > 0.97) c.setXYZ(i, k.r, k.g, k.b);
     }
-    const mat = std({ map: G.map, vertexColors: !!geo.attributes.color, roughness: o.puruz, envMapIntensity: o.env || 0.55 });
+    const mat = std(Object.assign({ map: G.map, vertexColors: !!geo.attributes.color, roughness: o.puruz, envMapIntensity: o.env || 0.55 }, o.emis ? { emissive: o.emis, emissiveIntensity: o.emisG || 0.2 } : {}, o.opak ? { transparent: true, opacity: o.opak } : {}, o.metal ? { metalness: o.metal } : {}));
     return { geo, mat, parca, konturGeo: kontur, golgeKutu: 1 };
   }
   const KUPR = { K: '#e8242c', Y: '#22b84a', M: '#2276f0' }, KAVR = { T: '#12b8b0', M: '#9a3cf0' };
   const kupTur = (r) => T(S, S, S, { mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', sert: 0, renk: KUPR[r], kir: 1, yuzer: 1, glb: 'pl_kup', yap: () => blok('pl_kup', KUPR[r], { govde: KUPR[r], puruz: 0.3, olcu: [S, S, S] }) });
   // kavanoz kirilgan: top degince ya da sert carpinca tuzla buz (topKir: oyunun kendi carpisma kirilmasi, sise ile ayni yol)
   const sutunTur = (r) => T(S, 2 * S, S, { mass: 2.2, f: 0.7, r: 0.05, ses: 'tas', renk: r, sekil: 'sil', glb: 'pl_sutun', yap: () => blok('pl_sutun', r, { govde: r, puruz: 0.38, sil: 1, olcu: [S, 2 * S, S] }) });   // krem ve gri tas ayni dosyadan
+  const BUZ = { govde: '#2a8ef4', puruz: 0.22, env: 0.4, emis: '#0b48c0', emisG: 0.35, olcu: [S, S, S] };   // buz: canli mavi, cok parlak, icten mavi isik (saydamlik karli fonda soluk gosteriyordu)
+  const tasTur = (r) => T(S, S, S, { mass: 0.8, f: 0.5, r: 0.08, ses: 'cam', sert: 0, renk: r, sekil: 'sil', kir: 1, topKir: 8, glb: 'pl_elmas', yap: () => blok('pl_elmas', r, { govde: r, puruz: 0.14, env: 0.6, metal: 0.15, emis: r, emisG: 0.32, sil: 1, olcu: [S, S, S] }) });   // mucevher: kesme tas, kendi isigi
   const kavTur = (r) => T(S, S, S, { mass: 0.6, f: 0.5, r: 0.08, ses: 'cam', sert: 0, renk: KAVR[r], sekil: 'sil', kir: 1, topKir: 6.5, glb: 'pl_kavanoz', yap: () => blok('pl_kavanoz', KAVR[r], { govde: KAVR[r], puruz: 0.2, env: 0.8, sil: 1, olcu: [S, S, S] }) });
   // ---------- tur tablosu (w, h, d: kup kenari S cinsinden) ----------
   const TUR = {
@@ -235,7 +238,13 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
     plKavanozT: kavTur('T'), plKavanozM: kavTur('M'),
     plLevha: T(2 * S, S, S, { mass: 2.6, f: 0.72, r: 0.05, ses: 'tas', renk: '#5b6e9c', glb: 'pl_levha', yap: () => blok('pl_levha', '#5b6e9c', { puruz: 0.5, env: 0.4, olcu: [2 * S, S, S] }) }),
     plSutun: sutunTur('#f6ead2'), plSutunG: sutunTur('#aeb7d2'),
-    plDirek: T(S, 2 * S, S, { mass: 1.2, f: 0.62, r: 0.12, ses: 'tahta', sert: 0, renk: '#f08a24', kir: 1, yuzer: 1, glb: 'pl_direk', yap: () => blok('pl_direk', '#f08a24', { puruz: 0.42, olcu: [S, 2 * S, S] }) })
+    plDirek: T(S, 2 * S, S, { mass: 1.2, f: 0.62, r: 0.12, ses: 'tahta', sert: 0, renk: '#f08a24', kir: 1, yuzer: 1, glb: 'pl_direk', yap: () => blok('pl_direk', '#f08a24', { puruz: 0.42, olcu: [S, 2 * S, S] }) }),
+    // v5.9: P21'in eski bloklarinin yerine Blender'da uretilen oyuncak tarzi karsiliklari (davranis eski turlerle ayni: kale.js ksBuz/ksBuz3/ksSandik/ksTNT/ksElmas)
+    plBuz: T(S, S, S, { mass: 0.95, f: 0.15, r: 0.1, ses: 'buz', sert: 0, renk: '#2a8ef4', kir: 1, topKir: 7, yuzer: 1, glb: 'pl_buz', yap: () => blok('pl_buz', '#2a8ef4', BUZ) }),
+    plBuz3: T(3 * S, S, S, { mass: 2.2, f: 0.16, r: 0.08, ses: 'buz', sert: 0, renk: '#2a8ef4', kir: 1, topKir: 9, yuzer: 1, glb: 'pl_buz3', yap: () => blok('pl_buz3', '#2a8ef4', Object.assign({}, BUZ, { olcu: [3 * S, S, S] })) }),
+    plSandik: T(S, S, S, { mass: 0.9, f: 0.62, r: 0.08, ses: 'tahta', sert: 0, renk: '#f08a24', kir: 1, yuzer: 1, glb: 'pl_sandik', yap: () => blok('pl_sandik', '#f08a24', { puruz: 0.44, olcu: [S, S, S] }) }),
+    plTNT: T(S, S, S, { mass: 0.9, f: 0.62, r: 0.08, ses: 'tahta', sert: 0, renk: '#e0322a', boom: 1.9, guc: 11, glb: 'pl_tnt', yap: () => blok('pl_tnt', '#e0322a', { puruz: 0.4, olcu: [S, S, S] }) }),
+    plElmas: tasTur('#2f8cff'), plYakut: tasTur('#ff2a44')
   };
   // bolumun kullandigi turlerin model dosyalarini indirir (pilot.js bolum kurulmadan once bekler)
   const yukle = (turler) => Promise.all([...new Set(turler.map((k) => TUR[k] && TUR[k].glb).filter(Boolean))].map(glbYukle));
