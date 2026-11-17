@@ -10,6 +10,8 @@ import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=8';
+import { sekilKutuphanesi } from './gorsel/sekiller.js?v=2';   // v6.11: parlak sekil kutuphanesi
+import { hdrOrtam } from './gorsel/ortam.js?v=2';
 import { blok3bKur } from './blok3b.js?v=5';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=1';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
@@ -462,6 +464,32 @@ const NENV = (() => {
 // KIND'e eklenir (sek: 1); olculeri kup kenari cinsinden SEK.TUR'da, govde ve malzemesi ilk kullanimda SEK.al(ad) ile kurulur.
 const B3K = blok3bKur({ THREE, ENV, GLTFLoader }), b3Ready = B3K.yukle();   // v6.1
 const SEK = sekilKur({ THREE, S, canvasTex, ENV, b3: B3K });
+// v6.11 (Adem 17 Kas: 'Bagla'): parlak sekil kutuphanesi (gorsel/sekiller.js) bolumlerdeki bloklara baglandi. Yalniz GORUNUM degisir:
+// turun adi, olcusu, fizik govdesi, kirilmasi ve sesi ayni kalir (kavanoz eski sisenin, kutuk eski ficinin yerinde). Eski gorunum: ?parlak=0
+if (Q.get('parlak') !== '0') {
+  try {
+    const PK = sekilKutuphanesi({ THREE, env: hdrOrtam(ren), mergeGeometries, dusuk: true });   // dusuk: buzda saydamlik gecisi yok (telefon)
+    const ESLE = { oyK: ['plaka-kare', 'kirmizi'], oyY: ['plaka-kare', 'yesil'], oyM: ['plaka-kare', 'mavi'], oyS: ['plaka-kare', 'sari'], oyP: ['plaka-kare', 'mor'], oyT: ['plaka-kare', 'turuncu'],
+      oyA: ['foxi'], ksTas: ['tas'], ksBuz: ['buz'], ksBuz3: ['buz-3'], ksFici: ['kutuk'], ksFiciK: ['kutuk'],
+      ksSiseM: ['kavanoz-kisa', 'mor'], ksSiseY: ['kavanoz-kisa', 'yesil'], ksSiseB: ['kavanoz-kisa', 'mavi'] };
+    const PARCA = { kirmizi: '#d4142f', yesil: '#12a83c', mavi: '#1270e0', sari: '#f0b000', mor: '#7426d9', turuncu: '#ef6400' };
+    for (const k in ESLE) {
+      const t = SEK.TUR[k]; if (!t) continue; const [ad, renk] = ESLE[k], eski = t.yap;
+      t.yap = () => {
+        try {
+          const geo = PK.geometri(ad).clone(); geo.computeBoundingBox(); const b = geo.boundingBox, hb = b.max.y - b.min.y;
+          const ky = Math.abs(hb - t.h) > 0.3 && ad !== 'foxi' ? t.h / hb : 1;   // boyu farkli olan (kutuk) turun boyuna oturur
+          geo.translate(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2); geo.scale(S, S * ky, S); geo.translate(0, -t.h * S / 2, 0);   // taban fizik kutusunun tabanina
+          geo.computeBoundingBox(); geo.computeBoundingSphere();
+          const pr = PARCA[renk] || (ad === 'tas' ? '#2a3a8c' : ad.startsWith('buz') ? '#8fd8ff' : ad === 'kutuk' ? '#ffb347' : '#ff8a1c');
+          const mat = PK.malzemeler(ad, renk || 'turuncu');
+          for (const m of mat) if (!m.userData.oyun) { m.userData.oyun = 1; m.envMapIntensity *= 0.45; m.clearcoat *= 0.7; }   // oyunun gunes+yarikure isigi zaten guclu: renk soluklasmasin
+          return { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: pr, roughness: 0.4 }) };
+        } catch (e) { return eski(); }
+      };
+    }
+  } catch (e) { /* kutuphane kurulamazsa bloklar eski gorunumde kalir */ }
+}
 const ORNEK = ornekKur({ THREE, scene, S, kontur: CILA ? 0 : 0.04, rim: CILA ? 0.1 : 0.28 });   // v5.3: cila setinde siyah kontur yok, kenar parlamasi hafif
 let PATI = null; const patiReady = (CILA ? Promise.resolve(null) : patiYukle({ THREE, S, ENV, GLTFLoader })).then((p) => { PATI = p; if (p) SEK.patiAyar(p); });
 // v4.4: (Adem 13 Kas) kaide platform (turkuaz-bakir) ve yeni top; ?kaide=0 eski Tripo platformu ve eski top

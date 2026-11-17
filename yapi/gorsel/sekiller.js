@@ -15,7 +15,7 @@ import { PALET, MALZEME, OLCU } from './ayar.js';
 export const SEKILLER = [
   'kavanoz-kisa', 'kavanoz-orta', 'kavanoz-uzun',
   'plaka-uzun', 'plaka-orta', 'plaka-kare', 'plaka-uzun-capa', 'plaka-orta-capa', 'plaka-kare-capa',
-  'buz', 'buz-kolon', 'buz-plaka-4', 'buz-plaka-6', 'tas', 'kutuk', 'foxi', 'platform'
+  'buz', 'buz-3', 'buz-kolon', 'buz-plaka-4', 'buz-plaka-6', 'tas', 'kutuk', 'foxi', 'platform'
 ];
 // renkli olanlar (paletteki 6 renkle boyanir); digerlerinin rengi malzemesinden gelir
 export const RENKLI = (ad) => ad.startsWith('kavanoz') || ad.startsWith('plaka');
@@ -309,6 +309,7 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
     if (ad.startsWith('kavanoz-')) r = kavanoz(ad.split('-')[1]);
     else if (ad.startsWith('plaka-')) { const p = ad.split('-'); r = plaka(p[1], p[2] === 'capa' ? 'capa' : 'pati'); }
     else if (ad.startsWith('buz-plaka-')) r = buzPlaka(+ad.split('-')[2]);
+    else if (ad === 'buz-3') r = birlestir([[yuvarlakKutu(3, 1, 1, 0.13, 5), 'buz']]);   // oyundaki 3'luk buz kirisi
     else r = { buz, 'buz-kolon': buzKolon, tas, kutuk, foxi, platform }[ad]();
     GEO.set(ad, r); return r;
   }
@@ -352,6 +353,7 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
     fizik(ad, S = 1) {
       if (ad.startsWith('kavanoz-')) return [{ tip: 'silindir', r: OLCU.kavanoz.r * S, h: OLCU.kavanoz.boy[ad.split('-')[1]] * S }];
       if (ad.startsWith('plaka-')) return [{ tip: 'kutu', yarim: [OLCU.plaka.boy[ad.split('-')[1]] * S / 2, OLCU.plaka.h * S / 2, OLCU.plaka.d * S / 2] }];
+      if (ad === 'buz-3') return [{ tip: 'kutu', yarim: [1.5 * S, 0.5 * S, 0.5 * S] }];
       if (ad.startsWith('buz-plaka-')) return [{ tip: 'kutu', yarim: [+ad.split('-')[2] * S / 2, OLCU.buzPlakaH * S / 2, 0.5 * S] }];
       if (ad === 'buz-kolon') return [{ tip: 'kutu', yarim: [0.5 * S, OLCU.buzKolon.h * S / 2, 0.5 * S] }];
       if (ad === 'kutuk') return [{ tip: 'silindir', r: OLCU.kutuk.r * S, h: OLCU.kutuk.h * S }];
