@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>Foxi Smash — Vitrin</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #2b1b4a; font-family: system-ui, sans-serif; }
+  #bg { position: fixed; inset: 0; background: linear-gradient(#f6eefe, #e2d6f5) center/cover no-repeat; }
+  #bg.foto { background-size: cover; background-position: center; }
+  canvas#gl { position: fixed; inset: 0; width: 100%; height: 100%; }
+  #ust { position: fixed; top: 0; left: 0; right: 0; display: flex; gap: 6px; padding: 8px; overflow-x: auto; z-index: 5; background: rgba(30, 14, 60, .55); backdrop-filter: blur(6px); }
+  #ust button { flex: none; border: 0; border-radius: 999px; padding: 7px 12px; font: 600 13px system-ui; color: #fff; background: #7a32d6; cursor: pointer; }
+  #ust button.on { background: #ffc93a; color: #3a1e00; }
+  #etiket { position: fixed; inset: 0; pointer-events: none; z-index: 3; }
+  #etiket span { position: absolute; transform: translate(-50%, 0); font: 600 10px system-ui; color: #3a1e5a; background: rgba(255,255,255,.85); padding: 1px 5px; border-radius: 6px; white-space: nowrap; }
+  #bilgi { position: fixed; left: 8px; bottom: 8px; z-index: 5; color: #fff; font: 600 12px system-ui; background: rgba(30, 14, 60, .6); padding: 4px 8px; border-radius: 8px; }
+  #alt { position: fixed; right: 8px; bottom: 8px; z-index: 5; display: flex; gap: 6px; }
+  #alt button { border: 0; border-radius: 10px; padding: 8px 12px; font: 700 13px system-ui; background: #2fd35a; color: #08310f; }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<canvas id="gl"></canvas>
+<div id="etiket"></div>
+<div id="ust"></div>
+<div id="bilgi"></div>
+<div id="alt"><button id="sars" hidden>Sars (fizik)</button><button id="coin" hidden>Coin uçuşu</button><button id="sandik" hidden>Sandık</button></div>
+<script type="module" src="showcase.js?v=1"></script>
+</body>
+</html>
