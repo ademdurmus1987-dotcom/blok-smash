@@ -564,6 +564,139 @@ def yildiz_blok():
         P.append(kabartma(o, u, v, SP(yildiz(0, -0.015, 0.31, 0.135, 5)), [(1.0, -0.004), (0.86, 0.035 * S), (0.55, 0.058 * S)], YIL))
     return uret('yildiz', P, 0.3, klasor=BLOK)
 
+# ------------------------------------------------------------------ ANA OYUN 4) ince kalas (wS x 0.5 x 1: ksKalas1/2/3): cerceve, iki yatay tahta, uclarda civi
+def kalas_ince(ad, wS):
+    w, h, d = wS * S * 0.99, S * 0.5 * 0.98, S * 0.99; r = 0.06 * S; gom = 0.03 * S; kal = 0.07 * S
+    CER = renk('#df650c'); T1 = renk('#ffa232'); T2 = renk('#ff9420'); CIVI = renk('#4a3a5c')
+    bm = kutu_bm(w, h, d, r, 2)
+    pn = {ad_: pano(bm, buyuk_yuz(bm, y), kal, gom) for ad_, y in YON.items()}
+    tahta = set()
+    for ad_ in ('on', 'arka', 'ust'):
+        f = pn[ad_]; n = f.normal.copy()
+        if ad_ != 'ust': ek = [e for e in f.edges if abs((e.verts[0].co - e.verts[1].co).normalized().y) > 0.9]
+        else: ek = [e for e in f.edges if abs((e.verts[0].co - e.verts[1].co).normalized().z) > 0.9]
+        bmesh.ops.subdivide_edges(bm, edges=ek, cuts=1, use_grid_fill=True); bm.normal_update()
+        d0 = f.calc_center_median().dot(n)
+        yz = [q for q in bm.faces if q.normal.dot(n) > 0.999 and abs(q.calc_center_median().dot(n) - d0) < 1e-4]
+        bmesh.ops.inset_individual(bm, faces=yz, thickness=0.014 * S, depth=0.0, use_even_offset=True)
+        for q in yz:
+            for vv in q.verts: vv.co += n * 0.012 * S
+            tahta.add(q)
+        bm.normal_update()
+    uclar = {pn['sag'], pn['sol'], pn['alt']}
+    def sec(f):
+        if f in tahta: c = f.calc_center_median(); return T2 if (c.y > 0) == (abs(f.normal.y) < 0.5) else T1
+        return T1 if f in uclar else CER
+    P = [bm_al(bm, sec)]; bm.free()
+    for yon in ('on', 'arka'):
+        o, u, v = yuz_cerceve(yon, d / 2)
+        for sx in (-1, 1):
+            for sy in (-1, 1): P.append(kabartma(o, u, v, elips(sx * (w / 2 - r - kal * 0.5), sy * (h / 2 - r - kal * 0.15) * 0.62, 0.03 * S, 0.03 * S, 6), [(1.0, -0.004), (0.5, 0.02 * S)], CIVI))
+    return uret(ad, P, 0.45, klasor=BLOK)
+def kalas1(): return kalas_ince('kalas1', 1)
+def kalas2(): return kalas_ince('kalas2', 2)
+def kalas3(): return kalas_ince('kalas3', 3)
+
+# ------------------------------------------------------------------ ANA OYUN 5) fici (cap 1, boy 1: ksFici, ksFiciK): sisik govde, iki tonlu citalar, iki demir cember, tahta kapak
+def fici_yap(ad, c1, c2, kapak):
+    T1, T2, CEM, KAP = renk(c1), renk(c2), renk('#3d3a58'), renk(kapak)
+    cita = lambda j: T1 if j % 2 == 0 else T2
+    R = lambda t: (0.4 + 0.075 * math.sin(t * Pi))
+    prof = [(0.36, -0.495, KAP), (0.40, -0.47, cita)]
+    for t, c in ((0.08, CEM), (0.15, cita), (0.22, cita), (0.5, cita), (0.78, CEM), (0.85, cita), (0.92, cita)):
+        prof.append((R(t) + (0.018 if c is CEM else 0), -0.48 + t * 0.96, c))
+    prof += [(0.40, 0.47, KAP), (0.36, 0.495, KAP)]
+    # cember seritleri: CEM kusagi bir sonraki noktaya kadar; kusak icin ikinci nokta
+    son = []
+    for (r_, y, c) in prof:
+        son.append((r_, y, c))
+        if c is CEM: son.append((r_, y + 0.06, cita))
+    prof = [(r_ * S, y * S, c) for r_, y, c in son]
+    P = [torna(prof, 16)]
+    # kapakta tahta cizgileri (iki ince cita kabartmasi) ve tapa
+    for x in (-0.12, 0.12): P.append(kabartma((0, 0.495 * S, 0), (1, 0, 0), (0, 0, -1), SP(serit((x, -0.27), (x, 0.27), 0.012)), [(1.0, -0.002), (1.0, 0.006 * S)], renk('#b86a26')))
+    P.append(kabartma((0, 0.495 * S, 0), (1, 0, 0), (0, 0, -1), elips(0.2 * S, 0, 0.05 * S, 0.05 * S, 8), [(1.0, -0.004), (0.7, 0.03 * S)], CEM))
+    return uret(ad, P, 0.5, klasor=BLOK)
+def fici_t(): return fici_yap('fici_t', '#f08c30', '#de7a22', '#ffb056')
+def fici_k(): return fici_yap('fici_k', '#e0382c', '#c92a20', '#ff7a5e')
+
+# ------------------------------------------------------------------ ANA OYUN 6) sise (cap 1, boy 1: ksSiseM/Y/B): yuvarlak cam govde (govde rengi isareti), boyun, ip halka, mantar tipa, cam parlamasi
+def sise():
+    MAN = renk('#c98a4a'); IP = renk('#f4e6c8')
+    prof = [(0.30, -0.495, GOVDE), (0.36, -0.46, GOVDE), (0.375, -0.30, GOVDE), (0.37, -0.08, GOVDE), (0.33, 0.06, GOVDE), (0.22, 0.17, GOVDE), (0.15, 0.22, GOVDE),
+            (0.14, 0.26, IP), (0.165, 0.27, IP), (0.165, 0.32, GOVDE), (0.14, 0.33, GOVDE), (0.13, 0.36, MAN), (0.125, 0.37, MAN), (0.12, 0.48, MAN), (0.09, 0.495, MAN)]
+    prof = [(r_ * S, y * S, c) for r_, y, c in prof]
+    P = [torna(prof, 16)]
+    for yon in ('on', 'arka'):   # cam parlamasi: govde uzerinde dikey beyaz seritler
+        o, u, v = yuz_cerceve(yon, 0.372 * S)
+        P.append(kabartma(o, u, v, SP(serit((-0.14, -0.3), (-0.14, -0.02), 0.06)), [(1.0, -0.006), (1.0, 0.008 * S)], ISIK))
+        P.append(kabartma(o, u, v, SP(serit((-0.04, -0.27), (-0.04, -0.12), 0.03)), [(1.0, -0.006), (1.0, 0.008 * S)], ISIK))
+    return uret('sise', P, 0.15, klasor=BLOK)
+
+# ------------------------------------------------------------------ ANA OYUN 7) karo (1x1x1: ksKaro): tahta cerceveli kutu, dort yanda kesme mavi tas (piramit kabartma)
+def karo():
+    CER = renk('#d8620e'); T1 = renk('#ffa232'); MAV = renk('#2a8cff'); ACIK = renk('#9fd4ff')
+    a = S * 0.99; r = 0.1 * S; gom = 0.04 * S
+    bm = kutu_bm(a, a, a, r, 2)
+    pn = {pano(bm, buyuk_yuz(bm, y), 0.11 * S, gom) for y in YON.values()}
+    P = [bm_al(bm, lambda f: T1 if f in pn else CER)]; bm.free()
+    for yon in ('on', 'arka', 'sag', 'sol'):
+        o, u, v = yuz_cerceve(yon, a / 2 - gom)
+        P.append(kabartma(o, u, v, SP([(0, -0.33), (0.33, 0), (0, 0.33), (-0.33, 0)]), [(1.0, -0.004), (0.9, 0.035 * S), (0.42, 0.11 * S), (0.16, 0.12 * S)], MAV))
+        n = Vector(u).cross(Vector(v))
+        P.append(kabartma(tuple(Vector(o) + n * 0.075 * S), u, v, SP(serit((-0.14, 0.03), (-0.05, 0.12), 0.035)), [(1.0, -0.004), (1.0, 0.03 * S)], ACIK))
+    return uret('karo', P, 0.3, klasor=BLOK)
+
+# ------------------------------------------------------------------ ANA OYUN 8) kemer (3x2x1: ksKemer): tas govde, gercek kemer acikligi (boolean), acikligin cevresinde
+# acik tonlu kemer taslari ve krem kilit tasi, onde iri kabartma taslar. Carpisma kutusu eskisi gibi tam kutu (kale.js).
+def kemer():
+    W, H, D = 3 * S * 0.99, 2 * S * 0.99, S * 0.92; r = 0.08 * S
+    GOV = renk('#8b93b3'); IC = renk('#646b8c'); KT = renk('#c3c9de'); KIL = renk('#efe6cf'); T = [renk('#aab2cd'), renk('#9ea6c4'), renk('#b4bbd2')]
+    ar = 0.62 * S; y0 = -H / 2; yc = y0 + H * 0.42
+    bm = kutu_bm(W, H, D, r, 2); govde = ham_nesne('kemer_govde', [bm_al(bm, lambda f: GOV)]); bm.free()
+    # kesici: tek parca kemer profili (alt dikdortgen + ust yarim daire, dis bukey), derinlik boyunca cekilir
+    kb = bmesh.new(); prof = [(-ar, y0 - 0.3 * S)] + [(-ar * math.cos(Pi * t / 16), yc + ar * math.sin(Pi * t / 16)) for t in range(17)] + [(ar, y0 - 0.3 * S)]
+    alt = [kb.verts.new((x, y, -(D / 2 + 0.2 * S))) for x, y in prof]; ust = [kb.verts.new((x, y, D / 2 + 0.2 * S)) for x, y in prof]; n_ = len(prof)
+    kb.faces.new(alt[::-1]); kb.faces.new(ust)
+    for t in range(n_): kb.faces.new([alt[t], alt[(t + 1) % n_], ust[(t + 1) % n_], ust[t]])
+    bmesh.ops.recalc_face_normals(kb, faces=list(kb.faces))
+    kes = ham_nesne('kemer_kesici', [bm_al(kb, lambda f: IC)]); kb.free()
+    m = govde.modifiers.new('acik', 'BOOLEAN'); m.operation = 'DIFFERENCE'; m.object = kes
+    try: m.solver = 'EXACT'; m.use_self = True
+    except Exception as e: print('  boolean ayari:', e)
+    dg = bpy.context.evaluated_depsgraph_get(); ev = govde.evaluated_get(dg); me = bpy.data.meshes.new_from_object(ev, preserve_all_data_layers=True, depsgraph=dg)
+    kat = me.color_attributes.get('Col'); V = [tuple(vv.co) for vv in me.vertices]; F = [list(p.vertices) for p in me.polygons]; C = []
+    for pg in me.polygons:
+        c = tuple(kat.data[pg.loop_start].color) if kat and kat.domain == 'CORNER' else GOV
+        cc = pg.center; ic = abs(cc.z) < D / 2 - 0.01 and (math.hypot(cc.x, cc.y - yc) < ar + 0.01 * S or (abs(cc.x) < ar + 0.01 * S and cc.y < yc + 0.01))
+        C.append(IC if ic else c)
+    bpy.data.objects.remove(govde); bpy.data.objects.remove(kes)
+    P = [(V, F, C)]
+    for yon in ('on', 'arka'):
+        o, u, v = yuz_cerceve(yon, D / 2); sx = 1 if yon == 'on' else -1
+        # kemer taslari: acikligin cevresinde 5 dilim, ortadaki kilit tasi (krem, biraz daha kabarik)
+        r1, r2 = ar / S + 0.03, ar / S + 0.25
+        for i in range(5):
+            a0, a1 = Pi * i / 5 + 0.025, Pi * (i + 1) / 5 - 0.025
+            pts = [(r1 * math.cos(a0), r1 * math.sin(a0)), (r2 * math.cos(a0), r2 * math.sin(a0)), (r2 * math.cos((a0 + a1) / 2) * 1.0, r2 * math.sin((a0 + a1) / 2)), (r2 * math.cos(a1), r2 * math.sin(a1)), (r1 * math.cos(a1), r1 * math.sin(a1)), (r1 * math.cos((a0 + a1) / 2), r1 * math.sin((a0 + a1) / 2))]
+            pts = [(sx * x, y + yc / S) for x, y in pts]
+            if sx < 0: pts = pts[::-1]   # arka yuzde ayna: sira ters cevrilir (yine saat yonunun tersine)
+            P.append(kabartma(o, u, v, SP(pts), [(1.0, -0.004), (0.93, (0.05 if i == 2 else 0.035) * S)], KIL if i == 2 else KT))
+        # iri tas kabartmalari (yalniz on yuz: ucgen siniri): kemerin iki yanindaki ayaklarda ve kemerin ustunde, kaydirmali orgu
+        if yon != 'on': continue
+        import random; rnd = random.Random(31)
+        bw, g = 0.7, 0.05; uh, vh = W / S / 2 - 0.1, H / S / 2 - 0.1; bh = (2 * vh - g * 5) / 4; sinir = r2 + 0.05; tepe = yc / S + r2 + 0.04
+        for j in range(4):
+            yb = -vh + g + j * (bh + g); yt = yb + bh
+            ara = [(-uh + g, uh - g)] if yb >= tepe else [(-uh + g, -sinir), (sinir, uh - g)]
+            x = -uh + g - ((bw + g) / 2 if j % 2 else 0)
+            while x < uh - g:
+                for (p0, p1) in ara:
+                    xa, xb = max(x, p0), min(x + bw, p1)
+                    if xb - xa > 0.2: P.append(kabartma(o, u, v, SP(yuvdik((xa + xb) / 2, (yb + yt) / 2, xb - xa, bh, 0.04, 2)), [(1.0, -0.004), (0.92, 0.03 * S)], rnd.choice(T)))
+                x += bw + g
+    return uret('kemer', P, 0.8, klasor=BLOK)
+
 # ------------------------------------------------------------------ onizleme (Blender icinde bakmak icin; oyunda kullanilmaz)
 def onizle(obs, dosya):
     sc = bpy.context.scene
@@ -589,7 +722,7 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dunya()
     ist = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk, 'buz': buz, 'buz3': buz3, 'sandik': sandik, 'tnt': tnt, 'elmas': elmas, 'tas1': tas1, 'tas2': tas2, 'tas3': tas3, 'tas4': tas4, 'sandik_t': sandik_t, 'sandik_k': sandik_k, 'sandik_m': sandik_m, 'yildiz': yildiz_blok}
+    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk, 'buz': buz, 'buz3': buz3, 'sandik': sandik, 'tnt': tnt, 'elmas': elmas, 'tas1': tas1, 'tas2': tas2, 'tas3': tas3, 'tas4': tas4, 'sandik_t': sandik_t, 'sandik_k': sandik_k, 'sandik_m': sandik_m, 'yildiz': yildiz_blok, 'kalas1': kalas1, 'kalas2': kalas2, 'kalas3': kalas3, 'fici_t': fici_t, 'fici_k': fici_k, 'sise': sise, 'karo': karo, 'kemer': kemer}
     obs = [f() for k, f in hepsi.items() if not ist or k in ist]
     if len(obs) > 1: onizle(obs, 'onizleme.png' if not ist else 'onizleme_secili.png')   # hepsi uretilince ana onizleme, secili uretimde ayri dosya
     print('BITTI')

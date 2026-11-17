@@ -8,6 +8,7 @@ export const B3 = !/[?&]b3=0/.test(location.search);
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]
 const BUZ = { govde: '#2a8ef4', emis: '#0b48c0', emisG: 0.3, env: 0.4 };   // pilotta denendi: saydamlik ve guclu yansima buzu soluk gosteriyordu
 const KUP = (r) => ['pilot/pl_kup', 0.3, r, { govde: r }];
+const SISE = (r) => ['blok/sise', 0.15, r, { govde: r, emis: r, emisG: 0.22, env: 0.8 }];   // cam: parlak, kendi isigi
 const TAS = (r) => ({ govde: r, emis: r, emisG: 0.32, env: 0.6, metal: 0.15 });
 const LISTE = {
   ksTas: ['tas1', 0.8, '#9aa2c0'], ksTas2: ['tas2', 0.8, '#9aa2c0'], ksTas3: ['tas3', 0.8, '#9aa2c0'], ksTas4: ['tas4', 0.8, '#9aa2c0'],
@@ -20,7 +21,12 @@ const LISTE = {
   oyK: KUP('#e8242c'), oyY: KUP('#22b84a'), oyM: KUP('#2276f0'), oyS: KUP('#f6b400'), oyP: KUP('#8a34e6'), oyT: KUP('#f2620f'), oyN: KUP('#ff3d9e'), oyB: KUP('#f1ede4'),
   oyA: ['pilot/pl_kup', 0.26, '#f5b81c', { govde: '#f5b81c', emis: '#c07800', emisG: 0.18, env: 0.7, metal: 0.35 }],
   ksTNT: ['pilot/pl_tnt', 0.4, '#e5302a'], ksDirek: ['pilot/pl_direk', 0.42, '#f08a24'],
-  ksSutun: ['pilot/pl_sutun', 0.38, '#b3bad2', { govde: '#b3bad2' }], ksMorSutun: ['pilot/pl_sutun', 0.34, '#9a3ae8', { govde: '#9a3ae8', emis: '#5a12a0', emisG: 0.12 }]
+  ksSutun: ['pilot/pl_sutun', 0.38, '#b3bad2', { govde: '#b3bad2' }], ksMorSutun: ['pilot/pl_sutun', 0.34, '#9a3ae8', { govde: '#9a3ae8', emis: '#5a12a0', emisG: 0.12 }],
+  // v6.5: ince kalaslar, ficilar, siseler (tek dosya, govde rengi), mucevher karosu, kemer
+  ksKalas1: ['kalas1', 0.45, '#ffa232'], ksKalas2: ['kalas2', 0.45, '#ffa232'], ksKalas3: ['kalas3', 0.45, '#ffa232'],
+  ksFici: ['fici_t', 0.5, '#f08c30'], ksFiciK: ['fici_k', 0.5, '#e0382c'],
+  ksSiseM: SISE('#a040ff'), ksSiseY: SISE('#30c850'), ksSiseB: SISE('#2f8cff'),
+  ksKaro: ['karo', 0.3, '#2a8cff', { emis: '#0a3a9a', emisG: 0.08 }], ksKemer: ['kemer', 0.8, '#9aa2c0']
 };
 const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=1';
 

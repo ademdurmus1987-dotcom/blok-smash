@@ -81,3 +81,6 @@ Adem: "sekiller kalitesiz, cok basit duruyor; referansla fark cok fazla". Yakin 
   Test `?sv=204`: hatasiz; uc atista 18 buz, 2 elmas, 1 yildiz kirildi/dustu. Ucgen 38,7 bin -> 31,2 bin.
 - v6.4 (17 Kas): patili kupler (`oyK oyY oyM oyS oyP oyT oyN oyB oyA` -> `pl_kup`, govde rengi tur basina, altin metalik), `ksTNT` -> `pl_tnt`, `ksDirek` -> `pl_direk`, `ksSutun` / `ksMorSutun` -> `pl_sutun` (gri / mor).
   Test: `?sv=246` hatasiz, ucgen 93 bin -> 44 bin; `?sv=1872` (16 tur karisik) hatasiz, 81 bin ucgen.
+- v6.5 (17 Kas): ince kalaslar (`ksKalas1/2/3` -> `kalas1..3.glb`, yarim yukseklik), ficilar (`ksFici`, `ksFiciK` -> `fici_t/k.glb`), siseler (`ksSiseM/Y/B` -> tek `sise.glb`, govde rengi), mucevher karosu (`ksKaro` -> `karo.glb`), kemer (`ksKemer` -> `kemer.glb`, gercek kemer acikligi; carpisma kutusu eskisi gibi).
+  Kemer: iki ust uste binen kesiciyle boolean acikligi delmedi (on yuz kapali kaldi); tek parca kemer profili kesiciyle duzeldi (isinla olculdu).
+  Test `?sv=1872`: bolumde eski cizimli blok kalmadi; hatasiz; ucgen 130 bin -> 48 bin. Once/sonra: `rapor/blok3b/karisik_once_1872.jpg`, `karisik_sonra_1872.png`.
