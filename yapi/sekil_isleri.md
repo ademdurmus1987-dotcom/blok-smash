@@ -79,3 +79,5 @@ Adem: "sekiller kalitesiz, cok basit duruyor; referansla fark cok fazla". Yakin 
   Test `?sv=239` (32 sandik): hatasiz, atista 8 sandik kirildi. Ucgen 121 bin -> 59 bin (eski sandik agirmis). Once/sonra: `rapor/blok3b/sandik_once_239.jpg`, `sandik_sonra_239.jpg`.
 - v6.3 (17 Kas): buz (`ksBuz`, `ksBuz3` -> pilotun `pl_buz`, `pl_buz3`), yildiz (`ksYildiz` -> yeni `yildiz.glb`: altin govde, kabarik bes kollu yildiz), mucevher (`ksYakut`, `ksElmas` -> `pl_elmas`, govde rengi tur basina). `blok3b.js` artik govde rengi, parilti ve metal secenegi aliyor.
   Test `?sv=204`: hatasiz; uc atista 18 buz, 2 elmas, 1 yildiz kirildi/dustu. Ucgen 38,7 bin -> 31,2 bin.
+- v6.4 (17 Kas): patili kupler (`oyK oyY oyM oyS oyP oyT oyN oyB oyA` -> `pl_kup`, govde rengi tur basina, altin metalik), `ksTNT` -> `pl_tnt`, `ksDirek` -> `pl_direk`, `ksSutun` / `ksMorSutun` -> `pl_sutun` (gri / mor).
+  Test: `?sv=246` hatasiz, ucgen 93 bin -> 44 bin; `?sv=1872` (16 tur karisik) hatasiz, 81 bin ucgen.
