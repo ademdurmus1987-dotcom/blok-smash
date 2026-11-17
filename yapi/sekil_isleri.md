@@ -84,3 +84,5 @@ Adem: "sekiller kalitesiz, cok basit duruyor; referansla fark cok fazla". Yakin 
 - v6.5 (17 Kas): ince kalaslar (`ksKalas1/2/3` -> `kalas1..3.glb`, yarim yukseklik), ficilar (`ksFici`, `ksFiciK` -> `fici_t/k.glb`), siseler (`ksSiseM/Y/B` -> tek `sise.glb`, govde rengi), mucevher karosu (`ksKaro` -> `karo.glb`), kemer (`ksKemer` -> `kemer.glb`, gercek kemer acikligi; carpisma kutusu eskisi gibi).
   Kemer: iki ust uste binen kesiciyle boolean acikligi delmedi (on yuz kapali kaldi); tek parca kemer profili kesiciyle duzeldi (isinla olculdu).
   Test `?sv=1872`: bolumde eski cizimli blok kalmadi; hatasiz; ucgen 130 bin -> 48 bin. Once/sonra: `rapor/blok3b/karisik_once_1872.jpg`, `karisik_sonra_1872.png`.
+- Durum (17 Kas gece): bolum dosyalarinda gecen 35 turun hepsi (`ks*` 26, `oy*` 9) Blender modelinde. sekil.js'teki diger turler (tas2, tug2, buzP, jole, kurabiye...) yalniz eski bolum ureticisinde geciyor, hazir bolum dosyalarinda yok: yapilmadi.
+  Genel tarama 390x844: `?sv=1, 12, 781, 1999` ve pilot 21, 22: eski cizimli blok yok, konsol hatasi yok. Telefonda denenmedi; kazanilabilirlik (top sayisi) yeni gorunumden etkilenmez (fizik ayni).
