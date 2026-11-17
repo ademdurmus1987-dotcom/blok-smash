@@ -6,8 +6,7 @@
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { kazanSahne } from './kazan2.js?v=2';
-import { ucur as ucur3d } from './gorsel/odul3d.js?v=1';   // v6.9: (Adem 17 Kas) Kenney coin modeli donerek sayaca ucar   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
+import { kazanSahne } from './kazan2.js?v=3';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -107,10 +106,8 @@ export function merkezKur(A) {
     altinYaz(eski);
     const vardi = (i) => { const hap = $('m-ahap'); hap.classList.remove('pop'); void hap.offsetWidth; hap.classList.add('pop');
       altinYaz(i === n - 1 ? yeni : Math.round(eski + (yeni - eski) * (i + 1) / n)); A.ses('para', 0.5, 1 + i * 0.045); };
-    // v6.9: 3B coin (Kenney coin-gold) donerek ucar; WebGL/model yoksa ya da ?coin3d=0 ise eski 2B coinler
-    if (!/[?&]coin3d=0/.test(location.search)) { ucur3d({ x, y, tx, ty, n, vardi }).catch(() => ucur2d(x, y, tx, ty, n, vardi)); }
-    else ucur2d(x, y, tx, ty, n, vardi);
-    setTimeout(() => altinYaz(SV.altin || 0), 900 + n * 55 + 600);
+    ucur2d(x, y, tx, ty, n, vardi);
+    setTimeout(() => altinYaz(SV.altin || 0), 900 + n * 55 + 200);
   }
   function ucur2d(x, y, tx, ty, n, vardi) {
     for (let i = 0; i < n; i++) {
@@ -389,7 +386,7 @@ export function merkezKur(A) {
   // ---------------- ayarlar / duraklatma ----------------
   function ayarKarti(oyunda) {
     const sat = (id, ad, on) => '<div class="ay"><b>' + ad + '</b><button class="tg' + (on ? ' on' : '') + '" data-a="' + id + '" aria-label="' + ad + '"><i></i></button></div>';
-    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not" style="margin:12px 0 6px!important">Geliştirici</p>' + sat('fps', 'FPS sayacı', !!SV.fps) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p><p class="p-not" style="margin-top:2px!important;opacity:.75">3D assets: Kenney (kenney.nl)</p></div>' +
+    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not" style="margin:12px 0 6px!important">Geliştirici</p>' + sat('fps', 'FPS sayacı', !!SV.fps) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p></div>' +
       (oyunda ? '<button class="m-btn" id="p-dv">Devam Et</button><button class="m-btn tur kck" id="p-yb">Yeniden Başla</button><button class="m-btn mavi kck" id="p-as">Ana Sayfa</button>' : '<button class="m-btn kck" id="p-dv">Tamam</button>'));
     durak = !!oyunda;
     for (const b of P.querySelectorAll('.tg')) b.onclick = () => { A.ayar(b.dataset.a); tik(); ayarKarti(oyunda); };

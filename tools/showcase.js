@@ -1,34 +1,29 @@
 // Foxi Smash vitrini: oyunun isigi (yarikure + golgeli gunes + kenar isigi, ACES 1.12) ve on kamerasi (9 derece, tam karsidan).
-// Adres: tools/showcase.html#<gorunum>   gorunumler: kavanoz, plaka, ozel, tumu, dizilim1, dizilim2, kenney, plaj, kar, kale
+// Adres: tools/showcase.html#<gorunum>   gorunumler: kavanoz, plaka, ozel, tumu, dizilim1, dizilim2
 import * as THREE from '../three.module.min.js';
 import * as CANNON from '../cannon.min.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { sekilKutuphanesi } from '../yapi/gorsel/sekiller.js';
 import { hdrOrtam, oyunRenderer, oyunIsigi, onKamera } from '../yapi/gorsel/ortam.js';
-import { RENKLER, TEMA, OLCU } from '../yapi/gorsel/ayar.js';
-import { kenneyOrtam, kenneyKopya, kenneyHepsi } from '../yapi/gorsel/kenney.js';
-import { temaDekor } from '../yapi/gorsel/tema3d.js';
-import { ucur, sandik } from '../yapi/gorsel/odul3d.js';
+import { RENKLER, OLCU } from '../yapi/gorsel/ayar.js';
 
 const S = 1.55, Q = new URLSearchParams(location.search), $ = (i) => document.getElementById(i);
 const ren = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true, alpha: true, preserveDrawingBuffer: true });
 ren.setClearColor(0, 0); ren.setPixelRatio(Math.min(2, devicePixelRatio || 1)); oyunRenderer(ren);
-const ENV = hdrOrtam(ren); kenneyOrtam(ENV);
+const ENV = hdrOrtam(ren);
 const K = sekilKutuphanesi({ THREE, env: ENV, mergeGeometries, dusuk: Q.get('dusuk') === '1' });
 const cam = new THREE.PerspectiveCamera(40, 1, 0.3, 400); window.__K = K;   // test icin
-let sahne, sun, dunya = null, govdeler = [], dekor = null, etiketler = [], kadr = null, zaman = 0;
+let sahne, sun, dunya = null, govdeler = [], etiketler = [], kadr = null, zaman = 0;
 
 const GORUNUM = {
   kavanoz: { ad: 'Kavanozlar', kur: kavanozlar }, plaka: { ad: 'Plakalar', kur: plakalar }, ozel: { ad: 'Buz · Taş · Kütük · Foxi · Platform', kur: ozel },
-  tumu: { ad: 'Tümü', kur: tumu }, dizilim1: { ad: 'Dizilim 1', kur: () => dizilim(1) }, dizilim2: { ad: 'Dizilim 2', kur: () => dizilim(2) },
-  kenney: { ad: 'Kenney modelleri', kur: kenneyGrid }, plaj: { ad: 'Plaj teması', kur: () => tema('plaj') }, kar: { ad: 'Kar teması', kur: () => tema('kar') }, kale: { ad: 'Kale teması', kur: () => tema('kale') }
+  tumu: { ad: 'Tümü', kur: tumu }, dizilim1: { ad: 'Dizilim 1', kur: () => dizilim(1) }, dizilim2: { ad: 'Dizilim 2', kur: () => dizilim(2) }
 };
 for (const k in GORUNUM) { const b = document.createElement('button'); b.textContent = GORUNUM[k].ad; b.dataset.g = k; b.onclick = () => { location.hash = k; }; $('ust').appendChild(b); }
 if (Q.get('ust') === '0') $('ust').style.display = 'none';
 
 function yeniSahne(fon) {
   sahne = new THREE.Scene(); sun = oyunIsigi(sahne, 22); govdeler = []; dunya = null; etiketler.forEach((e) => e.el.remove()); etiketler = []; kadr = null;
-  if (dekor) dekor.temizle(); dekor = null;
   const bg = $('bg'); bg.className = fon ? 'foto' : ''; bg.style.backgroundImage = fon ? 'url(' + fon + ')' : '';
   if (!fon) {   // studyo duvari ve zemin: golgeler okunur
     const m = new THREE.MeshStandardMaterial({ color: '#efe6fb', roughness: 0.9 });
@@ -129,62 +124,21 @@ function dizilim(no, sahneVar) {
 function esitle() { for (const [m, b] of govdeler) { m.position.copy(b.position); m.quaternion.copy(b.quaternion); } }
 $('sars').onclick = () => { for (const [, b] of govdeler) { b.wakeUp(); b.applyImpulse(new CANNON.Vec3((Math.random() - 0.5) * 6, 8, -6 - Math.random() * 4), b.position); } };
 
-// ---------------- Kenney modelleri (malzeme yukseltmeli) ----------------
-async function kenneyGrid() {
-  yeniSahne();
-  const liste = await (await fetch('../assets/models/kenney/liste.json')).json();
-  const sutun = innerWidth < innerHeight ? 5 : 9, ara = 3.0; let i = 0;
-  const satirS = Math.ceil(liste.length / sutun); await kenneyHepsi(liste);
-  for (const ad of liste) {
-    const n = await kenneyKopya(ad); if (!n) continue;
-    const b = new THREE.Box3().setFromObject(n), sz = b.getSize(new THREE.Vector3()), k = 2.2 / Math.max(sz.x, sz.y, sz.z);
-    n.scale.setScalar(k); n.rotation.y = -0.5; const g = new THREE.Group(); g.add(n);
-    const c = i % sutun, r = Math.floor(i / sutun), x = (c - (sutun - 1) / 2) * ara, y = (satirS - 1 - r) * 3.6;
-    const b2 = new THREE.Box3().setFromObject(n); n.position.y = -b2.min.y; g.position.set(x, y, 0); sahne.add(g);
-    if (c === 0) raf(-(sutun / 2) * ara, (sutun / 2) * ara, y);
-    etiket(ad.split('/')[1], new THREE.Vector3(x, y - 0.25, 1.3)); i++;
-  }
-  sigdir(icerik(), 0.94, 0.86);
-}
-
-// ---------------- tema ekranlari (oyundaki gibi resim fon + platform + yapi + 3B dekor) ----------------
-const FON = { plaj: '../yapi/fon/yeni/koy_gunduz.webp', kar: '../yapi/fon/yeni/buz.webp', kale: '../yapi/fon/yeni/col.webp' };
-async function tema(ad) {
-  yeniSahne(FON[ad]); dizilim(ad === 'kar' ? 2 : 1, true);
-  const zeminY = K.altY('platform') * S;
-  const golge = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.ShadowMaterial({ opacity: 0.25 })); golge.rotation.x = -Math.PI / 2; golge.position.y = zeminY + 0.01; golge.receiveShadow = true; sahne.add(golge);
-  dekor = temaDekor(ad, Object.assign({ S, zemin: zeminY, arka: OLCU.platform.d * S / 2 + 1 }, Q.has('yog') ? { yogunluk: +Q.get('yog'), sabit: true } : {}));
-  await dekor.kur(); sahne.add(dekor.kok);
-  const yapi = new THREE.Box3(); for (const [m] of govdeler) yapi.expandByObject(m); sahne.traverse((o) => { if (o.name.startsWith('platform')) yapi.expandByObject(o); });
-  sigdir(yapi, 0.82, 0.62);
-  const alan = { x0: 9, x1: -9, y0: 9, y1: -9 }, V = new THREE.Vector3();
-  for (let i = 0; i < 8; i++) { V.set(i & 1 ? yapi.max.x : yapi.min.x, i & 2 ? yapi.max.y : yapi.min.y, i & 4 ? yapi.max.z : yapi.min.z).project(cam); alan.x0 = Math.min(alan.x0, V.x); alan.x1 = Math.max(alan.x1, V.x); alan.y0 = Math.min(alan.y0, V.y); alan.y1 = Math.max(alan.y1, V.y); }
-  dekor.yerlestir(cam, alan); window.__dekor = dekor; window.__cam = cam;
-  const r = 40; Object.assign(sun.shadow.camera, { left: -r, right: r, top: r, bottom: -r, far: 160 }); sun.shadow.camera.updateProjectionMatrix();
-  $('coin').hidden = false; $('sandik').hidden = false;
-}
-
-// ---------------- odul gorselleri denemesi ----------------
-$('coin').onclick = () => { const t = $('bilgi').getBoundingClientRect(); ucur({ x: innerWidth / 2, y: innerHeight * 0.45, tx: t.left + 20, ty: t.top + 10, n: 10 }); };
-let sDur = null;
-$('sandik').onclick = () => { if (sDur) sDur(); const el = document.createElement('div'); Object.assign(el.style, { position: 'fixed', left: '50%', top: '42%', width: '160px', height: '140px', transform: 'translate(-50%,-50%)' }); document.body.appendChild(el); sDur = sandik(el); setTimeout(() => { if (sDur) sDur(); sDur = null; el.remove(); }, 9000); };
-
 // ---------------- dongu ----------------
 let FPS = { n: 0, t: 0, d: 0 }, onceki = 0;
 function kare(t) {
   const dt = Math.min(0.05, (t - (onceki || t)) / 1000); onceki = t; zaman += dt;
   if (dunya) { dunya.step(1 / 120, dt, 4); esitle(); }
-  if (dekor && dekor.hazir) dekor.kare(dt, zaman);
   if (sahne) ren.render(sahne, cam);
   if (etiketler.length) { const V = new THREE.Vector3(); for (const e of etiketler) { V.copy(e.p).project(cam); e.el.style.left = ((V.x + 1) / 2 * innerWidth) + 'px'; e.el.style.top = ((1 - V.y) / 2 * innerHeight) + 'px'; } }
-  FPS.n++; FPS.t += dt; if (FPS.t > 1) { FPS.d = Math.round(FPS.n / FPS.t); FPS = { n: 0, t: 0, d: FPS.d }; $('bilgi').textContent = (GORUNUM[gor] || {}).ad + ' · ' + FPS.d + ' FPS · ' + ren.info.render.calls + ' çizim · ' + Math.round(ren.info.render.triangles / 1000) + 'k üçgen' + (dekor ? ' · dekor ' + dekor.seviye : ''); window.__fps = FPS.d; window.__calls = ren.info.render.calls; }
+  FPS.n++; FPS.t += dt; if (FPS.t > 1) { FPS.d = Math.round(FPS.n / FPS.t); FPS = { n: 0, t: 0, d: FPS.d }; $('bilgi').textContent = (GORUNUM[gor] || {}).ad + ' · ' + FPS.d + ' FPS · ' + ren.info.render.calls + ' çizim · ' + Math.round(ren.info.render.triangles / 1000) + 'k üçgen'; window.__fps = FPS.d; window.__calls = ren.info.render.calls; }
   requestAnimationFrame(kare);
 }
 let gor = '';
 async function ac() {
   gor = (location.hash || '#kavanoz').slice(1); if (!GORUNUM[gor]) gor = 'kavanoz';
   for (const b of $('ust').children) b.classList.toggle('on', b.dataset.g === gor);
-  $('sars').hidden = $('coin').hidden = $('sandik').hidden = true;
+  $('sars').hidden = true;
   window.__hazir = false;
   ren.setSize(innerWidth, innerHeight, false);
   await GORUNUM[gor].kur();
