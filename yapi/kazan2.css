@@ -62,3 +62,6 @@
 #mkazan .k2-devam.on{opacity:1;pointer-events:auto;animation:k2devin .5s cubic-bezier(.3,2,.4,1),k2nabiz 1.3s 1s ease-in-out infinite}
 @keyframes k2devin{from{transform:scale(0)}}
 @keyframes k2nabiz{50%{transform:scale(1.07)}}
+
+/* v6.9: 3B hazine sandigi yeri (sandigin kendisi ust katmandaki 3B tuvalde cizilir) */
+#mkazan .k2-sandik3d{width:160px;height:136px;flex:none;margin:4px 0 -6px}

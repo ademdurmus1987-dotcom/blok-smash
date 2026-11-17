@@ -6,7 +6,8 @@
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { kazanSahne } from './kazan2.js?v=1';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
+import { kazanSahne } from './kazan2.js?v=2';
+import { ucur as ucur3d } from './gorsel/odul3d.js?v=1';   // v6.9: (Adem 17 Kas) Kenney coin modeli donerek sayaca ucar   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -104,15 +105,21 @@ export function merkezKur(A) {
   function ucur(x, y, adet, eski, yeni) {
     const hedef = $('m-ahap').querySelector('.coin').getBoundingClientRect(), tx = hedef.left + hedef.width / 2, ty = hedef.top + hedef.height / 2, n = Math.max(4, Math.min(14, adet));
     altinYaz(eski);
+    const vardi = (i) => { const hap = $('m-ahap'); hap.classList.remove('pop'); void hap.offsetWidth; hap.classList.add('pop');
+      altinYaz(i === n - 1 ? yeni : Math.round(eski + (yeni - eski) * (i + 1) / n)); A.ses('para', 0.5, 1 + i * 0.045); };
+    // v6.9: 3B coin (Kenney coin-gold) donerek ucar; WebGL/model yoksa ya da ?coin3d=0 ise eski 2B coinler
+    if (!/[?&]coin3d=0/.test(location.search)) { ucur3d({ x, y, tx, ty, n, vardi }).catch(() => ucur2d(x, y, tx, ty, n, vardi)); }
+    else ucur2d(x, y, tx, ty, n, vardi);
+    setTimeout(() => altinYaz(SV.altin || 0), 900 + n * 55 + 600);
+  }
+  function ucur2d(x, y, tx, ty, n, vardi) {
     for (let i = 0; i < n; i++) {
       const c = document.createElement('i'); c.className = 'coin m-ucan'; c.style.left = x + 'px'; c.style.top = y + 'px'; document.body.appendChild(c);
       const sx = (Math.random() - 0.5) * 150, sy = (Math.random() - 0.5) * 110 - 20;
       const an = c.animate([{ transform: 'translate(0,0) scale(.3)', opacity: 0 }, { transform: 'translate(' + sx + 'px,' + sy + 'px) scale(1.15)', opacity: 1, offset: 0.28 }, { transform: 'translate(' + sx + 'px,' + sy + 'px) scale(1)', opacity: 1, offset: 0.42 }, { transform: 'translate(' + (tx - x) + 'px,' + (ty - y) + 'px) scale(.75)', opacity: 1 }],
         { duration: 900, delay: i * 55, easing: 'cubic-bezier(.5,0,.6,1)', fill: 'both' });
-      an.onfinish = () => { c.remove(); const hap = $('m-ahap'); hap.classList.remove('pop'); void hap.offsetWidth; hap.classList.add('pop');
-        altinYaz(i === n - 1 ? yeni : Math.round(eski + (yeni - eski) * (i + 1) / n)); A.ses('para', 0.5, 1 + i * 0.045); };   // v3.4: (Adem 11 Kas) kasaya uçan her altın tik sesi (Altın 27), perdesi gittikçe yükselir
+      an.onfinish = () => { c.remove(); vardi(i); };   // v3.4: (Adem 11 Kas) kasaya uçan her altın tik sesi (Altın 27), perdesi gittikçe yükselir
     }
-    setTimeout(() => altinYaz(SV.altin || 0), 900 + n * 55 + 200);
   }
   function odulVer(o) { if (o.a) SV.altin = (SV.altin || 0) + o.a; if (o.g) { const s = A.ggSay(); s[o.g] = (s[o.g] || 0) + (o.n || 1); } A.save(); A.ggHud(); }
   const odulHtml = (o) => (o.a ? '<div class="o-od"><div class="g-ik"><i class="coin"></i></div>' + o.a + '</div>' : '') + (o.g ? '<div class="o-od"><div class="g-ik">' + ggIc(o.g) + '</div>' + ggAd[o.g] + ' x' + (o.n || 1) + '</div>' : '');
@@ -382,7 +389,7 @@ export function merkezKur(A) {
   // ---------------- ayarlar / duraklatma ----------------
   function ayarKarti(oyunda) {
     const sat = (id, ad, on) => '<div class="ay"><b>' + ad + '</b><button class="tg' + (on ? ' on' : '') + '" data-a="' + id + '" aria-label="' + ad + '"><i></i></button></div>';
-    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not" style="margin:12px 0 6px!important">Geliştirici</p>' + sat('fps', 'FPS sayacı', !!SV.fps) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p></div>' +
+    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not" style="margin:12px 0 6px!important">Geliştirici</p>' + sat('fps', 'FPS sayacı', !!SV.fps) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p><p class="p-not" style="margin-top:2px!important;opacity:.75">3D assets: Kenney (kenney.nl)</p></div>' +
       (oyunda ? '<button class="m-btn" id="p-dv">Devam Et</button><button class="m-btn tur kck" id="p-yb">Yeniden Başla</button><button class="m-btn mavi kck" id="p-as">Ana Sayfa</button>' : '<button class="m-btn kck" id="p-dv">Tamam</button>'));
     durak = !!oyunda;
     for (const b of P.querySelectorAll('.tg')) b.onclick = () => { A.ayar(b.dataset.a); tik(); ayarKarti(oyunda); };

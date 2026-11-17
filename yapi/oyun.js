@@ -17,12 +17,13 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=19';
+import { merkezKur } from './merkez.js?v=20';
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
-import { hisKur } from './fx/his.js?v=1';   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { hisKur } from './fx/his.js?v=1';
+import { temaDekor, kenneyOrtam, hdrOrtam, DUNYA_TEMA } from './gorsel/tema3d.js?v=1';   // v6.9: (Adem 17 Kas) Kenney tema dekorlari (yalniz arka plan)   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -1344,6 +1345,7 @@ function bolumBasla(Y) {
   g = { don: Y.don || 0, L: LV, ad: Y.ad, total: cubes.length, left: cubes.length, shots: shotsFor(cubes.length, Y), max: shotsFor(cubes.length, Y), state: 'play', t: 0, busy: 0, quiet: 0, combo: null, armed: false, bonus: 0, gold: 0 };
   FUSE.length = 0;
   if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + (fo.yeni ? 'yeni/' + fo.r + '.webp?v=2' : fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2')) + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; $('bg').classList.toggle('koyu', !!fo.yeni && LV % 5 === 0); setPlat(tm[1]); setDirt(fo); setSea(fo); if (fo.yeni) DIRT.visible = false; canliFon(fo.yeni ? { f: fo.f, vid: 1 } : fo); videoFon(fo); fonIsi(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); if (fo.yeni) temaKur(); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
+  dekorKur(K ? null : fonOf(LV));   // v6.9: tema dekoru (yalniz arka plan; ?dekor=0 kapali)
   let ipu = ''; if (Y.ip && Y.a && !K) { if (!SV.ark) SV.ark = []; if (!SV.ark.includes(Y.a)) { SV.ark.push(Y.a); ipu = '<i>' + Y.ip + '</i>'; } }   // v5.0: yeni yapi tipinin cozum ipucu (ilk karsilasmada)
   const nm = $('nm'); const dfo = !PLT && !K && FONYENI ? fonOf(LV) : null, dyeni = dfo && (LV === 1 || fonOf(LV - 1) !== dfo);   // v6.6: dunya adi; dunyanin ilk bolumunde 'YENI DUNYA'
   nm.innerHTML = '<div class="rb1"><small>' + (PLT ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
@@ -3382,8 +3384,35 @@ function fit() {
   ZW = -1e9;   // v3.21: resimdeki su cizgisinin zemindeki yeri (kameradan resimdeki o noktaya isin, zemin duzlemiyle kesisim)
   if (foY && foY.yeni && foY.sy) { V.set(0, 1 - 2 * fonPx(0.5, foY.sy)[1] / H, 0.5).unproject(cam).sub(cam.position).normalize(); if (V.y < -1e-4) ZW = cam.position.z + V.z * (GY - cam.position.y) / V.y; }
   cam.userData.base = cam.position.clone(); tilkiYer(); if (FONYENI) fonIsi(fonOf(LV));
+  if (DEKOR && DEKOR.d) dekorYer();   // v6.9
 }
 addEventListener('resize', fit); fit();
+
+// ================= v6.9 (Adem 17 Kas) Kenney tema dekorlari =================
+// Yalniz arka plan katmani: plaj/korsan (koy dunyalari), kar (buz), kale (col, magara, volkan). Dekor platformun arka kenarinin
+// arkasinda durur, fizik govdesi yok, bolum verisi degismez. Yakin dekor yapinin ekrandaki kutusuna girerse kenara kayar/gizlenir.
+// ?dekor=0 kapali, ?dekor=plaj|kar|kale her bolumde o tema. Modeller yuklenemezse dekor cizilmez, oyun ayni kalir.
+var DEKORQ = Q.get('dekor'), DEKOR = { tema: null, d: null, yuk: new Map() };   // var: fit()/bolumBasla bu satirdan once calisabilir
+try { kenneyOrtam(hdrOrtam(ren)); } catch (e) { /* ortam haritasi olmazsa modeller duz isikla cizilir */ }
+queueMicrotask(() => { try { if (g && !K) dekorKur(fonOf(LV)); } catch (e) { /* bolum henuz kurulmadi */ } });
+function dekorKur(fo) {
+  if (!DEKOR) return;
+  let ad = DEKORQ && DEKORQ !== '0' ? DEKORQ : (FONYENI && fo && fo.yeni ? DUNYA_TEMA[fo.f.replace('y_', '')] || null : null);
+  if (DEKORQ === '0' || K || PLT) ad = null;
+  if (ad === DEKOR.tema) { if (DEKOR.d) dekorYer(); return; }
+  if (DEKOR.d) scene.remove(DEKOR.d.kok); DEKOR.d = null; DEKOR.tema = ad; if (!ad) return;
+  let d = DEKOR.yuk.get(ad);
+  if (!d) { d = temaDekor(ad, Object.assign({ S, zemin: GY, golge: false }, Q.get('dekoryog') ? { yogunluk: +Q.get('dekoryog'), sabit: true } : {}));   // ?dekoryog=1..3 sabit yogunluk (test)
+ DEKOR.yuk.set(ad, d); d.kur().then(() => { if (DEKOR.d === d) dekorYer(); }).catch(() => {}); }
+  DEKOR.d = d; scene.add(d.kok); dekorYer();
+}
+function dekorYer() {
+  const d = DEKOR.d; if (!d || !d.hazir) return;
+  d.ayarla({ zemin: GY, arka: Math.max(RZ, RZB) + 1.2 });
+  const V = new THREE.Vector3(), a = { x0: 9, x1: -9, y0: 9, y1: -9 }; cam.updateMatrixWorld(true);
+  for (const x of [-R, R]) for (const y of [GY, TOPY + 0.2]) for (const z of [-Math.max(RZ, RZB), RZ]) { V.set(x, y, z).project(cam); a.x0 = Math.min(a.x0, V.x); a.x1 = Math.max(a.x1, V.x); a.y0 = Math.min(a.y0, V.y); a.y1 = Math.max(a.y1, V.y); }
+  d.yerlestir(cam, a);
+}
 
 // ================= v6.27 KALITE (Adem 8 Kas: ticari kalite; once yalniz 1. bolumde) =================
 // Darbe siddeti (s) ses, titresim, kamera ve kisa donmayi birlikte belirler. ?kalite=0 eski hal, ?kalite=1 her bolumde.
@@ -3468,6 +3497,7 @@ function frame(ts) {
   fovK(dt);
   // v6.29: (Adem: telefon cok isiniyor) hicbir sey kipirdamiyorsa golge haritasi yeniden cizilmez ve sahne saniyede 20 kez cizilir
   if (PRV.on) prvKare(dt);
+  if (DEKOR && DEKOR.d && DEKOR.d.hazir) DEKOR.d.kare(dt, ts / 1000);   // v6.9: gemiler sallanir, bayraklar dalgalanir; FPS dusunce dekor azalir
   if (sahneBos()) { BOS++; if (BOS > 12) { ren.shadowMap.autoUpdate = false; if (BOS % 3) { if (!TEST) requestAnimationFrame(frame); return; } } }
   else { BOS = 0; ren.shadowMap.autoUpdate = true; prOlc(dt); }
   if (HIZLI) return;   // v5.0: dogrulayici (YP.run(sn, true)): fizik var, cizim yok

@@ -44,6 +44,12 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
     const n = 2 * seg + 1, g = new THREE.BoxGeometry(1, 1, 1, n, n, n), P = g.attributes.position, N = g.attributes.normal;
     const H = [w / 2, h / 2, d / 2], I = H.map((x) => x - r), q = [0, 0, 0], c = [0, 0, 0];
     const yeni = (t, ax) => { const k = Math.round((t + 0.5) * n); return k <= seg ? -H[ax] + (k / seg) * r : I[ax] + ((k - seg - 1) / seg) * r; };
+    // UV: kutunun izgara UV'si koseye sikistirilan satirlari da sayar; duz yuz dokunun tamamini gostersin diye UV yeni konumdan hesaplanir
+    const UV = g.attributes.uv, eks = (nx, ny) => Math.abs(nx) > 0.5 ? [2, 1] : Math.abs(ny) > 0.5 ? [0, 2] : [0, 1];
+    for (let i = 0; i < UV.count; i++) {
+      const [au, av] = eks(N.getX(i), N.getY(i)), u = UV.getX(i), v = UV.getY(i);
+      UV.setXY(i, (yeni(u - 0.5, au) + H[au]) / (2 * H[au]), (yeni(v - 0.5, av) + H[av]) / (2 * H[av]));
+    }
     for (let i = 0; i < P.count; i++) {
       q[0] = yeni(P.getX(i), 0); q[1] = yeni(P.getY(i), 1); q[2] = yeni(P.getZ(i), 2);
       let L = 0; for (let a = 0; a < 3; a++) { c[a] = clamp(q[a], -I[a], I[a]); L += (q[a] - c[a]) ** 2; } L = Math.sqrt(L) || 1;
@@ -163,10 +169,10 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
       const gr = x.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#d8f3ff'); gr.addColorStop(1, '#8fd0f5'); x.fillStyle = gr; x.fillRect(0, 0, w, h);
       let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
       x.lineCap = 'round';
-      for (let i = 0; i < 7; i++) {
-        let px = rnd() * w, py = rnd() * h, a = rnd() * Math.PI * 2; x.beginPath(); x.moveTo(px, py);
-        const L = 4 + (rnd() * 5 | 0); for (let k = 0; k < L; k++) { a += (rnd() - 0.5) * 1.3; px += Math.cos(a) * 18; py += Math.sin(a) * 18; x.lineTo(px, py); }
-        x.strokeStyle = 'rgba(40,120,200,0.45)'; x.lineWidth = 4 + rnd() * 2; x.stroke(); x.strokeStyle = 'rgba(255,255,255,1)'; x.lineWidth = 1.8 + rnd() * 1.6; x.stroke();
+      for (let i = 0; i < 5; i++) {
+        let px = 40 + rnd() * (w - 80), py = 40 + rnd() * (h - 80), a = rnd() * Math.PI * 2; x.beginPath(); x.moveTo(px, py);
+        const L = 3 + (rnd() * 3 | 0); for (let k = 0; k < L; k++) { a += (rnd() - 0.5) * 1.3; px += Math.cos(a) * 26; py += Math.sin(a) * 26; x.lineTo(px, py); }
+        x.strokeStyle = 'rgba(20,90,180,0.55)'; x.lineWidth = 10 + rnd() * 4; x.stroke(); x.strokeStyle = 'rgba(255,255,255,1)'; x.lineWidth = 4 + rnd() * 3; x.stroke();
       }
     });
     TEX.set('catlak', t); return t;
@@ -175,10 +181,10 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
     if (TEX.has('dalga')) return TEX.get('dalga');
     const t = cnv(128, 512, (x, w, h) => {
       x.fillStyle = '#9ad8f8'; x.fillRect(0, 0, w, h);
-      for (let k = 0; k < 9; k++) {
-        const y0 = (k + 0.5) * h / 9; x.beginPath();
+      for (let k = 0; k < 6; k++) {
+        const y0 = (k + 0.5) * h / 6; x.beginPath();
         for (let px = 0; px <= w; px += 2) { const y = y0 + Math.sin(px / w * Math.PI * 4) * 9; px ? x.lineTo(px, y) : x.moveTo(px, y); }
-        x.strokeStyle = 'rgba(30,110,200,0.5)'; x.lineWidth = 12; x.stroke(); x.strokeStyle = 'rgba(255,255,255,1)'; x.lineWidth = 6; x.stroke();
+        x.strokeStyle = 'rgba(20,90,190,0.6)'; x.lineWidth = 22; x.stroke(); x.strokeStyle = 'rgba(255,255,255,1)'; x.lineWidth = 11; x.stroke();
       }
     });
     TEX.set('dalga', t); return t;
@@ -322,7 +328,7 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
       case 'buz': return fizMat('buz', Object.assign({}, dusuk ? MALZEME.buzDusuk : MALZEME.buz, { map: catlakDoku() }));
       case 'buzDalga': return fizMat('buzDalga', Object.assign({}, dusuk ? MALZEME.buzDusuk : MALZEME.buz, { map: dalgaDoku() }));
       case 'buzKapak': return fizMat('buzKapak', Object.assign({}, dusuk ? MALZEME.buzDusuk : MALZEME.buz, { color: '#b8e8ff', transmission: dusuk ? 0 : 0.35, roughness: 0.1 }));
-      case 'tas': { const t = tasDoku(); return fizMat('tas', Object.assign({}, MALZEME.tas, { color: '#ffffff', map: t.renk, bumpMap: t.bump, bumpScale: 1.6 })); }
+      case 'tas': { const t = tasDoku(); return fizMat('tas', Object.assign({}, MALZEME.tas, { color: '#ffffff', map: t.renk, bumpMap: t.bump, bumpScale: 0.8 })); }
       case 'tasKenar': return fizMat('tasKenar', Object.assign({}, MALZEME.tas, { color: '#4a5cc0', roughness: 0.45 }));
       case 'ahsap': return fizMat('ahsap', Object.assign({}, MALZEME.ahsap, { color: '#ffffff', map: ahsapDoku(KUTUK_PROF, OLCU.kutuk.h / 2) }));
     }

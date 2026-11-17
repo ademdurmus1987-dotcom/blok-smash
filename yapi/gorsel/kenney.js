@@ -30,8 +30,9 @@ export function malzemeYukselt(eski, ad) {
     roughness: c.roughness, metalness: c.metalness, clearcoat: c.clearcoat || 0, clearcoatRoughness: c.clearcoatRoughness ?? 0.2,
     envMapIntensity: c.envMapIntensity ?? 1, side: eski.side, transparent: eski.transparent, opacity: eski.opacity, alphaTest: eski.alphaTest
   });
+  if (c.renk) m.color = new THREE.Color(c.renk);
   if (m.map) { m.map.colorSpace = THREE.SRGBColorSpace; m.map.anisotropy = 4; }
-  if (c.emissiveIntensity) { m.emissive = new THREE.Color('#ffffff'); m.emissiveMap = m.map; m.emissiveIntensity = c.emissiveIntensity; }
+  if (c.emissiveIntensity) { m.emissive = c.renk ? new THREE.Color(c.renk) : new THREE.Color('#ffffff'); m.emissiveMap = m.map; m.emissiveIntensity = c.emissiveIntensity; }
   m.envMap = ENV; m.name = 'kenney:' + key; MAT.set(key, m); return m;
 }
 

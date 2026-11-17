@@ -15,7 +15,7 @@ const ren = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true, alpha: t
 ren.setClearColor(0, 0); ren.setPixelRatio(Math.min(2, devicePixelRatio || 1)); oyunRenderer(ren);
 const ENV = hdrOrtam(ren); kenneyOrtam(ENV);
 const K = sekilKutuphanesi({ THREE, env: ENV, mergeGeometries, dusuk: Q.get('dusuk') === '1' });
-const cam = new THREE.PerspectiveCamera(40, 1, 0.3, 400);
+const cam = new THREE.PerspectiveCamera(40, 1, 0.3, 400); window.__K = K;   // test icin
 let sahne, sun, dunya = null, govdeler = [], dekor = null, etiketler = [], kadr = null, zaman = 0;
 
 const GORUNUM = {
@@ -153,7 +153,7 @@ async function tema(ad) {
   yeniSahne(FON[ad]); dizilim(ad === 'kar' ? 2 : 1, true);
   const zeminY = K.altY('platform') * S;
   const golge = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.ShadowMaterial({ opacity: 0.25 })); golge.rotation.x = -Math.PI / 2; golge.position.y = zeminY + 0.01; golge.receiveShadow = true; sahne.add(golge);
-  dekor = temaDekor(ad, { S, zemin: zeminY, arka: OLCU.platform.d * S / 2 + 1 });
+  dekor = temaDekor(ad, Object.assign({ S, zemin: zeminY, arka: OLCU.platform.d * S / 2 + 1 }, Q.has('yog') ? { yogunluk: +Q.get('yog'), sabit: true } : {}));
   await dekor.kur(); sahne.add(dekor.kok);
   const yapi = new THREE.Box3(); for (const [m] of govdeler) yapi.expandByObject(m); sahne.traverse((o) => { if (o.name.startsWith('platform')) yapi.expandByObject(o); });
   sigdir(yapi, 0.82, 0.62);
@@ -167,7 +167,7 @@ async function tema(ad) {
 // ---------------- odul gorselleri denemesi ----------------
 $('coin').onclick = () => { const t = $('bilgi').getBoundingClientRect(); ucur({ x: innerWidth / 2, y: innerHeight * 0.45, tx: t.left + 20, ty: t.top + 10, n: 10 }); };
 let sDur = null;
-$('sandik').onclick = () => { if (sDur) sDur(); const el = document.createElement('div'); Object.assign(el.style, { position: 'fixed', left: '50%', top: '42%', width: '160px', height: '140px', transform: 'translate(-50%,-50%)' }); document.body.appendChild(el); sDur = sandik(el); setTimeout(() => { if (sDur) sDur(); sDur = null; el.remove(); }, 4500); };
+$('sandik').onclick = () => { if (sDur) sDur(); const el = document.createElement('div'); Object.assign(el.style, { position: 'fixed', left: '50%', top: '42%', width: '160px', height: '140px', transform: 'translate(-50%,-50%)' }); document.body.appendChild(el); sDur = sandik(el); setTimeout(() => { if (sDur) sDur(); sDur = null; el.remove(); }, 9000); };
 
 // ---------------- dongu ----------------
 let FPS = { n: 0, t: 0, d: 0 }, onceki = 0;
