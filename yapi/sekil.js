@@ -5,7 +5,7 @@
 // Olculer kup kenari (S) cinsindendir: w genislik (x), h yukseklik (y), d derinlik (z).
 import { kaleKur } from './kale.js?v=4';
 import { CILA, cilaKur } from './cila.js?v=1';   // v5.3: oyun kamerasina gore yeniden cizilen bloklar (?cila=0 eski gorunum)   // v4.3: Korsan Kalesi blok seti
-export function sekilKur({ THREE, S, canvasTex, ENV }) {
+export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
   const col = (h) => new THREE.Color(h);
   const mix = (a, b, t) => '#' + col(a).lerp(col(b), t).getHexString();
   const koyu = (h, t) => mix(h, '#000000', t), acik = (h, t) => mix(h, '#ffffff', t);
@@ -480,6 +480,7 @@ export function sekilKur({ THREE, S, canvasTex, ENV }) {
   };
   Object.assign(TUR, kaleKur({ THREE, S, canvasTex, ENV, kutu, torna, rng, acik, koyu }));   // v4.3
   if (CL) for (const k in CL.yeni) if (TUR[k]) TUR[k].yap = CL.yeni[k];   // v5.3
+  if (b3) for (const k in b3.TUR) if (TUR[k]) { const eski = TUR[k].yap; TUR[k].yap = () => b3.yap(k) || eski(); }   // v6.1: Blender modeli varsa o (blok3b.js), yoksa eski cizim
   const HAZIR = {};
   function al(k) { if (HAZIR[k]) return HAZIR[k]; const t = TUR[k], y = t.yap(); return (HAZIR[k] = Object.assign({ w: t.w * S, h: t.h * S, d: t.d * S, sil: t.sekil === 'sil', r: S * 0.47 }, y)); }
   function patiAyar(p) { PT.p = p; for (const k in HAZIR) if (k.startsWith('oy')) delete HAZIR[k]; }

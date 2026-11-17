@@ -14,6 +14,8 @@ BURASI = os.path.dirname(os.path.abspath(__file__))
 KOK = os.path.dirname(os.path.dirname(os.path.dirname(BURASI)))
 CIKTI = os.path.join(KOK, 'yapi', 'model', 'pilot')
 ONIZ = os.path.join(BURASI, 'onizleme')
+BLOK = os.path.join(KOK, 'yapi', 'model', 'blok')   # ana oyunun (2000 bolum) bloklari; pilot disi
+os.makedirs(BLOK, exist_ok=True)
 os.makedirs(CIKTI, exist_ok=True); os.makedirs(ONIZ, exist_ok=True)
 DOKU = 512
 ORNEK = 160            # pisirme ornek sayisi
@@ -210,8 +212,8 @@ def malzeme(ob, ad, img, puruz):
     pr.inputs['Roughness'].default_value = puruz; pr.inputs['Metallic'].default_value = 0.0
     ob.data.materials.clear(); ob.data.materials.append(mat)
 
-def aktar(ob, ad):
-    aktif(ob); yol = os.path.join(CIKTI, ad + '.glb')
+def aktar(ob, ad, klasor=None):
+    aktif(ob); yol = os.path.join(klasor or CIKTI, ad + '.glb')
     ist = dict(filepath=yol, export_format='GLB', use_selection=True, export_yup=True, export_apply=True, export_normals=True, export_texcoords=True,
                export_materials='EXPORT', export_image_format='JPEG', export_jpeg_quality=84, export_image_quality=84, export_vertex_color='ACTIVE', export_all_vertex_colors=False,
                export_active_vertex_color_when_no_material=True, export_tangents=False, export_animations=False, export_cameras=False, export_lights=False, export_extras=False)
@@ -226,12 +228,12 @@ def onizle_boya(ob, ad):
     for d in at.data:
         c = d.color
         if c[0] > 0.97 and c[1] > 0.97 and c[2] > 0.97: d.color = k
-def uret(ad, parcalar, puruz=0.34, keskin=62.0):
+def uret(ad, parcalar, puruz=0.34, keskin=62.0, klasor=None):
     print('==', ad)
     ob = nesne(ad, parcalar, keskin)
     ucgen = len(ob.data.polygons); print('  ucgen', ucgen, 'kose', len(ob.data.vertices))
     assert ucgen <= 830, (ad, ucgen)
-    uv_ac(ob); img = pisir(ob, ad); malzeme(ob, ad, img, puruz); aktar(ob, ad)
+    uv_ac(ob); img = pisir(ob, ad); malzeme(ob, ad, img, puruz); aktar(ob, ad, klasor)
     ob.hide_render = True   # sonraki modelin pisirmesinde golge yapmasin (hepsi ayni noktada duruyor)
     onizle_boya(ob, ad)     # disa aktarimdan SONRA: dosyadaki isaret beyaz kalir
     return ob
@@ -513,16 +515,51 @@ def elmas():
     P = [bm_al(bm)]; bm.free()
     return uret('pl_elmas', P, 0.08, keskin=8.0)
 
+# ------------------------------------------------------------------ ANA OYUN 1) tas blok (1x1, 2x1, 3x1, 4x1): yuvarlak govde, ice gomuk harc panosu,
+# panoda iki sira kaydirmali kabartma tas (tuglalar arasi harc derzinde pisirilmis golge). Ad ve fizik eski ksTas* turleriyle ayni (model/blok/tas*.glb).
+def tas_yap(ad, wS, bw0, yanbw):
+    import random
+    rnd = random.Random(wS * 101 + 7)
+    w, a = wS * S * 0.99, S * 0.99; r = 0.085 * S; gom = 0.04 * S; ins = 0.03 * S
+    CER = renk('#a9b0ca'); HARC = renk('#646b8c'); T = [renk('#b9c0d8'), renk('#aab2cd'), renk('#c3c9de')]
+    bm = kutu_bm(w, a, a, r, 2)
+    pn = {ad_: pano(bm, buyuk_yuz(bm, y), ins, gom) for ad_, y in YON.items()}
+    ustalt = {pn['ust'], pn['alt']}; yan = {pn[k] for k in ('on', 'arka', 'sag', 'sol')}
+    P = [bm_al(bm, lambda f: T[0] if f in ustalt else HARC if f in yan else CER)]; bm.free()
+    def orgu(yon, uzak, uh, vh, bw0):
+        o, u, v = yuz_cerceve(yon, uzak); g = 0.04; rh = (2 * vh - g * 3) / 2
+        n = max(1, round((2 * uh - g) / (bw0 + g))); bw = (2 * uh - g * (n + 1)) / n; hb = (bw - g) / 2
+        for j in range(2):
+            yc = -vh + g + j * (rh + g) + rh / 2
+            gen = [bw] * n if j == 0 else [hb] + [bw] * (n - 1) + [hb]
+            x = -uh + g
+            for bwi in gen:
+                P.append(kabartma(o, u, v, SP(yuvdik(x + bwi / 2, yc, bwi, rh, 0.035, 2)), [(1.0, -0.004), (0.93, 0.036 * S)], rnd.choice(T)))
+                x += bwi + g
+    pv = (a / S) / 2 - 0.085 - 0.03                  # pano yarim yuksekligi (S)
+    for yon in ('on', 'arka'): orgu(yon, a / 2 - gom, (w / S) / 2 - 0.085 - 0.03, pv, bw0)
+    for yon in ('sag', 'sol'): orgu(yon, w / 2 - gom, pv, pv, yanbw)   # yan yuz: uzun blokta iri tas (ucgen siniri)
+    return uret(ad, P, 0.82, klasor=BLOK)
+def tas1(): return tas_yap('tas1', 1, 0.7, 0.7)   # iri tas: oyun kamerasinda kucuk tugla 'pencere' gibi okunuyordu
+def tas2(): return tas_yap('tas2', 2, 0.6, 0.7)
+def tas3(): return tas_yap('tas3', 3, 0.7, 0.7)
+def tas4(): return tas_yap('tas4', 4, 0.7, 0.7)
+
 # ------------------------------------------------------------------ onizleme (Blender icinde bakmak icin; oyunda kullanilmaz)
 def onizle(obs, dosya):
     sc = bpy.context.scene
-    satir = [obs[i:i + 4] for i in range(0, len(obs), 4)]
+    satir = []; sat = []; top = 0.0   # satir genisligi 13 birimi gecmesin (uzun bloklar sigsin)
+    for o in obs:
+        e = max(o.dimensions.x, o.dimensions.y)
+        if sat and (top + e > 13 or len(sat) == 4): satir.append(sat); sat = []; top = 0.0
+        sat.append(o); top += e + 0.9
+    if sat: satir.append(sat)
     for ri, sat in enumerate(satir):
         en = [max(o.dimensions.x, o.dimensions.y) for o in sat]; x = -(sum(en) + 0.9 * (len(sat) - 1)) / 2
         for o, e in zip(sat, en): o.location = (x + e / 2, 0, -ri * 3.6); x += e + 0.9
     for ob in obs: ob.rotation_euler = (0, 0, math.radians(-24)); ob.hide_render = False
     orta = -(len(satir) - 1) * 1.8 + 0.6
-    cam = bpy.data.cameras.new('kam'); cam.type = 'ORTHO'; cam.ortho_scale = max(12.5, 3.9 * len(satir) + 2); co = bpy.data.objects.new('kam', cam); sc.collection.objects.link(co)
+    cam = bpy.data.cameras.new('kam'); cam.type = 'ORTHO'; cam.ortho_scale = max(14.5, 3.9 * len(satir) + 2); co = bpy.data.objects.new('kam', cam); sc.collection.objects.link(co)
     co.location = (0, -20, orta + 4.6); co.rotation_euler = (math.radians(77), 0, 0); sc.camera = co
     gn = bpy.data.lights.new('gunes', 'SUN'); gn.energy = 2.2; gn.angle = math.radians(12); go = bpy.data.objects.new('gunes', gn); sc.collection.objects.link(go); go.rotation_euler = (math.radians(50), 0, math.radians(35))
     sc.render.engine = 'CYCLES'; sc.cycles.samples = 48; sc.render.resolution_x = 1100; sc.render.resolution_y = int(760 * max(1, len(satir) / 2)); sc.render.film_transparent = False
@@ -533,7 +570,7 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dunya()
     ist = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk, 'buz': buz, 'buz3': buz3, 'sandik': sandik, 'tnt': tnt, 'elmas': elmas}
+    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk, 'buz': buz, 'buz3': buz3, 'sandik': sandik, 'tnt': tnt, 'elmas': elmas, 'tas1': tas1, 'tas2': tas2, 'tas3': tas3, 'tas4': tas4}
     obs = [f() for k, f in hepsi.items() if not ist or k in ist]
     if len(obs) > 1: onizle(obs, 'onizleme.png' if not ist else 'onizleme_secili.png')   # hepsi uretilince ana onizleme, secili uretimde ayri dosya
     print('BITTI')

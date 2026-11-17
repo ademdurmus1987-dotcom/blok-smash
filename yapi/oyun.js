@@ -9,7 +9,8 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=7';
+import { sekilKur, YAPI } from './sekil.js?v=8';
+import { blok3bKur } from './blok3b.js?v=1';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=1';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -459,7 +460,8 @@ const NENV = (() => {
 
 // v3.1: (Adem 10 Kas 2026) kodla cizilen 3B sekiller (sekil.js): parlak oyuncak kup, tas kiris, mermer tambur, buz, ahsap dikme, kavanoz, raf.
 // KIND'e eklenir (sek: 1); olculeri kup kenari cinsinden SEK.TUR'da, govde ve malzemesi ilk kullanimda SEK.al(ad) ile kurulur.
-const SEK = sekilKur({ THREE, S, canvasTex, ENV });
+const B3K = blok3bKur({ THREE, ENV, GLTFLoader }), b3Ready = B3K.yukle();   // v6.1
+const SEK = sekilKur({ THREE, S, canvasTex, ENV, b3: B3K });
 const ORNEK = ornekKur({ THREE, scene, S, kontur: CILA ? 0 : 0.04, rim: CILA ? 0.1 : 0.28 });   // v5.3: cila setinde siyah kontur yok, kenar parlamasi hafif
 let PATI = null; const patiReady = (CILA ? Promise.resolve(null) : patiYukle({ THREE, S, ENV, GLTFLoader })).then((p) => { PATI = p; if (p) SEK.patiAyar(p); });
 // v4.4: (Adem 13 Kas) kaide platform (turkuaz-bakir) ve yeni top; ?kaide=0 eski Tripo platformu ve eski top
@@ -3476,7 +3478,7 @@ function pilotBag() {
 if (PLTM) PLT = PLTM.pilotKur(pilotBag());   // PILOT
 const L0 = PLT ? PLT.L /* PILOT */ : Math.min(K ? 1e9 : TOPLAM(), Math.floor(+(Q.get('sv') || SV.L || 1)) || 1), modelReady = bolumYukle(L0).then(() => modelYukle(gerekliModel(L0)));   // v5.0: once bolum parcasi   // v4.7: acilista yalniz kayitli bolumun modelleri
 { let n = 0; const P5 = [faceReady, pofiReady, texReady, modelReady]; for (const p of P5) p.then(() => { n++; if (window.BSYUK) window.BSYUK(0.15 + 0.75 * n / P5.length); }); }
-Promise.all([faceReady, pofiReady, texReady, modelReady, patiReady, K ? K.yukle() : 0, PLT ? PLT.yukle() : 0 /* PILOT */]).then(() => {
+Promise.all([faceReady, pofiReady, texReady, modelReady, patiReady, b3Ready, K ? K.yukle() : 0, PLT ? PLT.yukle() : 0 /* PILOT */]).then(() => {
   makeCannon(); fit();
   if (!K && !TEST && !PLT) merkezBagla();   // PILOT: ana sayfa yok
   for (const k in KMAT) delete KMAT[k];

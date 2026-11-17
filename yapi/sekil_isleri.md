@@ -66,3 +66,11 @@ Adem: "sekiller kalitesiz, cok basit duruyor; referansla fark cok fazla". Yakin 
 - [x] Surum: oyun.js?v=99, sekil 7, ornek 3, cila 1, bolum 8, CACHE v50. Once/sonra: `uretici/rapor/katalog/cila_once_sonra.jpg`
 - Denenmedi: gercek telefonda isinma. Fazla isinirsa oyun.js'te `CILA ? 1.75` degerini 1.5 yap.
 - Siradaki adaylar (dokunulmadi): tas sutun, kemer, fici (uzaktan koyu), sandik X tahtalari (kalinlastirma `kutu`yu bozuyor, ayri geometri gerek).
+
+## 17 Kas 2026: ana oyun bloklari Blender'a geciyor (v6.0-6.1, Opus)
+- v6.0: kirilan bloklarin parcalari dolu. `oyun.js` `fragYap`: parcanin acik kenarlari ice dogru bir tepe noktasina kapatilir; kesit yuzleri `kesitMat` ile bloktan acik tonda, mat cizilir. Yalniz `?olc` adresinde `window.__kirik` inceleme kancasi var.
+- v6.1: `yapi/blok3b.js`: ana oyun turlerinin gorunumunu `yapi/model/blok/*.glb` ile degistirir (ad, olcu, fizik, kirilma ayni). `sekil.js` `TUR[k].yap` -> model varsa model, yoksa eski cizim. Eski gorunum: `?b3=0`.
+- Ilk tur: tas (`ksTas`, `ksTas2`, `ksTas3`, `ksTas4` -> `tas1..tas4.glb`, 420-772 ucgen, ~80 KB). Uretim: `blender -b --python yapi/uretici/blender/pilot_bloklar.py -- tas1 tas2 tas3 tas4`.
+- Ders: oyun kamerasinda bir blok ~30 piksel. Kucuk tugla + koyu cerceve 'pencereli gri kutu' gibi okundu; iri tas (yuzde bir tam + iki yarim), acik cerceve ve yumusak harc temiz tas gibi okunuyor.
+- Test (390x844): `?sv=582` (38 tas) ve `?sv=25` (uzun tas) hatasiz; atista taslar dusup kiriliyor. Ucgen 123 bin -> 115 bin, cizim 53 -> 53. Once/sonra: `yapi/uretici/rapor/blok3b/tas_once_582.jpg`, `tas_sonra_582.jpg`.
+- Siradaki turler (bolumlerde kullanim sirasiyla): ksSandik/K/M, ksBuz, ksYildiz, ksYakut/ksElmas, ksSise Y/B/M, ksKalas1/2/3, ksKaro, ksFici/K, ksTNT, ksKemer, ksSutun, ksDirek, ksMorSutun, ksBuz3. Pilotta karsiligi olanlar (pl_*) dogrudan `LISTE`ye eklenebilir.
