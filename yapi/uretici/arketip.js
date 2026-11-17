@@ -412,5 +412,7 @@ export function topHesap(Y, botAtis) {
   const n = Y.c.length, sert = Y.c.filter((c) => SERT.has(c[3])).length, d = Y.d == null ? zorluk(Y.L || 100) : Y.d;
   let t = (n / 2.9 + 3) * (1.1 - 0.25 * d) + sert / 6 + (Y.engel || []).length + (Y.pl && Y.pl.some((p) => p.kay || p.asn) ? 1 : 0) + (Y.don || Y.denge ? 1 : 0);
   if (Y.zor) t *= 0.88; else if (Y.L % 10 === 1) t *= 1.12;
+  // v6.6 (Adem 17 Kas: '1000. bolum 1. gibi'): ilerledikce top payi azalir (150. bolumden 1650.'ye %14); bot alt siniri aynen korunur
+  t *= 1 - 0.14 * Math.min(1, Math.max(0, ((Y.L || 100) - 150) / 1500));
   return Math.max(8, Math.min(30, Math.max(Math.round(t), Math.ceil(botAtis * 0.7))));
 }

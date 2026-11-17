@@ -725,25 +725,30 @@ function fonEski(L) { return FONLAR[Math.floor((L - 1) / 3) % FONLAR.length]; } 
 // v3.19: (Adem) ?fon=yeni deneme anahtari: 8 tam resim fon (fon/yeni/*.webp, 768x1376), her dunya 10 bolum. Eski gorunum varsayilan.
 // cy: resimdeki bos yuvarlak zemin alaninin orta noktasi (yukseklik orani); platform ayagi kamera ile tam buraya oturur (fit).
 // isi: gunes/ay/isik huzmesinin resimdeki yeri (yalniz transform+opacity ile yavas parilti). pn: zemine gore zit renkli platform modeli.
-const FONYENI = Q.get('fon') === 'yeni';
+// v6.6 (Adem 17 Kas: '1000. bolum 1. bolum gibi'): 9 dunya artik varsayilan; eski 4 fon (cayir, koy, kar, sahil) ?fon=eski ile.
+// Oynanisi degistiren deneme kurallari (9/14 kapi-giyotin tanitimi, denge tahtasi, arka dizilis) yalniz ?fon=yeni adresinde (FONYENIQ): el yapimi bolumler ayni kalir.
+const FONYENIQ = Q.get('fon') === 'yeni';
+const FONYENI = FONYENIQ || (Q.get('fon') !== 'eski' && !PILOTQ);
 // v3.21: (Adem 13 Kas) resimlerdeki zemin halkasi silindi (yeni resimler); 1. dunya Adem'in dalgali koy videosu: platform denizin icinde.
 // zem: platformun cevresindeki zemin (kum/kar: dusen gomulur, su: batar). sy: resimde suyun bittigi (kumun basladigi) yukseklik orani;
-// bunun arkasina dusen suya batar. hep: her yer su (video koy). zr: gomulme seti/toz rengi.
+// bunun arkasina dusen suya batar (v6.6: koy, gun batimi, volkan, gece resimden yeniden olculdu; eski degerler sig suyu kum sayiyordu). hep: her yer su (video koy). zr: gomulme seti/toz rengi.
 const YFON = {
   dalga: { f: 'y_dalga', r: 'koy_dalga', vid: 'yeni/koy_dalga', cy: 0.70, pn: 'platform_4', toz: '#e8f8ff', ad: 'Dalgalı Koy', zem: 'su', hep: 1 },
-  koy: { f: 'y_koy', r: 'koy_gunduz', cy: 0.685, pn: 'platform_4', toz: '#e8c896', ad: 'Korsan Koyu', zem: 'kum', sy: 0.54 },
+  koy: { f: 'y_koy', r: 'koy_gunduz', cy: 0.685, pn: 'platform_4', toz: '#e8c896', ad: 'Korsan Koyu', zem: 'kum', sy: 0.625 },
   col: { f: 'y_col', r: 'col', cy: 0.688, pn: 'platform_4', toz: '#e8c48a', ad: 'Altın Çöl', zem: 'kum' },
   seker: { f: 'y_seker', r: 'seker', cy: 0.700, pn: 'platform_4', toz: '#ffd0e4', ad: 'Şeker Diyarı', zem: 'kum', zr: ['#ffc6de', '#ffb0d0', '#ffe0ee'] },
   buz: { f: 'y_buz', r: 'buz', cy: 0.678, pn: 'platform_3', toz: '#ffffff', ad: 'Buz Koyu', isi: [0.49, 0.36, 0.5], zem: 'kar', sy: 0.565 },
-  gunbatimi: { f: 'y_gunbatimi', r: 'koy_gunbatimi', cy: 0.695, pn: 'platform_4', toz: '#f0c090', ad: 'Gün Batımı Koyu', isi: [0.51, 0.44, 0.6], zem: 'kum', sy: 0.595 },
-  volkan: { f: 'y_volkan', r: 'volkan', cy: 0.675, pn: 'platform_3', toz: '#b8a090', ad: 'Volkan Adası', zem: 'kum', sy: 0.6, zr: ['#5e4c40', '#6e5a4c', '#4e3e34'] },
-  gece: { f: 'y_gece', r: 'gece', cy: 0.670, pn: 'platform_3', toz: '#c8d4e8', ad: 'Gece Koyu', isi: [0.68, 0.26, 0.4], zem: 'kum', sy: 0.6, zr: ['#4c5868', '#5a6676', '#3e4858'] },
+  gunbatimi: { f: 'y_gunbatimi', r: 'koy_gunbatimi', cy: 0.695, pn: 'platform_4', toz: '#f0c090', ad: 'Gün Batımı Koyu', isi: [0.51, 0.44, 0.6], zem: 'kum', sy: 0.635 },
+  volkan: { f: 'y_volkan', r: 'volkan', cy: 0.675, pn: 'platform_3', toz: '#b8a090', ad: 'Volkan Adası', zem: 'kum', sy: 0.625, zr: ['#5e4c40', '#6e5a4c', '#4e3e34'] },
+  gece: { f: 'y_gece', r: 'gece', cy: 0.670, pn: 'platform_3', toz: '#c8d4e8', ad: 'Gece Koyu', isi: [0.68, 0.26, 0.4], zem: 'kum', sy: 0.635, zr: ['#4c5868', '#5a6676', '#3e4858'] },
   magara: { f: 'y_magara', r: 'magara', cy: 0.650, pn: 'platform_3', toz: '#e0c890', ad: 'Hazine Mağarası', isi: [0.55, 0.12, 0.7], zem: 'kum', zr: ['#d8b064', '#c89a50', '#e8c47a'] }
 };
 for (const k in YFON) Object.assign(YFON[k], { yeni: 1, dirt: ['200,170,120', '180,150,100', '150,120,80'] });
 const YSIRA = ['dalga', 'koy', 'col', 'seker', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'];   // 1-10 dalgali koy (video), 11-20 kumsal koy, ... 81-90 magara, sonra basa doner
 let ZW = -1e9;   // v3.21: resim fonda suyun basladigi z (fit hesaplar); bunun arkasi su
-function fonOf(L) { return FONYENI && !K ? YFON[YSIRA[Math.floor((L - 1) / 10) % YSIRA.length]] : fonEski(L); }
+// v6.6: her dunya 10 bolum; 9 dunya (90 bolum) bitince sira kayar (her turda baska dunyadan baslar), boylece 1000. bolum 1.'nin dunyasinda olmaz
+function dunyaNo(L) { const b = Math.floor((L - 1) / 10), tur = Math.floor((L - 1) / 90); return (b + 4 * tur) % YSIRA.length; }
+function fonOf(L) { return FONYENI && !K ? YFON[YSIRA[dunyaNo(L)]] : fonEski(L); }
 function platAd(fo) { return fo.pn || (fo.f.startsWith('kar') ? 'platform_3' : fo.f.startsWith('sahil') ? 'platform_2' : 'platform_4'); }
 // resim fonun (cover, ortali) ekrandaki yeri: resimdeki (fx, fy) oranlari -> ekran pikseli
 function fonPx(fx, fy) { const W = innerWidth, H = innerHeight, s = Math.max(W / 768, H / 1376); return [(W - 768 * s) / 2 + fx * 768 * s, (H - 1376 * s) / 2 + fy * 1376 * s, s]; }
@@ -852,7 +857,7 @@ function uretBolum(L) {
 function engelOf(L, Y) {
   { const qe = Q.get('engel'); if (qe === 'kapi' || qe === 'kapi2' || qe === 'giyotin') return [{ t: qe }]; }   // deneme: ?engel=kapi|kapi2|giyotin her bolumde
   if (Y && Y.veri) return Y.engel;   // v5.0: kayitli bolumun engeli uretimde secildi
-  if (FONYENI && !K && L === 9) return [{ t: 'kapi2' }]; if (FONYENI && !K && L === 14) return [{ t: 'giyotin' }];   // v3.21: yalniz resim fonda tanitim bolumleri
+  if (FONYENIQ && !K && L === 9) return [{ t: 'kapi2' }]; if (FONYENIQ && !K && L === 14) return [{ t: 'giyotin' }];   // v3.21: yalniz resim fonda tanitim bolumleri
   if (L < 4) return [];
   if (L === 4) return [{ t: 'kurek' }]; if (L === 7) return [{ t: 'kalkan' }]; if (L === 10) return [{ t: 'kayan' }];
   const r = mul32(L * 104729 + 7), d = zorluk(L); if (r() > 0.38 + 0.35 * d) return [];
@@ -1228,7 +1233,7 @@ function buildMulti(Y, list, PD) {
   if (Y.anahtar) PD = [{ x: 0, z: -(info[1].rz + 1.7 + info[0].rz), y: 1.0 }, { x: 0, z: 0 }];   // v3.21: kapili yapi arkada ve yukarida, anahtar yapisi onde
   // v3.19: (Adem) resim fonda ana platform (ortadaki) zemin alaninin tam ortasinda; digerleri yan yana degil, onun ARKASINDA ve biraz yukarida
   // (bot testi: arkaya dizince 4. bolum belirgin zorlasti; zorluk degismesin diye yalniz &dizi=arka ile karsilastirma icin acik)
-  if (FONYENI && Q.get('dizi') === 'arka' && PD.length > 1) {
+  if (FONYENIQ && Q.get('dizi') === 'arka' && PD.length > 1) {
     let m = 0; PD.forEach((d, n) => { if (Math.abs(d.x || 0) < Math.abs(PD[m].x || 0) - 0.01) m = n; });
     const hy = PD.map(() => 0); for (const c of list) hy[c[4]] = Math.max(hy[c[4]], (c[1] + olcu(c[3])[1]) * S);   // her platformdaki yapinin yuksekligi
     let zb = -info[m].rz, yb = 0, hb = hy[m]; const yeni = PD.map((d) => ({ ...d }));
@@ -1306,7 +1311,8 @@ function bolumBasla(Y) {
   FUSE.length = 0;
   if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + (fo.yeni ? 'yeni/' + fo.r + '.webp?v=2' : fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2')) + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; $('bg').classList.toggle('koyu', !!fo.yeni && LV % 5 === 0); setPlat(tm[1]); setDirt(fo); setSea(fo); if (fo.yeni) DIRT.visible = false; canliFon(fo.yeni ? { f: fo.f, vid: 1 } : fo); videoFon(fo); fonIsi(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); if (fo.yeni) temaKur(); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
   let ipu = ''; if (Y.ip && Y.a && !K) { if (!SV.ark) SV.ark = []; if (!SV.ark.includes(Y.a)) { SV.ark.push(Y.a); ipu = '<i>' + Y.ip + '</i>'; } }   // v5.0: yeni yapi tipinin cozum ipucu (ilk karsilasmada)
-  const nm = $('nm'); nm.innerHTML = '<div class="rb1"><small>' + (PLT ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
+  const nm = $('nm'); const dfo = !PLT && !K && FONYENI ? fonOf(LV) : null, dyeni = dfo && (LV === 1 || fonOf(LV - 1) !== dfo);   // v6.6: dunya adi; dunyanin ilk bolumunde 'YENI DUNYA'
+  nm.innerHTML = '<div class="rb1"><small>' + (PLT ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
   hud(true);
 }
 // v6.26: (Adem 8 Kas) sahil fonu canli: Adem'in sahil resminden yaptigi 10 sn'lik video (bas/son 1 sn karistirilip kesintisiz 9 sn donguye cevrildi).
@@ -1563,7 +1569,7 @@ function ptAyak(tip, tm, h) {
   if (u.upd) u.upd(h);
   return g;
 }
-function dengeMu(L, Y) { if (Y.veri) return !!Y.denge; return FONYENI && !Y.pl && !Y.don && !asansorMu(L) && (Q.get('denge') === '1' || (Q.get('denge') !== '0' && L >= 7 && (L % 10 === 7 || L % 10 === 8))); }
+function dengeMu(L, Y) { if (Y.veri) return !!Y.denge; return FONYENIQ && !Y.pl && !Y.don && !asansorMu(L) && (Q.get('denge') === '1' || (Q.get('denge') !== '0' && L >= 7 && (L % 10 === 7 || L % 10 === 8))); }
 function ptAt(o) { o.traverse((m) => { if (m.userData.kopuk) { m.material.dispose(); return; } if (m.geometry && m !== o) m.geometry.dispose(); }); }
 function temaKur() {
   const tm = PTEM[fonOf(LV).f.slice(2)] || PTEM.koy;
@@ -2253,8 +2259,10 @@ function malzemeFx(c, p, dir) {
 }
 // v6.5: (Adem) dusen blok zeminde sekmez: fona gore kara gomulur (kar tozu), kuma oturur (kum sicramasi) ya da cimene/topraga
 // saplanir (toprak ve cimen parcalari). Fizikten cikar, yavasca batar, sonra zemine girip kaybolur.
+// v6.6: konumdaki zemin efekti turu; koyda iskele (cim bolgesi) tahta kiymigi, ?zfx=0 eski davranis
+function fxZemin(x, z) { if (Q.get('zfx') === '0' || x === undefined) return zemin(); const zn = zoneAt(x, z); if (zn === 'cim') { const f = (fonOf(LV) || {}).f || ''; return f === 'koy' ? 'tahta' : zemin() === 'su' ? 'kum' : zemin(); } return ZFX[zn] ? zn : zemin(); }
 function zemin() { if (K) return 'su'; const fo = fonOf(LV) || {}; if (fo.yeni) return fo.hep ? 'su' : fo.zem || 'kum'; const f = fo.f || ''; return f.startsWith('kar') ? 'kar' : f.startsWith('sahil') || f === 'koy' ? 'su' : 'cim'; }
-const ZFX = { kar: { toz: '#ffffff', toz2: 3, par: ['#ffffff', '#eef6ff', '#dfeeff'], bat: 0.62, n: 22, up: 6.5 }, kum: { toz: '#f1d9a6', toz2: 2.4, par: ['#f3dcae', '#e6c88e', '#d8b678'], bat: 0.4, n: 18, up: 5.5 }, su: { toz: '#e8f8ff', toz2: 1.6, par: ['#ffffff', '#c9f1ff', '#8fdcff', '#5cc8f0'], bat: 1.35, n: 24, up: 8.5, halka: 1, kolon: 1 }, cim: { toz: '#b89468', toz2: 2, par: ['#6b4a2c', '#8a6238', '#4fae3c', '#3d8f2e'], bat: 0.28, n: 16, up: 5 } };
+const ZFX = { kar: { toz: '#ffffff', toz2: 3, par: ['#ffffff', '#eef6ff', '#dfeeff'], bat: 0.62, n: 22, up: 6.5 }, kum: { toz: '#f1d9a6', toz2: 2.4, par: ['#f3dcae', '#e6c88e', '#d8b678'], bat: 0.4, n: 18, up: 5.5 }, su: { toz: '#e8f8ff', toz2: 1.6, par: ['#ffffff', '#c9f1ff', '#8fdcff', '#5cc8f0'], bat: 1.35, n: 24, up: 8.5, halka: 1, kolon: 1 }, tahta: { toz: '#c89a62', toz2: 1.8, par: ['#a0703c', '#c8904e', '#7a5028', '#e0b070'], bat: 0.2, n: 16, up: 5 }, cim: { toz: '#b89468', toz2: 2, par: ['#6b4a2c', '#8a6238', '#4fae3c', '#3d8f2e'], bat: 0.28, n: 16, up: 5 } };
 // v6.13: (Adem) efekt gorunmuyordu (parcaciklar kucuktu) ve dusen her cisim kirilsin: blok zemine degince parcalanir,
 // parcalar zemine batar; zemine gore buyuk su sicramasi + halkalar, kar bulutu ya da kum puskurmesi.
 function land(c) {
@@ -2306,6 +2314,25 @@ function setSand(on) {
   }
   if (SAND.mesh) { SAND.mesh.visible = on; SAND.mesh.position.set(0, GY + 0.004, SEA.z0 + 60 - 0.3); }
 }
+// v6.6 (Adem 17 Kas): pilotta begenilen ayak tabani (kaide + halka + baslik, altinda yumusak temas golgesi) normal oyunda da.
+// Sahil videosunda ayak islak kumda durur: taban + golge. Koyda ayak denizde: taban suya biraz gomulu + etrafinda kopuk halkasi.
+// Eski gorunum (tabansiz direk suya/kuma iner): adrese ?ayak=0.
+const AYAKYENI = Q.get('ayak') !== '0';
+let AYGM = null, AYKM = null;
+function ayakTaban(L, tur) {
+  // klonlanan ayaklarda userData kopya olur: parcalar adiyla bulunur
+  let ag = L.children.find((o) => o.name === 'ayG'), ak = L.children.find((o) => o.name === 'ayK');
+  if (!ag && tur) {
+    if (!AYGM) AYGM = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, map: canvasTex(128, 128, (x, w, h) => { const gr = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gr.addColorStop(0, 'rgba(70,46,20,.62)'); gr.addColorStop(0.42, 'rgba(70,46,20,.38)'); gr.addColorStop(0.75, 'rgba(70,46,20,.12)'); gr.addColorStop(1, 'rgba(70,46,20,0)'); x.fillStyle = gr; x.fillRect(0, 0, w, h); }) });
+    if (!AYKM) AYKM = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, opacity: 0.85, map: canvasTex(128, 128, (x, w, h) => { const cx = w / 2; for (let i = 0; i < 90; i++) { const a = Math.random() * 6.283, r = w * (0.24 + Math.random() * 0.2); x.fillStyle = 'rgba(255,255,255,' + (0.35 + Math.random() * 0.5) + ')'; x.beginPath(); x.arc(cx + Math.cos(a) * r, cx + Math.sin(a) * r, 2 + Math.random() * 5, 0, 6.283); x.fill(); } }) });
+    const g = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 4.8), AYGM); g.rotation.x = -Math.PI / 2; g.position.z = 0.2; g.renderOrder = 2;
+    const k = new THREE.Mesh(new THREE.PlaneGeometry(4.8, 4.8), AYKM); k.rotation.x = -Math.PI / 2; k.renderOrder = 3;
+    g.name = 'ayG'; k.name = 'ayK'; L.add(g, k); ag = g; ak = k;
+  }
+  if (!ag) return;
+  ag.visible = tur === 'kum'; ak.visible = tur === 'su';
+  ag.position.y = GY + 0.03; ak.position.y = GY + 0.06;
+}
 function setSea(fo) {
   SEA.on = fo.f.startsWith('sahil');
   if (!SEA.mesh) { SEA.mesh = new THREE.Mesh(new THREE.PlaneGeometry(220, 84, 110, 42), SEAMAT); SEA.mesh.rotation.x = -Math.PI / 2; SEA.mesh.renderOrder = 1; scene.add(SEA.mesh); }
@@ -2322,9 +2349,10 @@ function setSea(fo) {
   const coklu = PLS.some((q) => q.leg && q.leg !== LEG) || PLS.some((q) => Math.abs(q.x || 0) > 0.5);
   HAVUZ.visible = false;
   for (const L of [LEG].concat(PLS.filter((q) => q.leg && q.leg !== LEG).map((q) => q.leg))) {
-    setLeg(suda ? 1.2 : gom ? 0.3 : 0, L);
-    for (const n of [2, 3, 4]) L.children[n].visible = !suda;   // v3.4: suda alt kaide yok, yalniz dikey direk suyun icine iner
+    setLeg(suda ? (AYAKYENI ? (koy ? 0.3 : 0) : 1.2) : gom ? 0.3 : 0, L);
+    for (const n of [2, 3, 4]) L.children[n].visible = !suda || AYAKYENI;   // v3.4: suda alt kaide yok, yalniz dikey direk suyun icine iner
     if (suda) for (const n of [5, 6]) if (L.children[n]) L.children[n].visible = false;
+    ayakTaban(L, AYAKYENI && suda ? (koy ? 'su' : 'kum') : '');   // v6.6 (Adem 17 Kas): pilottaki ayak tabani normal oyunda da
     // v4.0: (Adem: cimende ortada kel yer) toprak lekesi her ayagin kendi dibinde; cok platformda ortada bos leke kalmaz
     const lk = L.children.find((o) => o.userData.leke); if (lk) lk.visible = !gom && !koy && coklu;
   }
@@ -2357,6 +2385,8 @@ function updSea(dt) { SEA.t += dt; SEAMAT.uniforms.t.value = SEA.t; }
 function seaY(x, z) { return GY + 0.04 + 0.07 * Math.sin(x * 0.8 + SEA.t * 1.7) + 0.05 * Math.sin(z * 1.1 - SEA.t * 1.3); }
 const ZV = new THREE.Vector3();
 // zemindeki (x, z) noktasinin fon resmindeki yukseklik orani (0 ust, 1 alt); fon 9:16, ekrana 'cover' ve ortali oturur
+// v6.6 (Adem 17 Kas): sahil videosunda (sahil4) suyun bittigi kopuk cizgisi resim yuksekliginin ~%67'si (olculdu); eski 0.6 sig suyu kum sayiyordu
+const SAHIL_KIYI = Q.get('zfx') === '0' ? 0.6 : 0.67;
 function fonFy(x, z) { const H = innerHeight, ih = Math.max(H, innerWidth * 16 / 9); ZV.set(x, GY, z).project(cam); return ((1 - ZV.y) / 2 * H - (H - ih) / 2) / ih; }
 function zoneAt(x, z) {
   if (K) return K.zone(x, z);
@@ -2366,7 +2396,7 @@ function zoneAt(x, z) {
   // v5.5 (Adem 16 Kas): zemin turu resimde gorunen yere gore: koyda alttaki tahta iskeleye dusen batmaz (kara gibi kirilir), denize dusen batar;
   // sahilde resimdeki kiyi cizgisinin ustu deniz (batar), alti kum (saplanir). Eski hesap resimle uyusmuyordu (iskelede batiyor, denizde kuma saplaniyordu).
   if (f === 'koy') return fonFy(x, z) > 0.8 ? 'cim' : 'su';
-  if (f.startsWith('sahil')) return fo.vid || !SEA.mesh ? (fonFy(x, z) < 0.6 ? 'su' : 'kum') : (z < SEA.z0 - 0.18 * Math.sin(x * 0.45 + 1.3) ? 'su' : 'kum');
+  if (f.startsWith('sahil')) return fo.vid || !SEA.mesh ? (fonFy(x, z) < SAHIL_KIYI + 0.012 * Math.sin(x * 0.5 + 1.1) ? 'su' : 'kum') : (z < SEA.z0 - 0.18 * Math.sin(x * 0.45 + 1.3) ? 'su' : 'kum');
   return 'cim';
 }
 // yuzenler (tahta, buz, fici, kabak) ve batanlar (tas, metal, altin, cam, jole)
@@ -2486,7 +2516,7 @@ function softPiece(o, v, w, st, hs, dt) {
 let PIECEFX = 0; setInterval(() => { PIECEFX = 0; }, 400);
 // zemin efekti (s: buyukluk carpani; blok 1, top 0.6)
 function groundFx(x, z0, s) {
-  const zn = zemin(), z = ZFX[zn];
+  const zn = fxZemin(x, z0), z = ZFX[zn];   // v6.6 (Adem 17 Kas): efekt dustugu yerin zeminine gore (eskiden butun fon icin tek tur: sahilde kuma/iskeleye dusene su sicriyordu)
   for (let i = 0; i < z.n; i++) {
     const m = spr(z.par[i % z.par.length], false, 0.95), a = Math.random() * 6.283, r = (1.5 + Math.random() * 2.5) * s;
     const w = new THREE.Vector3(Math.cos(a) * r, z.up * (0.7 + Math.random() * 0.7) * (0.6 + 0.4 * s), Math.sin(a) * r);
@@ -2508,7 +2538,7 @@ const RIPGEO = new THREE.RingGeometry(0.82, 1, 48);
 function ripple(x, z, s) { for (let i = 0; i < 2; i++) { const m = new THREE.Mesh(RIPGEO, new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.8, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(x, GY + 0.03, z); scene.add(m);
   const d = i * 0.18; fx(m, 0.9 + d, (o, k) => { const q = Math.max(0, k - d / (0.9 + d)); o.scale.setScalar(s * (0.5 + q * 1.4)); o.material.opacity = 0.8 * (1 - q); }); } }
 // top yere/suya dustugunde de ayni zemin efekti (kucuk)
-function landFx(x, z, s) { const zn = zemin(), zz = ZFX[zn]; const t0 = TOZ; TOZ = zz.toz; dust(x, GY, z, s); TOZ = t0; if (zz.halka) ripple(x, z, s * 1.4);
+function landFx(x, z, s) { const zn = fxZemin(x, z), zz = ZFX[zn]; const t0 = TOZ; TOZ = zz.toz; dust(x, GY, z, s); TOZ = t0; if (zz.halka) ripple(x, z, s * 1.4);
   for (let i = 0; i < 6; i++) { const m = spr(zz.par[i % zz.par.length], false, 0.95), a = Math.random() * 6.283, w = new THREE.Vector3(Math.cos(a) * 1.5, zz.up * 0.7, Math.sin(a) * 1.5); m.position.set(x, GY + 0.15, z);
     fx(m, 0.6, (o, k, dt) => { w.y -= 18 * dt; o.position.addScaledVector(w, dt); o.scale.setScalar(0.2 * (1 - k * 0.5)); o.material.opacity = 0.95 * (1 - k); }); } }
 function dust(x, y, z, s) {

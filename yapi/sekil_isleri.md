@@ -86,3 +86,12 @@ Adem: "sekiller kalitesiz, cok basit duruyor; referansla fark cok fazla". Yakin 
   Test `?sv=1872`: bolumde eski cizimli blok kalmadi; hatasiz; ucgen 130 bin -> 48 bin. Once/sonra: `rapor/blok3b/karisik_once_1872.jpg`, `karisik_sonra_1872.png`.
 - Durum (17 Kas gece): bolum dosyalarinda gecen 35 turun hepsi (`ks*` 26, `oy*` 9) Blender modelinde. sekil.js'teki diger turler (tas2, tug2, buzP, jole, kurabiye...) yalniz eski bolum ureticisinde geciyor, hazir bolum dosyalarinda yok: yapilmadi.
   Genel tarama 390x844: `?sv=1, 12, 781, 1999` ve pilot 21, 22: eski cizimli blok yok, konsol hatasi yok. Telefonda denenmedi; kazanilabilirlik (top sayisi) yeni gorunumden etkilenmez (fizik ayni).
+
+## v6.6 (17 Kas, Opus): zemin, ayak, dunyalar (Adem: "1000. bolum 1. gibi", "ayaklar yansimamis", "zeminde bile suya dusuyor")
+- Zemin efekti: `groundFx`/`landFx` artik dustugu yerin zeminine bakar (`fxZemin` -> `zoneAt`). Eskiden butun fon icin tek tur (`zemin()`) kullaniliyordu: sahilde kuma, koyda iskeleye dusen top/bloga su sicriyordu. Koy iskelesinde tahta kiymigi (`ZFX.tahta`).
+- Kiyi cizgileri resimden olculdu: sahil videosu 0.6 -> 0.67 (`SAHIL_KIYI`); yeni dunyalarda koy 0.54 -> 0.625, gun batimi 0.595 -> 0.635, volkan 0.6 -> 0.625, gece 0.6 -> 0.635. Kontrol: oyun ekraninda zemin noktalarini zoneAt rengine boyayan ekran goruntusu. Eski degerler: `?zfx=0`.
+- Ayak tabani: pilottaki taban (kaide + halka + baslik) eski fonlarda da: sahilde taban + yumusak golge, koyda taban suya biraz gomulu + kopuk halkasi (`ayakTaban`). Eski: `?ayak=0`.
+- 9 dunya varsayilan (eski 4 fon `?fon=eski`). Her dunya 10 bolum; 90 bolumde bir sira 4 dunya kayar (`dunyaNo`): 1000. bolum Hazine Magarasi, 1. bolum Dalgali Koy. Bolum adinin ustunde dunya adi, dunyanin ilk bolumunde "YENI DUNYA". Oynanisi degistiren deneme kurallari (9/14 kapi-giyotin, denge tahtasi, arka dizilis) yalniz `?fon=yeni` (`FONYENIQ`).
+- Olcum (kayitli 26-2000): bolum buyuklugu butun bolumlerde ayni (ort. 40-43 kup, 6 kat, 5 genislik, 2 derinlik, ~18.7 top). Ilk adim olarak top payi ilerledikce azaliyor (`topHesap`: 150 -> 1650 arasi %14; bot alt siniri ayni): 1826-2000 ort. 18.8 -> 16.5 top.
+- Yapilmadi (sonraki is): yuksek bolumlerde daha buyuk/karmasik yapi icin uretici egrisi + 1975 bolumun fizikle yeniden testi (dogrula.py, saatler surer).
+- Surum: oyun.js?v=112, bolumler.json surum 4, CACHE v62.
