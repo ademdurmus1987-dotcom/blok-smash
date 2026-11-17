@@ -38,7 +38,9 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 const PLTM = PILOTQ ? await import('./pilot.js?v=13') : null; let PLT = null;   // PILOT
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
-const save = () => { if (PILOTQ) return;   /* PILOT: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
+// v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
+const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.parse(localStorage.getItem('bs_dene') || 'null'); if (!v || !v.c || !v.c.length) return null; const Y = { ad: v.ad || 'Benim Bölümüm', veri: 1, engel: [], ek: 0, make: () => v.c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) }; if (v.top) Y.top = v.top; if (v.pl) Y.pl = v.pl; if (v.don) Y.don = v.don; return Y; } catch (e) { return null; } })() : null;
+const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
 const SURUM = 'v5.2', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
@@ -900,7 +902,7 @@ function engelOf(L, Y) {
 }
 const UCACHE = new Map(); let DENE = null;   // v5.0: DENE: dogrulayicinin verdigi bolum (YP.dene)
 function asansorMu(L) { return Q.get('asansor') === '1' || (Q.get('asansor') !== '0' && L >= 5 && L % 4 === 1); }
-function levelOf(L) { if (PLT) return PLT.Y;   /* PILOT */ if (K) return K.bolum(L); if (Q.get('eski') === '1' ? L <= LSIRA.length : L <= BOLUMLER.length) return Q.get('eski') === '1' ? LSIRA[L - 1] : BOLUMLER[L - 1]; if (DENE && DENE.L === L) return DENE.Y; { const v = bvY(L); if (v) return v; } if (!UCACHE.has(L)) UCACHE.set(L, uretBolum(L)); return UCACHE.get(L); }
+function levelOf(L) { if (PLT) return PLT.Y;   /* PILOT */ if (DENEQ) return DENEQ; if (K) return K.bolum(L); if (Q.get('eski') === '1' ? L <= LSIRA.length : L <= BOLUMLER.length) return Q.get('eski') === '1' ? LSIRA[L - 1] : BOLUMLER[L - 1]; if (DENE && DENE.L === L) return DENE.Y; { const v = bvY(L); if (v) return v; } if (!UCACHE.has(L)) UCACHE.set(L, uretBolum(L)); return UCACHE.get(L); }
 // v6.13: kup listesindeki 5. alan platform numarasi (0, 1, ...); bolumun pl dizisi platformlarin yeri ve hareketi
 
 // ---------------- fizik ----------------
@@ -1246,7 +1248,7 @@ function buildLevel() {
   const made = Y.make(), list = convertLevel(made, LV);
   list.forEach((c, n) => { c[4] = made[n][4] || 0; });
   if (!K) kapaliKur(list);   // v5.1
-  if (!K && !kapaliMi('kola')) kolaKoy(list, LV);
+  if (!K && !DENEQ && !kapaliMi('kola')) kolaKoy(list, LV);
   if (K) return K.kur(Y, list);   // v6.19: korsan hedefi (sal, gemi, kule) kendi platformunu kurar
   let PD = Y.pl || [{ x: 0, z: 0 }];
   // v3.10: (Adem 11 Kas) asansor platform: 5. bolumden sonra her 4 bolumde bir (5, 9, 13...) platform yavasca iner ve kalkar
