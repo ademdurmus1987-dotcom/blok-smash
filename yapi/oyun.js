@@ -10,7 +10,7 @@ import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=8';
-import { sekilKutuphanesi } from './gorsel/sekiller.js?v=2';   // v6.11: parlak sekil kutuphanesi
+import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
 import { blok3bKur } from './blok3b.js?v=5';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
@@ -485,7 +485,7 @@ if (Q.get('parlak') !== '0') {
           geo.computeBoundingBox(); geo.computeBoundingSphere();
           const pr = PARCA[renk] || (ad === 'tas' ? '#2a3a8c' : ad.startsWith('buz') ? '#8fd8ff' : ad === 'kutuk' ? '#ffb347' : '#ff8a1c');
           const mat = PK.malzemeler(ad, renk || 'turuncu');
-          for (const m of mat) if (!m.userData.oyun) { m.userData.oyun = 1; m.envMapIntensity *= 0.45; m.clearcoat *= 0.7; }   // oyunun gunes+yarikure isigi zaten guclu: renk soluklasmasin
+          for (const m of mat) if (!m.userData.oyun) { m.userData.oyun = 1; m.envMapIntensity *= 0.45; if (m.clearcoat) m.clearcoat *= 0.7; }   // oyunun gunes+yarikure isigi zaten guclu: renk soluklasmasin
           return { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: pr, roughness: 0.4 }) };
         } catch (e) { return eski(); }
       };
@@ -498,7 +498,8 @@ let PATI = null; const patiReady = (CILA ? Promise.resolve(null) : patiYukle({ T
 const KAIDE = Q.get('kaide') === '0' ? null : kaideKur({ THREE, canvasTex, ENV }); if (KAIDE) KAIDE.ayakBoya(LEG);
 for (const k in SEK.TUR) { const t = SEK.TUR[k]; KIND[k] = { mass: t.mass, f: t.f, r: t.r, sek: 1 }; if (t.carp) KIND[k].kir = t.carp; if (t.boom) { KIND[k].boom = t.boom; KIND[k].guc = t.guc; } }
 const SEKSH = {};
-function sekShape(k) { if (SEKSH[k]) return SEKSH[k]; const s = SEK.al(k); return (SEKSH[k] = s.sil ? new CANNON.Cylinder(s.r, s.r, s.h, 16) : new CANNON.Box(new CANNON.Vec3(s.w / 2, s.h / 2, s.d / 2))); }
+// v6.13 (Adem 18 Kas, 168 blokta agirlik): kavanoz carpismasi kutu, diger silindirler 8 kenarli (eskiden 16 kenar = 32 kose, fizigi yariya yakin yavaslatiyordu)
+function sekShape(k) { if (SEKSH[k]) return SEKSH[k]; const s = SEK.al(k); return (SEKSH[k] = s.sil && /^ksSise/.test(k) ? new CANNON.Box(new CANNON.Vec3(s.r * 0.94, s.h / 2, s.r * 0.94)) : s.sil ? new CANNON.Cylinder(s.r, s.r, s.h, 8) : new CANNON.Box(new CANNON.Vec3(s.w / 2, s.h / 2, s.d / 2))); }
 // parcanin yarim genisligi, yuksekligi, yarim derinligi (kup kenari cinsinden): platform ve kamera yapiya gore ayarlanir
 function olcu(col) { const t = SEK.TUR[col]; return t ? [t.w / 2, t.h, t.d / 2] : [0.5, KEEP[col] === 'tall' ? 2 : 1, 0.5]; }
 

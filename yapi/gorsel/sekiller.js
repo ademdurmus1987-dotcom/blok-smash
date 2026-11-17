@@ -20,7 +20,12 @@ export const SEKILLER = [
 // renkli olanlar (paletteki 6 renkle boyanir); digerlerinin rengi malzemesinden gelir
 export const RENKLI = (ad) => ad.startsWith('kavanoz') || ad.startsWith('plaka');
 
-export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false }) {
+export function sekilKutuphanesi({ THREE: T0, env, mergeGeometries, dusuk = false }) {
+  // v6.13 (Adem 18 Kas: 168 blokta oyun agirlasti): dusuk kipte (oyun) torna/kure/kose/bevel bolumleri azaltilir; blok ~6900 -> ~800 ucgen
+  const THREE = !dusuk ? T0 : Object.assign({}, T0, {
+    LatheGeometry: class extends T0.LatheGeometry { constructor(p, n = 12, a, b) { super(p, Math.max(12, Math.round(n / 3)), a, b); } },
+    SphereGeometry: class extends T0.SphereGeometry { constructor(r, w = 32, h = 16, ...x) { super(r, Math.max(8, Math.round(w / 2)), Math.max(6, Math.round(h / 2)), ...x); } }
+  });
   const GEO = new Map(), MAT = new Map(), TEX = new Map();
 
   // ---------------- yardimcilar ----------------
@@ -40,7 +45,7 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
   }
   // yuvarlak koseli kutu: alt bolumlu kutunun koseleri kureye izdusurulur (normaller analitik)
   function yuvarlakKutu(w, h, d, r, seg = 5) {
-    r = Math.min(r, w / 2 - 1e-3, h / 2 - 1e-3, d / 2 - 1e-3);
+    r = Math.min(r, w / 2 - 1e-3, h / 2 - 1e-3, d / 2 - 1e-3); if (dusuk) seg = Math.min(seg, 2);
     const n = 2 * seg + 1, g = new THREE.BoxGeometry(1, 1, 1, n, n, n), P = g.attributes.position, N = g.attributes.normal;
     const H = [w / 2, h / 2, d / 2], I = H.map((x) => x - r), q = [0, 0, 0], c = [0, 0, 0];
     const yeni = (t, ax) => { const k = Math.round((t + 0.5) * n); return k <= seg ? -H[ax] + (k / seg) * r : I[ax] + ((k - seg - 1) / seg) * r; };
@@ -60,7 +65,7 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
   }
   // profil koselerine yay (fillet): pts [[r,y,yaricap]], torna (Lathe) icin puruzsuz nokta listesi
   function yumusakProfil(pts, adim = 6) {
-    const out = [];
+    const out = []; if (dusuk) adim = Math.min(adim, 2);
     for (let i = 0; i < pts.length; i++) {
       const [x, y, rr] = pts[i];
       if (!rr || i === 0 || i === pts.length - 1) { out.push(new THREE.Vector2(x, y)); continue; }
@@ -97,6 +102,7 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
   function delik(w, h, r) { return yuvDik(w, h, r, new THREE.Path()); }
   // Extrude: sekil XY duzleminde, derinlik +z yonunde; kenarlar bevel ile yumusak
   function cikinti(sekiller, derin, bevel, seg = 4, egri = 24) {
+    if (dusuk) { seg = 1; egri = Math.max(3, Math.round(egri / 4)); }
     const g = new THREE.ExtrudeGeometry(sekiller, { depth: derin, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel * 0.85, bevelSegments: seg, curveSegments: egri });
     return g;
   }
@@ -144,7 +150,8 @@ export function sekilKutuphanesi({ THREE, env, mergeGeometries, dusuk = false })
     if (MAT.has(key)) return MAT.get(key);
     const o = Object.assign({}, opts); if (o.color) o.color = new THREE.Color(o.color);
     if (o.attenuationColor) o.attenuationColor = new THREE.Color(o.attenuationColor);
-    const m = new THREE.MeshPhysicalMaterial(o); m.envMap = env || null; m.name = key; MAT.set(key, m); return m;
+    if (dusuk) { const ornek = new THREE.MeshStandardMaterial(); for (const k in o) if (!(k in ornek)) delete o[k]; if (o.roughness != null) o.roughness = Math.max(0.12, o.roughness * 0.85); }   // v6.13: telefonda cila katmani yok (Standard)
+    const m = dusuk ? new THREE.MeshStandardMaterial(o) : new THREE.MeshPhysicalMaterial(o); m.envMap = env || null; m.name = key; MAT.set(key, m); return m;
   }
   function plastik(hex, ek = {}) { return fizMat('plastik:' + hex + JSON.stringify(ek), Object.assign({}, MALZEME.plastik, { color: hex }, ek)); }
   const altinMat = () => fizMat('altin', MALZEME.altin);
