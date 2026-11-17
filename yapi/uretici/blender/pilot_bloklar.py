@@ -473,17 +473,24 @@ def sandik_govde(cerceve, tahta1, tahta2, planks=True):
         return tahta1 if f in pn else cerceve
     P = [bm_al(bm, sec)]; bm.free()
     return P, a, gom
-def sandik():
-    CER = renk('#d8620e'); T1 = renk('#ff9f30'); T2 = renk('#ff9020'); DES = renk('#ffb24a'); CIVI = renk('#4a3a5c')
+def sandik_yap(ad, cer, t1, t2, des, civi, capraz=1, klasor=None):
+    """capraz=1: tek capraz destek (pilot), 2: X destek (ana oyunun eski sandik kimligi)"""
+    CER, T1, T2, DES, CIVI = renk(cer), renk(t1), renk(t2), renk(des), renk(civi)
     P, a, gom = sandik_govde(CER, T1, T2)
     for yon in ('on', 'arka', 'sag', 'sol'):
         o, u, v = yuz_cerceve(yon, a / 2 - gom + 0.014 * S)
-        P.append(kabartma(o, u, v, SP(serit((-0.29, -0.29), (0.29, 0.29), 0.2)), [(1.0, -0.004), (0.99, 0.034 * S)], DES))
+        P.append(kabartma(o, u, v, SP(serit((-0.29, -0.29), (0.29, 0.29), 0.2 if capraz == 1 else 0.17)), [(1.0, -0.004), (0.99, 0.034 * S)], DES))
+        if capraz == 2: P.append(kabartma(o, u, v, SP(serit((0.29, -0.29), (-0.29, 0.29), 0.17)), [(1.0, -0.004), (0.99, 0.042 * S)], DES))   # ustteki tahta biraz daha kabarik (kesisimde titreme olmasin)
     for yon in ('on', 'arka'):
         o, u, v = yuz_cerceve(yon, a / 2)
         for sx in (-1, 1):
             for sy in (-1, 1): P.append(kabartma(o, u, v, elips(sx * 0.395 * S, sy * 0.395 * S, 0.034 * S, 0.034 * S, 6), [(1.0, -0.004), (0.5, 0.024 * S)], CIVI))
-    return uret('pl_sandik', P, 0.44)
+    return uret(ad, P, 0.44, klasor=klasor)
+def sandik(): return sandik_yap('pl_sandik', '#d8620e', '#ff9f30', '#ff9020', '#ffb24a', '#4a3a5c')
+# ana oyun: ksSandik (turuncu), ksSandikK (kirmizi), ksSandikM (mor); X destekli
+def sandik_t(): return sandik_yap('sandik_t', '#d8620e', '#ff9f30', '#ff9020', '#ffbf5e', '#4a3a5c', 2, BLOK)
+def sandik_k(): return sandik_yap('sandik_k', '#a3170f', '#ec3d31', '#dd2f25', '#ff7a5e', '#3a2434', 2, BLOK)
+def sandik_m(): return sandik_yap('sandik_m', '#561c92', '#a453e6', '#953fd8', '#cb8cff', '#2a2240', 2, BLOK)
 
 # ------------------------------------------------------------------ 10) TNT (1x1x1): kirmizi sandik, dort yanda krem etiket uzerinde bomba amblemi
 def tnt():
@@ -570,7 +577,7 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dunya()
     ist = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk, 'buz': buz, 'buz3': buz3, 'sandik': sandik, 'tnt': tnt, 'elmas': elmas, 'tas1': tas1, 'tas2': tas2, 'tas3': tas3, 'tas4': tas4}
+    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk, 'buz': buz, 'buz3': buz3, 'sandik': sandik, 'tnt': tnt, 'elmas': elmas, 'tas1': tas1, 'tas2': tas2, 'tas3': tas3, 'tas4': tas4, 'sandik_t': sandik_t, 'sandik_k': sandik_k, 'sandik_m': sandik_m}
     obs = [f() for k, f in hepsi.items() if not ist or k in ist]
     if len(obs) > 1: onizle(obs, 'onizleme.png' if not ist else 'onizleme_secili.png')   # hepsi uretilince ana onizleme, secili uretimde ayri dosya
     print('BITTI')

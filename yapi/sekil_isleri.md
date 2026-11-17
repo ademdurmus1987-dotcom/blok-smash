@@ -74,3 +74,6 @@ Adem: "sekiller kalitesiz, cok basit duruyor; referansla fark cok fazla". Yakin 
 - Ders: oyun kamerasinda bir blok ~30 piksel. Kucuk tugla + koyu cerceve 'pencereli gri kutu' gibi okundu; iri tas (yuzde bir tam + iki yarim), acik cerceve ve yumusak harc temiz tas gibi okunuyor.
 - Test (390x844): `?sv=582` (38 tas) ve `?sv=25` (uzun tas) hatasiz; atista taslar dusup kiriliyor. Ucgen 123 bin -> 115 bin, cizim 53 -> 53. Once/sonra: `yapi/uretici/rapor/blok3b/tas_once_582.jpg`, `tas_sonra_582.jpg`.
 - Siradaki turler (bolumlerde kullanim sirasiyla): ksSandik/K/M, ksBuz, ksYildiz, ksYakut/ksElmas, ksSise Y/B/M, ksKalas1/2/3, ksKaro, ksFici/K, ksTNT, ksKemer, ksSutun, ksDirek, ksMorSutun, ksBuz3. Pilotta karsiligi olanlar (pl_*) dogrudan `LISTE`ye eklenebilir.
+
+- v6.2 (17 Kas): sandiklar (`ksSandik`, `ksSandikK`, `ksSandikM` -> `sandik_t/k/m.glb`, 524 ucgen, 65 KB): cerceve, dik tahtalar, eski sandiktaki gibi X destek, civiler. Uretim: `-- sandik_t sandik_k sandik_m`.
+  Test `?sv=239` (32 sandik): hatasiz, atista 8 sandik kirildi. Ucgen 121 bin -> 59 bin (eski sandik agirmis). Once/sonra: `rapor/blok3b/sandik_once_239.jpg`, `sandik_sonra_239.jpg`.

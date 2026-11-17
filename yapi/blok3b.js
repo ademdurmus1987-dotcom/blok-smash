@@ -6,7 +6,8 @@ export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya, puruzluluk, kirik parca rengi]
 const LISTE = {
-  ksTas: ['tas1', 0.8, '#9aa2c0'], ksTas2: ['tas2', 0.8, '#9aa2c0'], ksTas3: ['tas3', 0.8, '#9aa2c0'], ksTas4: ['tas4', 0.8, '#9aa2c0']
+  ksTas: ['tas1', 0.8, '#9aa2c0'], ksTas2: ['tas2', 0.8, '#9aa2c0'], ksTas3: ['tas3', 0.8, '#9aa2c0'], ksTas4: ['tas4', 0.8, '#9aa2c0'],
+  ksSandik: ['sandik_t', 0.44, '#ff9f30'], ksSandikK: ['sandik_k', 0.44, '#ec3d31'], ksSandikM: ['sandik_m', 0.44, '#a453e6']   // v6.2: X destekli sandik
 };
 
 export function blok3bKur({ THREE, ENV, GLTFLoader }) {
