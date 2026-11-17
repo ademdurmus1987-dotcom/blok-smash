@@ -77,3 +77,5 @@ Adem: "sekiller kalitesiz, cok basit duruyor; referansla fark cok fazla". Yakin 
 
 - v6.2 (17 Kas): sandiklar (`ksSandik`, `ksSandikK`, `ksSandikM` -> `sandik_t/k/m.glb`, 524 ucgen, 65 KB): cerceve, dik tahtalar, eski sandiktaki gibi X destek, civiler. Uretim: `-- sandik_t sandik_k sandik_m`.
   Test `?sv=239` (32 sandik): hatasiz, atista 8 sandik kirildi. Ucgen 121 bin -> 59 bin (eski sandik agirmis). Once/sonra: `rapor/blok3b/sandik_once_239.jpg`, `sandik_sonra_239.jpg`.
+- v6.3 (17 Kas): buz (`ksBuz`, `ksBuz3` -> pilotun `pl_buz`, `pl_buz3`), yildiz (`ksYildiz` -> yeni `yildiz.glb`: altin govde, kabarik bes kollu yildiz), mucevher (`ksYakut`, `ksElmas` -> `pl_elmas`, govde rengi tur basina). `blok3b.js` artik govde rengi, parilti ve metal secenegi aliyor.
+  Test `?sv=204`: hatasiz; uc atista 18 buz, 2 elmas, 1 yildiz kirildi/dustu. Ucgen 38,7 bin -> 31,2 bin.

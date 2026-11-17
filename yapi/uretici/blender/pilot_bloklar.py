@@ -552,6 +552,18 @@ def tas2(): return tas_yap('tas2', 2, 0.6, 0.7)
 def tas3(): return tas_yap('tas3', 3, 0.7, 0.7)
 def tas4(): return tas_yap('tas4', 4, 0.7, 0.7)
 
+# ------------------------------------------------------------------ ANA OYUN 3) yildiz blok (1x1x1, ksYildiz): altin govde, koyu altin pano, dort yanda kabarik bes kollu yildiz
+def yildiz_blok():
+    a = S * 0.99; r = 0.13 * S; gom = 0.035 * S
+    ALT = renk('#ffb400'); PANO = renk('#e88400'); YIL = renk('#fff0a0')
+    bm = kutu_bm(a, a, a, r, 2)
+    pn = {pano(bm, buyuk_yuz(bm, y), 0.07 * S, gom) for y in YON.values()}
+    P = [bm_al(bm, lambda f: PANO if f in pn else ALT)]; bm.free()
+    for yon in ('on', 'arka', 'sag', 'sol'):
+        o, u, v = yuz_cerceve(yon, a / 2 - gom)
+        P.append(kabartma(o, u, v, SP(yildiz(0, -0.015, 0.31, 0.135, 5)), [(1.0, -0.004), (0.86, 0.035 * S), (0.55, 0.058 * S)], YIL))
+    return uret('yildiz', P, 0.3, klasor=BLOK)
+
 # ------------------------------------------------------------------ onizleme (Blender icinde bakmak icin; oyunda kullanilmaz)
 def onizle(obs, dosya):
     sc = bpy.context.scene
@@ -577,7 +589,7 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dunya()
     ist = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk, 'buz': buz, 'buz3': buz3, 'sandik': sandik, 'tnt': tnt, 'elmas': elmas, 'tas1': tas1, 'tas2': tas2, 'tas3': tas3, 'tas4': tas4, 'sandik_t': sandik_t, 'sandik_k': sandik_k, 'sandik_m': sandik_m}
+    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk, 'buz': buz, 'buz3': buz3, 'sandik': sandik, 'tnt': tnt, 'elmas': elmas, 'tas1': tas1, 'tas2': tas2, 'tas3': tas3, 'tas4': tas4, 'sandik_t': sandik_t, 'sandik_k': sandik_k, 'sandik_m': sandik_m, 'yildiz': yildiz_blok}
     obs = [f() for k, f in hepsi.items() if not ist or k in ist]
     if len(obs) > 1: onizle(obs, 'onizleme.png' if not ist else 'onizleme_secili.png')   # hepsi uretilince ana onizleme, secili uretimde ayri dosya
     print('BITTI')
