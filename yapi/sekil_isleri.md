@@ -95,3 +95,4 @@ Adem: "sekiller kalitesiz, cok basit duruyor; referansla fark cok fazla". Yakin 
 - Olcum (kayitli 26-2000): bolum buyuklugu butun bolumlerde ayni (ort. 40-43 kup, 6 kat, 5 genislik, 2 derinlik, ~18.7 top). Ilk adim olarak top payi ilerledikce azaliyor (`topHesap`: 150 -> 1650 arasi %14; bot alt siniri ayni): 1826-2000 ort. 18.8 -> 16.5 top.
 - Yapilmadi (sonraki is): yuksek bolumlerde daha buyuk/karmasik yapi icin uretici egrisi + 1975 bolumun fizikle yeniden testi (dogrula.py, saatler surer).
 - Surum: oyun.js?v=112, bolumler.json surum 4, CACHE v62.
+- v6.7 (17 Kas): yan yana platformlar kayarken ic ice geciyordu (145 kayan platformlu bolum; or. 1003: x -5/0/5, yari genislik 2.33, kayma 0.8 -> 0.45 ust uste). `buildMulti` platformlari en yakin anda bile 0.75 bosluk kalacak kadar yana acar (yapilar birlikte kayar, kopru bolumleri haric). 1003: fizik bosluk -0.45 -> 0.75, gorunum -0.79 -> 0.41. Eski: `?ayir=0`. oyun.js?v=113, CACHE v63.

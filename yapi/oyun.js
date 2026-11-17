@@ -1242,6 +1242,20 @@ function buildMulti(Y, list, PD) {
     PD.forEach((d, n) => { if (n === m) return; const z = zb - 1.1 - info[n].rz; yb = Math.max(yb + 1.5, yb + hb * 0.55); Object.assign(yeni[n], { x: 0, z, y: yb }); zb = z - info[n].rz; hb = hy[n]; });
     PD = yeni;
   }
+  // v6.7 (Adem 17 Kas: 'platformlar ic ice geciyor'): yan yana platformlar arasi bosluk kayma genligine yetmiyordu (or. 1003: x -5/0/5, yari genislik 2.33,
+  // kayma 0.8 -> 0.45 ic ice). Kayarken en yakin anda bile ARALIK kadar bosluk kalacak sekilde platformlar yana acilir; yapilar platformla birlikte kayar.
+  // Kopru bolumleri (d.r) dokunulmaz. Eski: ?ayir=0.
+  if (Q.get('ayir') !== '0' && PD.length > 1 && !PD.some((d) => d.r)) {
+    const ARALIK = 0.75, sira = PD.map((d, n) => n).sort((a, b) => (PD[a].x || 0) - (PD[b].x || 0)), kay = PD.map((d) => d.x || 0);
+    for (let k = 1; k < sira.length; k++) {
+      const a = sira[k - 1], b = sira[k], da = PD[a], db = PD[b];
+      if (Math.abs((da.z || 0) - (db.z || 0)) >= info[a].rz + info[b].rz) continue;   // biri tamamen arkadaysa carpismaz
+      const yak = (da.kay ? da.kay.a : 0) + (db.kay ? db.kay.a : 0), bos = (kay[b] - info[b].r) - (kay[a] + info[a].r) - yak;
+      if (bos < ARALIK) { const e = ARALIK - bos; for (let m = k; m < sira.length; m++) kay[sira[m]] += e; }
+    }
+    const x0 = PD.map((d) => d.x || 0), ort = (Math.min(...kay) + Math.max(...kay)) / 2 - (Math.min(...x0) + Math.max(...x0)) / 2;
+    if (kay.some((x, n) => Math.abs(x - ort - x0[n]) > 1e-3)) PD = PD.map((d, n) => ({ ...d, x: kay[n] - ort }));
+  }
   TOPY = 0;
   for (const c of list) TOPY = Math.max(TOPY, (c[1] + olcu(c[3])[1]) * S + ((PD[c[4]] && PD[c[4]].y) || 0));
   R = 0; RZ = 0; RZB = 0;
