@@ -650,7 +650,7 @@ function splat(x, y, z, r, col, ang, el) {
 }
 function updateDebris(dt) {
   for (let i = DEB.length - 1; i >= 0; i--) {
-    const d = DEB[i], m = d.m; d.life -= dt; d.v.y -= 22 * dt; m.position.addScaledVector(d.v, dt);
+    const d = DEB[i], m = d.m; d.life -= dt; d.v.y -= 22 * (d.gk || 1) * dt; m.position.addScaledVector(d.v, dt);
     if (d.str) { const sp = d.v.length(); if (sp > 0.01) m.quaternion.setFromUnitVectors(UPV, TVV.copy(d.v).divideScalar(sp)); const e = Math.min(2.8, 1 + sp * 0.11); m.scale.set(d.s.x / Math.sqrt(e), d.s.y * e, d.s.z / Math.sqrt(e)); }
     else { m.rotation.x += d.w.x * dt; m.rotation.y += d.w.y * dt; m.rotation.z += d.w.z * dt; }
     const f0 = floorAt(m.position.x, m.position.z), fy = f0 + (d.h || 0.04);
@@ -933,6 +933,26 @@ function anahtarBolum(Y0) {
   Y.make = () => ana.map((c) => c.slice()).concat(on.map((c) => c.slice())); Y.anahtarI = ana.length + ai;
   return Y;
 }
+// v6.8 (Adem 17 Kas, referans video: 'metal engele degince metal ses cikiyor'): kisa, parlak metal 'klank'.
+// Eski metal kaydi 2 sn cinliyordu (Adem begenmemisti); bu ses 0.35 sn icinde soner: carpma tiki + 4 uyumsuz (inharmonik) metal frekansi.
+// Engel (kurek, kalkan, kayan, giyotin) ve altin/metal kupe carpan topta calar. Eski: ?metal=0.
+const KLANK = Q.get('metal') !== '0';
+let KLT = 0;
+function klank(s, perde) {
+  if (!AC || !KLANK) return; const now = AC.currentTime; if (now - KLT < 0.06) return; KLT = now;
+  s = Math.max(0.25, Math.min(1.2, s || 0.8)); const o = out(), t = now + 0.005, f0 = (perde || 880) * (0.94 + Math.random() * 0.12) * RS;
+  const ana = AC.createGain(); ana.gain.value = 0.32 * s * VS; ana.connect(o);
+  [[1, 1, 0.34], [2.32, 0.55, 0.22], [4.25, 0.32, 0.13], [6.63, 0.18, 0.08]].forEach(([r, a, d]) => {
+    const os = AC.createOscillator(), gg = AC.createGain(); os.type = 'sine'; os.frequency.value = f0 * r;
+    gg.gain.setValueAtTime(0.0001, t); gg.gain.exponentialRampToValueAtTime(a, t + 0.002); gg.gain.exponentialRampToValueAtTime(0.0001, t + d * (0.8 + 0.4 * s));
+    os.connect(gg); gg.connect(ana); os.start(t); os.stop(t + d + 0.1);
+  });
+  // carpma tiki: cok kisa, tiz gurultu
+  const n = Math.floor(AC.sampleRate * 0.02), buf = AC.createBuffer(1, n, AC.sampleRate), dd = buf.getChannelData(0);
+  for (let i = 0; i < n; i++) dd[i] = (Math.random() * 2 - 1) * (1 - i / n) ** 3;
+  const src = AC.createBufferSource(), bp = AC.createBiquadFilter(), gn = AC.createGain(); src.buffer = buf; bp.type = 'bandpass'; bp.frequency.value = 3800; bp.Q.value = 0.8; gn.gain.value = 0.9;
+  src.connect(bp); bp.connect(gn); gn.connect(ana); src.start(t);
+}
 function e2Ses(tip) {
   if (!AC) return; const o = out(), t = AC.currentTime;
   const ton = (f, v, d, ty, t0) => { const os = AC.createOscillator(), gg = AC.createGain(); os.type = ty || 'sine'; os.frequency.value = f; gg.gain.setValueAtTime(0.0001, t + (t0 || 0)); gg.gain.exponentialRampToValueAtTime(v, t + (t0 || 0) + 0.004); gg.gain.exponentialRampToValueAtTime(0.0001, t + (t0 || 0) + d); os.connect(gg); gg.connect(o); os.start(t + (t0 || 0)); os.stop(t + (t0 || 0) + d + 0.05); };
@@ -1077,9 +1097,9 @@ function engCarp(E, ev) {
   const p = new THREE.Vector3().copy(b.body.position);
   if (E.kir) {   // giyotin: top parcalanir, atis bosa gider
     b.eng = 1; b.hit = true; b.body.collisionFilterMask = 0; b.body.velocity.set(0, 0, 0); b.t = 99; b.mesh.visible = false;
-    burst(p, '#cfd6de', 18, 8); burst(p, '#ffcc66', 8, 5); sfx('metal'); e2Ses('kapan'); buzz(30); shake = Math.max(shake, 0.15); return;
+    burst(p, '#cfd6de', 18, 8); burst(p, '#ffcc66', 8, 5); if (KLANK) klank(1.1, 640); else sfx('metal'); e2Ses('kapan'); buzz(30); shake = Math.max(shake, 0.15); return;
   }
-  b.eng = 1; b.yavas = 1; b.hit = true; burst(p, '#ffe0a0', 8, 5); sfx('kir', 'ahsap2'); buzz(20);
+  b.eng = 1; b.yavas = 1; b.hit = true; burst(p, '#ffe0a0', 8, 5); if (KLANK) { klank(0.95, E.t === 'kalkan' ? 760 : 980); withS(0.45, 1, () => sfx('kir', 'ahsap2')); } else sfx('kir', 'ahsap2'); buzz(20);
 }
 const ENGKART = { kapi2: ['Anahtarlı Kapı', '🔑', 'Önce altın anahtar küpü düşür: anahtar kilide uçar, kapı açılır. Sonra arkadaki yapıyı da yık!'],
   giyotin: ['Giyotin', '⚔️', 'Çelik çeneler açılıp kapanır. Açıkken at! Kapalıyken çarpan top parçalanır. Kırmızı parlarsa kapanıyor.'] };
@@ -1928,7 +1948,7 @@ function impact(b, e) {
   if (KAL()) { impactK(b, e); return; }
   buzz([40, 30, 25], 0);   // v6.8: (Adem) kupe carpinca titresim
   wakeAll(); g.busy = 2.5; shake = Math.min(0.5, shake + 0.3);
-  const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); HIS.vurus(p, b.dir, malzOf(b.hc && b.hc.kind), 1); sfx('hit');   // v4.2: malzemenin kendi kivilcimi/kiymigi
+  const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); HIS.vurus(p, b.dir, malzOf(b.hc && b.hc.kind), 1); sfx('hit'); if (b.hc && MATSND[b.hc.kind] === 'metal') klank(1, 1150);   // v4.2: malzemenin kendi kivilcimi/kiymigi
 }
 // v5.3: atis guclendi. Top kupe degdigi an cevresindeki kupler (yaklasik 1.6 kup yaricap) top yonunde itilir;
 // itis kupun merkezinin ustunden uygulandigi icin kup sadece kaymaz, devrilir. Agir malzeme (celik, tugla) daha az etkilenir.
@@ -2257,6 +2277,7 @@ const MFX = (() => {
   const M = {}, mat = (k, o) => M[k] || (M[k] = new THREE.MeshStandardMaterial(Object.assign({ roughness: 0.5, envMap: ENV, envMapIntensity: 0.6 }, o)));
   return { kiymik, moloz, kirik, kristal, mat };
 })();
+const SIVIM = {};
 function malzemeFx(c, p, dir) {
   if (PARN > 150 || !c.kind) return; const T = SEK.TUR[c.kind]; if (!T) return;
   const ses = T.ses, renk = T.renk, par = (n, col, add, s0, ust) => { for (let i = 0; i < n; i++) { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: STAR, color: col, transparent: true, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); m.position.copy(p);
@@ -2268,6 +2289,18 @@ function malzemeFx(c, p, dir) {
   if (ses === 'tas') { for (let i = 0; i < 6; i++) piece(new THREE.Mesh(MFX.moloz, MFX.mat('s' + renk, { color: renk, roughness: 0.95, flatShading: true })), p, dir, S * (0.1 + Math.random() * 0.12), 6, 1.4 + Math.random() * 0.5);
     for (let i = 0; i < 4; i++) { const m = spr('#d8d4e4', false, 0.5), v = new THREE.Vector3((Math.random() - 0.5) * 2.6, 0.6 + Math.random() * 1.2, (Math.random() - 0.5) * 2.6); m.position.copy(p); const s0 = 0.8 + Math.random() * 0.5;
       fx(m, 1.0, (o, k, dt) => { o.position.addScaledVector(v, dt); v.multiplyScalar(1 - dt * 2); o.scale.setScalar(s0 * (1 + k * 2.2)); o.material.opacity = 0.45 * (1 - k); }); } return; }
+  // v6.8 (Adem 17 Kas, referans video: 'sise kirilinca icindeki sivi etrafa dagiliyor'): sise kirilinca sivisi parlak damlalar halinde
+  // her yone sacilir (hizina gore uzar), platforma/yere degince leke birakir; cam kiriklari renksiz, saydam. Eski: ?sivi=0.
+  if (ses === 'cam' && /Sise/.test(c.kind) && Q.get('sivi') !== '0') {
+    const col = renk, mat = SIVIM[col] || (SIVIM[col] = new THREE.MeshStandardMaterial({ color: col, roughness: 0.08, metalness: 0, envMap: ENV, envMapIntensity: 1.1, emissive: col, emissiveIntensity: 0.4 })), geo = jarKit().blobGeo;
+    const n = PARN > 90 ? 18 : 34;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * 6.283, h = 1.5 + Math.random() * 4.5, v = new THREE.Vector3(Math.cos(a) * h, 4 + Math.random() * 7, Math.sin(a) * h * 0.6).addScaledVector(dir, 0.8 + Math.random() * 1.2);
+      damla(mat, geo, p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.4, Math.random() * 0.5, (Math.random() - 0.5) * 0.4)), v, 0.7 + Math.random() * 0.8, col, i < 8 ? 0.22 + Math.random() * 0.14 : 0.1 + Math.random() * 0.1, false).gk = 0.5;   // sivi havada daha uzun kalir
+    }
+    for (let i = 0; i < 7; i++) piece(new THREE.Mesh(MFX.kirik, MFX.mat('cs', { color: '#eef8ff', transparent: true, opacity: 0.5, roughness: 0.02, metalness: 0.1, envMapIntensity: 1.6, side: THREE.DoubleSide })), p, dir, S * (0.1 + Math.random() * 0.12), 9, 0.9 + Math.random() * 0.4);
+    par(5, '#ffffff', true, 0.35); par(4, col, true, 0.4); return;
+  }
   if (ses === 'cam') { for (let i = 0; i < 8; i++) piece(new THREE.Mesh(MFX.kirik, MFX.mat('c' + renk, { color: renk, transparent: true, opacity: 0.75, roughness: 0.05, metalness: 0.1, envMapIntensity: 1.4, side: THREE.DoubleSide })), p, dir, S * (0.1 + Math.random() * 0.12), 9, 1.0 + Math.random() * 0.4); par(6, '#ffffff', true, 0.35); return; }
   if (ses === 'buz') { for (let i = 0; i < 7; i++) piece(new THREE.Mesh(MFX.kristal, MFX.mat('b', { color: '#a8e4ff', transparent: true, opacity: 0.85, roughness: 0.05, emissive: '#1a6ad8', emissiveIntensity: 0.25, flatShading: true })), p, dir, S * (0.1 + Math.random() * 0.1), 8, 1.2 + Math.random() * 0.4); par(6, '#e8fbff', true, 0.4); }
 }
@@ -3365,6 +3398,7 @@ function darbeHaptik(kind, s) { if (s < 0.35) return; buzz((MAT_H[matSnd(kind)] 
 function darbeSesi(c, vn) {
   if (!g || !g.armed || c.out || vn < 4) return; const now = performance.now(); if (c.sndT && now - c.sndT < 140) return;
   const m = matSnd(c.kind); if (m === 'cam' || m === 'buz') return; c.sndT = now;
+  if (KLANK && MATSND[c.kind] === 'metal') { klank(Math.min(1, vn / 18), 1150); return; }   // v6.8: metal kup (altin patili) gercek metal sesi
   const s = Math.min(1, vn / 18) * 0.7, mp = MAT_P[m] || MAT_P.tahta;
   withS(s * mp.v, mp.r * (1.08 - 0.14 * s), () => sfx('kir', c.kind));
 }
@@ -3387,7 +3421,7 @@ function impactK(b, e) {
   const c = b.hc, vn = e && e.contact ? Math.abs(e.contact.getImpactVelocityAlongNormal()) : 45, mp = MAT_P[matSnd(c ? c.kind : null)] || MAT_P.tahta, s = Math.min(1.4, vn / 70) * mp.w;
   wakeAll(); g.busy = 2.5;
   const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); HIS.vurus(p, b.dir, malzOf(c && c.kind), s);
-  withS(Math.min(1.3, 0.75 + 0.3 * s), 1.04 - 0.1 * Math.min(1, s), () => sfx('hit'));
+  withS(Math.min(1.3, 0.75 + 0.3 * s), 1.04 - 0.1 * Math.min(1, s), () => sfx('hit')); if (c && MATSND[c.kind] === 'metal') klank(Math.min(1.2, 0.6 + 0.4 * s), 1150);
   buzz([Math.round(40 + 16 * s), 26, 34], 0); if (s > 0.7) { shake = Math.max(shake, 0.12 * s * s); hitstop(0.05 * Math.min(1, s)); }   /* v4.9: (Adem 14 Kas: atista ekran titriyor) siradan vuruslarda ekran sarsintisi, yakinlasma ve donma yok; yalniz cok sert vurusta hafif */
 }
 // kirilan kavanoz parcalarinin malzemeleri ilk kirilista derleniyordu (200 ms takilma): yuklenince bir kez gorunmez yerde derle
@@ -3493,7 +3527,7 @@ function kabarcik() {
   const t = AC.currentTime, r = 1 + (Math.random() - 0.5) * 0.06;
   tone('sine', 320 * r, 1100, t, 0.11, 0.6); tone('sine', 600 * r, 1500, t + 0.03, 0.07, 0.25);
 }
-window.YP = { zoneAt, fonFy, THREE, KIND, SEK, MOD, GLASS, get PATI() { return PATI; }, ORNEK, get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, get ENG() { return ENG; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec, hz) { HIZLI = !!hz; let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } HIZLI = false; }, lv: (L) => levelOf(L), engelOf, BV, dene(L, v) { DENE = { L, Y: Object.assign({ veri: 1, engel: v.engel || [], make: () => v.c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) }, v) }; BV.Y.delete(L); UCACHE.delete(L); start0(L); }, get GONE() { return cubes.filter((c) => c.gone).length; }, snap() { return glc.toDataURL('image/png'); } };
+window.YP = { zoneAt, fonFy, THREE, KIND, SEK, MOD, GLASS, get PATI() { return PATI; }, ORNEK, get M() { return M; }, SV, TK, tilkiDurum, gg: { bas: ggBas, uygula: ggUygula, GGA, say: ggSay }, K, ren, TC, cam, scene, cubes, balls, get g() { return g; }, get R() { return R; }, get RZ() { return RZ; }, get PLS() { return PLS; }, get ENG() { return ENG; }, GY: () => GY, start, shoot: (x, y, z) => shoot(new THREE.Vector3(x, y, z)), aimAt, run(sec, hz) { HIZLI = !!hz; let t = last || 0; for (let i = 0; i < Math.round(sec * 60); i++) { t += 1000 / 60; frame(t); } HIZLI = false; }, lv: (L) => levelOf(L), engelOf, BV, dene(L, v) { DENE = { L, Y: Object.assign({ veri: 1, engel: v.engel || [], make: () => v.c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) }, v) }; BV.Y.delete(L); UCACHE.delete(L); start0(L); }, get GONE() { return cubes.filter((c) => c.gone).length; }, kir(i) { breakBlock(cubes[i]); }, snap() { return glc.toDataURL('image/png'); } };
 if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MOD, PM, platBody, GB, cubes, balls, S, TC, KEEP, NENV, SV, save, $, Q, TEST,
   get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set GY(v) { GY = v; GB.position.y = v; }, get shake() { return shake; }, set shake(v) { shake = v; },
   set TOPY(v) { TOPY = v; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, LEG, DIRT, KIND, splashSnd: (v) => AC && (K ? play('su', v + 0.2) : splashSnd(v)), dongu, play: (k, v, r) => AC && play(k, v, r),
