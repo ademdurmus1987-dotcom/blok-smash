@@ -48,8 +48,8 @@
 #merkez.cik{animation:mcik .45s ease-in forwards;pointer-events:none}
 @keyframes mgir{from{opacity:0;transform:scale(1.05)}}
 @keyframes mcik{to{opacity:0;transform:scale(1.12)}}
-.m-bg{position:absolute;inset:-3%;background:url(../korsan/kaynak/fon_gunbatimi.webp) center 38%/cover no-repeat;animation:akay 18s ease-in-out infinite alternate}
-.m-bg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,22,84,.55) 0%,rgba(18,22,84,0) 20%,rgba(10,20,70,0) 62%,rgba(8,14,52,.75) 100%)}
+.m-bg{position:absolute;inset:-3%;background:url(fon/ana_ada.webp?v=1) center 62%/cover no-repeat;animation:akay 18s ease-in-out infinite alternate}   /* v6.14 (Adem 18 Kas): gunduz korsan adasi, Foxi cimende */
+.m-bg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,60,150,.35) 0%,rgba(20,60,150,0) 18%,rgba(10,30,20,0) 70%,rgba(10,30,40,.55) 100%)}
 .m-pus{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .m-pus i{position:absolute;bottom:-20px;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,236,160,.2) 60%,transparent);opacity:0;animation:mpus linear infinite}
 @keyframes mpus{0%{transform:translateY(0) scale(.5);opacity:0}15%{opacity:.9}100%{transform:translateY(-70vh) translateX(var(--dx)) scale(1.3);opacity:0}}
@@ -315,7 +315,7 @@ button,.m-btn,.btn,.m-yb,.gt,.gb,.ib,.p-x,[data-s]{touch-action:manipulation;-we
 /* ana sayfa tilkisi (video): dokununca ziplar, ayagi altinda isik */
 #m-kc.zip{animation:tkzip .55s cubic-bezier(.2,1.6,.4,1)}
 @keyframes tkzip{35%{transform:translateY(calc(var(--zn,1) * -16px)) scale(1.04,.97)}70%{transform:translateY(0) scale(.98,1.03)}}
-.m-sahne:after{content:"";position:absolute;left:50%;bottom:2%;width:62%;height:9%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,226,150,.55),rgba(255,180,80,.18) 60%,transparent);pointer-events:none;z-index:0}
+.m-sahne:after{content:"";position:absolute;left:50%;bottom:calc(var(--ay,2%) - 16px);width:var(--gen,62%);height:32px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(8,20,4,.85),rgba(8,20,4,.45) 50%,transparent);pointer-events:none;z-index:0}
 .m-sahne.kilitli:after{opacity:.3}
 #m-kc{z-index:1}
 /* bolum karti */
@@ -367,3 +367,6 @@ button,.m-btn,.btn,.m-yb,.gt,.gb,.ib,.p-x,[data-s]{touch-action:manipulation;-we
 #load.hazir{cursor:pointer}
 #load.hazir .a-yaz{animation:fvnab2 1s ease-in-out infinite}
 @keyframes fvnab2{50%{transform:scale(1.08)}}
+
+/* v6.14 (Adem 18 Kas: arkasinda neden isiklar var): gunduz adasinda ucusan isik noktalari yok */
+.m-pus{display:none}

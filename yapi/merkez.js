@@ -176,7 +176,7 @@ export function merkezKur(A) {
     return (t3yuk = (async () => {
       const kc = $('m-kc'), gl = kc.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
       if (!gl) return null;
-      const vid = document.createElement('video'); vid.src = '../karakter/tilki_dans.mp4?v=2'; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute('playsinline', ''); vid.setAttribute('webkit-playsinline', ''); vid.preload = 'auto'; vid.crossOrigin = 'anonymous';
+      const vid = document.createElement('video'); vid.src = '../karakter/foxi_korsan.mp4?v=1'; vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute('playsinline', ''); vid.setAttribute('webkit-playsinline', ''); vid.preload = 'auto'; vid.crossOrigin = 'anonymous';
       const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return o; };
       const pg = gl.createProgram();
       gl.attachShader(pg, sh(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 u; void main(){ u = vec2(p.x * 0.5 + 0.5, 0.5 - p.y * 0.5); gl_Position = vec4(p, 0.0, 1.0); }'));
@@ -197,20 +197,31 @@ export function merkezKur(A) {
       const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.uniform2f(gl.getUniformLocation(pg, 'px'), 1 / 480, 1 / 700);
+      gl.uniform2f(gl.getUniformLocation(pg, 'px'), 1 / 478, 1 / 850);   // v6.14: yeni korsan Foxi videosu 478x850
       let VW = 0, VH = 0;
       const boyut = () => {
         const w = kc.clientWidth, h = kc.clientHeight; if (!w || !h) return; const pr = Math.min(2, devicePixelRatio || 1);
         kc.width = Math.round(w * pr); kc.height = Math.round(h * pr);
-        const ar = 480 / 700; VH = kc.height * 0.97; VW = VH * ar; if (VW > kc.width * 0.98) { VW = kc.width * 0.98; VH = VW / ar; }
+        const ar = 478 / 850; VH = kc.height * 0.97; VW = VH * ar; if (VW > kc.width * 0.98) { VW = kc.width * 0.98; VH = VW / ar; }
         gl.viewport(Math.round((kc.width - VW) / 2), 0, Math.round(VW), Math.round(VH)); ciz(true);
+        { const sn = kc.parentElement.style; sn.setProperty('--ay', (VH / pr * 0.153).toFixed(1) + 'px'); sn.setProperty('--gen', (VW / pr * 0.62).toFixed(1) + 'px'); }   // v6.14: gölge Foxi'nin ayaklarının altında (videoda ayak tabanı alttan %15)
       };
       const ciz = (zorla) => {
         if (vid.readyState < 2) return;
         gl.bindTexture(gl.TEXTURE_2D, tx); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
         gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       };
-      const oynat = () => { if (acik && sekmeAd === 'ana' && !document.hidden) { if (vid.paused) vid.play().catch(() => {}); } else if (!vid.paused) vid.pause(); };
+      // v6.14 (Adem 18 Kas): videonun kendi sesi calar. Telefon sesli otomatik oynatmaya izin vermez: ilk dokunusla ses acilir.
+      // Ayarlarda ses ya da muzik kapaliysa sessiz; Foxi konusurken arka plan muzigi kisilir; sarki ekrani acikken bu video durur.
+      let sesIzin = false, kisik = false;
+      const izin = () => { sesIzin = true; removeEventListener('pointerdown', izin, true); };
+      addEventListener('pointerdown', izin, true);
+      const oynat = () => {
+        const gor = acik && sekmeAd === 'ana' && !document.hidden && !FV.classList.contains('on');
+        if (gor) { if (vid.paused) vid.play().catch(() => {}); } else if (!vid.paused) vid.pause();
+        const duy = gor && sesIzin && !SV.sessiz && !SV.muziksiz; if (vid.muted === duy) vid.muted = !duy;
+        const kis = duy && !vid.paused; if (kis !== kisik) { kisik = kis; if (!FV.classList.contains('on') && A.muzikKis) A.muzikKis(kis); }
+      };
       const kare = () => { requestAnimationFrame(kare); oynat(); if (!vid.paused) ciz(); };
       vid.addEventListener('loadeddata', () => { boyut(); ciz(true); });
       document.addEventListener('visibilitychange', oynat);
