@@ -152,7 +152,7 @@ def p21():
     def ek(t, i, k, kat, **kw):
         n[0] += 1; L.append(P(t, i * S, k * S, y=Y(kat), id='s%d' % n[0], **kw))
     # 1) cevre sutunlari (2 kat boyunda): onde kapi boslugu (0, 2)
-    for (i, k) in [(-2, 2), (-1, 2), (1, 2), (2, 2), (-2, 0), (2, 0), (-2, -2), (0, -2), (2, -2)]: ek('ksSutun', i, k, 0, devril=3.0)
+    for (i, k) in [(-2, 2), (-1, 2), (1, 2), (2, 2), (-2, 0), (2, 0), (-2, -2), (0, -2), (2, -2)]: ek('plSutunG', i, k, 0, devril=3.0)
     # 2) ic dolgu 3x3x2: altta buz + ortada TNT, ustte sandik koseler + buz + altin
     for i in (-1, 0, 1):
         for k in (-1, 0, 1):
@@ -166,7 +166,7 @@ def p21():
     # 4) ust kosk (kat 3-4): koselerde tahta direk, kenarlarda ve ortada buz
     for i in (-1, 0, 1):
         for k in (-1, 0, 1):
-            if i and k: ek('ksDirek', i, k, 3)
+            if i and k: ek('plDirek', i, k, 3)
             else: ek('ksBuz', i, k, 3); ek('ksBuz', i, k, 4)
     # 5) tepe: uc uzun buz, ustunde kup ve elmas
     for k in (-1, 0, 1): ek('ksBuz3', 0, k, 5)
@@ -204,8 +204,45 @@ def p22():
     ada = [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'kare', 'r': 4.15, 'ust': 0, 'kal': 0.75}]}]
     return {'ad': 'Oyuncak Kale', 'top': 0, 'kam': {'pitch': 1, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
 
-TOP = {1: 16, 7: 15, 13: 12, 21: 24, 22: 24}   # top sayilari (pilot_test bot sonucuna gore ayarlandi; bkz. yapi/pilot_isleri.md)
-B = {1: p1(), 7: p7(), 13: p13(), 21: p21(), 22: p22()}
+# ---------------- P23 Fener Kulesi (17 Kas: yuvarlak kaide, 4x4 taban, yukari daralan simetrik kule; yeni bloklarin hepsi) ----------------
+def p23():
+    L = []; G = 0.004; n = [0]
+    def Y(k): return k * (S + G)
+    def ek(t, i, k, kat, **kw):
+        n[0] += 1; L.append(P(t, i * S, k * S, y=Y(kat), id='s%d' % n[0], **kw))
+    KUP = ('plKupK', 'plKupY', 'plKupM')
+    A, B = (-1.5, 1.5), (-0.5, 0.5)
+    # kat 0-1: koselerde tahta direk, on/arkada tas levha + kup, yanlarda kup, icte kup + kavanoz
+    for i in A:
+        for k in A: ek('plDirek', i, k, 0)
+        for k in B: ek(KUP[0], i, k, 0); ek(KUP[2], i, k, 1)
+    for k in A:
+        ek('plLevha', 0, k, 0)
+        for i in B: ek(KUP[1], i, k, 1)
+    for i in B:
+        for k in B: ek(KUP[1], i, k, 0); ek('plKavanozT', i, k, 1)
+    # kat 2: tas levha doseme (4x4'u kapatir)
+    for k in A + B:
+        for i in (-1, 1): ek('plLevha', i, k, 2)
+    # kat 3-4: on ve arkada ikiser sutun, icte kup + kavanoz
+    for k in A:
+        for i in (-1, 1): ek('plSutun', i, k, 3, devril=3.0)
+    for i in B:
+        for k in B: ek(KUP[0], i, k, 3); ek('plKavanozM', i, k, 4)
+    # kat 5: sutunlarin ustunde kalas, icte tas levha
+    for k in A: ek('plKalas', 0, k, 5)
+    for k in B: ek('plLevha', 0, k, 5)
+    # kat 6: icte kupler, kalaslarin ustunde kavanoz
+    for i in B:
+        for k in B: ek(KUP[2], i, k, 6)
+    for k in A: ek('plKavanozT', 0, k, 6)
+    # tepe
+    ek('plLevha', 0, 0, 7); ek('plKavanozM', 0, 0, 8)
+    ada = [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'disk', 'r': 4.85, 'ust': 0, 'kal': 0.75}]}]
+    return {'ad': 'Fener Kulesi', 'top': 0, 'kam': {'pitch': 1, 'yaw': 0, 'atis': 0.9, 'genis': 0.95}, 'ada': ada, 'kopru': [], 'parca': L}
+
+TOP = {1: 16, 7: 15, 13: 12, 21: 24, 22: 24, 23: 24}   # top sayilari (pilot_test bot sonucuna gore ayarlandi; bkz. yapi/pilot_isleri.md)
+B = {1: p1(), 7: p7(), 13: p13(), 21: p21(), 22: p22(), 23: p23()}
 for k, v in B.items(): v['top'] = TOP[k]
 json.dump({'surum': 2, 'bolumler': B}, open(OUT, 'w', encoding='utf-8', newline=chr(10)), ensure_ascii=False, indent=1)   # Windows'ta da UTF-8 ve LF (Turkce harfler bozulmasin)
 print('yazildi', OUT, {k: len(v['parca']) for k, v in B.items()})

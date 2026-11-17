@@ -9,12 +9,12 @@
 //   parca: [{ t, x, y?, z, ry?, rx?, rz?, p: 'adaId.kat', id?, kir? }]   y: parcanin ALT yuzu (verilmezse katin ustu),
 //          ry/rx/rz derece. kir: bu hizdan sert sabit yuzeye carpinca kirilir (turun kendi 'carp' degeri yerine).
 //   kam:   { pitch, yaw } derece. top: top sayisi.
-import { pilotSekilKur } from './pilot_sekil.js?v=2';
+import { pilotSekilKur } from './pilot_sekil.js?v=3';
 
 export function pilotKur(A) {
   const { THREE, CANNON, S } = A, Pi = Math.PI, D2R = Pi / 180;
   const N = Math.floor(+A.Q.get('pilot')) || 0;
-  const SIRA = [1, 7, 13, 21, 22];
+  const SIRA = [21, 22, 23];   // 1, 7, 13 rafta (adresle yine acilir)
   let VERI = null, B = null;   // B: bu bolumun verisi
   const BOS = { veri: 1, engel: [], ad: 'Pilot', top: 10, make: () => [] };
   let Y = BOS;
@@ -380,7 +380,7 @@ export function pilotKur(A) {
   function kaybet() { const g = A.g; A.sfx('lose'); kart('Toplar bitti!', true, '<h2>' + g.left + ' parça kaldı</h2><p>Deneme bölümü: ilerleme kaydedilmez.</p>'); }
 
   async function yukle() {
-    try { VERI = await (await fetch('pilot/pilot.json?v=3')).json(); } catch (e) { VERI = null; }
+    try { VERI = await (await fetch('pilot/pilot.json?v=4')).json(); } catch (e) { VERI = null; }
     B = VERI && VERI.bolumler && VERI.bolumler[N] || null;
     if (B) Y = { veri: 1, engel: [], ad: B.ad, top: B.top, make: () => [] };
     if (B && PS.yukle) await PS.yukle(B.parca.map((p) => p.t));   // v5.6: Blender bloklarinin model dosyalari

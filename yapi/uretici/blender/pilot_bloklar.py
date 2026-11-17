@@ -90,7 +90,7 @@ def pati(o, u, v, k, hh, c):
     yastik = [(0.0, -0.275), (0.13, -0.26), (0.215, -0.17), (0.20, -0.06), (0.10, 0.03), (0.0, 0.05), (-0.10, 0.03), (-0.20, -0.06), (-0.215, -0.17), (-0.13, -0.26)]
     P.append(kabartma(o, u, v, [(a * k, b * k) for a, b in yastik], [(1.0, -0.006), (0.93, hh * 0.5), (0.70, hh)], c))
     for (cx, cy, don) in [(-0.255, 0.075, 0.45), (-0.092, 0.225, 0.14), (0.092, 0.225, -0.14), (0.255, 0.075, -0.45)]:
-        P.append(kabartma(o, u, v, elips(cx * k, cy * k, 0.07 * k, 0.092 * k, 6, don, Pi / 6), [(1.0, -0.006), (0.60, hh)], c))
+        P.append(kabartma(o, u, v, elips(cx * k, cy * k, 0.07 * k, 0.092 * k, 8, don, Pi / 8), [(1.0, -0.006), (0.60, hh)], c))
     return P
 
 def tilki(o, u, v, k, hh):
@@ -283,7 +283,7 @@ def kavanoz():
             (0.486, -0.195, KREM), (0.486, 0.035, GOVDE), (0.468, 0.055, GOVDE), (0.468, 0.115, GOVDE), (0.435, 0.195, GOVDE), (0.365, 0.245, GOVDE),
             (0.345, 0.268, KREM), (0.415, 0.275, serit), (0.415, 0.425, serit), (0.375, 0.478, KREM), (0.30, 0.4975, KREM)]
     prof = [(r * s, y * s, c) for r, y, c in prof]
-    P = [torna(prof, SEG, dalga={11: 0.935, 12: 0.935})]
+    P = [torna(prof, SEG)]
     # etiket kusaginda on ve arkada pati izi
     for yon in ('on', 'arka'):
         o, u, v = yuz_cerceve(yon, 0.478 * s); o = (o[0], -0.08 * s, o[2])
@@ -360,15 +360,49 @@ def ham_nesne(ad, parcalar):
 
 # ------------------------------------------------------------------ 5) sutun (cap 1, boy 2): acik renk, altta ve ustte bilezik
 def sutun():
-    s = S; SEG = 16; TASK = renk('#f7ecd6'); TASK2 = renk('#eadbbd'); BIL = ALTIN
+    s = S; SEG = 16; TASK = GOVDE; TASK2 = GOVDE; BIL = ALTIN
     alt = [(0.47, -0.9975, TASK2), (0.47, -0.905, TASK2), (0.435, -0.885, BIL), (0.468, -0.84, BIL), (0.468, -0.765, BIL), (0.435, -0.72, TASK), (0.405, -0.70, TASK), (0.385, -0.63, TASK)]
     ust = [(r, -y, c) for (r, y, c) in alt[::-1]]
     # ust yarida renk bir onceki noktadan gelir: kusak renkleri aynalanir
     ustr = [TASK, TASK, BIL, BIL, BIL, TASK2, TASK2, TASK2]
     prof = alt + [(r, y, ustr[i]) for i, (r, y, c) in enumerate(ust)]
     prof = [(r * s, y * s, c) for r, y, c in prof]
-    P = [torna(prof, SEG, dalga={7: 0.94, 8: 0.94})]
+    P = [torna(prof, SEG, dalga={7: 0.87, 8: 0.87})]
     return uret('pl_sutun', P, 0.38)
+
+# ------------------------------------------------------------------ 6) tahta direk (1x2x1): dik tahtalar, iki bakir kusak, pati amblemi
+def direk():
+    w, h, d = S * 0.995, 2 * S * 0.998, S * 0.995; r = 0.1 * S; gom = 0.035 * S; kal = 0.085 * S
+    CERCEVE = renk('#e2680f'); TAHTA = renk('#ffa232'); TAHTA2 = renk('#ff9420'); KUSAK = renk('#2a3a78')
+    bm = kutu_bm(w, h, d, r, 2)
+    panolar = {ad: pano(bm, buyuk_yuz(bm, y), kal, gom) for ad, y in YON.items()}
+    tahta = set()
+    for ad in ('on', 'arka', 'sag', 'sol'):       # her yan yuzde iki dik tahta (aralarinda gercek derz)
+        f = panolar[ad]; n = f.normal.copy()
+        yatay = [e for e in f.edges if abs((e.verts[0].co - e.verts[1].co).normalized().y) < 0.1]
+        bmesh.ops.subdivide_edges(bm, edges=yatay, cuts=1, use_grid_fill=True); bm.normal_update()
+        d0 = f.calc_center_median().dot(n)
+        yz = [q for q in bm.faces if q.normal.dot(n) > 0.999 and abs(q.calc_center_median().dot(n) - d0) < 1e-4]
+        bmesh.ops.inset_individual(bm, faces=yz, thickness=0.02 * S, depth=0.0, use_even_offset=True)
+        for q in yz:
+            for vv in q.verts: vv.co += n * 0.016 * S
+            tahta.add(q)
+        bm.normal_update()
+    uclar = {panolar['ust'], panolar['alt']}
+    def sec(f):
+        if f in tahta: c = f.calc_center_median(); return TAHTA2 if (c.x + c.z) * (1 if abs(f.normal.z) > 0.5 else -1) * (1 if f.normal.z + f.normal.x > 0 else -1) > 0 else TAHTA
+        return TAHTA if f in uclar else CERCEVE
+    P = [bm_al(bm, sec)]; bm.free()
+    for y in (-0.62 * S, 0.62 * S):                # kusaklar: govdeden hafif tasan ince cember
+        kb = kutu_bm(w + 0.035 * S, 0.17 * S, d + 0.035 * S, 0.035 * S, 1)
+        for v in kb.verts: v.co.y += y
+        P.append(bm_al(kb, lambda f: KUSAK)); kb.free()
+        for yon in ('on', 'arka'):                 # kusak civileri (yalniz on ve arka: ucgen siniri)
+            o, u, v = yuz_cerceve(yon, d / 2 + 0.0175 * S)
+            for sx in (-1, 1): P.append(kabartma(o, u, v, elips(sx * 0.3 * S, y, 0.04 * S, 0.04 * S, 6), [(1.0, -0.004), (0.55, 0.026 * S)], ALTIN))
+    for yon in ('on', 'arka'):
+        o, u, v = yuz_cerceve(yon, d / 2 - gom + 0.016 * S); P += pati(o, u, v, 0.78 * S, 0.045 * S, KREM)
+    return uret('pl_direk', P, 0.42)
 
 # ------------------------------------------------------------------ onizleme (Blender icinde bakmak icin; oyunda kullanilmaz)
 def onizle(obs):
@@ -376,7 +410,7 @@ def onizle(obs):
     x = -(len(obs) - 1) * 1.3
     for ob in obs: ob.location = (x + 0, 0, 0); x += 2.6
     obs[1].location.z = -2.4; obs[1].location.x = -2.2; obs[3].location.z = -2.4; obs[3].location.x = 2.6
-    obs[0].location.x = -3.6; obs[2].location.x = 0; obs[4].location.x = 3.6; obs[4].location.z = 0.6
+    obs[0].location.x = -3.6; obs[2].location.x = -1.2; obs[4].location.x = 3.9; obs[4].location.z = 0.6; obs[5].location.x = 1.5; obs[5].location.z = 0.6
     for ob in obs: ob.rotation_euler = (0, 0, math.radians(-28)); ob.hide_render = False
     cam = bpy.data.cameras.new('kam'); cam.type = 'ORTHO'; cam.ortho_scale = 12.5; co = bpy.data.objects.new('kam', cam); sc.collection.objects.link(co)
     co.location = (0, -20, 5.2); co.rotation_euler = (math.radians(77), 0, 0); sc.camera = co
@@ -389,9 +423,9 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dunya()
     ist = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun}
+    hepsi = {'kup': kup, 'kalas': kalas, 'kavanoz': kavanoz, 'levha': levha, 'sutun': sutun, 'direk': direk}
     obs = [f() for k, f in hepsi.items() if not ist or k in ist]
-    if len(obs) == 5: onizle(obs)
+    if len(obs) == 6: onizle(obs)
     print('BITTI')
 
 main()

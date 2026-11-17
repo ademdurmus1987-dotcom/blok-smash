@@ -6,7 +6,7 @@
 //   plLento   lento (iki dikili tasin ustune yatan tas)   plSunak  sunak tablasi (krem mermer, altin kakma)
 //   plDomino  domino tasi (lacivert cilali tas, altin noktalar)
 // v5.6 (17 Kas 2026): Blender'da uretilen oyuncak bloklar (model/pilot/*.glb): plKupK/Y/M patili kup, plKalas uzun kalas (3x1x1),
-//   plKavanozT/M cizgili kapakli kavanoz, plLevha tilki amblemli tas levha (2x1x1), plSutun bilezikli sutun (1x2).
+//   plKavanozT/M cizgili kapakli kavanoz, plLevha tilki amblemli tas levha (2x1x1), plSutun / plSutunG bilezikli sutun (1x2, krem / gri tas), plDirek kusakli tahta direk (1x2).
 // carp: bu hizdan sert sabit yuzeye (platform, zemin) carpinca kirilir (pilot.js uygular; top degince kirilmaz, devrilir).
 import { mergeVertices } from '../BufferGeometryUtils.js';
 import { GLTFLoader } from '../GLTFLoader.js?v=2';   // v5.6: Blender bloklari (oyun.js ile ayni adres: ayni modul)
@@ -195,7 +195,7 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
   // tek dosyadan uc renk kup, iki renk kavanoz cikar. Dosya yalniz o turu kullanan pilot bolumde iner (yukle).
   const T = (w, h, d, o) => Object.assign({ w: w / S, h: h / S, d: d / S, f: 0.72, r: 0.05, ses: 'tas', sert: 1 }, o);
   const GLB = {}, GLBP = {};
-  const glbYukle = (ad) => GLBP[ad] || (GLBP[ad] = new Promise((ok) => new GLTFLoader().load('model/pilot/' + ad + '.glb?v=1', (gl) => {
+  const glbYukle = (ad) => GLBP[ad] || (GLBP[ad] = new Promise((ok) => new GLTFLoader().load('model/pilot/' + ad + '.glb?v=2', (gl) => {
     let m = null; gl.scene.traverse((o) => { if (o.isMesh && !m) m = o; });
     if (m) { const map = m.material && m.material.map || null; if (map) map.anisotropy = 8; GLB[ad] = { geo: m.geometry, map }; }
     ok();
@@ -216,6 +216,7 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
   const KUPR = { K: '#e8242c', Y: '#22b84a', M: '#2276f0' }, KAVR = { T: '#12b8b0', M: '#9a3cf0' };
   const kupTur = (r) => T(S, S, S, { mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', sert: 0, renk: KUPR[r], kir: 1, yuzer: 1, glb: 'pl_kup', yap: () => blok('pl_kup', KUPR[r], { govde: KUPR[r], puruz: 0.3, olcu: [S, S, S] }) });
   // kavanoz kirilgan: top degince ya da sert carpinca tuzla buz (topKir: oyunun kendi carpisma kirilmasi, sise ile ayni yol)
+  const sutunTur = (r) => T(S, 2 * S, S, { mass: 2.2, f: 0.7, r: 0.05, ses: 'tas', renk: r, sekil: 'sil', glb: 'pl_sutun', yap: () => blok('pl_sutun', r, { govde: r, puruz: 0.38, sil: 1, olcu: [S, 2 * S, S] }) });   // krem ve gri tas ayni dosyadan
   const kavTur = (r) => T(S, S, S, { mass: 0.6, f: 0.5, r: 0.08, ses: 'cam', sert: 0, renk: KAVR[r], sekil: 'sil', kir: 1, topKir: 6.5, glb: 'pl_kavanoz', yap: () => blok('pl_kavanoz', KAVR[r], { govde: KAVR[r], puruz: 0.2, env: 0.8, sil: 1, olcu: [S, S, S] }) });
   // ---------- tur tablosu (w, h, d: kup kenari S cinsinden) ----------
   const TUR = {
@@ -233,7 +234,8 @@ export function pilotSekilKur({ THREE, CANNON, S, canvasTex, ENV }) {
     plKalas: T(3 * S, S, S, { mass: 1.7, f: 0.62, r: 0.08, ses: 'tahta', sert: 0, renk: '#f08a24', kir: 1, yuzer: 1, glb: 'pl_kalas', yap: () => blok('pl_kalas', '#f08a24', { puruz: 0.42, olcu: [3 * S, S, S] }) }),
     plKavanozT: kavTur('T'), plKavanozM: kavTur('M'),
     plLevha: T(2 * S, S, S, { mass: 2.6, f: 0.72, r: 0.05, ses: 'tas', renk: '#5b6e9c', glb: 'pl_levha', yap: () => blok('pl_levha', '#5b6e9c', { puruz: 0.5, env: 0.4, olcu: [2 * S, S, S] }) }),
-    plSutun: T(S, 2 * S, S, { mass: 2.2, f: 0.7, r: 0.05, ses: 'tas', renk: '#f3e6cc', sekil: 'sil', glb: 'pl_sutun', yap: () => blok('pl_sutun', '#f3e6cc', { puruz: 0.38, sil: 1, olcu: [S, 2 * S, S] }) })
+    plSutun: sutunTur('#f6ead2'), plSutunG: sutunTur('#aeb7d2'),
+    plDirek: T(S, 2 * S, S, { mass: 1.2, f: 0.62, r: 0.12, ses: 'tahta', sert: 0, renk: '#f08a24', kir: 1, yuzer: 1, glb: 'pl_direk', yap: () => blok('pl_direk', '#f08a24', { puruz: 0.42, olcu: [S, 2 * S, S] }) })
   };
   // bolumun kullandigi turlerin model dosyalarini indirir (pilot.js bolum kurulmadan once bekler)
   const yukle = (turler) => Promise.all([...new Set(turler.map((k) => TUR[k] && TUR[k].glb).filter(Boolean))].map(glbYukle));

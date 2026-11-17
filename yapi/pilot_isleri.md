@@ -65,3 +65,11 @@
 - Kamera standardi artik `kam: {pitch: 1, yaw: 0, genis: 0.95}` (eski -8 asagida kaliyordu). P21 ve P22 guncellendi.
 - Top parcalarin icinden geciyordu: top 95 birim/sn ile bir fizik adiminda 0.8 birim gidip silindir govdenin (sutun, kavanoz) icine giriyor, carpisma kaciyordu. `oyun.js` icinde PILOT isaretli `CCD` (postStep): top bir sonraki adimda parcaya girecekse yuzeyine alinir. Yalniz pilot kipte acik; normal bolumlerde ayni hata olabilir ama denge testleri eski davranisa gore, orada acilmadi.
 - Kaide ayagi havada gorunuyordu (pilotta tabansiz, yerde duz kesilen ince direk): `pilot.js` `ayakDibi()` oyunun kendi ayak tabanini (kaide, halka, baslik) geri acar ve altina yumusak temas golgesi koyar; `yapi/referans/oyun` gorsellerindeki gibi. Su birikintisi, kum yigini, asagi uzayan direk ve kum adacigi denendi; Adem begenmedi.
+
+## 17 Kas 2026 (gece): blok cilasi, eski bloklarin yenilenmesi, P23 (v5.8)
+- Blender betigi: pati parmaklari sekizgen (yuvarlak), kavanoz kapagi tirtiksiz yuvarlak, sutun yivleri belirgin; sutun govdesi isaretli renk (tek dosyadan `plSutun` krem ve `plSutunG` gri tas).
+- Yeni blok `plDirek` (`pl_direk.glb`, 724 ucgen): dik tahtali, iki lacivert kusakli, patili tahta direk (1x2).
+- P21 Buz Sarayi: eski dokulu `ksSutun` -> `plSutunG`, `ksDirek` -> `plDirek`. Buz, sandik, TNT, elmas hala eski tarzda.
+- P23 Fener Kulesi (`?pilot=23`): yuvarlak kaide, 4x4 taban, 58 parca, 24 top. Ekran: `yapi/uretici/rapor/pilot/P23_390x844.jpg`.
+- Test (390x844): P21, P22, P23 konsol hatasiz, 3 sn kayma 0; `?sv=6` hatasiz. Kazanilabilirlik (bot) testi yok: top sayilari tahmin.
+- Pilot kartindaki sira artik 21, 22, 23 (1, 7, 13 rafta, adresle acilir).
