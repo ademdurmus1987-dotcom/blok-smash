@@ -1956,17 +1956,33 @@ function fragYap(geo, n, tohum) {
     let b = 0, bd = 1e9; for (let i = 0; i < n; i++) { const d = seeds[i].distanceToSquared(cc); if (d < bd) { bd = d; b = i; } } bol[b].push(t);
   }
   const adlar = Object.keys(src.attributes).filter((a) => !/^skin|^_/.test(a)), out = [];
+  // v6.0 (Adem 17 Kas: "kati cisimlerin ici niye bos"): parca yalniz dis kabuktan bir yamaydi; doner donmez ici bos kutu gibi gorunuyordu.
+  // Her parcanin acik kenarlari (parcada tek kez kullanilan kenarlar) parcanin icindeki bir tepe noktasina baglanir: parca kapali, dolu bir yonga olur.
+  // Bu kesit yuzleri ayri bir malzeme grubunda (KESIT: bloktan acik tonda, mat) cizilir. kesitK: kesit malzemesinin dizideki yeri.
+  const orta = bb.getCenter(new THREE.Vector3()), kesitK = mi.reduce((a, b) => Math.max(a, b), 0) + 1, anah = (i) => Math.round(pa.getX(i) * 1e4) + ',' + Math.round(pa.getY(i) * 1e4) + ',' + Math.round(pa.getZ(i) * 1e4);
+  const KA = new THREE.Vector3(), KB = new THREE.Vector3(), KN = new THREE.Vector3(), KT = new THREE.Vector3();
   for (const L of bol) {
     if (L.length < 2) continue; L.sort((a, b) => mi[a] - mi[b]);
-    const g = new THREE.BufferGeometry(), nv = L.length * 3;
+    // acik kenarlar: ayni iki konumu birlestiren kenar parcada bir kez geciyorsa (yon dis yuzun sirasina gore)
+    const say = new Map(), kenar = [], tepe = new THREE.Vector3();
+    for (const t of L) for (let k = 0; k < 3; k++) { const a = t * 3 + k, b = t * 3 + (k + 1) % 3, ka = anah(a), kb = anah(b), u = ka < kb ? ka + '|' + kb : kb + '|' + ka; say.set(u, (say.get(u) || 0) + 1); kenar.push([a, b, u]); tepe.x += pa.getX(a); tepe.y += pa.getY(a); tepe.z += pa.getZ(a); }
+    tepe.multiplyScalar(1 / (L.length * 3)).lerp(orta, 0.78);   // yamanin ortasindan blogun merkezine dogru: yonganin ic ucu
+    const acik = kenar.filter((e) => say.get(e[2]) === 1), nk = acik.length;
+    const g = new THREE.BufferGeometry(), nv = L.length * 3 + nk * 3;
     for (const a of adlar) {
       const A = src.attributes[a], is = A.itemSize, arr = new Float32Array(nv * is), get = ['getX', 'getY', 'getZ', 'getW'];
       let o = 0; for (const t of L) for (let k = 0; k < 3; k++) { const vi = t * 3 + k; for (let c = 0; c < is; c++) arr[o++] = A[get[c]](vi); }
+      if (a === 'position' || a === 'normal') for (const [ea, eb] of acik) {   // kesit ucgeni (b, a, tepe): dis yuzle ayni yone bakar
+        KA.fromBufferAttribute(pa, ea); KB.fromBufferAttribute(pa, eb);
+        if (a === 'position') { for (const P of [KB, KA, tepe]) { arr[o++] = P.x; arr[o++] = P.y; arr[o++] = P.z; } }
+        else { KN.subVectors(KA, KB).cross(KT.subVectors(tepe, KB)).normalize(); for (let k = 0; k < 3; k++) { arr[o++] = KN.x; arr[o++] = KN.y; arr[o++] = KN.z; } }
+      } else if (a === 'color') for (let i = o; i < arr.length; i++) arr[i] = 1;   // kesit malzemesi kose rengi kullanmaz; yine de beyaz
       g.setAttribute(a, new THREE.BufferAttribute(arr, is));
     }
     let gs = 0; for (let i = 1; i <= L.length; i++) if (i === L.length || mi[L[i]] !== mi[L[gs]]) { g.addGroup(gs * 3, (i - gs) * 3, mi[L[gs]]); gs = i; }
+    if (nk) g.addGroup(L.length * 3, nk * 3, kesitK);
     g.computeBoundingBox(); const c = g.boundingBox.getCenter(new THREE.Vector3()); g.translate(-c.x, -c.y, -c.z); g.computeBoundingSphere();
-    out.push({ geo: g, c, hs: g.boundingSphere.radius });
+    out.push({ geo: g, c, hs: g.boundingSphere.radius, k: kesitK });
   }
   if (src !== geo) src.dispose();
   return out;
@@ -1974,6 +1990,15 @@ function fragYap(geo, n, tohum) {
 function fragMat(m) {   // parcalarin ici de gorunsun: malzemenin iki yuzlu kopyasi
   if (Array.isArray(m)) return m.map(fragMat);
   if (!m) return m; let k = FRAGM.get(m); if (!k) { k = m.clone(); k.side = THREE.DoubleSide; FRAGM.set(m, k); } return k;
+}
+// v6.0: dolu yonga malzemesi: blogun kendi malzemeleri (ilk K) + K. sirada kesit (blogun renginden acik, mat, keskin yuzlu: taze kirilmis ic)
+const KESITM = new Map(), KESITD = new Map();
+function kesitMat(m, K, renk) {
+  const anah = (Array.isArray(m) ? m.map((x) => x.uuid).join() : m.uuid) + '|' + K + '|' + renk; let d = KESITD.get(anah); if (d) return d;
+  let km = KESITM.get(renk);
+  if (!km) { const r = new THREE.Color(renk), ic = r.clone().lerp(new THREE.Color('#ffffff'), 0.2); km = new THREE.MeshStandardMaterial({ color: ic, roughness: 0.62, metalness: 0, flatShading: true, envMap: ENV, envMapIntensity: 0.3, emissive: r, emissiveIntensity: 0.3 }); KESITM.set(renk, km); }
+  const L = Array.isArray(m) ? m : [m]; d = []; for (let i = 0; i < K; i++) d.push(fragMat(L[i] || L[0])); d.push(km);
+  KESITD.set(anah, d); return d;
 }
 function fragAl(c, v0) {
   const geo = c.mesh && c.mesh.isMesh && c.mesh.geometry; if (!geo || !geo.attributes.position) return null;
@@ -1983,6 +2008,7 @@ function fragAl(c, v0) {
   return L[v].length ? L[v] : null;
 }
 // bolum kurulunca parca desenleri, kareleri bozmadan teker teker onceden hesaplanir (ilk kirilista takilma olmasin)
+if (Q.has('olc')) window.__kirik = { fragAl: (c, v) => fragAl(c, v), kesitMat, bColor, fragMat };   // v6.0: yalniz ?olc: kirik parcalari incelemek icin
 function fragIsit() {
   const gs = new Map(); for (const c of cubes) { const f = c.kind && MFILE[c.kind]; if (c.mesh && c.mesh.isMesh && !(f && PAR[f]) && !gs.has(c.mesh.geometry.uuid)) gs.set(c.mesh.geometry.uuid, c); }
   let i = 0; for (const c of gs.values()) for (let v = 0; v < 3; v++) setTimeout(() => { try { fragAl(c, v); } catch (e) {} }, 500 + 45 * i++);
@@ -1990,7 +2016,8 @@ function fragIsit() {
 function fragPieces(c, p, q, dir) {
   if (PARN > 170 || !c.mesh || !c.mesh.isMesh) return false;
   const L = fragAl(c); if (!L) return false;
-  const mat = fragMat(c.mesh.material), sc = c.mesh.scale, dd = dir.clone(); dd.y = Math.max(-0.1, Math.min(0.35, dd.y)); dd.normalize();
+  const sc = c.mesh.scale, dd = dir.clone(); dd.y = Math.max(-0.1, Math.min(0.35, dd.y)); dd.normalize();
+  const mat = kesitMat(c.mesh.material, L[0].k || 1, bColor(c));
   for (const it of L) {
     const m = new THREE.Mesh(it.geo, mat); m.castShadow = true; m.receiveShadow = true; m.scale.copy(sc); m.userData.shared = true;
     const off = it.c.clone().multiply(sc).applyQuaternion(q), grp = m; grp.position.copy(p).add(off); grp.quaternion.copy(q); scene.add(grp); PARN++;
