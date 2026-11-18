@@ -202,7 +202,7 @@ export function pilotKur(A) {
 
   // ---------- bolum kurulumu ----------
   let KATLAR = [], CERCEVE = null;
-  const KUYRUK = [], PATLAYAN = [], EK = [], HEDEF = [0, 0], TUM = [], LEKE = []; let GOLGE = false, D0 = 0;   // EK: pilotun kendi sahne nesneleri (ayaklar); her kurulumda silinir
+  const KUYRUK = [], PATLAYAN = [], EK = [], HEDEF = [0, 0], TUM = [], TUM0 = [], LEKE = []; let HM = null, HQ = null; let GOLGE = false, D0 = 0;   // EK: pilotun kendi sahne nesneleri (ayaklar); her kurulumda silinir
   function bilinmeyen() {
     A.bolumBasla(Y); A.g.state = 'bilgi';
     A.modal('<div class="rib r">Pilot ' + N + ' yok</div><p>Hazır pilotlar: ' + SIRA.join(', ') + '</p>' + SIRA.map((n) => '<button class="btn kck" data-p="' + n + '">Pilot ' + n + '</button>').join(''));
@@ -241,13 +241,23 @@ export function pilotKur(A) {
         ilk = false;
       });
       const ML = B.kaide === 'mor' ? morMat() : MLIST;   // v8.3
-      for (const [g, mm] of GL) { g.translate(ax, 0, az); for (const gr of g.groups) TUM.push([parcaAl(g, gr.start, gr.count), ML[Array.isArray(mm) ? mm[gr.materialIndex] : mm]]); }
+      const HED = B.hareket && ada === B.ada[0] ? TUM0 : TUM;   // v8.7: hareketli ana platformun gorunusu ayri mesh
+      for (const [g, mm] of GL) { g.translate(ax, 0, az); for (const gr of g.groups) HED.push([parcaAl(g, gr.start, gr.count), ML[Array.isArray(mm) ? mm[gr.materialIndex] : mm]]); }
       if (ada.katlar.length > 1) GOLGE = true;   // ust katlar alt kata golge dusurur
     }
     for (const k of B.kopru || []) { const q = kopruKur(k); A.PLS.push(q); }
     // butun adalar, ayaklar ve kopruler tek mesh: malzeme basina bir cizim (11 ayri mesh 40+ cizim yapiyordu)
     { const ML = [], L = []; for (const [g, m] of TUM) { let i = ML.indexOf(m); if (i < 0) { i = ML.length; ML.push(m); } L.push([g, i]); }
       const tm = new THREE.Mesh(birlestirMat(L), ML); tm.receiveShadow = true; tm.castShadow = GOLGE; A.scene.add(tm); EK.push(tm); TUM.length = 0; if (window.PLT_DBG) window.PLT_DBG.plat = tm; }
+    HM = null; HQ = null;
+    if (B.hareket && TUM0.length) {   // v8.7 (Adem 19 Kas: donen, asansor, kayan platform yoktu): ana platform hareketli
+      const ML = [], L = []; for (const [g, m] of TUM0) { let i = ML.indexOf(m); if (i < 0) { i = ML.length; ML.push(m); } L.push([g, i]); }
+      HM = new THREE.Mesh(birlestirMat(L), ML); HM.receiveShadow = true; A.scene.add(HM); EK.push(HM); TUM0.length = 0;
+      HQ = A.PLS[adaKat[B.ada[0].id][0]]; HQ.mesh = HM; const h = B.hareket;
+      if (h.tip === 'asansor') { HQ.asn = { a: h.a || 1.4, h: h.h || 0.85 }; HQ.ah = 0; HQ.yb = 0; }
+      else if (h.tip === 'kay') { HQ.kay = { a: h.a || 2, h: h.h || 0.8 }; HQ.ph = 0; HQ.cx = HQ.x; }
+      else if (h.tip === 'don') A.SIRK.mesh = HM;
+    }
     // ek ayaklarin dibinde yumusak temas golgesi (ana ayaginki gibi): hepsi tek mesh, tek cizim
     if (LEKE.length) {
       const gs = LEKE.map(([x, z, r]) => { const g = new THREE.PlaneGeometry(r * 2, r * 2); g.rotateX(-Pi / 2); g.translate(x, A.GY + 0.03, z); return [g.toNonIndexed(), 0]; });
@@ -295,10 +305,19 @@ export function pilotKur(A) {
     const ky = (B.kam && B.kam.yaw || 0) * D2R; let on = 0;
     for (const q of pts) { rmax = Math.max(rmax, Math.hypot(q[0], q[2])); on = Math.max(on, q[0] * Math.sin(ky) + q[2] * Math.cos(ky)); }
     { let s0 = 1e9, s1 = -1e9; const rx = Math.cos(ky), rz = -Math.sin(ky); for (const q of pts) { const d = q[0] * rx + q[2] * rz; s0 = Math.min(s0, d); s1 = Math.max(s1, d); } HEDEF[0] = rx * (s0 + s1) / 2; HEDEF[1] = rz * (s0 + s1) / 2; }   // kamera hedefi: yapinin ekrandaki yatay ortasi
+    if (B.hareket) {   // hareketin bütün yolu kameraya sigsin
+      const h = B.hareket, ek = [];
+      if (h.tip === 'asansor') for (const q of pts) ek.push([q[0], q[1] - (h.a || 1.4), q[2]]);
+      if (h.tip === 'kay') for (const q of pts) { ek.push([q[0] + (h.a || 2), q[1], q[2]]); ek.push([q[0] - (h.a || 2), q[1], q[2]]); }
+      if (h.tip === 'don') for (const q of pts) for (let i = 1; i < 8; i++) { const a = i * Pi / 4, c = Math.cos(a), s2 = Math.sin(a); ek.push([q[0] * c + q[2] * s2, q[1], -q[0] * s2 + q[2] * c]); }
+      for (const q of ek) { pts.push(q); rmax = Math.max(rmax, Math.hypot(q[0], q[2])); }
+      on = Math.max(on, ...ek.map((q) => q[0] * Math.sin(ky) + q[2] * Math.cos(ky)));
+    }
     CERCEVE = pts; A.R = rmax; A.RZ = on; A.RZB = rmax; A.TOPY = tepe;   // RZ: kameraya dogru en on nokta (top arabasinin yeri buna gore)
-    ortala(); A.TC.aimYaw = A.TC.yaw = Math.PI + A.CAZ;
+    ortala(); suAyak(); A.TC.aimYaw = A.TC.yaw = Math.PI + A.CAZ;
     if (A.TC.pad) { A.TC.pad.visible = false; if (A.TC.rim2) A.TC.rim2.visible = false; }   // yukseltilmis kamerada arabanin beyaz kaidesi gorunuyordu; normal bolumlerde gorunmez
     A.bolumBasla(Y);
+    if (B.hareket && B.hareket.tip === 'don') A.g.don = B.hareket.w || 0.4;   // v8.7: ilk atistan sonra yavasca doner
     ayakDibi();
     hoyuk();
     if (B.kaide === 'mor') elmasSus();
@@ -309,7 +328,7 @@ export function pilotKur(A) {
   function oturt() {
     const C = A.cubes.filter((c) => !c.gone && !c.out);
     if (DUVAR) {   // v8.6: 9-10 sira yuksek duvarlar (her derinlik sirasi ayri ince duvar) ilk uyanista esniyordu
-      A.world.solver.iterations = 24;
+      A.world.solver.iterations = 18;   // v8.7: 24 seri atista agirdi
       for (const c of C) { c.body.angularDamping = 0.45; c.body.linearDamping = 0.08; }
     }
     for (const c of C) c.body.wakeUp();
@@ -321,7 +340,7 @@ export function pilotKur(A) {
   function elmasSus() {
     const k = B.ada[0].katlar[0];
     if (!SUS) { SUS = new THREE.Mesh(new THREE.OctahedronGeometry(0.3, 0), MOR[2]); SUS.scale.set(1.25, 0.8, 0.35); }
-    SUS.position.set(B.ada[0].x || 0, k.ust - 0.58, (k.rz || k.r) + 0.17); A.scene.add(SUS);
+    SUS.position.set(B.ada[0].x || 0, k.ust - 0.58, (k.rz || k.r) + 0.17); (HM || A.scene).add(SUS);
   }
   // kamera hedefini yapinin ekrandaki yatay ortasina kaydir (perspektif yuzunden tek seferde olmaz: 3 tur)
   const VV = new THREE.Vector3();
@@ -334,7 +353,26 @@ export function pilotKur(A) {
       HEDEF[0] += Math.cos(ky) * xc * hw; HEDEF[1] += -Math.sin(ky) * xc * hw;
     }
   }
-  addEventListener('resize', () => { if (CERCEVE) ortala(); });
+  addEventListener('resize', () => { if (CERCEVE) { ortala(); suAyak(); } });
+  // v8.7 (Adem 19 Kas): denizde platform ayagi tabaniyla suyun ustunde 'emanet gibi' duruyordu: ayak suya gomulu, yalniz duz direk;
+  // suya girdigi yerde ince kopuk halkasi. Kumda/karda/cimende eski taban kalir. Su: fonun zemini 'su' ya da ayak resimdeki su cizgisinin otesinde.
+  let KOPUK = null;
+  function suAyak() {
+    const L = A.LEG; if (!L.visible || !B) return;
+    const az = B.ada[0].z || 0, su = A.fonZem() === 'su' || (A.ZW > -1e8 && A.ZW > az);
+    const [pole, collar, base, ring, cap] = L.children;
+    for (const o of [base, ring, cap]) if (o) o.visible = !su;
+    for (const o of EK) if (o.material === AYAKG) o.visible = !su;
+    if (su) {   // direk alt ucu su yuzunde (GY) kesilir
+      const top = pole.position.y + pole.scale.y / 2, bot = A.GY; pole.scale.y = Math.max(0.05, top - bot); pole.position.y = (top + bot) / 2; L.userData.bot = bot;
+      if (!KOPUK) {
+        const g = new THREE.PlaneGeometry(3.2, 3.2); g.rotateX(-Pi / 2);
+        KOPUK = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, map: A.canvasTex(128, 128, (x, w, h) => { const gr = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.17, 'rgba(255,255,255,0)'); gr.addColorStop(0.22, 'rgba(255,255,255,.95)'); gr.addColorStop(0.36, 'rgba(225,246,255,.55)'); gr.addColorStop(0.6, 'rgba(210,240,255,.15)'); gr.addColorStop(1, 'rgba(210,240,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, w, h); }) }));
+        KOPUK.renderOrder = 3;
+      }
+      KOPUK.position.set(L.position.x, A.GY + 0.02, L.position.z); A.scene.add(KOPUK);
+    } else if (KOPUK) A.scene.remove(KOPUK);
+  }
   // karli fonda ana ayagin dibindeki kar yigini 22 ayri kure (22 cizim): pilotta tek mesh'e birlestirilir (gorunus ayni)
   // v5.7 (Adem: kaide suya girmiyor, kuma batmiyor; daha gercekci dursun): pilotta ayak tabansiz, yerde duz kesilmis ince direkti (havada duruyordu).
   // Referans oyunlardaki gibi: ince govde + yere basan genis taban (oyunun kendi ayak tabani: kaide, halka, baslik) + tabanin altinda yumusak temas golgesi.
@@ -409,12 +447,14 @@ export function pilotKur(A) {
       for (const p of b.trail) { const kk = Math.min(1, p.m.position.distanceTo(kp) / D0); if (kk < 1) p.m.scale.multiplyScalar(kk); } }
   }
   function kare() {
+    if (HQ && HQ.kay) { A.LEG.position.x = HQ.cx; if (KOPUK) KOPUK.position.x = HQ.cx; }
     devrilt(); topOlcek();
     for (const c of PATLAYAN) { if (c.patladi) continue; if (c.out && !c.oncedus) { c.patladi = 1; buyukPatlama(c); } c.oncedus = c.gone; }
     if (!KUYRUK.length) return;
     const g = A.g;
-    while (KUYRUK.length) { const c = KUYRUK.pop(); if (c.out) continue; A.breakBlock(c, null, 10); }
-    A.wakeAll(); if (g) g.busy = Math.max(g.busy, 1);
+    let sp = null;
+    while (KUYRUK.length) { const c = KUYRUK.pop(); if (c.out) continue; sp = c.body.position.clone(); A.breakBlock(c, null, 10); }
+    A.wakeAll(sp); if (g) g.busy = Math.max(g.busy, 1);
   }
   function zemin(x, z) {   // dusen kirintilar icin: noktanin altindaki en yuksek kat yuzu
     let y = -1e9; for (const q of KATLAR) if (q.ust > y && icinde(q.P, x, z)) y = q.ust;
@@ -432,14 +472,14 @@ export function pilotKur(A) {
   function kaybet() { const g = A.g; A.sfx('lose'); kart('Toplar bitti!', true, '<h2>' + g.left + ' parça kaldı</h2><p>Deneme bölümü: ilerleme kaydedilmez.</p>'); }
 
   async function yukle() {
-    try { VERI = await (await fetch(DUVAR ? 'pilot/duvar.json?v=3' : RESIM ? 'pilot/resim.json?v=4' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
+    try { VERI = await (await fetch(DUVAR ? 'pilot/duvar.json?v=5' : RESIM ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
     if (DUVAR && VERI) SIRA = VERI.sira;
     B = VERI && VERI.bolumler && VERI.bolumler[N] || null;
     if (B) Y = { veri: 1, engel: [], ad: B.ad, top: B.top, make: () => [] };
     if (B && PS.yukle) await PS.yukle(B.parca.map((p) => p.t));   // v5.6: Blender bloklarinin model dosyalari
     window.PLT_DBG = { world: A.world, B, ad: (b) => { const c = A.cubes.find((q) => q.body === b); return c ? c.pid : null; } };
   }
-  return { get L() { return N || 1; }, get Y() { return Y; }, yukle, kur, kare, zemin, cerceve: () => CERCEVE, hedef: HEDEF, get genis() { return B && B.kam && B.kam.genis || 0.74; }, kazan, kaybet,
+  return { get ustY() { return B && B.ada ? B.ada[0].katlar[0].ust : 0; }, get L() { return N || 1; }, get Y() { return Y; }, yukle, kur, kare, zemin, cerceve: () => CERCEVE, hedef: HEDEF, get genis() { return B && B.kam && B.kam.genis || 0.74; }, kazan, kaybet,
     // top cikis noktasi: kameradan namluya giden isin uzerinde (ekranda yine namlunun agzinda gorunur), 'atis' orani kadar kameraya yakin.
     // Alcak namludan cikan top derin yapida on siradaki parcalara takiliyordu; boylece atis hatti oyuncunun bakis hattina yaklasir.
     cikis(st, kp) { const k = B && B.kam && B.kam.atis != null ? B.kam.atis : 0.5; D0 = st.distanceTo(kp); st.lerp(kp, k); } };

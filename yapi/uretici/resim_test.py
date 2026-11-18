@@ -37,15 +37,20 @@ async def main():
                 await pg.wait_for_function('window.YP && YP.g && window.__bsHazir', timeout=300000)
                 await pg.evaluate("() => { const l = document.getElementById('load'); if (l) l.click(); }")
                 await pg.wait_for_timeout(5000)
-                await pg.evaluate("() => { for (const i of ['nm', 'hint']) { const n = document.getElementById(i); if (n) n.style.display = 'none'; } }")
+                await pg.evaluate("() => { for (const i of ['hint']) { const n = document.getElementById(i); if (n) n.style.display = 'none'; } }")
                 await pg.screenshot(path=os.path.join(RAPOR, f'R{N}.jpg'), type='jpeg', quality=88, timeout=180000)
                 print(N, 'ekran', [h for h in hatalar if 'GPU' not in h][:5], flush=True); await ctx.close()
             elif KIP == 'fizik':
                 ctx, pg = await sayfa(b, f'test&tilki=0&pilot={N}', hatalar)
                 await pg.wait_for_function('window.YP && YP.g', timeout=300000)
                 r = await pg.evaluate(FIZIK + '(5.0)'); print(N, 'fizik', json.dumps(r, ensure_ascii=False), flush=True); await ctx.close()
-            elif KIP == 'tek':
+            elif KIP == 'hareket':   # hareketli platform: oyun 'atis yapildi' sayilir (donen platform doner), 8 sn oyun dongusu; dusen parca sayilir
                 ctx, pg = await sayfa(b, f'test&tilki=0&pilot={N}', hatalar)
+                await pg.wait_for_function('window.YP && YP.g', timeout=300000)
+                r = await pg.evaluate("(() => { const P = YP; P.g.armed = true; for (const c of P.cubes) c.body.wakeUp(); P.run(8, true); return { n: P.cubes.length, dusen: P.cubes.filter((c) => c.gone || c.out).length, don: P.g.don, tip: (P.PLS[0].asn ? 'asn' : P.PLS[0].kay ? 'kay' : '') }; })()")
+                print(N, 'hareket', json.dumps(r), [h for h in hatalar if 'GPU' not in h][:3], flush=True); await ctx.close()
+            elif KIP == 'tek':
+                ctx, pg = await sayfa(b, f'test&tilki=0&pilot={N}' + os.environ.get('EKQ', ''), hatalar)
                 await pg.wait_for_function('window.YP && YP.g', timeout=300000); await modul(pg)
                 r = await pg.evaluate('PT.botEkran(+(window.__MAX || 90), true)'); r.pop('iz', None); print(N, 'tek', json.dumps(r), flush=True); await ctx.close()
             elif KIP == 'bot':

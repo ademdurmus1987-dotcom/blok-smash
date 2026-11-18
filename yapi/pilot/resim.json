@@ -1039,7 +1039,8 @@
 "p": "ana.0",
 "id": "ksKalas141b"
 }
-]
+],
+"hareketTip": "sabit"
 },
 "32": {
 "ad": "Kale",
@@ -2332,7 +2333,12 @@
 "p": "ana.0",
 "id": "ksSandikK42b"
 }
-]
+],
+"hareket": {
+"tip": "don",
+"w": 0.35
+},
+"hareketTip": "don"
 },
 "33": {
 "ad": "Kuru Kafa",
@@ -3508,7 +3514,13 @@
 "km": 0.35,
 "kir": 4
 }
-]
+],
+"hareket": {
+"tip": "asansor",
+"a": 1.4,
+"h": 0.85
+},
+"hareketTip": "asansor"
 },
 "34": {
 "ad": "Deniz Feneri",
@@ -4255,7 +4267,13 @@
 "p": "ana.0",
 "id": "oyK29b"
 }
-]
+],
+"hareket": {
+"tip": "kay",
+"a": 1.8,
+"h": 0.7
+},
+"hareketTip": "kay"
 },
 "35": {
 "ad": "Foxi Tilki Başı",
@@ -4276,6 +4294,20 @@
 {
 "sekil": "kare",
 "r": 5.675,
+"rz": 2.5250000000000004,
+"ust": 0,
+"kal": 0.75
+}
+]
+},
+{
+"id": "yan",
+"x": 8.775,
+"z": 0,
+"katlar": [
+{
+"sekil": "kare",
+"r": 1.8,
 "rz": 2.5250000000000004,
 "ust": 0,
 "kal": 0.75
@@ -5268,8 +5300,153 @@
 "y": 9.336,
 "p": "ana.0",
 "id": "oyT41b"
+},
+{
+"t": "ksFici",
+"x": 7.997,
+"z": -1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici0-1-1"
+},
+{
+"t": "ksFici",
+"x": 7.997,
+"z": 0.0,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici0-10"
+},
+{
+"t": "ksFici",
+"x": 7.997,
+"z": 1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici0-11"
+},
+{
+"t": "ksFici",
+"x": 9.553,
+"z": -1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici01-1"
+},
+{
+"t": "ksFici",
+"x": 9.553,
+"z": 0.0,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici010"
+},
+{
+"t": "ksFici",
+"x": 9.553,
+"z": 1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici011"
+},
+{
+"t": "ksSandik",
+"x": 7.997,
+"z": -1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik1-1-1"
+},
+{
+"t": "ksSandik",
+"x": 7.997,
+"z": 0.0,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik1-10"
+},
+{
+"t": "ksSandik",
+"x": 7.997,
+"z": 1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik1-11"
+},
+{
+"t": "ksSandik",
+"x": 9.553,
+"z": -1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik11-1"
+},
+{
+"t": "ksSandik",
+"x": 9.553,
+"z": 0.0,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik110"
+},
+{
+"t": "ksSandik",
+"x": 9.553,
+"z": 1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik111"
+},
+{
+"t": "oyY",
+"x": 7.997,
+"z": -1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyY2-1-1"
+},
+{
+"t": "oyY",
+"x": 7.997,
+"z": 0.0,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyY2-10"
+},
+{
+"t": "oyY",
+"x": 7.997,
+"z": 1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyY2-11"
+},
+{
+"t": "oyN",
+"x": 9.553,
+"z": -1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyN21-1"
+},
+{
+"t": "oyN",
+"x": 9.553,
+"z": 0.0,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyN210"
+},
+{
+"t": "oyN",
+"x": 9.553,
+"z": 1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyN211"
 }
-]
+],
+"hareketTip": "iki"
 },
 "36": {
 "ad": "Taş Köprü",
@@ -6355,7 +6532,8 @@
 "p": "ana.0",
 "id": "ksSandik37b"
 }
-]
+],
+"hareketTip": "sabit"
 },
 "37": {
 "ad": "Mor Bayrakli Gemi",
@@ -7189,7 +7367,8 @@
 "p": "ana.0",
 "id": "oyP33b"
 }
-]
+],
+"hareketTip": "sabit"
 },
 "38": {
 "ad": "Kırmızı Kubbeli Kapı",
@@ -7705,7 +7884,12 @@
 "p": "ana.0",
 "id": "oyK19b"
 }
-]
+],
+"hareket": {
+"tip": "don",
+"w": 0.35
+},
+"hareketTip": "don"
 },
 "39": {
 "ad": "Yıldızlı Kale",
@@ -8428,7 +8612,13 @@
 "km": 0.35,
 "kir": 4
 }
-]
+],
+"hareket": {
+"tip": "asansor",
+"a": 1.4,
+"h": 0.85
+},
+"hareketTip": "asansor"
 },
 "40": {
 "ad": "Renkli Ağaç",
@@ -9208,7 +9398,13 @@
 "p": "ana.0",
 "id": "oyK31b"
 }
-]
+],
+"hareket": {
+"tip": "kay",
+"a": 1.8,
+"h": 0.7
+},
+"hareketTip": "kay"
 },
 "41": {
 "ad": "Pazar Tezgahı",
@@ -9229,6 +9425,20 @@
 {
 "sekil": "kare",
 "r": 5.675,
+"rz": 2.5250000000000004,
+"ust": 0,
+"kal": 0.75
+}
+]
+},
+{
+"id": "yan",
+"x": 8.775,
+"z": 0,
+"katlar": [
+{
+"sekil": "kare",
+"r": 1.8,
 "rz": 2.5250000000000004,
 "ust": 0,
 "kal": 0.75
@@ -9909,8 +10119,165 @@
 "y": 6.224,
 "p": "ana.0",
 "id": "oyB26b"
+},
+{
+"t": "ksSandik",
+"x": 7.997,
+"z": -1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksSandik0-1-1"
+},
+{
+"t": "ksSandik",
+"x": 7.997,
+"z": 0.0,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksSandik0-10"
+},
+{
+"t": "ksSandik",
+"x": 7.997,
+"z": 1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksSandik0-11"
+},
+{
+"t": "ksSandik",
+"x": 9.553,
+"z": -1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksSandik01-1"
+},
+{
+"t": "ksSandik",
+"x": 9.553,
+"z": 0.0,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksSandik010"
+},
+{
+"t": "ksSandik",
+"x": 9.553,
+"z": 1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksSandik011"
+},
+{
+"t": "oyK",
+"x": 7.997,
+"z": -1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyK1-1-1"
+},
+{
+"t": "oyK",
+"x": 7.997,
+"z": 0.0,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyK1-10"
+},
+{
+"t": "oyK",
+"x": 7.997,
+"z": 1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyK1-11"
+},
+{
+"t": "oyB",
+"x": 9.553,
+"z": -1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyB11-1"
+},
+{
+"t": "oyB",
+"x": 9.553,
+"z": 0.0,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyB110"
+},
+{
+"t": "oyB",
+"x": 9.553,
+"z": 1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyB111"
+},
+{
+"t": "ksTNT",
+"x": 7.997,
+"z": -1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksTNT2-1-1",
+"patlama": {
+"r": 4.5,
+"guc": 13
 }
-]
+},
+{
+"t": "ksTNT",
+"x": 7.997,
+"z": 0.0,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksTNT2-10",
+"patlama": {
+"r": 4.5,
+"guc": 13
+}
+},
+{
+"t": "ksTNT",
+"x": 7.997,
+"z": 1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksTNT2-11",
+"patlama": {
+"r": 4.5,
+"guc": 13
+}
+},
+{
+"t": "ksYildiz",
+"x": 9.553,
+"z": -1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksYildiz21-1"
+},
+{
+"t": "ksYildiz",
+"x": 9.553,
+"z": 0.0,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksYildiz210"
+},
+{
+"t": "ksYildiz",
+"x": 9.553,
+"z": 1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksYildiz211"
+}
+],
+"hareketTip": "iki"
 },
 "42": {
 "ad": "Taçlı Kemer",
@@ -10417,7 +10784,8 @@
 "p": "ana.0",
 "id": "oyA19b"
 }
-]
+],
+"hareketTip": "sabit"
 },
 "43": {
 "ad": "Yel Değirmeni",
@@ -11128,7 +11496,8 @@
 "p": "ana.0",
 "id": "ksDirek27b"
 }
-]
+],
+"hareketTip": "sabit"
 },
 "44": {
 "ad": "Roket",
@@ -11866,7 +12235,12 @@
 "p": "ana.0",
 "id": "oyK29b"
 }
-]
+],
+"hareket": {
+"tip": "don",
+"w": 0.35
+},
+"hareketTip": "don"
 },
 "45": {
 "ad": "Taş Robot",
@@ -12652,7 +13026,13 @@
 "p": "ana.0",
 "id": "oyK28b"
 }
-]
+],
+"hareket": {
+"tip": "asansor",
+"a": 1.4,
+"h": 0.85
+},
+"hareketTip": "asansor"
 },
 "46": {
 "ad": "Hazine Sandığı",
@@ -13532,7 +13912,13 @@
 "p": "ana.0",
 "id": "ksYildiz43a"
 }
-]
+],
+"hareket": {
+"tip": "kay",
+"a": 1.8,
+"h": 0.7
+},
+"hareketTip": "kay"
 },
 "47": {
 "ad": "Mavi Pagoda",
@@ -13553,6 +13939,20 @@
 {
 "sekil": "kare",
 "r": 7.225,
+"rz": 2.5250000000000004,
+"ust": 0,
+"kal": 0.75
+}
+]
+},
+{
+"id": "yan",
+"x": 10.325,
+"z": 0,
+"katlar": [
+{
+"sekil": "kare",
+"r": 1.8,
 "rz": 2.5250000000000004,
 "ust": 0,
 "kal": 0.75
@@ -14566,8 +14966,129 @@
 "y": 12.448,
 "p": "ana.0",
 "id": "ksYildiz41b"
+},
+{
+"t": "ksTas2",
+"x": 10.325,
+"z": -1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksTas200-1"
+},
+{
+"t": "ksTas2",
+"x": 10.325,
+"z": 0.0,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksTas2000"
+},
+{
+"t": "ksTas2",
+"x": 10.325,
+"z": 1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksTas2001"
+},
+{
+"t": "oyM",
+"x": 9.547,
+"z": -1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyM1-1-1"
+},
+{
+"t": "oyM",
+"x": 9.547,
+"z": 0.0,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyM1-10"
+},
+{
+"t": "oyM",
+"x": 9.547,
+"z": 1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyM1-11"
+},
+{
+"t": "oyS",
+"x": 11.103,
+"z": -1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyS11-1"
+},
+{
+"t": "oyS",
+"x": 11.103,
+"z": 0.0,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyS110"
+},
+{
+"t": "oyS",
+"x": 11.103,
+"z": 1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanoyS111"
+},
+{
+"t": "ksSandikM",
+"x": 9.547,
+"z": -1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksSandikM2-1-1"
+},
+{
+"t": "ksSandikM",
+"x": 9.547,
+"z": 0.0,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksSandikM2-10"
+},
+{
+"t": "ksSandikM",
+"x": 9.547,
+"z": 1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksSandikM2-11"
+},
+{
+"t": "ksSandikM",
+"x": 11.103,
+"z": -1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksSandikM21-1"
+},
+{
+"t": "ksSandikM",
+"x": 11.103,
+"z": 0.0,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksSandikM210"
+},
+{
+"t": "ksSandikM",
+"x": 11.103,
+"z": 1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanksSandikM211"
 }
-]
+],
+"hareketTip": "iki"
 },
 "48": {
 "ad": "Renkli Piramit",
@@ -15374,7 +15895,8 @@
 "p": "ana.0",
 "id": "oyA31b"
 }
-]
+],
+"hareketTip": "sabit"
 },
 "49": {
 "ad": "Uçak",
@@ -16412,7 +16934,8 @@
 "p": "ana.0",
 "id": "ksKalas142b"
 }
-]
+],
+"hareketTip": "sabit"
 },
 "50": {
 "ad": "Kobra Yılanı",
@@ -17288,7 +17811,12 @@
 "p": "ana.0",
 "id": "oyK35b"
 }
-]
+],
+"hareket": {
+"tip": "don",
+"w": 0.35
+},
+"hareketTip": "don"
 },
 "51": {
 "ad": "Taht ve Hazine",
@@ -18452,7 +18980,13 @@
 "p": "ana.0",
 "id": "oyA46b"
 }
-]
+],
+"hareket": {
+"tip": "asansor",
+"a": 1.4,
+"h": 0.85
+},
+"hareketTip": "asansor"
 },
 "52": {
 "ad": "Yelkenli Gemi",
@@ -19418,7 +19952,13 @@
 "p": "ana.0",
 "id": "ksKalas138b"
 }
-]
+],
+"hareket": {
+"tip": "kay",
+"a": 1.8,
+"h": 0.7
+},
+"hareketTip": "kay"
 },
 "53": {
 "ad": "Kurbağa",
@@ -19439,6 +19979,20 @@
 {
 "sekil": "kare",
 "r": 7.225,
+"rz": 2.5250000000000004,
+"ust": 0,
+"kal": 0.75
+}
+]
+},
+{
+"id": "yan",
+"x": 10.325,
+"z": 0,
+"katlar": [
+{
+"sekil": "kare",
+"r": 1.8,
 "rz": 2.5250000000000004,
 "ust": 0,
 "kal": 0.75
@@ -20311,8 +20865,153 @@
 "y": 7.78,
 "p": "ana.0",
 "id": "oyB36b"
+},
+{
+"t": "ksFici",
+"x": 9.547,
+"z": -1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici0-1-1"
+},
+{
+"t": "ksFici",
+"x": 9.547,
+"z": 0.0,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici0-10"
+},
+{
+"t": "ksFici",
+"x": 9.547,
+"z": 1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici0-11"
+},
+{
+"t": "ksFici",
+"x": 11.103,
+"z": -1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici01-1"
+},
+{
+"t": "ksFici",
+"x": 11.103,
+"z": 0.0,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici010"
+},
+{
+"t": "ksFici",
+"x": 11.103,
+"z": 1.556,
+"y": 0.0,
+"p": "yan.0",
+"id": "yanksFici011"
+},
+{
+"t": "ksSandik",
+"x": 9.547,
+"z": -1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik1-1-1"
+},
+{
+"t": "ksSandik",
+"x": 9.547,
+"z": 0.0,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik1-10"
+},
+{
+"t": "ksSandik",
+"x": 9.547,
+"z": 1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik1-11"
+},
+{
+"t": "ksSandik",
+"x": 11.103,
+"z": -1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik11-1"
+},
+{
+"t": "ksSandik",
+"x": 11.103,
+"z": 0.0,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik110"
+},
+{
+"t": "ksSandik",
+"x": 11.103,
+"z": 1.556,
+"y": 1.556,
+"p": "yan.0",
+"id": "yanksSandik111"
+},
+{
+"t": "oyY",
+"x": 9.547,
+"z": -1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyY2-1-1"
+},
+{
+"t": "oyY",
+"x": 9.547,
+"z": 0.0,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyY2-10"
+},
+{
+"t": "oyY",
+"x": 9.547,
+"z": 1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyY2-11"
+},
+{
+"t": "oyN",
+"x": 11.103,
+"z": -1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyN21-1"
+},
+{
+"t": "oyN",
+"x": 11.103,
+"z": 0.0,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyN210"
+},
+{
+"t": "oyN",
+"x": 11.103,
+"z": 1.556,
+"y": 3.112,
+"p": "yan.0",
+"id": "yanoyN211"
 }
-]
+],
+"hareketTip": "iki"
 },
 "54": {
 "ad": "Maden Arabası",
@@ -21332,7 +22031,8 @@
 "p": "ana.0",
 "id": "ksBuz38b"
 }
-]
+],
+"hareketTip": "sabit"
 }
 }
 }

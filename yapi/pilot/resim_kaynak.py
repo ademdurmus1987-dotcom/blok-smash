@@ -373,8 +373,10 @@ def maden():
     Y.sira(6.5, ('ksTNT', -1), ('ksBuz', 0), ('ksBuz', 1))
     return Y.bolum(44)
 
+import sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); from hareket import ekle   # v8.7 hareketli platformlar
 V = {'surum': 2, 'sira': list(range(31, 55)), 'bolumler': {31: gemi(), 32: kale(), 33: kafa(), 34: fener(), 35: tilki(), 36: kopru(),
      37: gemi2(), 38: kule2(), 39: kale2(), 40: agac(), 41: tezgah(), 42: tac(), 43: degirmen(), 44: roket(), 45: robot(), 46: sandik(), 47: pagoda(), 48: piramit2(),
      49: ucak(), 50: kobra(), 51: taht(), 52: yelkenli(), 53: kurbaga(), 54: maden()}}
+for _n, _b in V['bolumler'].items(): ekle(int(_n), _b)
 json.dump(V, open(OUT, 'w'), ensure_ascii=False, indent=0)
 for k, b in V['bolumler'].items(): print(k, b['ad'], len(b['parca']), 'parca, kaide yarim genislik', b['ada'][0]['katlar'][0]['r'])

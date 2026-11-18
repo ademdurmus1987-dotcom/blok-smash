@@ -37,7 +37,7 @@ const SKEY = K ? 'blokpop_korsan_v1' : 'blokpop_yapi_v3';
 // PILOT v5.4 (16 Kas 2026): ?pilot=N yeni bolum bicimi denemesi (yapi/pilot.js, pilot_sekil.js, pilot/pilot.json). Pilot kipte kayda HIC yazilmaz.
 // Geri donus: o uc dosya/klasor ve bu dosyadaki 'PILOT' isaretli satirlar silinir; eski oyun aynen kalir.
 const PILOTQ = !K && Q.has('pilot');   // PILOT
-const PLTM = PILOTQ ? await import('./pilot.js?v=17') : null; let PLT = null;   // PILOT
+const PLTM = PILOTQ ? await import('./pilot.js?v=18') : null; let PLT = null;   // PILOT
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -1769,7 +1769,11 @@ function denge(dt) {
   }
 }
 function syncMeshes() { for (const c of cubes) { if (c.landed === true) continue; c.mesh.position.copy(c.body.position); c.mesh.quaternion.copy(c.body.quaternion); } }
-function wakeAll() { for (const c of cubes) if (!c.out) c.body.wakeUp(); }
+function wakeAll(p) {   // v8.7: buyuk pilot yapilarda (120+ parca) her vurusta butun parcalari uyandirmak seri atista oyunu yavaslatiyordu:
+  // yalniz vurulan yerin 7 birim yatay cevresi (o sutunun ustundekiler dahil) uyanir; uzaktakiler hareket eden parcaya degince kendiliginden uyanir
+  if (p && PLT && cubes.length > 120) { for (const c of cubes) if (!c.out && Math.hypot(c.body.position.x - p.x, c.body.position.z - p.z) < 7) c.body.wakeUp(); return; }
+  for (const c of cubes) if (!c.out) c.body.wakeUp();
+}
 
 // ---------------- Pofi ----------------
 // live_pofi.glb (Tripo modeli); govde rengi seviyeye gore boyanir. Kosma klibinin bir karesinde durur, nefes alir, atista hortumu kalkar.
@@ -2011,6 +2015,8 @@ const BR = 0.47;   // v6.8: (Adem) biraz kucultuldu. v6.5: 3B top mermisi net go
 const BALLGEO = new THREE.SphereGeometry(BR, 32, 20);
 const TRAILGEO = new THREE.SphereGeometry(0.16, 12, 8);
 // Blok Smash 1. asama (Adem 9 Kas, Royal Smash referansi): top 62 yerine 95 birim/sn; kutle 5 yerine 3.3, carpma itisi (kutle x hiz) ayni kalsin diye.
+const DUZ = Q.get('duz') !== '0';
+world.addEventListener('preStep', () => { for (const b of balls) if (b.duz && !b.hit && b.t < 1.1) b.body.force.y -= b.body.mass * world.gravity.y; });   /* iskalayan top 1.1 sn sonra duser */   // v8.7: duz atis (yercekimi carpmaya kadar dengelenir)
 function shoot(target) {
   if (!g || g.state !== 'play') return false;
   if (g.kuyruk && g.kuyruk.length) return ggAtis(target);
@@ -2028,13 +2034,14 @@ function shoot(target) {
   let T = Math.max(0.08, dv.length() / 95);   // v6.10: (Adem) mermi daha da hizli (v6.9: 44)   // v6.5: biraz yavas, top gozle takip edilir   // v6.1: her yone ayni hiz (~44 birim/sn): yukari da asagi da ayni guc
   // v6.11: (Adem) alt siralara atis kavise girip yavasliyordu, karli koyde kare platformun kenarina takilip hic gitmiyordu:
   // mermi platforma carpmaz (carpisma filtresi), her hedefe duz ve ayni hizla gider
-  const v = new CANNON.Vec3(dv.x / T, dv.y / T - 0.5 * gy * T, dv.z / T);
+  // v8.7 (Adem 19 Kas: kulenin ustune atista top agir gidiyordu): top ilk carpmaya kadar yercekimsiz, duz ve sabit hizla gider (?duz=0 eski yay)
+  const v = DUZ ? new CANNON.Vec3(dv.x / T, dv.y / T, dv.z / T) : new CANNON.Vec3(dv.x / T, dv.y / T - 0.5 * gy * T, dv.z / T);
   const col = PF.col || '#3d9bff';
   const body = new CANNON.Body({ mass: 3.3, material: PM.ball, linearDamping: 0.01, allowSleep: false }); body.addShape(new CANNON.Sphere(BR)); body.collisionFilterGroup = 2; body.collisionFilterMask = ~4;
   body.position.set(st.x, st.y, st.z); body.velocity.copy(v); world.addBody(body);
   const tg = topGeo(), mesh = tg ? new THREE.Mesh(tg, topMat()) : new THREE.Mesh(BALLGEO, new THREE.MeshStandardMaterial({ color: col, roughness: 0.15, metalness: 0.1, emissive: col, emissiveIntensity: 0.45 })); mesh.castShadow = true; scene.add(mesh);
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#ffe6ff', transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false })); halo.scale.setScalar(BR * 4.2); halo.visible = false; mesh.add(halo);
-  const b = { body, mesh, halo, t: 0, hit: false, trail: [], col, dir: new THREE.Vector3(v.x, v.y, v.z).normalize(), sp: Math.hypot(v.x, v.y, v.z) };
+  const b = { body, mesh, halo, t: 0, hit: false, trail: [], col, dir: new THREE.Vector3(v.x, v.y, v.z).normalize(), sp: Math.hypot(v.x, v.y, v.z), duz: DUZ };
   body.angularVelocity.set(-v.z * 0.9, 0, v.x * 0.9);   // ucarken one dogru donsun
   // ilk kupe carpista vurus dalgasi: carpisma adimin icinde gelir, itis adimdan sonra yapilir (b.blast)
   body.addEventListener('collide', (e) => { if (b.hit) return; const c = CUBE_OF.get(e.body); if (!c) return; b.hit = true; b.hc = c; b.blast = new THREE.Vector3().copy(body.position); b.slow = true; YUM.push([b.blast.clone(), b]); impact(b, e); });
@@ -3485,20 +3492,25 @@ function fit() {
   for (; d < 120; d += 0.25) {
     let lo = -10, hi = TOPY + 10;
     // v3.19: resim fonda platform ayagi (0, GY, 0) resimdeki bos yuvarlak zeminin ortasina oturur (ekranda sabit nokta); kamera yapi sigana kadar geri cekilir
-    if (ayak != null) { for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); if (yOf([0, GY, 0]) > ayak) lo = ty; else hi = ty; } }
+    if (PC) { const hd = -0.7 + (TC.ustF != null ? TC.ustF : 0.24) + 0.012;   /* v8.7 (Adem 19 Kas): top arabasinin yeri sabit; kamera yukari/asagi kayar, platform yuzeyi arabanin hemen ustunde */
+      for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); if (yOf([PLT.hedef[0], PLT.ustY, RZ]) > hd) lo = ty; else hi = ty; } }
+    else if (ayak != null) { for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); if (yOf([0, GY, 0]) > ayak) lo = ty; else hi = ty; } }
     else for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); const top = Math.max(...tops.map(yOf)), bot = Math.min(...bots.map(yOf)); if ((top + bot) / 2 > 0.13) lo = ty; else hi = ty; }
     place(d, (lo + hi) / 2);
     const top = Math.max(...tops.map(yOf)), bot = Math.min(...bots.map(yOf)), side = Math.max(...tops.concat(bots).map((p) => Math.abs(V.set(p[0], p[1], p[2]).project(cam).x)));
-    if (top < 0.74 && (ayak != null || bot > -0.46) && side < (PC ? PLT.genis : 0.92)) break;   /* PILOT: yapi ekran genisliginin ~%70'i */   // v6.5: yapi ekrani daha cok doldurur
+    if (top < 0.74 && (PC || ayak != null || bot > -0.46) && side < (PC ? PLT.genis : 0.92)) break;   /* PILOT: yapi ekran genisliginin ~%70'i */   // v6.5: yapi ekrani daha cok doldurur
   }
   // top arabasi
   if (TC.gun) {
     const dH = Math.hypot(cam.position.x, cam.position.z), dc = Math.max(2.8, Math.min(dH - (reach + CGAP), (dH - reach) / 3.6));   // v6.29: (Adem) gozle gorulen aralik her bolumde ayni: kameranin platforma uzakligi arabaya uzakliginin 3.6 kati
     const k = (0.4 * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
-    let lo = GY - 30, hi = cam.position.y; const tipY = Math.max(-0.8, Math.min(-0.6, V.set(0, GY + 0.3, 2).project(cam).y - 0.16));   // v6.29: (Adem) namlu ucu ekranda platform ayaginin altinda kalir, ayagin ustune binmez
+    let lo = GY - 30, hi = cam.position.y; const tipY = PC ? -0.7   /* v8.7 PILOT: top arabasi her bolumde ekranda ayni yerde; platform ona gore (kamera) hizalanir */
+      : Math.max(-0.8, Math.min(-0.6, V.set(0, GY + 0.3, 2).project(cam).y - 0.16));   // v6.29: (Adem) namlu ucu ekranda platform ayaginin altinda kalir, ayagin ustune binmez
+    const UST = new THREE.Box3(), ustY = () => { UST.setFromObject(TC.gun); let m = -9; for (const x of [UST.min.x, UST.max.x]) for (const z of [UST.min.z, UST.max.z]) m = Math.max(m, V.set(x, UST.max.y, z).project(cam).y); return m; };
     for (let it = 0; it < 30; it++) { const by = (lo + hi) / 2; TC.holder.position.set(cam.position.x - Math.sin(CAZ) * dc, by, cam.position.z - Math.cos(CAZ) * dc); TC.holder.rotation.y = Math.PI + CAZ; TC.holder.updateMatrixWorld(true);
-      const m = trunkTip(V); if (m.project(cam).y > tipY) hi = by; else lo = by; }
-    TC.by = (lo + hi) / 2; TC.holder.position.y = TC.by;
+      const yy = trunkTip(V).project(cam).y; if (yy > tipY) hi = by; else lo = by; }
+    TC.by = (lo + hi) / 2; TC.holder.position.y = TC.by; TC.holder.updateMatrixWorld(true);
+    if (PC) TC.ustF = ustY() - tipY;   // v8.7: arabanin ekrandaki ust ucu, namlu ucunun ne kadar ustunde (kamera hizalamasi icin)
     const ph = Math.max(0.2, (TC.by - GY) / TC.k); TC.pad.scale.y = ph; TC.pad.position.y = -ph / 2; TC.rim2.position.y = -ph + 0.12;
   }
   ZW = -1e9;   // v3.21: resimdeki su cizgisinin zemindeki yeri (kameradan resimdeki o noktaya isin, zemin duzlemiyle kesisim)
@@ -3514,7 +3526,8 @@ let VS = 1, RS = 1, TS = 1, HS = 0, FP = 0;   // ses carpani, perde carpani, zam
 const MAT_P = { tahta: { v: 1, r: 1, w: 1 }, tas: { v: 1.15, r: 0.88, w: 1.2 }, metal: { v: 0.95, r: 1.06, w: 1.15 }, cam: { v: 0.9, r: 1.14, w: 0.8 }, buz: { v: 0.9, r: 1.1, w: 0.85 } };
 const MAT_H = { tahta: (s) => [Math.round(30 + 24 * s)], tas: (s) => [Math.round(40 + 36 * s)], metal: (s) => [34, 26, Math.round(30 + 20 * s)], cam: (s) => [30, 20, 30, 20, Math.round(26 + 12 * s)], buz: (s) => [28, 18, Math.round(28 + 14 * s)] };
 function withS(s, rs, fn) { const a = VS, b = RS; VS = s; RS = rs; try { fn(); } finally { VS = a; RS = b; } }
-function hitstop(sec) { HS = Math.max(HS, sec); TS = 0.12; }
+let HST = -9;
+function hitstop(sec) { const n = performance.now() / 1000; if (n - HST < 0.6) return; HST = n; HS = Math.max(HS, sec); TS = 0.12; }   // v8.7 (Adem: ust uste atista oyun yavasliyordu): vurus donmasi en fazla 0.6 sn'de bir
 function darbeHaptik(kind, s) { if (s < 0.35) return; buzz((MAT_H[matSnd(kind)] || MAT_H.tahta)(Math.min(1.4, s)), 70); }
 // bir kupun baska bir seye carpma sesi: yalniz yeterince sert ve sik degil; kirilacak cam/kavanoz kendi kirilma sesini cikarir
 function darbeSesi(c, vn) {
@@ -3541,7 +3554,7 @@ function ekranSars() {
 // top kupe carpinca: malzemeye gore agirlik, ses, titresim, kisa donma, gorus acisi vurusu
 function impactK(b, e) {
   const c = b.hc, vn = e && e.contact ? Math.abs(e.contact.getImpactVelocityAlongNormal()) : 45, mp = MAT_P[matSnd(c ? c.kind : null)] || MAT_P.tahta, s = Math.min(1.4, vn / 70) * mp.w;
-  wakeAll(); g.busy = 2.5;
+  wakeAll(b.body.position); g.busy = 2.5;
   const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); HIS.vurus(p, b.dir, malzOf(c && c.kind), s);
   withS(Math.min(1.3, 0.75 + 0.3 * s), 1.04 - 0.1 * Math.min(1, s), () => sfx('hit')); if (KLANKKUP && c && MATSND[c.kind] === 'metal') klank(Math.min(1.2, 0.6 + 0.4 * s), 1150);
   if (VRA()) { VR.vurus(p, s); hitstop(Math.min(0.085, 0.05 + 0.03 * s)); }   // v7.0: her vurusta kisa donma + sok halkasi + bum (ekran sarsintisi eklenmez)
@@ -3676,7 +3689,7 @@ world.addEventListener('postStep', () => {
 function pilotBag() {
   return { THREE, CANNON, scene, world, PM, platBody, GB, SIRK, LEG, legBoy, PLS, cubes, balls, S, KAIDE, SEK, KIND, SEKSH, MATSND, KIRILGAN, FLOAT, ORNEK, ren, cam, TC, Q, $, canvasTex, ENV,
     parcaKur, bolumBasla, fit, breakBlock, wakeAll, start, modal, closeModal, sfx, buzz, kamera(p, a) { CPITCH = p; CAZ = a; }, get CAZ() { return CAZ; },
-    HAVUZ, setLeg, zoneAt, fonAd: () => (fonOf(LV) || {}).f || '', get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
+    HAVUZ, setLeg, zoneAt, fonAd: () => (fonOf(LV) || {}).f || '', fonZem: () => (fonOf(LV) || {}).zem || '', get ZW() { return ZW; }, get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
 }
 if (PLTM) PLT = PLTM.pilotKur(pilotBag());   // PILOT
 const L0 = PLT ? PLT.L /* PILOT */ : Math.min(K ? 1e9 : TOPLAM(), Math.floor(+(Q.get('sv') || SV.L || 1)) || 1), modelReady = bolumYukle(L0).then(() => modelYukle(gerekliModel(L0)));   // v5.0: once bolum parcasi   // v4.7: acilista yalniz kayitli bolumun modelleri

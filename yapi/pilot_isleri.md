@@ -110,3 +110,8 @@
   Fizik (yalniz duvar bolumleri, pilot.js): fici carpismasi kutu (`kutu:1`), alt 3 sira tas normal agirlik, kalas x2.5; cozucu 24 tur, donme sonumu 0.45.
   5 sn fizik: 54/54 dusen 0, kayma <3 cm. Bot (tohum 12345): 54/54 kazandi, 24-87 atis; top = atis x1.15 + 2 (30-103).
   Karsilastirma: `yapi/uretici/rapor/resim/karsilastirma3_1..9.jpg`.
+- v8.7 (19 Kas gece, Adem): (1) top arabasi yerinde (ekranda namlu ucu -0.7); pilotta kamera yukari/asagi kayar, platform yuzeyi arabanin ust ucunun hemen ustunde (oyun.js fit, `TC.ustF`).
+  (2) top ilk carpmaya kadar yercekimsiz, duz ve sabit hizla (oyun.js `DUZ`, `?duz=0` eski yay; iskalayan top 1.1 sn sonra duser): uzun kulede yukari atista guc kaybi yoktu.
+  (3) seri atista yavaslama: vurus donmasi (hitstop) en fazla 0.6 sn'de bir; pilotta 120+ parcali yapida her vurusta yalniz 7 birim cevre uyanir (wakeAll(p)); duvar cozucu turu 24 -> 18.
+  (4) denizde ayak tabansiz duz direk (pilot.js `suAyak`). (5) hareketli platformlar: `B.hareket` {tip: don|asansor|kay} ana platformda (gorunus ayri mesh, kamera hareket yolunu kapsar);
+  `pilot/hareket.py` 31-108'e dagitir: (n-31)%6 -> sabit, donen, asansor, kayan, iki platform (yanda 2x3x3 kucuk yapi), sabit.
