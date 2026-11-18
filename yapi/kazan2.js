@@ -40,7 +40,7 @@ export function yazi(txt, tema = 'altin', o = {}) {
   for (let i = dz; i >= 1; i--) { const c = isle(T.e, T.d, i / dz); s += tx(`fill="${c}" stroke="${i === dz ? T.d : c}" stroke-width="${fs * kal}" stroke-linejoin="round" transform="translate(0 ${i})"`); }
   s += tx(`fill="${T.d}" stroke="${T.d}" stroke-width="${fs * kal}" stroke-linejoin="round"`);
   s += tx(`fill="${T.e}" stroke="url(#${id}k)" stroke-width="${fs * (kal - 0.1)}" stroke-linejoin="round"`);
-  s += `<g filter="url(#${id}f)">${tx(`fill="url(#${id}g)"`)}</g>`;
+  s += tx(`fill="url(#${id}g)"`);   // v8.1: feSpecularLighting filtresi kaldirildi (telefonda her karede yeniden hesaplaniyor, donma yapiyordu)
   s += `<g clip-path="url(#${id}h)">${tx(`fill="url(#${id}u)"`)}</g>`;
   s += `<g clip-path="url(#${id}c)"><rect class="par" x="0" y="-20" width="${w * 0.3}" height="${h}" fill="url(#${id}p)" transform="skewX(-22)"/></g>`;
   if (!o.sade) for (let i = 0; i < 3; i++) { const x = w * (0.18 + i * 0.32) + (Math.random() - 0.5) * w * 0.1, y = ky - fs * (0.55 + Math.random() * 0.3); s += `<use href="#${id}y" class="pir" fill="#fff" style="animation-delay:${(i * 0.9 + Math.random() * 0.5).toFixed(2)}s;transform-origin:${x}px ${y}px" transform="translate(${x} ${y}) scale(1.6)"/>`; }
@@ -50,19 +50,20 @@ const yaziDegis = (svg, t) => svg.querySelectorAll('text').forEach((e) => { e.te
 
 // ---------- parcacik: konfeti, havai fisek, isilti, gece gokyuzu ----------
 function fxBasla(cv, ortam, ses) {
-  const c = cv.getContext('2d'), P = [], d = Math.min(2, devicePixelRatio || 1); let w, h, dur = false;
+  const c = cv.getContext('2d'), P = [], d = Math.min(1.5, devicePixelRatio || 1), MAXP = 420; let w, h, dur = false;   // v8.1: daha hafif (yogunluk en cok 1,5, en cok 420 parcacik)
   w = cv.width = cv.clientWidth * d; h = cv.height = cv.clientHeight * d;
   const R = ['#ffd34a', '#ff5470', '#3fd45a', '#2fa8ff', '#ff9a2e', '#c86bff', '#fff'];
   const yildizCiz = (z) => { c.beginPath(); for (let i = 0; i < 8; i++) { const r = i % 2 ? z * 0.28 : z, a = i * Math.PI / 4; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.fill(); };
-  const fisek = (x, y) => { const cc = R[Math.random() * R.length | 0], c2 = R[Math.random() * R.length | 0]; for (let i = 0; i < 80; i++) { const a = i / 80 * 6.28, v = (2.5 + Math.random() * 4) * d; P.push({ x: w * x, y: h * y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.05 * d, s: 0.97, r: 0, vr: 0, z: 2.6 * d, c: i % 2 ? cc : c2, k: 'o', t: 80 + Math.random() * 25 }); } if (ses) ses(); };
+  const fisek = (x, y) => { const cc = R[Math.random() * R.length | 0], c2 = R[Math.random() * R.length | 0]; for (let i = 0; i < 48; i++) { const a = i / 48 * 6.28, v = (2.5 + Math.random() * 4) * d; P.push({ x: w * x, y: h * y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.05 * d, s: 0.97, r: 0, vr: 0, z: 2.6 * d, c: i % 2 ? cc : c2, k: 'o', t: 80 + Math.random() * 25 }); } if (ses) ses(); };
   function kare() {
     if (dur) return; requestAnimationFrame(kare); c.clearRect(0, 0, w, h);
     if (ortam) {
-      if (Math.random() < 0.3) P.push({ x: Math.random() * w, y: Math.random() * h * 0.7, vx: 0, vy: 0, g: 0, s: 1, r: 0, vr: 0.02, z: (1.5 + Math.random() * 4) * d, c: '#fff8d0', k: 'y', t: 70, T: 70 });
-      if (Math.random() < 0.025) { const x = 0.1 + Math.random() * 0.8, y = 0.08 + Math.random() * 0.35, cc = R[Math.random() * R.length | 0]; for (let i = 0; i < 70; i++) { const a = i / 70 * 6.28, v = (2 + Math.random() * 3.5) * d; P.push({ x: w * x, y: h * y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.04 * d, s: 0.97, r: 0, vr: 0, z: 2.2 * d, c: cc, k: 'o', t: 90 }); } }
+      if (P.length < MAXP && Math.random() < 0.12) P.push({ x: Math.random() * w, y: Math.random() * h * 0.7, vx: 0, vy: 0, g: 0, s: 1, r: 0, vr: 0.02, z: (1.5 + Math.random() * 4) * d, c: '#fff8d0', k: 'y', t: 70, T: 70 });
+      if (P.length < MAXP && Math.random() < 0.012) { const x = 0.1 + Math.random() * 0.8, y = 0.08 + Math.random() * 0.35, cc = R[Math.random() * R.length | 0]; for (let i = 0; i < 40; i++) { const a = i / 40 * 6.28, v = (2 + Math.random() * 3.5) * d; P.push({ x: w * x, y: h * y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.04 * d, s: 0.97, r: 0, vr: 0, z: 2.2 * d, c: cc, k: 'o', t: 90 }); } }
     }
     for (let i = P.length - 1; i >= 0; i--) {
       const p = P[i]; p.vy += p.g; p.vx *= p.s; p.vy *= p.s; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.t--; if (p.t <= 0 || p.y > h + 60) { P.splice(i, 1); continue; }
+      if (P.length > MAXP && i < P.length - MAXP) { P.splice(i, 1); continue; }
       c.save(); c.translate(p.x, p.y); c.rotate(p.r);
       if (p.k === 'y') { c.globalAlpha = Math.sin(p.t / p.T * Math.PI); c.fillStyle = p.c; yildizCiz(p.z); }
       else if (p.k === 'p') { c.globalAlpha = Math.min(1, p.t / 20); c.scale(Math.cos(p.r * 2), 1); c.drawImage(COIN, -p.z, -p.z, p.z * 2, p.z * 2); }
@@ -84,9 +85,10 @@ export function kazanSahne(KZ, d, o) {
   // ---- sesler (oyunun ana ses zinciri uzerinden; ses kapaliysa o.sesAg() null doner) ----
   const ton = (f, t, v, tip = 'triangle', gec = 0, f1) => { const S = o.sesAg(); if (!S) return; const n = S.AC.currentTime + gec, os = S.AC.createOscillator(), g = S.AC.createGain(); os.type = tip; os.frequency.setValueAtTime(f, n); if (f1) os.frequency.exponentialRampToValueAtTime(f1, n + t); g.gain.setValueAtTime(0, n); g.gain.linearRampToValueAtTime(v, n + 0.01); g.gain.exponentialRampToValueAtTime(0.001, n + t); os.connect(g); g.connect(S.out); os.start(n); os.stop(n + t + 0.05); };
   const gur = (t, v, fq, gec = 0, tip = 'bandpass') => { const S = o.sesAg(); if (!S) return; const A = S.AC, n = A.currentTime + gec, len = A.sampleRate * t | 0, b = A.createBuffer(1, len, A.sampleRate), dd = b.getChannelData(0); for (let i = 0; i < len; i++) dd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2); const s = A.createBufferSource(); s.buffer = b; const f = A.createBiquadFilter(); f.type = tip; f.frequency.value = fq; const g = A.createGain(); g.gain.value = v; s.connect(f); f.connect(g); g.connect(S.out); s.start(n); };
-  const fanfar = () => { [[523, 0], [659, 0.11], [784, 0.22], [1047, 0.34]].forEach(([f, g]) => { ton(f, 0.45, 0.2, 'square', g); ton(f * 2, 0.45, 0.07, 'triangle', g); }); [523, 659, 784, 1047, 1319].forEach((f) => ton(f, 1.4, 0.1, 'sawtooth', 0.5)); ton(131, 1.2, 0.4, 'sine', 0.5); };
-  const yildizSes = (i) => { ton(880 * Math.pow(1.26, i), 0.4, 0.3, 'triangle'); ton(1760 * Math.pow(1.26, i), 0.6, 0.12, 'sine', 0.03); gur(0.2, 0.3, 5000); };
-  const gum = () => { ton(110, 0.4, 0.8, 'sine', 0, 40); gur(0.25, 0.6, 300, 0, 'lowpass'); };
+  // v8.1 (Adem 18 Kas: yildiz sesi kulagi rahatsiz ediyor): kare/testere dalga yerine yumusak ucgen/sinus, tiz gurultu yok, ses kisik
+  const fanfar = () => { [[523, 0], [659, 0.11], [784, 0.22], [1047, 0.34]].forEach(([f, g]) => { ton(f, 0.45, 0.13, 'triangle', g); ton(f * 2, 0.45, 0.03, 'sine', g); }); [523, 659, 784, 1047].forEach((f) => ton(f, 1.2, 0.045, 'sine', 0.5)); ton(131, 1.2, 0.4, 'sine', 0.5); };
+  const yildizSes = (i) => { const f = [523.25, 659.25, 783.99][i] || 784; ton(f, 0.55, 0.11, 'sine'); ton(f * 1.5, 0.4, 0.03, 'sine', 0.03); };   // yumusak do-mi-sol zili
+  const gum = (v = 0.8) => { ton(110, 0.4, v, 'sine', 0, 40); gur(0.25, v * 0.75, 300, 0, 'lowpass'); };
 
   const st = d.st, BAS = st >= 3 ? 'MÜKEMMEL!' : st === 2 ? 'SÜPER!' : 'TEBRİKLER!';
   const H = o.HEDEF, sn = Math.min(o.sn, H), sandik = o.sn >= H ? 'Hazır!' : sn + ' / ' + H;
@@ -107,27 +109,27 @@ export function kazanSahne(KZ, d, o) {
   const ic = $('.k2-ic');
   // ekrana sigdir
   { const ak = [...ic.children], ust = Math.min(...ak.map((c) => c.offsetTop)), alt = Math.max(...ak.map((c) => c.offsetTop + c.offsetHeight)), need = alt - ust + 40, z = Math.min(1, KZ.clientHeight / need); if (z < 1) ic.style.zoom = z.toFixed(3); }
-  const arka = fxBasla($('.k2-arka'), true), fx = fxBasla($('.k2-fx'), false, () => gur(0.4, 0.25, 2500));
+  const arka = fxBasla($('.k2-arka'), true), fx = fxBasla($('.k2-fx'), false, () => gur(0.35, 0.1, 1200, 0, 'lowpass'));
   const sars = () => { KZ.classList.remove('k2-sars'); void KZ.offsetWidth; KZ.classList.add('k2-sars'); };
   const merkez = (el) => { const r = el.getBoundingClientRect(), q = KZ.getBoundingClientRect(); return [r.left + r.width / 2 - q.left, r.top + r.height / 2 - q.top]; };
   const goster = (el, ms) => sonra(ms, () => { if (!el) return; el.style.opacity = 1; el.animate([{ transform: 'translateY(30px) scale(.6)', opacity: 0 }, { transform: 'scale(1.06)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], { duration: 420, easing: 'ease-out' }); });
 
-  sonra(80, () => { $('.k2-flas').classList.add('on'); gur(0.6, 0.3, 1400); });
+  sonra(80, () => { $('.k2-flas').classList.add('on'); gur(0.5, 0.12, 900, 0, 'lowpass'); });
   [...ic.querySelectorAll('.k2-yil')].forEach((y, i) => sonra(250 + i * 460, () => {
     y.style.opacity = 1; y.animate([{ transform: 'translateY(-70vh) scale(2.6) rotate(-220deg)' }, { transform: 'scale(1.3)', offset: 0.75 }, { transform: 'none' }], { duration: 540, easing: 'cubic-bezier(.5,0,.5,1)', fill: 'forwards' });
     sonra(520, () => {
-      if (i < st) { y.classList.add('dolu'); yildizSes(i); o.buzz(65); const [x, yy] = merkez(y); fx.isilti(x, yy, 46); const hk = document.createElement('div'); hk.className = 'k2-halka'; hk.style.left = x + 'px'; hk.style.top = yy + 'px'; KZ.appendChild(hk); setTimeout(() => hk.remove(), 650); gum(); sars(); }
-      else ton(220, 0.2, 0.15, 'sine');
+      if (i < st) { y.classList.add('dolu'); yildizSes(i); o.buzz(40); const [x, yy] = merkez(y); fx.isilti(x, yy, 22); const hk = document.createElement('div'); hk.className = 'k2-halka'; hk.style.left = x + 'px'; hk.style.top = yy + 'px'; KZ.appendChild(hk); setTimeout(() => hk.remove(), 650); gum(0.3); sars(); }
+      else ton(220, 0.2, 0.08, 'sine');
     });
   }));
-  sonra(1750, () => { const b = $('.k2-bas'); b.classList.add('carp'); gum(); fanfar(); o.buzz([50, 30, 50]); sars(); fx.fisek(0.2, 0.25); fx.konfeti(180); if (st >= 3) fx.yagmur(24); sonra(560, () => { b.classList.remove('carp'); b.classList.add('salin'); }); });
+  sonra(1750, () => { const b = $('.k2-bas'); b.classList.add('carp'); gum(0.5); fanfar(); o.buzz([40, 30, 40]); sars(); fx.fisek(0.2, 0.25); fx.konfeti(110); if (st >= 3) fx.yagmur(16); sonra(560, () => { b.classList.remove('carp'); b.classList.add('salin'); }); });
   sonra(2200, () => fx.fisek(0.8, 0.2)); sonra(2600, () => fx.fisek(0.5, 0.1));
   if (o.sarki) sonra(2700, () => { if (KZ.classList.contains('on')) o.sarki(); });   // v3.13: (Adem) kazaninca Foxi'nin sarkisi; fanfardan sonra
   goster($('.k2-levha'), 2300); goster($('.k2-panel'), 2600);
   // altin sayaci
-  const pn = $('.k2-panel'), u = $('.k2-ust'), sv = u.querySelector('svg'); let n = 0; const adim = Math.max(1, Math.round(d.kaz / 24));
-  const say = () => { n = Math.min(d.kaz, n + adim); yaziDegis(sv, '+' + n); o.ses('para', 0.3, 0.95 + 0.5 * n / Math.max(1, d.kaz));
-    if (n < d.kaz) sonra(42, say);
+  const pn = $('.k2-panel'), u = $('.k2-ust'), sv = u.querySelector('svg'); let n = 0, ts = 0; const adim = Math.max(1, Math.round(d.kaz / 14));
+  const say = () => { n = Math.min(d.kaz, n + adim); yaziDegis(sv, '+' + n); if (ts++ % 2 === 0 || n >= d.kaz) o.ses('para', 0.2, 0.95 + 0.5 * n / Math.max(1, d.kaz));
+    if (n < d.kaz) sonra(70, say);
     else { u.classList.add('pop'); o.buzz(35); [...pn.querySelectorAll('.k2-satir div')].forEach((e, i) => goster(e, i * 120)); goster($('.k2-yeni'), 400);
       sonra(500, () => { $('.k2-devam').classList.add('on'); ton(660, 0.1, 0.2); ton(990, 0.15, 0.2, 'triangle', 0.07); }); } };
   sonra(2750, say);

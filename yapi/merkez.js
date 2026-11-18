@@ -6,7 +6,7 @@
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { kazanSahne, yazi } from './kazan2.js?v=4';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
+import { kazanSahne, yazi } from './kazan2.js?v=5';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 import { ADA, adaKur } from './ada.js?v=1';
 import { insaKur } from './insa.js?v=1';   // v7.2: (Adem 18 Kas) ayri Insa sayfasi (gemi 10 asama)   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
@@ -58,6 +58,7 @@ const GUNLUK = [{ a: 50 }, { a: 75 }, { g: 'roket', n: 1 }, { a: 120 }, { g: 'bo
 const SANDIK_HEDEF = 5;   // bu kadar yeni bolum gecilince hazine sandigi acilir
 const SOZ = ['Ahoy Kaptan!', 'Kuleyi yıkalım!', 'Toplar hazır!', 'Hazine bizi bekliyor!', 'Alt sıraya nişan al!', 'Yelkenler fora!'];
 
+let KZA = false;
 export function merkezKur(A) {
   const SV = A.SV;
   let acik = false, durak = false, sekmeAd = 'ana', T3 = null, t3yuk = null, popKapat = null;
@@ -517,8 +518,9 @@ export function merkezKur(A) {
     // v4.8: (Adem 14 Kas) yeni sahne kazan2.js; eski sahne ?eskikazan=1 ile
     if (!/[?&]eskikazan=1/.test(location.search)) {
       if (fxDur) fxDur();
+      KZA = true;   // v8.1: kazanma sahnesi acikken 3B oyun ve fizik durur (donma hissi)
       fxDur = kazanSahne(KZ, d, { sesAg: A.sesAg, ses: A.ses, buzz: A.buzz, tik, sarki: A.sarki ? () => A.sarki('kazan') : null, sarkiDur: A.sarkiDur, HEDEF: SANDIK_HEDEF, sn: SV.sn || 0,
-        bitir: (r) => { fxDur = null; KZ.classList.add('cik'); setTimeout(() => { KZ.className = ''; KZ.innerHTML = ''; }, 340);
+        bitir: (r) => { fxDur = null; KZA = false; KZ.classList.add('cik'); setTimeout(() => { KZ.className = ''; KZ.innerHTML = ''; }, 340);
           ac({ ucan: { x: r.left + r.width / 2, y: r.top + r.height / 2, n: Math.round(d.kaz / 8), eski: d.once, yeni: d.once + d.kaz } }); } });
       return;
     }
@@ -583,5 +585,5 @@ export function merkezKur(A) {
   $('m-korsan').onclick = () => { tik(); pop(bas('Korsan Pilot') + '<div class="p-ic"><h3>Deneme modu</h3><p>Açık denizde düşman gemilerini ve kuleleri batır. Bu mod hâlâ yapım aşamasında.</p></div><button class="m-btn tur" id="p-dv">Denize Açıl</button>'); $('p-dv').onclick = () => { location.href = '../korsan/'; }; };
   $('m-oyna').onclick = () => { tik(); bolumKarti(maxL()); };
 
-  return { ac, kapat, kazan, kaybet, bolumKarti, duraklat: () => ayarKarti(true), durdur: () => acik || durak, acik: () => acik };
+  return { ac, kapat, kazan, kaybet, bolumKarti, duraklat: () => ayarKarti(true), durdur: () => acik || durak || KZA, acik: () => acik };
 }

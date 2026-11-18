@@ -89,7 +89,7 @@ export function odul(P) { return P.tip === 'kaptan' ? AYAR.odul.kaptan : P.etike
 // arayuz yazilari
 export const TUR = {
   normal: { ad: '', hedef: 'Bütün küpleri platformdan düşür!' },
-  hazine: { ad: 'Hazine Avı', hedef: 'Parlayan hazine küplerini düşür, gerisi kalabilir!', ic: '💎', yeni: 'Yalnız parlayan hazineleri düşürmen yeter. Top az, iyi nişan al!' },
+  hazine: { ad: 'Hazine Avı', hedef: 'Parlayan hazine küplerini düşür, gerisi kalabilir!', ic: '🎯', yeni: 'Yalnız parlayan hazineleri düşürmen yeter. Top az, iyi nişan al!' },
   zincir: { ad: 'Zincir Atış', hedef: 'Tek atışta ' + AYAR.zincirEsik + ' küp düşür, top geri gelsin!', ic: '⛓️', yeni: 'Top az ama tek atışta ' + AYAR.zincirEsik + ' küp düşürürsen top geri gelir. Yapının altını vur!' },
   kaptan: { ad: 'Kaptan Bölümü', hedef: 'Seferin son kalesi! Bütün küpleri düşür.', ic: '☠️' },
   altin: { ad: 'Altın Yağmuru', hedef: 'Düşen her küp +1 altın! Bol top, keyfine bak.', ic: '🪙' }

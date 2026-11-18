@@ -14,13 +14,13 @@ import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak 
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
 import { blok3bKur } from './blok3b.js?v=5';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
-import { kapaliHucre, kapaliMi } from './kapali.js?v=1';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
+import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=27';
-import * as EG from './egri.js?v=1';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
+import { merkezKur } from './merkez.js?v=28';
+import * as EG from './egri.js?v=2';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
@@ -45,7 +45,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v8.0', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v8.1', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -1381,34 +1381,24 @@ function parcaKur(col, pn, yer, donus) {
 }
 // ================= v8.0 (Adem 18 Kas): zorluk egrisi ve bolum turleri (egri.js) =================
 // PLAN: bu bolumun turu ve etiketi (EGRI kapaliysa, 1-25'te ve korsan/pilot/dene kipinde null).
-// hazine: rastgele (bolume gore sabit) 3-6 ust kup 'hedef' olur, ustunde altin elmas isareti doner; hepsi dusunce kazanilir.
+// hazine: rastgele (bolume gore sabit) 3-6 ust kup 'hedef' olur, onunde parlayan altin cerceve (v8.1: elmas isareti kaldirildi); hepsi dusunce kazanilir.
 // zincir: tek atista her EG.AYAR.zincirEsik kup icin +1 top. altin: dusen her kup +1 altin (bolum sonunda). Foxi yardimi: SV.kyb.
-let PLAN = null, HZTEX = null, HZCER = null; const HZM = [];
-function hzTex() {
-  return HZTEX || (HZTEX = canvasTex(128, 160, (x, w) => {
-    x.translate(w / 2, 0); x.lineJoin = 'round';
-    x.beginPath(); x.moveTo(0, 8); x.lineTo(46, 44); x.lineTo(0, 104); x.lineTo(-46, 44); x.closePath();
-    const gr = x.createLinearGradient(0, 8, 0, 104); gr.addColorStop(0, '#fff6b0'); gr.addColorStop(0.45, '#ffd23f'); gr.addColorStop(1, '#e07a00');
-    x.fillStyle = gr; x.fill(); x.lineWidth = 8; x.strokeStyle = '#6a2a00'; x.stroke();
-    x.beginPath(); x.moveTo(-46, 44); x.lineTo(46, 44); x.moveTo(-18, 44); x.lineTo(0, 8); x.lineTo(18, 44); x.lineTo(0, 104); x.lineTo(-18, 44); x.lineWidth = 3; x.strokeStyle = 'rgba(106,42,0,.55)'; x.stroke();
-    x.beginPath(); x.moveTo(-22, 120); x.lineTo(22, 120); x.lineTo(0, 152); x.closePath(); x.fillStyle = '#ffd23f'; x.fill(); x.lineWidth = 6; x.strokeStyle = '#6a2a00'; x.stroke();
-  }));
-}
+let PLAN = null, HZCER = null; const HZM = [];
 // hedef kupun onunde altin cerceve + kose parltilari (kupun ustune cizilir, her renkte okunur)
 function hzCer() {
   return HZCER || (HZCER = canvasTex(128, 128, (x, w, h) => {
     const r = 18, k = 10; x.lineJoin = 'round';
     const yol = () => { x.beginPath(); x.moveTo(k + r, k); x.arcTo(w - k, k, w - k, h - k, r); x.arcTo(w - k, h - k, k, h - k, r); x.arcTo(k, h - k, k, k, r); x.arcTo(k, k, w - k, k, r); x.closePath(); };
-    x.shadowColor = '#ffb000'; x.shadowBlur = 14; yol(); x.lineWidth = 12; x.strokeStyle = '#ffd23f'; x.stroke(); x.shadowBlur = 0;
+    x.shadowColor = '#ffb000'; x.shadowBlur = 16; yol(); x.lineWidth = 16; x.strokeStyle = '#ffd23f'; x.stroke(); x.shadowBlur = 0;
     yol(); x.lineWidth = 4; x.strokeStyle = '#fff6b0'; x.stroke();
-    x.fillStyle = 'rgba(255,210,63,.18)'; yol(); x.fill();
+    x.fillStyle = 'rgba(255,210,63,.3)'; yol(); x.fill();
     for (const [a, b] of [[k, k], [w - k, k], [k, h - k], [w - k, h - k]]) { x.save(); x.translate(a, b); x.fillStyle = '#fff'; x.beginPath(); for (let i = 0; i < 8; i++) { const t = i * Math.PI / 4, q = i % 2 ? 4 : 13; x.lineTo(Math.cos(t) * q, Math.sin(t) * q); } x.closePath(); x.fill(); x.restore(); }
   }));
 }
-function hzmSil(m) { const i = HZM.indexOf(m); if (i >= 0) HZM.splice(i, 1); scene.remove(m.isr); scene.remove(m.hale); m.isr.material.dispose(); m.hale.material.dispose(); }
+function hzmSil(m) { const i = HZM.indexOf(m); if (i >= 0) HZM.splice(i, 1); scene.remove(m.hale); m.hale.material.dispose(); }
 function hzmKare(dt) {
-  for (const m of HZM) { m.t += dt; const p = m.c.body.position, b = Math.sin(m.t * 4) * 0.12 * S;
-    m.isr.position.set(p.x, p.y + (m.c.h || S) * 0.5 + 0.8 * S + b, p.z); m.hale.position.set(p.x, p.y, p.z); m.hale.material.opacity = 0.8 + 0.2 * Math.sin(m.t * 5); m.hale.scale.setScalar(S * (1.12 + 0.06 * Math.sin(m.t * 5))); }
+  for (const m of HZM) { m.t += dt; const p = m.c.body.position;
+    m.hale.position.set(p.x, p.y, p.z); m.hale.material.opacity = 0.8 + 0.2 * Math.sin(m.t * 5); m.hale.scale.setScalar(S * (1.12 + 0.06 * Math.sin(m.t * 5))); }
 }
 function egriBasla(Y) {
   while (HZM.length) hzmSil(HZM[0]);
@@ -1423,9 +1413,8 @@ function egriBasla(Y) {
     for (const uz of [S * 1.6, S * 0.9, 0]) for (const c of ust) { if (sec.length >= k) break; if (!sec.includes(c) && sec.every((o) => o.body.position.distanceTo(c.body.position) >= uz)) sec.push(c); }
     for (const c of sec) {
       c.hedef = true;
-      const isr = new THREE.Sprite(new THREE.SpriteMaterial({ map: hzTex(), transparent: true, depthTest: false, depthWrite: false })); isr.scale.set(S * 0.9, S * 1.125, 1); isr.renderOrder = 9;
       const hale = new THREE.Sprite(new THREE.SpriteMaterial({ map: hzCer(), transparent: true, opacity: 0.9, depthTest: false, depthWrite: false })); hale.scale.setScalar(S * 1.12); hale.renderOrder = 8;
-      scene.add(isr); scene.add(hale); HZM.push({ c, isr, hale, t: Math.random() * 6 });
+      scene.add(hale); HZM.push({ c, hale, t: Math.random() * 6 });
     }
     if (sec.length) { g.hedef = g.hedef0 = sec.length; hzmKare(0); } else { PLAN.tip = g.tip = 'zincir'; }
   }
@@ -1446,7 +1435,7 @@ function egriYazi() {
 }
 function egriKnock(c, p, at) {
   if (c.hedef && g.hedef != null) { c.hedef = false; g.hedef = Math.max(0, g.hedef - 1); const m = HZM.find((q) => q.c === c); if (m) hzmSil(m);
-    floatText('💎 ' + (g.hedef0 - g.hedef) + '/' + g.hedef0, at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 24, 8); sfx('bonus'); buzz(30); }
+    floatText('🎯 ' + (g.hedef0 - g.hedef) + '/' + g.hedef0, at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 24, 8); sfx('bonus'); buzz(30); }
   if (PLAN.tip === 'zincir' && g.combo && g.combo.n > 0 && g.combo.n % EG.AYAR.zincirEsik === 0) { g.shots++; floatText('+1 Top ⛓️', at[0], at[1] - 30, 'blue'); sfx('bonus'); buzz(25); }
   if (PLAN.tip === 'altin') { g.yagmur++; if (g.yagmur <= EG.AYAR.altinTavan && g.yagmur % 3 === 0) floatText('+3 🪙', at[0], at[1] - 20, 'gold'); }
 }
@@ -3401,8 +3390,9 @@ function yeniSekil() {
   };
   // v5.0: (ilk acilista) "Yeni Blok!" karti ana sayfanin ustunde cikiyordu: ana sayfa / bolum karti kapanana kadar bekler.
   // Bu arada baska bolum baslarsa (g degisirse) bu bekleme iptal olur, kart yeni bolumle gelir.
-  const g0 = g, bekle = () => { if (g !== g0) return; const mz = $('merkez'), mp = $('mpop');
-    if ((mz && mz.classList.contains('on')) || (mp && mp.classList.contains('on'))) { setTimeout(bekle, 400); return; } goster(0); };
+  const g0 = g, bekle = () => { if (g !== g0) return; const mz = $('merkez'), mp = $('mpop'), kz = $('mkazan');
+    if ((mz && mz.classList.contains('on')) || (mp && mp.classList.contains('on')) || (kz && kz.classList.contains('on'))) {   // v8.1: kazanma sahnesi de beklenir
+      setTimeout(bekle, 400); return; } goster(0); };
   setTimeout(bekle, 450);
 }
 function ggOnce() {
@@ -3586,7 +3576,7 @@ function frame(ts) {
   // v3.0: ana sayfa acikken ya da oyun duraklatilmisken sahne islemez ve cizilmez (telefon isinmasin); bolum kurulduktan sonraki ilk 2,5 sn haric (malzemeler derlensin)
   { const v = $('bgv'), dur = !!(M && M.durdur()); if (v && dur && !v.paused) v.pause(); else if (v && !dur && v.paused && $('bg').classList.contains('vid')) v.play().catch(() => {}); }   // v3.18: ana sayfa/duraklatma acikken fon videosu durur
   { const gi = $('bgisi'); if (gi) gi.classList.toggle('dur', !!(M && M.durdur())); }   // v3.19: menu acikken fon parlamasi durur
-  if (M && M.durdur() && performance.now() - STARTT > 2500) { last = 0; if (!TEST) requestAnimationFrame(frame); return; }
+  if (M && M.durdur() && !$('ysn') && performance.now() - STARTT > 2500) { last = 0; if (!TEST) requestAnimationFrame(frame); return; }   // v8.1: 'Yeni Blok' karti acikken onizleme cizilsin
   const dt = Math.min(0.05, last ? (ts - last) / 1000 : 0.016); last = ts;
   if (HS > 0) { HS -= dt; if (HS <= 0) TS = 1; }
   if (SLOW > 0) { SLOW = Math.max(0, SLOW - dt); if (HS <= 0) TS = SLOW > 0.35 ? 0.28 : 0.28 + 0.72 * (1 - SLOW / 0.35); }   // v7.0

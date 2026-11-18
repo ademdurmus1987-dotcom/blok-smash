@@ -51,3 +51,5 @@ Sorun: kayıtlı 2000 bölüm çeşitliydi ama zorluk 100. bölümden sonra nere
 - Foxi yardımı: aynı bölümü 2 kez kaybeden +2, 4 kez +4, 6 kez +6 top (`SV.kyb`). Kazanınca sıfırlanır.
 - Doğrulayıcı (`?test`) eski kurallarla çalışır; `?test&egri=1` ile yeni kurallar denenebilir.
 - Telefonda zor/kolay gelirse yalnız `egri.js` `AYAR` değerleri değiştirilir (`egim`, `testere`, `tur`), fizik testi gerekmez.
+- v8.1 (18 Kas): Hazine Avı'nda elmas işareti kaldırıldı (hedef yalnız altın çerçeve, ikon 🎯). Yakut/elmas mücevher bloklar `kapali.js`'te kapatıldı → aynı ölçülü şişe (`ksSiseM`/`ksSiseB`); geri açmak için o satırı sil.
+- v8.1 kazanma kartı: sahne açıkken 3B oyun/fizik durur (`merkez.js` KZA), SVG yazılardaki ışık filtresi ve gölge filtresi kalktı, parçacık sayısı sınırlandı. Ölçüm (test tarayıcısı): 3 kare/sn → 58 kare/sn. Yıldız sesi yumuşak do-mi-sol zili; fanfar ve havai fişek sesleri kısıldı.

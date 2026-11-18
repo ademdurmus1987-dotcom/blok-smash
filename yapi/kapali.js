@@ -10,7 +10,7 @@ export const KAPALI = {
   // --- eski sekiller (sekil.js): seker/oyuncak temasi, duz boyali ---
   joP: 'oyN', joY: 'oyY', joT: 'oyT',                         // jole -> patili kup (ayni renk)
   hdK: 'ksSandikK', hdM: 'ksSandikM', hdY: 'ksSandik',        // hediye kutusu -> sandik
-  krM: 'ksYakut', krT: 'ksElmas',                             // duz kristal kup -> yuzeyli mucevher
+  krM: 'ksSiseM', krT: 'ksSiseB',                             // duz kristal kup -> sise (v8.1: mucevherler de kapali)
   kkK: 'oyB', kkA: 'oyA', kkL: 'ksTNT',                       // kuru kafa -> beyaz/altin patili kup, lanetli kafa -> TNT
   knK: 'ksFiciK', knM: 'ksFici', dalga: 'ksFici',             // konserve, tas halka -> fici (ayni silindir)
   mermer: 'ksTas', buzP: 'ksBuz', buzP3: 'ksBuz3',
@@ -25,7 +25,9 @@ export const KAPALI = {
   buz: 'ksBuz', buz2: 'ksBuz', kabak: 'ksFiciK', kola: 'ksSutun', buzDikey: 'ksMorSutun', alevUzun: 'ksSutun', morDikey: 'ksMorSutun',
   // --- cam sekiller (duz yari saydam ilkel sekiller) ---
   g_kup: 'ksBuz', g_silindir: 'ksSiseB', g_altigen: 'ksSiseB', g_prizma: 'ksSiseY', g_kare: 'ksSiseB', g_yivli: 'ksSiseB', g_L: 'ksBuz', g_kemer: 'ksBuz', g_buz: 'ksBuz',
-  g_kure: 'ksSiseY', g_kapsul: 'ksSiseM', g_piramit: 'ksYakut', g_koni: 'ksYakut', g_kubbe: 'ksElmas', g_kristal: 'ksElmas', g_kama: 'ksYakut', g_cubuk: 'ksKalas1', g_ince: 'ksKalas1', g_mazgal: 'ksKalas1', g_Y: 'ksYakut'
+  g_kure: 'ksSiseY', g_kapsul: 'ksSiseM', g_piramit: 'ksSiseM', g_koni: 'ksSiseM', g_kubbe: 'ksSiseB', g_kristal: 'ksSiseB', g_kama: 'ksSiseM', g_cubuk: 'ksKalas1', g_ince: 'ksKalas1', g_mazgal: 'ksKalas1', g_Y: 'ksSiseM',
+  // --- v8.1 (Adem 18 Kas: 'elmas gibi seyleri kaldiralim'): yakut ve elmas mucevher bloklar -> ayni olculu sise ---
+  ksYakut: 'ksSiseM', ksElmas: 'ksSiseB'
 };
 export const kapaliMi = (t) => typeof t === 'string' && t in KAPALI;
 
