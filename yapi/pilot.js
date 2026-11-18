@@ -14,7 +14,9 @@ import { pilotSekilKur } from './pilot_sekil.js?v=6';
 export function pilotKur(A) {
   const { THREE, CANNON, S } = A, Pi = Math.PI, D2R = Pi / 180;
   const N = Math.floor(+A.Q.get('pilot')) || 0;
-  const SIRA = [21, 22, 23];   // 1, 7, 13 rafta (adresle yine acilir)
+  // v8.3 (18 Kas 2026): 31-36 Adem'in cizimindeki 6 yapi (Korsan Gemisi, Kale, Kuru Kafa, Deniz Feneri, Tilki Basi, Tas Kopru): ayri dosya pilot/resim.json
+  const RESIM = N >= 31 && N <= 36;
+  const SIRA = RESIM ? [31, 32, 33, 34, 35, 36] : [21, 22, 23];   // 1, 7, 13 rafta (adresle yine acilir)
   let VERI = null, B = null;   // B: bu bolumun verisi
   const BOS = { veri: 1, engel: [], ad: 'Pilot', top: 10, make: () => [] };
   let Y = BOS;
@@ -46,6 +48,20 @@ export function pilotKur(A) {
   // ---------- platform gorunusu: kaide.js ile ayni turkuaz tahta ust + percinli bakir kusak ----------
   const MAT = A.KAIDE ? A.KAIDE.MAT : { ust: new THREE.MeshStandardMaterial({ color: '#0b9a92' }), yan: new THREE.MeshStandardMaterial({ color: '#0a8a83' }), kus: new THREE.MeshStandardMaterial({ color: '#e8862a', metalness: 0.6 }), alt: new THREE.MeshStandardMaterial({ color: '#0a5552' }) };
   const MLIST = [MAT.ust, MAT.yan, MAT.kus, MAT.alt];
+  // v8.3: mor-altin kaide (resim bolumleri, B.kaide === 'mor'): mor tahta ust, altin seritli mor yan, altin kusak, ayak da mor-altin
+  let MOR = null;
+  function morMat() {
+    if (MOR) return MOR;
+    const std = (o) => new THREE.MeshStandardMaterial(Object.assign({ roughness: 0.45, envMap: A.ENV, envMapIntensity: 0.5 }, o));
+    const tek = (t) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; };
+    const ust = tek(A.canvasTex(256, 256, (x, w, h) => { const n = 4, ph = h / n; for (let i = 0; i < n; i++) { const g = x.createLinearGradient(0, i * ph, 0, (i + 1) * ph); g.addColorStop(0, '#9a52e8'); g.addColorStop(0.5, '#7a32cc'); g.addColorStop(1, '#5a1ea6'); x.fillStyle = g; x.fillRect(0, i * ph, w, ph); x.fillStyle = 'rgba(255,255,255,.3)'; x.fillRect(0, i * ph + 1, w, 2); x.fillStyle = 'rgba(30,0,60,.45)'; x.fillRect(0, (i + 1) * ph - 3, w, 3); } }));
+    const yan = tek(A.canvasTex(128, 128, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#ffe08a'); g.addColorStop(0.1, '#f2b234'); g.addColorStop(0.16, '#8a3ee0'); g.addColorStop(1, '#4a168a'); x.fillStyle = g; x.fillRect(0, 0, w, h); x.fillStyle = '#ffc94a'; x.fillRect(0, h * 0.86, w, h * 0.08); }));
+    const kus = tek(A.canvasTex(128, 64, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#fff0b0'); g.addColorStop(0.35, '#f4b42a'); g.addColorStop(1, '#a8640c'); x.fillStyle = g; x.fillRect(0, 0, w, h); x.fillStyle = 'rgba(90,40,0,.35)'; x.fillRect(0, h * 0.48, w, 2); }));
+    MOR = [std({ map: ust, roughness: 0.5, envMapIntensity: 0.35 }), std({ map: yan, roughness: 0.4 }), std({ map: kus, metalness: 0.75, roughness: 0.28, envMapIntensity: 1.2, emissive: '#5a3000', emissiveIntensity: 0.18 }), std({ color: '#3a0f70', roughness: 0.7 })];
+    const u = A.LEG.userData;   // ayak: mor direk, altin halka ve taban (yalniz bu kipte; sayfa pilot kipte acik)
+    if (u.pole) { u.pole.material = std({ color: '#6a28c0', roughness: 0.45 }); u.collar.material = u.ring.material = u.cap.material = MOR[2]; u.base.material = std({ color: '#4a168a', roughness: 0.5 }); }
+    return MOR;
+  }
   function cevre(k) {   // katin dis cizgisi: [x, z] noktalari (saat yonunun tersine, ustten bakista)
     const r = k.r, don = (k.don || 0) * D2R, P = [];
     let n = k.sekil === 'disk' ? (k.n || 40) : k.sekil === 'cokgen' ? (k.n || 6) : 4, a0 = don;
@@ -223,7 +239,8 @@ export function pilotKur(A) {
         for (const [x, z] of P) { pts.push([x, k.ust, z]); pts.push([x, alt - 0.35, z]); }
         ilk = false;
       });
-      for (const [g, mm] of GL) { g.translate(ax, 0, az); for (const gr of g.groups) TUM.push([parcaAl(g, gr.start, gr.count), MLIST[Array.isArray(mm) ? mm[gr.materialIndex] : mm]]); }
+      const ML = B.kaide === 'mor' ? morMat() : MLIST;   // v8.3
+      for (const [g, mm] of GL) { g.translate(ax, 0, az); for (const gr of g.groups) TUM.push([parcaAl(g, gr.start, gr.count), ML[Array.isArray(mm) ? mm[gr.materialIndex] : mm]]); }
       if (ada.katlar.length > 1) GOLGE = true;   // ust katlar alt kata golge dusurur
     }
     for (const k of B.kopru || []) { const q = kopruKur(k); A.PLS.push(q); }
@@ -243,12 +260,22 @@ export function pilotKur(A) {
       const y0 = p.y != null ? p.y : (kat.ust != null ? kat.ust : kat.cy), q = new CANNON.Quaternion(); q.setFromEuler((p.rx || 0) * D2R, (p.ry || 0) * D2R, (p.rz || 0) * D2R, 'YXZ');
       const c = A.parcaKur(p.t, pi, (h) => [p.x, y0 + h / 2 + 0.003, p.z], q);
       c.pid = p.id || p.t;
+      if (p.bos && p.t === 'ksKemer') kemerBos(c);   // v8.3: kemer acikligi gercek bosluk (top icinden gecer)
       if (t.govde) Object.assign(c.body, t.govde);   // tur basina govde ayari (domino: az sonum, gec uyku)
       const esik = p.kir != null ? p.kir : t.carp;
       if (esik) carpmaKir(c, esik);
       if (p.patlama) { c.patlama = p.patlama; PATLAYAN.push(c); }
       if (p.ezil) ezilKir(c, p.ezil);   // agir bir parca (devrilen dikili tas) ya da top carpinca ezilir
       if (p.patlarKir) c.pkir = 1;   // ezilme: kutlesi 2.5'ten buyuk hareketli bir govde (devrilen dikili tas, top) esikten hizli carparsa parca kirilir (sunak)
+  // v8.3: ksKemer'in carpisma kutusu tam kutuydu (acikligi gorunuste vardi, fizikte yoktu). Yalniz 'bos' isaretli parcada:
+  // iki ayak + acikligin ustundeki tas (kemer.glb olculeri: aciklik yarim genislik 0.62 S, tepe 0.46 S govde ortasindan).
+  function kemerBos(c) {
+    const b = c.body, s = S;
+    while (b.shapes.length) b.removeShape(b.shapes[0]);
+    for (const sx of [-1, 1]) b.addShape(new CANNON.Box(new CANNON.Vec3(0.44 * s, s, 0.5 * s)), new CANNON.Vec3(sx * 1.06 * s, 0, 0));
+    b.addShape(new CANNON.Box(new CANNON.Vec3(0.62 * s, 0.35 * s, 0.5 * s)), new CANNON.Vec3(0, 0.65 * s, 0));
+    b.updateMassProperties(); b.aabbNeedsUpdate = true;
+  }
   function ezilKir(c, esik) {
     c.body.addEventListener('collide', (e) => {
       const g = A.g; if (!g || !g.armed || c.out || c.gone || c.kq || e.body.mass < 2.5) return;
@@ -271,6 +298,23 @@ export function pilotKur(A) {
     A.bolumBasla(Y);
     ayakDibi();
     hoyuk();
+    if (B.kaide === 'mor') elmasSus();
+    if (RESIM) oturt();
+  }
+  // v8.3: resim bolumleri oyuncu gormeden once oturtulur: bloklar 3 sn fizikle yerine iner (siralar arasi 3 mm bosluk + temas sikismasi
+  // ilk atista ~6 cm cokme gibi gorunuyordu), sonra hiz sifirlanir ve uyutulur. Kirilma/dusme sayimi bu sirada kapali (g.armed yok).
+  function oturt() {
+    const C = A.cubes.filter((c) => !c.gone && !c.out);
+    for (const c of C) c.body.wakeUp();
+    for (let i = 0; i < 360; i++) A.world.step(1 / 120);
+    for (const c of C) { c.body.velocity.set(0, 0, 0); c.body.angularVelocity.set(0, 0, 0); c.body.sleep(); c.mesh.position.copy(c.body.position); c.mesh.quaternion.copy(c.body.quaternion); }
+  }
+  // v8.3: kaidenin on kusaginin ortasinda altin elmas susu (resimdeki gibi)
+  let SUS = null;
+  function elmasSus() {
+    const k = B.ada[0].katlar[0];
+    if (!SUS) { SUS = new THREE.Mesh(new THREE.OctahedronGeometry(0.3, 0), MOR[2]); SUS.scale.set(1.25, 0.8, 0.35); }
+    SUS.position.set(B.ada[0].x || 0, k.ust - 0.58, (k.rz || k.r) + 0.17); A.scene.add(SUS);
   }
   // kamera hedefini yapinin ekrandaki yatay ortasina kaydir (perspektif yuzunden tek seferde olmaz: 3 tur)
   const VV = new THREE.Vector3();
@@ -381,7 +425,7 @@ export function pilotKur(A) {
   function kaybet() { const g = A.g; A.sfx('lose'); kart('Toplar bitti!', true, '<h2>' + g.left + ' parça kaldı</h2><p>Deneme bölümü: ilerleme kaydedilmez.</p>'); }
 
   async function yukle() {
-    try { VERI = await (await fetch('pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
+    try { VERI = await (await fetch(RESIM ? 'pilot/resim.json?v=1' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
     B = VERI && VERI.bolumler && VERI.bolumler[N] || null;
     if (B) Y = { veri: 1, engel: [], ad: B.ad, top: B.top, make: () => [] };
     if (B && PS.yukle) await PS.yukle(B.parca.map((p) => p.t));   // v5.6: Blender bloklarinin model dosyalari

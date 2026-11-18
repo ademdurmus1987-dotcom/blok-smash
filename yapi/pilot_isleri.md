@@ -81,3 +81,13 @@
 - P21 Buz Sarayi artik tamamen yeni tarzda (yalniz ortadaki altin patili kup `oyA` eski, o zaten oyuncak tarzi). Ekran: `yapi/uretici/rapor/pilot/P21_390x844.jpg`.
 - Test (390x844): P21 atista buz kiriliyor, TNT patliyor (cevresindeki 8 buzu kirdi), mucevher kiriliyor; konsol hatasi yok. Sandiklar sutunlarin arkasinda kaldigi icin dogrudan vurulamadi (kirilma yolu patili kupla ayni). P22, P23, `?sv=6` hatasiz.
 - Not: betigin tamami yeniden calistirilinca `pl_kup.glb` ve `pl_direk.glb` bayt olarak degisebiliyor (gorunum ayni); gereksizse `git checkout` ile geri alinir.
+
+## 18 Kas 2026 (Opus): resim bolumleri 31-36 (v8.3) — Adem'in Gemini cizimi
+- 6 yapi: 31 Korsan Gemisi, 32 Kale, 33 Kuru Kafa, 34 Deniz Feneri, 35 Foxi Tilki Basi, 36 Tas Kopru. Acmak: `yapi/index.html?pilot=31` .. `36` (kayitsiz pilot kip; kartta "Sonraki" 31-36 arasinda doner).
+- Kaynak `yapi/pilot/resim_kaynak.py` -> `yapi/pilot/resim.json` (ayri dosya; pilot.json, 2000 bolum ve kayit degismedi). Degisiklikten sonra: `python3 yapi/pilot/resim_kaynak.py`.
+- Yalniz oyundaki bloklar (ks*, oy*). Tek sira derinlik, kamera `pitch 1, yaw 0`. `kaide: 'mor'` -> mor-altin kaide + altin elmas susu + mor-altin ayak (pilot.js `morMat`).
+- `bos: 1` isaretli ksKemer'in carpismasi iki ayak + ust tas (acikliktan top gecer; pilot.js `kemerBos`). Kale ve fener kapisi boyle.
+- Resim bolumlerinde ksTas / ksFici / ksSise Blender modeliyle (gri tas, fici, sise); oyunun "parlak" kutuphane eslemesi (mavi patili tas, kutuk, kavanoz) yalniz bu bolumlerde kapali (oyun.js `RESIMQ`).
+- Kurulumda 3 sn gorunmez oturtma (pilot.js `oturt`): 3 mm sira boslugu + temas sikismasi ilk uyanista ~6 cm cokuyordu.
+- Test: `python3 yapi/uretici/resim_test.py ekran|fizik|bot 31,32,33,34,35,36`. Sonuc (18 Kas): 5 sn fizikte dusen 0, en cok kayma 0.9-1.8 cm, donme <0.3 derece; bot 3 tohumda kendi top sayisiyla hepsini kazandi.
+  Top: 31:18, 32:20, 33:20, 34:20, 35:16, 36:18. Karsilastirma: `yapi/uretici/rapor/resim/karsilastirma_1..3.jpg`.
