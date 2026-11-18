@@ -37,7 +37,7 @@ const SKEY = K ? 'blokpop_korsan_v1' : 'blokpop_yapi_v3';
 // PILOT v5.4 (16 Kas 2026): ?pilot=N yeni bolum bicimi denemesi (yapi/pilot.js, pilot_sekil.js, pilot/pilot.json). Pilot kipte kayda HIC yazilmaz.
 // Geri donus: o uc dosya/klasor ve bu dosyadaki 'PILOT' isaretli satirlar silinir; eski oyun aynen kalir.
 const PILOTQ = !K && Q.has('pilot');   // PILOT
-const PLTM = PILOTQ ? await import('./pilot.js?v=15') : null; let PLT = null;   // PILOT
+const PLTM = PILOTQ ? await import('./pilot.js?v=16') : null; let PLT = null;   // PILOT
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -479,7 +479,7 @@ if (Q.get('parlak') !== '0') {
       ksSiseM: ['kavanoz-kisa', 'mor'], ksSiseY: ['kavanoz-kisa', 'yesil'], ksSiseB: ['kavanoz-kisa', 'mavi'] };
     const PARCA = { kirmizi: '#d4142f', yesil: '#12a83c', mavi: '#1270e0', sari: '#f0b000', mor: '#7426d9', turuncu: '#ef6400' };
     // v8.3: resim bolumlerinde (?pilot=31..36) tas, fici ve sise Adem'in cizimindeki gibi gri tas / fici / sise (oyunun Blender modelleri, blok3b.js) kalir
-    const RESIMQ = PILOTQ && +Q.get('pilot') >= 31 && +Q.get('pilot') <= 36;
+    const RESIMQ = PILOTQ && +Q.get('pilot') >= 31 && +Q.get('pilot') <= 54;
     if (RESIMQ) for (const k of ['ksTas', 'ksFici', 'ksFiciK', 'ksSiseM', 'ksSiseY', 'ksSiseB']) delete ESLE[k];
     for (const k in ESLE) {
       const t = SEK.TUR[k]; if (!t) continue; const [ad, renk] = ESLE[k], eski = t.yap;

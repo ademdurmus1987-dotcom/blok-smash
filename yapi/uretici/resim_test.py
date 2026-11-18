@@ -26,7 +26,7 @@ async def modul(pg):
 FIZIK = """((sn) => { const P = YP, bas = P.cubes.map((c) => [c.body.position.clone(), c.body.quaternion.clone()]);
   for (const c of P.cubes) c.body.wakeUp(); P.run(sn, true);
   const L = P.cubes.map((c, i) => { const d = c.body.position.vsub(bas[i][0]).length(); const q = bas[i][1], r = c.body.quaternion, dot = Math.abs(q.x*r.x+q.y*r.y+q.z*r.z+q.w*r.w); const v = c.body.position.vsub(bas[i][0]); return { id: c.pid, d: +d.toFixed(4), yatay: +Math.hypot(v.x, v.z).toFixed(4), dy: +v.y.toFixed(4), don: +(2*Math.acos(Math.min(1, dot))*180/Math.PI).toFixed(2), dus: c.gone || c.out }; });
-  L.sort((a, b) => b.d - a.d); return { n: L.length, dusen: L.filter((x) => x.dus).length, kayan: L.filter((x) => x.d > 0.02 || x.don > 1).length, enCok: L.slice(0, 3), enCokYatay: Math.max(...L.map((x) => x.yatay)), enCokDon: Math.max(...L.map((x) => x.don)), uyuyan: P.cubes.filter((c) => c.body.sleepState === 2).length }; })"""
+  L.sort((a, b) => b.d - a.d); return { n: L.length, dusen: L.filter((x) => x.dus).length, kayan: L.filter((x) => x.d > 0.02 || x.don > 1).length, enCok: L.slice(0, +(window.__K || 3)), enCokYatay: Math.max(...L.map((x) => x.yatay)), enCokDon: Math.max(...L.map((x) => x.don)), uyuyan: P.cubes.filter((c) => c.body.sleepState === 2).length }; })"""
 async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(executable_path=CHROME, args=ARGS)

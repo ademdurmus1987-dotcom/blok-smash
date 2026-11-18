@@ -15,8 +15,8 @@ export function pilotKur(A) {
   const { THREE, CANNON, S } = A, Pi = Math.PI, D2R = Pi / 180;
   const N = Math.floor(+A.Q.get('pilot')) || 0;
   // v8.3 (18 Kas 2026): 31-36 Adem'in cizimindeki 6 yapi (Korsan Gemisi, Kale, Kuru Kafa, Deniz Feneri, Tilki Basi, Tas Kopru): ayri dosya pilot/resim.json
-  const RESIM = N >= 31 && N <= 36;
-  const SIRA = RESIM ? [31, 32, 33, 34, 35, 36] : [21, 22, 23];   // 1, 7, 13 rafta (adresle yine acilir)
+  const RESIM = N >= 31 && N <= 54;
+  const SIRA = RESIM ? [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54] : [21, 22, 23];   // 1, 7, 13 rafta (adresle yine acilir)
   let VERI = null, B = null;   // B: bu bolumun verisi
   const BOS = { veri: 1, engel: [], ad: 'Pilot', top: 10, make: () => [] };
   let Y = BOS;
@@ -426,7 +426,7 @@ export function pilotKur(A) {
   function kaybet() { const g = A.g; A.sfx('lose'); kart('Toplar bitti!', true, '<h2>' + g.left + ' parça kaldı</h2><p>Deneme bölümü: ilerleme kaydedilmez.</p>'); }
 
   async function yukle() {
-    try { VERI = await (await fetch(RESIM ? 'pilot/resim.json?v=2' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
+    try { VERI = await (await fetch(RESIM ? 'pilot/resim.json?v=4' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
     B = VERI && VERI.bolumler && VERI.bolumler[N] || null;
     if (B) Y = { veri: 1, engel: [], ad: B.ad, top: B.top, make: () => [] };
     if (B && PS.yukle) await PS.yukle(B.parca.map((p) => p.t));   // v5.6: Blender bloklarinin model dosyalari

@@ -96,3 +96,10 @@
   TNT buyuk patlama (`patlama r 4.5, guc 13`), kaide payi 0.2-0.25. Test botu kemerin ortasina (acikliga) degil ayagina nisan alir (pilot_test.js).
   5 sn fizik: dusen 0, kayan 0 (en cok 1.9 cm, 0.6 derece). Bot (3 tohum) kazandigi atislar: 31: 39/45/40, 32: 41/44/48, 33: 16/12/14, 34: 46/35/38, 35: 43/42/36, 36: 54/44/47.
   Top: 31:50, 32:56, 33:20, 34:50, 35:52, 36:60. Kale cizim 63, ucgen 81 bin (390x844).
+- v8.5 (18 Kas aksam): 18 yeni resim bolumu 37-54 (Adem'in 3 yeni cizimi), hepsi 3 sira derinlik, `?pilot=37` .. `54`.
+  37 Mor Bayrakli Gemi, 38 Kirmizi Kubbeli Kapi, 39 Yildizli Kale, 40 Renkli Agac, 41 Pazar Tezgahi, 42 Tacli Kemer, 43 Yel Degirmeni, 44 Roket, 45 Tas Robot,
+  46 Hazine Sandigi, 47 Mavi Pagoda, 48 Renkli Piramit, 49 Ucak, 50 Kobra Yilani, 51 Taht ve Hazine, 52 Yelkenli Gemi, 53 Kurbaga, 54 Maden Arabasi.
+  `Yapi.ek(..., derin=(...))`: parca yalniz verilen sira(lar)da (sandik kapagi arka sirada). Parca basina `km` ile tas kutlesi ezilebilir (maden arabasi rayi km=1).
+  Kagit ustu denetim: `python3 yapi/uretici/resim_denetim.py [31,32..]` (ic ice gecen / agirlik merkezi destek disinda kalan blok).
+  5 sn fizik: dusen 0; en cok kayma 2.3-3.4 cm (51 tac, 52 direk), digerleri <2.5 cm. Bot 3 tohumda hepsini kazandi; top = en uzun atis x1.15 (+1).
+  Karsilastirma: `yapi/uretici/rapor/resim/karsilastirma2_1..6.jpg`.
