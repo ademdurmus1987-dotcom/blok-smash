@@ -91,3 +91,8 @@
 - Kurulumda 3 sn gorunmez oturtma (pilot.js `oturt`): 3 mm sira boslugu + temas sikismasi ilk uyanista ~6 cm cokuyordu.
 - Test: `python3 yapi/uretici/resim_test.py ekran|fizik|bot 31,32,33,34,35,36`. Sonuc (18 Kas): 5 sn fizikte dusen 0, en cok kayma 0.9-1.8 cm, donme <0.3 derece; bot 3 tohumda kendi top sayisiyla hepsini kazandi.
   Top: 31:18, 32:20, 33:20, 34:20, 35:16, 36:18. Karsilastirma: `yapi/uretici/rapor/resim/karsilastirma_1..3.jpg`.
+- v8.4 (18 Kas, Adem: "derinlik 3 olsun, tek sira hemen yikiliyor"): her blok onde/ortada/arkada (3 sira, 87-126 parca). Bosluklar uc sirada da acik.
+  3 sira tas yikilmiyordu (60 topla kale 45 blok kaliyordu): bu bolumlerde tas ve kemer kutlesi x0.35 (`km`), devrilip sert carpan tas kirilir (`kir: 4`),
+  TNT buyuk patlama (`patlama r 4.5, guc 13`), kaide payi 0.2-0.25. Test botu kemerin ortasina (acikliga) degil ayagina nisan alir (pilot_test.js).
+  5 sn fizik: dusen 0, kayan 0 (en cok 1.9 cm, 0.6 derece). Bot (3 tohum) kazandigi atislar: 31: 39/45/40, 32: 41/44/48, 33: 16/12/14, 34: 46/35/38, 35: 43/42/36, 36: 54/44/47.
+  Top: 31:50, 32:56, 33:20, 34:50, 35:52, 36:60. Kale cizim 63, ucgen 81 bin (390x844).

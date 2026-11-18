@@ -73,8 +73,8 @@ function bekle(enCok = 12) {
 
 // ---------------- pilot ----------------
 // gercek dokunus yolu: parcanin ekrandaki yeri -> canvas'a pointerdown/pointerup (oyunun kendi aimAt + shoot'u calisir)
-export function ekranda(c, dy = 0) {
-  const P = YP(), v = new P.THREE.Vector3().copy(c.body.position); v.y += dy; v.project(P.cam);
+export function ekranda(c, dy = 0, dx = 0) {
+  const P = YP(), v = new P.THREE.Vector3().copy(c.body.position); v.y += dy; v.x += dx; v.project(P.cam);
   return [(v.x + 1) / 2 * innerWidth, (1 - v.y) / 2 * innerHeight];
 }
 export function dokun(x, y) {
@@ -124,7 +124,7 @@ export function botEkran(sinir = 40, sinirsiz = false) {
     let sec = null, sy = -1, sx = 0;
     for (const c of k) for (const dy of [-0.25 * (c.h || S), 0]) {
       if ((c.bosa || 0) >= 2 && c.bekle > n) break;   // iki kez bosuna vurulan parca birkac atis beklenir (oyuncu da baska yere nisan alir)
-      const [x, y] = ekranda(c, dy); if (x < 8 || x > innerWidth - 8 || y < 8 || y > innerHeight - 8) continue;
+      const [x, y] = ekranda(c, dy, c.kind === 'ksKemer' ? 1.06 * S : 0); if (x < 8 || x > innerWidth - 8 || y < 8 || y > innerHeight - 8) continue;
       if (isabet(x, y) !== c) continue;
       if (y > sy) { sy = y; sx = x; sec = c; } break;
     }

@@ -2,13 +2,17 @@
 # Calistirinca yapi/pilot/resim.json yazilir; oyun yalniz JSON'u okur (?pilot=31..36). Mevcut 2000 bolum, pilot.json ve kayit sistemine dokunmaz.
 #   python3 yapi/pilot/resim_kaynak.py
 # Birim: blok (1 = kup kenari S = 1.55 dunya birimi). x: yapinin ortasina gore blok merkezi, y: blogun ALT yuzu (blok cinsinden).
-# Butun yapilar resimdeki gibi tek sira derinlikte (z = 0), kamera tam onden (yaw 0) ve kaide hizasinda (pitch 1).
+# v8.4 (Adem: 'derinlik 3 olsun, tek sira hemen yikiliyor'): her blok onde, ortada ve arkada ayni yerde (3 sira derinlik, z = -1, 0, +1).
+# Kamera tam onden (yaw 0) ve kaide hizasinda (pitch 1).
 # Yalniz oyunda var olan bloklar: oy* patili kupler, ksSandik/M/K, ksTNT, ksTas/2/3/4, ksBuz/3, ksKalas1/2/3, ksDirek, ksSutun, ksMorSutun, ksKemer, ksFici/K, ksSise*, ksYildiz.
 import json, os
 S = 1.55
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resim.json')
 GX = 1.004   # yan yana bloklar arasinda ~6 mm (carpisma kutulari birbirine surtunup titremesin)
 GY = 0.003   # her blok sirasi arasinda 3 mm (ust uste oturur, batmaz)
+DERIN = (-1, 0, 1)   # sira derinligi (blok)
+# v8.4: 3 sira tas 60 topla yikilmiyordu (tas 3 kat agir). Bu bolumlerde tas: kutle x KM, devrilip/dusup sabit yuzeye sert carpan tas kirilir (pilot kurali 'kir')
+TAS = {'km': 0.35, 'kir': 4}
 GEN = {'ksTas2': 2, 'ksTas3': 3, 'ksTas4': 4, 'ksBuz3': 3, 'ksKalas2': 2, 'ksKalas3': 3, 'ksKemer': 3}
 BOY = {'ksKalas1': 0.5, 'ksKalas2': 0.5, 'ksKalas3': 0.5, 'ksDirek': 2, 'ksSutun': 2, 'ksMorSutun': 2, 'ksKemer': 2}
 
@@ -17,16 +21,19 @@ class Yapi:
     def ek(s, t, x, y, **kw):
         """t turunu x (blok merkezi) ve y (alt yuz, blok) konumuna koy"""
         s.n += 1; k = round(y * 2)   # kacinci yarim sira (dikey bosluk icin)
-        o = {'t': t, 'x': round(x * S * GX, 3), 'z': 0, 'y': round(y * S + k * GY, 3), 'p': 'ana.0', 'id': '%s%d' % (t, s.n)}
-        o.update(kw); s.L.append(o)
+        for d in DERIN:
+            o = {'t': t, 'x': round(x * S * GX, 3), 'z': round(d * S * GX, 3), 'y': round(y * S + k * GY, 3), 'p': 'ana.0', 'id': '%s%d%s' % (t, s.n, 'aob'[d + 1])}
+            if t.startswith('ksTas') or t == 'ksKemer': o.update(TAS)
+            if t == 'ksTNT': o['patlama'] = {'r': 4.5, 'guc': 13}   # v8.4: buyuk patlama (pilot kurali): cevredeki kirilabilirler parcalanir, digerleri itilir
+            o.update(kw); s.L.append(o)
     def sira(s, y, *parca):
         """bir sira: (tur, x) ciftleri"""
         for t, x in parca: s.ek(t, x, y)
     def sinir(s):
         x0 = min(p['x'] / S / GX - GEN.get(p['t'], 1) / 2 for p in s.L); x1 = max(p['x'] / S / GX + GEN.get(p['t'], 1) / 2 for p in s.L)
         return x0, x1
-    def bolum(s, top, r=None, rz=1.35):
-        x0, x1 = s.sinir(); r = r or max(-x0, x1) * S + 0.45
+    def bolum(s, top, r=None, rz=1.5 * S + 0.2):
+        x0, x1 = s.sinir(); r = r or max(-x0, x1) * S + 0.25
         return {'ad': s.ad, 'top': top, 'kaide': 'mor', 'kam': {'pitch': 1, 'yaw': 0, 'atis': 0.9, 'genis': 0.95},
                 'ada': [{'id': 'ana', 'x': 0, 'z': 0, 'katlar': [{'sekil': 'kare', 'r': round(r, 3), 'rz': rz, 'ust': 0, 'kal': 0.75}]}], 'kopru': [], 'parca': s.L}
 
@@ -50,7 +57,7 @@ def gemi():
     Y.ek('ksDirek', m, 2.5); Y.ek('ksKalas1', m, 4.5); Y.ek('ksKalas2', m, 5.0); Y.ek('ksKalas1', m, 5.5); Y.ek('ksKalas2', m, 6.0); Y.ek('ksKalas2', m, 6.5); Y.ek('ksKalas1', m, 7.0)
     m = 1.25
     Y.ek('ksDirek', m, 2.5); Y.ek('ksKalas2', m, 4.5); Y.ek('ksKalas2', m, 5.0); Y.ek('ksKalas1', m, 5.5); Y.ek('ksKalas2', m, 6.0); Y.ek('ksKalas1', m, 6.5)
-    return Y.bolum(18, r=4.6 * S)
+    return Y.bolum(50, r=4.6 * S)
 
 # ---------------- 32 Kale ----------------
 def kale():
@@ -71,7 +78,7 @@ def kale():
     Y.sira(5, ('ksSandikM', -2), ('ksTNT', 0), ('ksSandikK', 2))
     for p in Y.L:
         if p['t'] == 'ksKemer': p['bos'] = 1
-    return Y.bolum(20)
+    return Y.bolum(56)
 
 # ---------------- 33 Kuru Kafa ----------------
 def kafa():
@@ -101,7 +108,7 @@ def fener():
     Y.sira(7, (R, 0))
     for p in Y.L:
         if p['t'] == 'ksKemer': p['bos'] = 1
-    return Y.bolum(20)
+    return Y.bolum(50)
 
 # ---------------- 35 Foxi Tilki Basi ----------------
 def tilki():
@@ -114,7 +121,7 @@ def tilki():
     Y.sira(4, *[(O, x) for x in range(-3, 4)])
     Y.sira(5, (O, -3), (O, -2), (O, 2), (O, 3))
     Y.sira(6, (O, -3), (O, 3))
-    return Y.bolum(16)
+    return Y.bolum(52)
 
 # ---------------- 36 Tas Kopru ----------------
 def kopru():
@@ -129,7 +136,7 @@ def kopru():
     Y.sira(5, (T2, -3.5), ('ksSiseY', -2), ('ksSiseB', -1), ('ksSiseB', 2), (T2, 3.5))   # kule baslari (ince tas tabla yok -> 2'lik tas), siseler kopru ustunde
     Y.sira(6, ('ksBuz', -4), ('ksBuz', -3), ('ksSandik', 3), ('ksSandik', 4))
     Y.sira(7, ('ksBuz', -3.5), ('ksSandik', 3.5))
-    return Y.bolum(18)
+    return Y.bolum(60)
 
 V = {'surum': 1, 'sira': [31, 32, 33, 34, 35, 36], 'bolumler': {31: gemi(), 32: kale(), 33: kafa(), 34: fener(), 35: tilki(), 36: kopru()}}
 json.dump(V, open(OUT, 'w'), ensure_ascii=False, indent=0)

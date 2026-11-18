@@ -260,7 +260,8 @@ export function pilotKur(A) {
       const y0 = p.y != null ? p.y : (kat.ust != null ? kat.ust : kat.cy), q = new CANNON.Quaternion(); q.setFromEuler((p.rx || 0) * D2R, (p.ry || 0) * D2R, (p.rz || 0) * D2R, 'YXZ');
       const c = A.parcaKur(p.t, pi, (h) => [p.x, y0 + h / 2 + 0.003, p.z], q);
       c.pid = p.id || p.t;
-      if (p.bos && p.t === 'ksKemer') kemerBos(c);   // v8.3: kemer acikligi gercek bosluk (top icinden gecer)
+      if (p.bos && p.t === 'ksKemer') kemerBos(c);
+      if (p.km) { c.body.mass *= p.km; c.body.updateMassProperties(); }   // v8.4: parca basina kutle carpani (resim bolumlerinde 3 sira tas)   // v8.3: kemer acikligi gercek bosluk (top icinden gecer)
       if (t.govde) Object.assign(c.body, t.govde);   // tur basina govde ayari (domino: az sonum, gec uyku)
       const esik = p.kir != null ? p.kir : t.carp;
       if (esik) carpmaKir(c, esik);
@@ -425,7 +426,7 @@ export function pilotKur(A) {
   function kaybet() { const g = A.g; A.sfx('lose'); kart('Toplar bitti!', true, '<h2>' + g.left + ' parça kaldı</h2><p>Deneme bölümü: ilerleme kaydedilmez.</p>'); }
 
   async function yukle() {
-    try { VERI = await (await fetch(RESIM ? 'pilot/resim.json?v=1' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
+    try { VERI = await (await fetch(RESIM ? 'pilot/resim.json?v=2' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
     B = VERI && VERI.bolumler && VERI.bolumler[N] || null;
     if (B) Y = { veri: 1, engel: [], ad: B.ad, top: B.top, make: () => [] };
     if (B && PS.yukle) await PS.yukle(B.parca.map((p) => p.t));   // v5.6: Blender bloklarinin model dosyalari
