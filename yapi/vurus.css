@@ -1,0 +1,19 @@
+/* v7.0 (Adem 18 Kas 2026): vuruş hissi — kombo sayacı ve canlı "+n" yazısı. Kapatma: ?vurus=0 */
+#kombo{position:fixed;left:50%;top:calc(var(--sat) + 118px);z-index:7;pointer-events:none;display:flex;flex-direction:column;align-items:center;
+  transform:translate(-50%,0) scale(.4);opacity:0;transition:opacity .25s ease,transform .25s ease;font-family:var(--disp)}
+#kombo small{font-size:13px;letter-spacing:2px;color:#fff;padding:2px 10px;border-radius:10px;background:linear-gradient(180deg,#7b3cff,#4a17b8);
+  box-shadow:0 2px 0 #2a1666;margin-bottom:-4px;position:relative;z-index:1}
+#kombo b{font-weight:400;font-size:46px;line-height:1;color:#ffe14a;
+  text-shadow:-3px 0 0 #2a1666,3px 0 0 #2a1666,0 -3px 0 #2a1666,0 3px 0 #2a1666,0 6px 0 #2a1666,0 0 18px rgba(255,210,63,.75)}
+#kombo.gor{opacity:1;transform:translate(-50%,0) scale(1)}
+#kombo.git{opacity:0;transform:translate(-50%,-14px) scale(.85);transition-duration:.35s}
+#kombo.k2 b{color:#ffad2e;text-shadow:-3px 0 0 #5a1d00,3px 0 0 #5a1d00,0 -3px 0 #5a1d00,0 3px 0 #5a1d00,0 6px 0 #5a1d00,0 0 20px rgba(255,140,30,.8)}
+#kombo.k3 b{color:#ff6fb5;text-shadow:-3px 0 0 #5c0b38,3px 0 0 #5c0b38,0 -3px 0 #5c0b38,0 3px 0 #5c0b38,0 6px 0 #5c0b38,0 0 22px rgba(255,90,170,.85)}
+#kombo.k4 b{color:#c9a6ff;text-shadow:-3px 0 0 #2a0a66,3px 0 0 #2a0a66,0 -3px 0 #2a0a66,0 3px 0 #2a0a66,0 6px 0 #2a0a66,0 0 26px rgba(180,120,255,.95)}
+#kombo.k3 small,#kombo.k4 small{background:linear-gradient(180deg,#ff4fa0,#b0156a)}
+#kombo.vur b{animation:kvur .32s cubic-bezier(.2,1.6,.4,1)}
+@keyframes kvur{0%{transform:scale(1.55) rotate(-6deg)}60%{transform:scale(.92) rotate(2deg)}100%{transform:scale(1) rotate(0)}}
+/* kırılan blokların "+n" yazısı: altın, zıplayarak yükselir */
+body.vurus .fl.mini{font-size:26px;color:#ffe14a;animation:flv .85s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes flv{0%{transform:translate(-50%,8px) scale(.2);opacity:0}22%{transform:translate(-50%,-22px) scale(1.35);opacity:1}40%{transform:translate(-50%,-30px) scale(1)}100%{transform:translate(-50%,-78px) scale(.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){#kombo.vur b{animation:none}body.vurus .fl.mini{animation-duration:.6s}}
