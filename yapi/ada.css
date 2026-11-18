@@ -1,0 +1,83 @@
+/* Foxi Smash v7.0 (Adem 18 Kas 2026): Hazine Adasi insasi - ana menu katmani (ada.js + merkez.js) */
+.ada-c{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+
+/* ust: Foxi'nin Adasi ilerleme hapi (logonun altinda) */
+.ada-bar{position:relative;z-index:3;align-self:center;display:flex;align-items:center;gap:8px;margin:6px auto 0;padding:5px 14px 5px 6px;height:48px;border-radius:26px;border:3px solid #fff3c4;
+  background:linear-gradient(180deg,#3f7cf0 0%,#2456cc 55%,#1a3fa8 100%);box-shadow:0 4px 0 #0c2470,0 8px 14px rgba(0,0,0,.3),inset 0 3px 0 rgba(255,255,255,.35);color:#fff;cursor:pointer;
+  animation:abGir .6s cubic-bezier(.2,1.5,.4,1) .15s both;-webkit-tap-highlight-color:transparent;transition:transform .12s}
+.ada-bar:active{transform:scale(.94)}
+.ab-ik{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,#fff7d0,#ffcf3a 60%,#e89a10);border:2.5px solid #7a3a00;box-shadow:0 2px 0 #7a3a00}
+.ab-ik svg{width:28px;height:28px;animation:abSal 2.4s ease-in-out infinite;transform-origin:20% 90%}
+.ab-t{display:flex;flex-direction:column;gap:4px;min-width:118px}
+.ab-t b{font:400 16px/1 var(--disp);letter-spacing:.3px;text-shadow:0 2px 0 #0c2470;white-space:nowrap}
+.ab-cub{position:relative;height:11px;border-radius:6px;background:#0c1f66;box-shadow:inset 0 2px 2px rgba(0,0,0,.45);overflow:hidden}
+.ab-cub i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(180deg,#fff6a0,#ffc81e 55%,#f08a00);box-shadow:inset 0 -2px 0 rgba(140,60,0,.4);transition:width .8s cubic-bezier(.3,1.3,.5,1)}
+.ab-cub i:after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.8) 50%,transparent 70%);background-size:220% 100%;animation:abParla 2.2s linear infinite}
+.ada-bar em{font:400 19px/1 var(--disp);font-style:normal;color:#ffe36b;text-shadow:0 2px 0 #7a3a00}
+.ada-bar.hazir{animation:abGir .6s cubic-bezier(.2,1.5,.4,1) .15s both,abNabiz 1.4s ease-in-out 1s infinite}
+.ada-bar.hazir:before{content:"!";position:absolute;right:-8px;top:-9px;width:24px;height:24px;border-radius:50%;background:linear-gradient(180deg,#ff6a6a,#d81e36);border:2.5px solid #fff;font:400 15px/19px var(--disp);text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.3);animation:abZip 1s ease-in-out infinite}
+
+/* insa rozeti: siradaki yapinin ustunde yuzen cekic + fiyat */
+.ada-rz{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.ada-roz{position:absolute;left:0;top:0;display:none;flex-direction:column;align-items:center;margin:-74px 0 0 -40px;width:80px;padding:0;border:0;background:none;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;will-change:transform}
+.ada-roz.on{display:flex}
+.ar-ik{position:relative;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;border:3.5px solid #fff;
+  background:radial-gradient(circle at 50% 28%,#8fd0ff,#2f74e6 60%,#1a48b0);box-shadow:0 4px 0 #0c2470,0 8px 14px rgba(0,0,0,.35),inset 0 3px 0 rgba(255,255,255,.4);animation:arVur 1.6s ease-in-out infinite}
+.ar-ik svg{width:38px;height:38px;filter:drop-shadow(0 2px 0 rgba(0,0,0,.3))}
+.ar-ik:after{content:"";position:absolute;left:50%;bottom:-13px;margin-left:-9px;border:9px solid transparent;border-top:11px solid #fff;border-bottom:0}
+.ar-f{display:flex;align-items:center;gap:3px;margin-top:9px;padding:3px 10px 3px 4px;border-radius:14px;background:#13286e;border:2.5px solid #fff3c4;font:400 16px/1 var(--disp);color:#fff;text-shadow:0 2px 0 #050c30;box-shadow:0 3px 0 rgba(0,0,0,.35);white-space:nowrap}
+.ar-f .coin{width:20px;height:20px}.ar-f .i3{width:22px;height:22px}
+.ada-roz.hazir .ar-ik{background:radial-gradient(circle at 50% 28%,#c8ff9a,#4fcf2a 60%,#2a9a10);box-shadow:0 4px 0 #14600a,0 0 0 0 rgba(140,255,90,.7),0 8px 14px rgba(0,0,0,.35),inset 0 3px 0 rgba(255,255,255,.5);animation:arVur 1.6s ease-in-out infinite,arHalka 1.4s ease-out infinite}
+.ada-roz.hazir .ar-f{background:#1f7a10;border-color:#d8ffb0}
+.ada-roz.kilit .ar-ik{background:radial-gradient(circle at 50% 28%,#c8b8ff,#7a5ae0 60%,#4a2ab0);box-shadow:0 4px 0 #2a1470,0 8px 14px rgba(0,0,0,.35),inset 0 3px 0 rgba(255,255,255,.4)}
+.ada-roz:active .ar-ik{transform:scale(.88)}
+
+/* insa karti */
+.ada-k .ak-res{position:relative;height:150px;margin:-4px auto 6px;display:grid;place-items:center}
+.ada-k .ak-res .m-isin{position:absolute;inset:-20px;opacity:.55}
+.ada-k .ak-res img{position:relative;width:170px;height:170px;object-fit:contain;opacity:0;transform:scale(.6);transition:opacity .25s,transform .45s cubic-bezier(.2,1.6,.4,1);filter:drop-shadow(0 8px 8px rgba(60,30,0,.35))}
+.ada-k .ak-res img.on{opacity:1;transform:none;animation:akSal 3s ease-in-out .5s infinite}
+.ak-sart{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.ak-sart span{display:flex;align-items:center;gap:5px;padding:5px 12px 5px 6px;border-radius:16px;background:#fff;border:2.5px solid #2f9a1e;font:400 17px/1 var(--disp);color:#2f6a1e}
+.ak-sart span.yok{border-color:#d0a050;color:#8a4a00;background:#fff4dc}
+.ak-sart .coin{width:24px;height:24px}.ak-sart .i3{width:26px;height:26px}
+.ak-not{margin:10px 0 0!important;text-align:center;font-weight:800}
+.m-btn.ak-in{animation:abNabiz 1.2s ease-in-out infinite}
+.m-btn.ak-in .coin{width:28px;height:28px;margin:0 2px 0 8px;vertical-align:-5px}
+
+/* ada genel karti: yapi listesi */
+.ada-g p{text-align:center;margin:0 0 10px!important}
+.ag-kay{display:flex;flex-direction:column;gap:7px;max-height:52vh;overflow:auto;padding:2px}
+.ag-s{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:14px;background:#fff;border:2.5px solid #e2c48a;color:#5a3010}
+.ag-s.k{background:#eaffdf;border-color:#5ac03a}
+.ag-s.sr{background:#fff8d6;border-color:#ffb81e;box-shadow:0 0 0 3px rgba(255,200,40,.35)}
+.ag-s.yak{opacity:.55}
+.ag-n{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#c8a46a;color:#fff;font:400 18px/1 var(--disp);border:2px solid #7a5020}
+.ag-s.k .ag-n{background:#3fb424;border-color:#1f6a10}.ag-s.k .ag-n svg{width:22px;height:22px}
+.ag-s.sr .ag-n{background:#ffb81e;border-color:#8a4a00}
+.ag-ad{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.ag-ad b{font:400 17px/1.1 var(--disp)}
+.ag-ad small{display:flex;align-items:center;gap:3px;font-weight:800;font-size:13px}
+.ag-ad .coin{width:16px;height:16px}.ag-ad .i3{width:17px;height:17px}
+.ag-git{flex:none;height:38px;padding:0 16px;border-radius:12px;border:2.5px solid #14600a;background:linear-gradient(180deg,#8ef060,#3fb424);color:#fff;font:400 17px/1 var(--disp);text-shadow:0 2px 0 #14600a;box-shadow:0 3px 0 #14600a;cursor:pointer}
+
+/* insa bitti ilani */
+.ada-ilan{position:absolute;left:0;right:0;top:30%;z-index:6;display:flex;justify-content:center;pointer-events:none}
+.ai-ic{display:flex;flex-direction:column;align-items:center;animation:aiGir .55s cubic-bezier(.2,1.6,.4,1) both}
+.ai-ic b{margin-top:-6px;padding:5px 18px;border-radius:14px;background:linear-gradient(180deg,#5fe036,#2f9a1e);border:3px solid #fff;font:400 20px/1 var(--disp);letter-spacing:1px;color:#fff;text-shadow:0 2px 0 #14600a;box-shadow:0 4px 0 #14600a,0 8px 14px rgba(0,0,0,.3)}
+.ada-ilan.cik .ai-ic{animation:aiCik .45s ease-in forwards}
+#merkez.ada-sars{animation:adaSars .45s cubic-bezier(.3,.7,.4,1)}
+
+@keyframes abGir{from{opacity:0;transform:translateY(-14px) scale(.6)}to{opacity:1;transform:none}}
+@keyframes abSal{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+@keyframes abParla{from{background-position:120% 0}to{background-position:-120% 0}}
+@keyframes abNabiz{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes abZip{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes arVur{0%,70%,100%{transform:rotate(0)}78%{transform:rotate(-14deg)}86%{transform:rotate(8deg)}93%{transform:rotate(-3deg)}}
+@keyframes arHalka{0%{box-shadow:0 4px 0 #14600a,0 0 0 0 rgba(140,255,90,.75),0 8px 14px rgba(0,0,0,.35),inset 0 3px 0 rgba(255,255,255,.5)}100%{box-shadow:0 4px 0 #14600a,0 0 0 18px rgba(140,255,90,0),0 8px 14px rgba(0,0,0,.35),inset 0 3px 0 rgba(255,255,255,.5)}}
+@keyframes akSal{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+@keyframes aiGir{0%{opacity:0;transform:scale(2.2) rotate(-6deg)}60%{opacity:1;transform:scale(.92) rotate(2deg)}100%{transform:none}}
+@keyframes aiCik{to{opacity:0;transform:translateY(-40px) scale(.8)}}
+@keyframes adaSars{0%{transform:translate(0,0)}15%{transform:translate(-7px,5px)}30%{transform:translate(6px,-4px)}45%{transform:translate(-4px,3px)}60%{transform:translate(3px,-2px)}80%{transform:translate(-1px,1px)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.ada-bar,.ab-ik svg,.ab-cub i:after,.ar-ik,.ada-roz.hazir .ar-ik,#merkez.ada-sars{animation:none!important}}
+@media (max-height:700px){.ada-bar{height:40px;margin-top:2px}.ab-ik{width:30px;height:30px}.ab-ik svg{width:22px;height:22px}.ab-t b{font-size:14px}}

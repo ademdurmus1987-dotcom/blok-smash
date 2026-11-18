@@ -5,7 +5,7 @@ Sahibi Adem; kod yazmaz, sonuçları telefonda dener. Yanıtlar Türkçe.
 ## Yapı
 - Derleme adımı YOK: Vite, TypeScript, npm paketleri, React kullanılmaz. Oyun düz ES modülleri ve tek sayfa (`yapi/index.html`) olarak GitHub Pages'te çalışır.
 - Three.js repoda hazır: `three.module.min.js`, `GLTFLoader.js`, `cannon.min.js` (fizik). Yeni kütüphane gerekiyorsa dosya olarak repoya eklenir, CDN kullanılmaz.
-- Oyun: `yapi/oyun.js` · kabuk (ana sayfa, harita, kartlar): `yapi/merkez.js` + `merkez.css` · bölümler: `yapi/bolum.js` · kazanma: `yapi/kazan2.js` · korsan tema görünümü: `yapi/tema.css`.
+- Oyun: `yapi/oyun.js` · kabuk (ana sayfa, harita, kartlar): `yapi/merkez.js` + `merkez.css` · bölümler: `yapi/bolum.js` · kazanma: `yapi/kazan2.js` · ana menüdeki Hazine Adası (altınla yapı kurma, 3B katman): `yapi/ada.js` + `ada.css` (eski menü: `?eskimenu=1`) · korsan tema görünümü: `yapi/tema.css`.
 - Blok görünümü (v6.1+): bölümlerde kullanılan bütün bloklar Blender modeli. Üretim: `blender -b --python yapi/uretici/blender/pilot_bloklar.py -- <ad...>` (Blender 5.3 tam yolla: `C:\Program Files\Blender Foundation\Blender 5.3\blender.exe`) → `yapi/model/blok/*.glb` (pilotla ortaklar `yapi/model/pilot/`). Tür ↔ model eşlemesi `yapi/blok3b.js` `LISTE`; ad, fizik, kırılma `kale.js` / `sekil.js`'te aynı kalır. Eski kodla çizilmiş görünüm: adrese `?b3=0`. Ayrıntı: `yapi/sekil_isleri.md` sonu.
 - Oyun kamerasında bir blok ~30 piksel: ince ayrıntı ve koyu çerçeve kaybolur; iri, sade kabartma ve açık çerçeve okunur. Yeni modeli her zaman oyun ekranında (390x844) kontrol et.
 - Bir dosya değişince onu yükleyen satırdaki `?v=` numarasını artır, `sw.js` içindeki `CACHE` sürümünü bir artır (telefonda eski sürüm takılmasın).

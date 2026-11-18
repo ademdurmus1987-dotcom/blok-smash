@@ -6,9 +6,11 @@
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { kazanSahne } from './kazan2.js?v=3';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
+import { kazanSahne, yazi } from './kazan2.js?v=3';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
+import { ADA, adaKur } from './ada.js?v=1';   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
 const $ = (id) => document.getElementById(id);
+const ESKI_MENU = /[?&]eskimenu=1/.test(location.search);   // v7.0: eski ana menu (adasiz)
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const I3 = (n, c, st) => '<img class="i3 ' + (c || '') + '" src="ikon/3b/' + n + '.webp?v=1" alt="" draggable="false"' + (st ? ' style="' + st + '"' : '') + '>';   // v3.17: Gemini 3B ikonlar
 const svg = (ic, vb = 48) => '<svg viewBox="0 0 ' + vb + ' ' + vb + '" aria-hidden="true">' + ic + '</svg>';
@@ -30,6 +32,8 @@ const IK = {
   capa: svg('<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#0c1c58" stroke-width="9"><circle cx="24" cy="9.5" r="4"/><path d="M24 14v27M15 21h18M8 29c1 8 8 12 16 12s15-4 16-12"/></g><g stroke="#fff" stroke-width="4.5"><circle cx="24" cy="9.5" r="4"/><path d="M24 14v27M15 21h18M8 29c1 8 8 12 16 12s15-4 16-12"/></g></g>'),
   alev: svg('<path d="M25 3c1 9 12 13 12 26a13 13 0 0 1-26 0c0-6 3-10 6-13 0 4 2 6 4 6 0-7-1-13 4-19z" fill="#ff7a1c" stroke="#7a1400" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 24c1 4 6 6 6 11a6 6 0 0 1-12 0c0-4 4-6 6-11z" fill="#ffe36b"/>'),
   blok: svg('<path d="M24 4l18 9v21l-18 10L6 34V13z" fill="#3d7bff" stroke="#0c2a78" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 4l18 9-18 10L6 13z" fill="#8fc0ff" stroke="#0c2a78" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 23v21" stroke="#0c2a78" stroke-width="2.5"/>'),
+  cekic: svg('<path d="M27 21L9 39" stroke="#5a2a08" stroke-width="8" stroke-linecap="round"/><path d="M27 21L9 39" stroke="#c8843a" stroke-width="4" stroke-linecap="round"/><rect x="18" y="5" width="24" height="14" rx="3" transform="rotate(45 30 12)" fill="#b8c4d8" stroke="#2a3450" stroke-width="2.5"/><path d="M24 8l9 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".8"/>'),
+  bayrak: svg('<path d="M11 5v39" stroke="#5a2a08" stroke-width="5" stroke-linecap="round"/><path d="M13 7c8-4 14 4 27 0v18c-13 4-19-4-27 0z" fill="#e8413c" stroke="#6a0a1c" stroke-width="2.5" stroke-linejoin="round"/><circle cx="26" cy="15" r="4.2" fill="#fff"/><path d="M22.5 20.5l7 0" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="11" cy="5" r="3.4" fill="#ffc81e" stroke="#7a3a00" stroke-width="1.8"/>'),
   top: svg('<circle cx="24" cy="26" r="17" fill="#3a3f5c" stroke="#12142a" stroke-width="2.5"/><path d="M13 21a12 12 0 0 1 10-8" fill="none" stroke="#aab0d8" stroke-width="4" stroke-linecap="round"/><path d="M29 10l5-6" stroke="#c8843a" stroke-width="3.5" stroke-linecap="round"/><path d="M36 1l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" fill="#ffd23f"/>')
 };
 // altin yigini (kazanma sahnesi): alttan uste dizilen paralar
@@ -74,6 +78,7 @@ export function merkezKur(A) {
     '<main class="m-sayfalar" id="m-sayfalar">' +
     '<section class="m-sayfa" id="s-magaza"><div class="m-ic"><h2 class="m-sb">Mağaza</h2><div class="m-kay" id="d-liste"></div></div></section>' +
     '<section class="m-sayfa" id="s-ana"><div class="m-ic"><h1 class="m-logo"><b>FOXI</b><span>SMASH</span></h1>' +
+    (ESKI_MENU ? '' : '<button class="ada-bar" id="ada-bar" aria-label="Foxi\'nin Adası"><span class="ab-ik">' + IK.bayrak + '</span><span class="ab-t"><b>Foxi\'nin Adası</b><span class="ab-cub"><i id="ada-cub"></i></span></span><em id="ada-say">0/8</em></button>') +
     '<div class="m-sahne" id="m-sahne"><div class="m-isin"></div><canvas id="m-kc" aria-label="Korsan Tilki"></canvas><div class="m-kil">' + IK.kilit + '<b id="m-kilyaz"></b></div><div class="m-balon" id="m-balon"></div>' +
     '<div class="m-yan sol"><button class="m-yb" id="m-gorev"><span class="m-yk">' + I3('gorev') + '<em class="m-rz" id="m-gorevn"></em></span><small>Görevler</small></button>' +
     '<button class="m-yb" id="m-gunluk"><span class="m-yk">' + I3('hediye') + '<em class="m-rz" id="m-gunlukn">!</em></span><small>Günlük</small></button></div>' +
@@ -91,6 +96,73 @@ export function merkezKur(A) {
   document.body.append(M, KZ, P, FV);
   // kartlar ve merkez oyun alanina dokunus gecirmesin
   for (const e of [M, P, KZ, FV]) for (const ev of ['pointerdown', 'pointerup', 'pointermove']) e.addEventListener(ev, (x) => x.stopPropagation());
+
+  // ---------------- v7.0: HAZINE ADASI (Adem 18 Kas: B yonu) ----------------
+  // Altinla sirayla 8 yapi kurulur (ilk teslimde 3'u hazir), yildizlar siradaki yapinin kilidini acar. 3B katman: ada.js
+  let ADK = null, insaVar = false;
+  const RZ = document.createElement('div'); RZ.className = 'ada-rz';
+  RZ.innerHTML = '<button class="ada-roz" id="ada-roz" aria-label="İnşa et"><span class="ar-ik">' + IK.cekic + '</span><span class="ar-f" id="ada-rf"></span></button>';
+  if (!ESKI_MENU) {
+    M.insertBefore(RZ, M.querySelector('.m-alt'));
+    ADK = adaKur({ kap: M.querySelector('.m-bg'), SV, kare: rozetYer });
+    if (!ADK) RZ.remove();
+  }
+  const adaSay = () => ADA.filter((a, i) => ADK && ADK.kurulu(i)).length;
+  function rozetYer() {
+    const r = $('ada-roz'), s = ADK.sira(), a = ADA[s];
+    const gor = acik && sekmeAd === 'ana' && !insaVar && s >= 0 && a.hazir !== false && !P.classList.contains('on');
+    r.classList.toggle('on', gor); if (!gor) return;
+    const p = ADK.ekran(s); if (!p) { r.classList.remove('on'); return; }
+    r.style.transform = 'translate(' + p.x.toFixed(1) + 'px,' + (p.y - 6 + Math.sin(performance.now() / 260) * 4).toFixed(1) + 'px)';
+  }
+  function adaCiz() {
+    if (!ADK) return;
+    const n = adaSay(), s = ADK.sira(), a = ADA[s];
+    $('ada-say').textContent = n + '/' + ADA.length; $('ada-cub').style.width = Math.round(100 * n / ADA.length) + '%';
+    const r = $('ada-roz');
+    if (s >= 0 && a.hazir !== false) {
+      const yOk = yilTop() >= a.y, aOk = (SV.altin || 0) >= a.f;
+      r.classList.toggle('hazir', yOk && aOk); r.classList.toggle('kilit', !yOk);
+      $('ada-rf').innerHTML = yOk ? '<i class="coin"></i>' + a.f : I3('yildiz') + a.y;
+      $('ada-bar').classList.toggle('hazir', yOk && aOk);
+    } else $('ada-bar').classList.remove('hazir');
+    ADK.guncelle();
+  }
+  function adaKarti(i) {
+    const a = ADA[i], al = SV.altin || 0, yl = yilTop(), yOk = yl >= a.y, aOk = al >= a.f;
+    pop(bas(a.ad) + '<div class="p-ic ada-k"><div class="ak-res"><div class="m-isin"></div><img id="ak-img" alt=""></div><p>' + esc(a.ac) + '</p>' +
+      '<div class="ak-sart"><span class="' + (yOk ? 'ok' : 'yok') + '">' + I3('yildiz') + '<b>' + Math.min(yl, a.y) + ' / ' + a.y + '</b></span><span class="' + (aOk ? 'ok' : 'yok') + '"><i class="coin"></i><b>' + Math.min(al, a.f) + ' / ' + a.f + '</b></span></div></div>' +
+      (yOk && aOk ? '<button class="m-btn uz ak-in" id="ak-in">İnşa Et <i class="coin"></i>' + a.f + '</button>'
+        : '<p class="ak-not">' + (!yOk ? (a.y - yl) + ' yıldız daha topla, kilit açılsın!' : (a.f - al) + ' altın daha lazım. Bölüm geç, altın kazan!') + '</p><button class="m-btn tur" id="ak-oy">Bölüm ' + maxL() + ' Oyna</button>'));
+    ADK.resim(i).then((u) => { const im = $('ak-img'); if (im && u) { im.src = u; im.classList.add('on'); } });
+    if ($('ak-in')) $('ak-in').onclick = () => { tik(); insaEt(i); };
+    if ($('ak-oy')) $('ak-oy').onclick = () => { tik(); pkapat(); bolumKarti(maxL()); };
+  }
+  function adaGenel() {
+    const s = ADK.sira();
+    pop(bas('Foxi\'nin Adası') + '<div class="p-ic ada-g"><p>Altınla adayı kur, yıldızlarla yeni yapıların kilidini aç!</p><div class="ag-kay">' +
+      ADA.map((a, i) => { const k = ADK.kurulu(i), yak = a.hazir === false, sr = i === s && !yak;
+        return '<div class="ag-s' + (k ? ' k' : sr ? ' sr' : '') + (yak ? ' yak' : '') + '"><span class="ag-n">' + (k ? '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' : i + 1) + '</span><span class="ag-ad"><b>' + esc(a.ad) + '</b><small>' +
+          (k ? 'Kuruldu' : yak ? 'Yakında' : I3('yildiz') + a.y + ' &nbsp;<i class="coin"></i>' + a.f) + '</small></span>' + (sr ? '<button class="ag-git" data-i="' + i + '">Kur</button>' : '') + '</div>'; }).join('') +
+      '</div></div>');
+    for (const b of P.querySelectorAll('.ag-git')) b.onclick = () => { tik(); adaKarti(+b.dataset.i); };
+  }
+  function sars() { M.classList.remove('ada-sars'); void M.offsetWidth; M.classList.add('ada-sars'); }
+  function insaEt(i) {
+    const a = ADA[i]; if ((SV.altin || 0) < a.f || yilTop() < a.y || insaVar) return;
+    insaVar = true; pkapat(); $('ada-roz').classList.remove('on');
+    const eski = SV.altin || 0; SV.altin = eski - a.f; SV.ada = SV.ada || { y: [] }; SV.ada.y.push(a.id); A.save();
+    const p = ADK.ekran(i), h = $('m-ahap').querySelector('.coin').getBoundingClientRect(), n = 10;
+    ucur2d(h.left + h.width / 2, h.top + h.height / 2, p.ax, p.ay - 20, n, (k) => { altinYaz(Math.round(eski - a.f * (k + 1) / n)); A.ses('para', 0.4, 1.3 - k * 0.03); });
+    setTimeout(() => ADK.insa(i, { carpinca: () => { sars(); A.sfx('slap'); A.ses('sandik', 0.6); A.buzz([70, 30, 50]); } }).then(() => {
+      A.sfx('bonus'); if (T3) T3.t.oyna('sevin');
+      const il = document.createElement('div'); il.className = 'ada-ilan';
+      il.innerHTML = '<div class="ai-ic">' + yazi(a.ad.toLocaleUpperCase('tr'), 'altin', { w: 'min(86vw,400px)', derin: 9 }) + '<b>İNŞA EDİLDİ!</b></div>';
+      M.appendChild(il); setTimeout(() => il.classList.add('cik'), 1900); setTimeout(() => il.remove(), 2400);
+      insaVar = false; altinYaz(SV.altin || 0); adaCiz();
+    }), 900 + n * 55);
+  }
+  if (ADK) { $('ada-roz').onclick = () => { tik(); const s = ADK.sira(); if (s >= 0) adaKarti(s); }; $('ada-bar').onclick = () => { tik(); adaGenel(); }; }
 
   // ---------------- yardimcilar ----------------
   function avIc(id) {
@@ -163,6 +235,7 @@ export function merkezKur(A) {
     $('m-seri').innerHTML = I.seri >= 2 ? IK.alev + ' ' + I.seri + ' bölümlük seri' : '';
     const tilkiAcik = acikMi('tilki', max), kr = KARAKTERLER.find((k) => k.id === 'tilki');
     $('m-sahne').classList.toggle('kilitli', !tilkiAcik); $('m-kilyaz').textContent = 'Bölüm ' + kr.sart + '\'e ulaş, ' + kr.ad + '\'yi kazan!';
+    adaCiz();
   }
 
   // ---------------- 3B tilki (ana sayfanin ortasi) ----------------
@@ -473,7 +546,7 @@ export function merkezKur(A) {
   // ---------------- ac / kapat ----------------
   // o.ilk: oyun yeni acildi (gunluk odul karti cikar); o.ucan: kazanilan altinlar sayaca ucar
   function ac(o = {}) {
-    durak = false; sekme('ana', true); ciz(); if (o.sekme) { hOdak = o.odak || 0; setTimeout(() => sekme(o.sekme), 30); }   /* v5.0: final sahnesinden haritaya */ acik = true; M.classList.remove('cik'); M.classList.add('on', 'gir'); setTimeout(() => M.classList.remove('gir'), 450);
+    durak = false; sekme('ana', true); if (ADK) ADK.goster(true); ciz(); if (o.sekme) { hOdak = o.odak || 0; setTimeout(() => sekme(o.sekme), 30); }   /* v5.0: final sahnesinden haritaya */ acik = true; M.classList.remove('cik'); M.classList.add('on', 'gir'); setTimeout(() => M.classList.remove('gir'), 450);
     tilkiKur().then((t) => { if (t) { t.boyut(); if (o.ucan) t.t.oyna('sevin', 2.2); else t.t.oyna('selam', 1.6); } });
     A.muzikBasla();
     sira.length = 0;   // v3.15: karsilama sarkisi artik acilis ekraninin kendisi (index.html); burada yalniz Foxi'ye dokununca
@@ -483,7 +556,7 @@ export function merkezKur(A) {
     if (o.ucan) { const u = o.ucan; altinYaz(u.eski); setTimeout(() => ucur(u.x, u.y, u.n, u.eski, u.yeni), 380); setTimeout(sonraki, 1900); }
     else setTimeout(sonraki, o.ilk ? 900 : 300);
   }
-  function kapat() { acik = false; M.classList.add('cik'); setTimeout(() => { if (!acik) M.classList.remove('on', 'cik'); }, 440); }
+  function kapat() { acik = false; if (ADK) setTimeout(() => { if (!acik) ADK.goster(false); }, 460); M.classList.add('cik'); setTimeout(() => { if (!acik) M.classList.remove('on', 'cik'); }, 440); }
 
   $('m-prof').onclick = () => { tik(); profilKarti(); };
   $('m-ayar').onclick = () => { tik(); ayarKarti(false); };
