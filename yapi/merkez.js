@@ -8,7 +8,8 @@ import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { kazanSahne, yazi } from './kazan2.js?v=3';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
-import { ADA, adaKur } from './ada.js?v=1';   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
+import { ADA, adaKur } from './ada.js?v=1';
+import { insaKur } from './insa.js?v=1';   // v7.2: (Adem 18 Kas) ayri Insa sayfasi (gemi 10 asama)   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
 const $ = (id) => document.getElementById(id);
 const ESKI_MENU = !/[?&]ada=1/.test(location.search);   // v7.1: (Adem 18 Kas) ada ana sayfadan kaldirildi (ayri sayfa olacak); deneme: ?ada=1
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -26,6 +27,7 @@ const IK = {
   // altin kesesi: magaza
   magaza: '<img class="ik3" src="ikon/magaza.webp?v=1" alt="" draggable="false">',
   harita: '<img class="ik3" src="ikon/harita.webp?v=1" alt="" draggable="false">',
+  insa: '<img class="ik3" src="ikon/insa.webp?v=1" alt="" draggable="false">',
   gorev: svg('<circle cx="22" cy="26" r="19" fill="#e8413c" stroke="#6a0a1c" stroke-width="2.5"/><circle cx="22" cy="26" r="13.5" fill="#fff"/><circle cx="22" cy="26" r="8.5" fill="#e8413c"/><circle cx="22" cy="26" r="3.5" fill="#fff"/><path d="M22 26L41 7" stroke="#4a2406" stroke-width="3.2" stroke-linecap="round"/><path d="M36 4l1 7 7 1-5 5-6-1-2-7z" fill="#ffc81e" stroke="#7a3a00" stroke-width="2" stroke-linejoin="round"/>'),
   hediye: svg('<rect x="7" y="21" width="34" height="22" rx="3" fill="#e8413c" stroke="#6a0a1c" stroke-width="2.5"/><rect x="4" y="13" width="40" height="10" rx="3" fill="#ff6a5a" stroke="#6a0a1c" stroke-width="2.5"/><rect x="20" y="13" width="8" height="30" fill="#ffd23f" stroke="#8a5a00" stroke-width="2"/><path d="M24 13c-9-11-17-3-9 0zM24 13c9-11 17-3 9 0z" fill="#ffd23f" stroke="#8a5a00" stroke-width="2.2" stroke-linejoin="round"/>'),
   sandik: svg('<path d="M6 23c0-10 6-14 18-14s18 4 18 14z" fill="#c07a30" stroke="#4a2406" stroke-width="2.5" stroke-linejoin="round"/><rect x="6" y="22" width="36" height="20" rx="3" fill="#9a5a20" stroke="#4a2406" stroke-width="2.5"/><path d="M14.5 10v32M33.5 10v32" stroke="#ffc81e" stroke-width="4.5"/><rect x="6" y="20.5" width="36" height="5" fill="#ffc81e" stroke="#7a4a00" stroke-width="1.6"/><rect x="19.5" y="19" width="9" height="11" rx="2.5" fill="#ffe36b" stroke="#7a4a00" stroke-width="2"/><circle cx="24" cy="24.5" r="1.8" fill="#7a4a00"/>'),
@@ -85,8 +87,9 @@ export function merkezKur(A) {
     '<div class="m-yan sag"><button class="m-yb" id="m-sandik"><span class="m-yk">' + I3('sandik') + '<em class="m-rz" id="m-sandikn">!</em><span class="m-mc"><i id="m-sandikc"></i></span></span><small>Hazine</small></button>' +
     '<button class="m-yb" id="m-korsan"><span class="m-yk">' + I3('capa') + '</span><small>Korsan</small></button></div></div>' +
     '<div class="m-oynak" id="m-oynak"><div class="m-seri" id="m-seri"></div><span class="m-zor">Zor bölüm!</span><button class="m-btn m-oyna" id="m-oyna"><b></b><small></small></button></div></div></section>' +
+    '<section class="m-sayfa" id="s-insa"><div class="m-ic" id="in-ic"></div></section>' +
     '<section class="m-sayfa" id="s-harita"><div class="m-ic"><h2 class="m-sb">Hazine Haritası</h2><div class="m-kay" id="h-kay"><div class="h-yol" id="h-yol"></div></div></div></section>' +
-    '</main><nav class="m-alt"><button data-s="magaza">' + IK.magaza + '<span>Mağaza</span></button><button data-s="ana" class="on">' + IK.ev + '<span>Ana Sayfa</span></button><button data-s="harita">' + IK.harita + '<span>Harita</span></button></nav>';
+    '</main><nav class="m-alt"><button data-s="magaza">' + IK.magaza + '<span>Mağaza</span></button><button data-s="ana" class="on">' + IK.ev + '<span>Ana Sayfa</span></button><button data-s="insa">' + IK.insa + '<span>İnşa</span></button><button data-s="harita">' + IK.harita + '<span>Harita</span></button></nav>';
   const P = document.createElement('div'); P.id = 'mpop';
   const KZ = document.createElement('div'); KZ.id = 'mkazan';
   // v3.14: (Adem 11 Kas) Foxi'nin karsilama sarkisi (Gemini videosu, sesli): 'Welcome to Foxy Smash, let's go...'
@@ -162,6 +165,8 @@ export function merkezKur(A) {
       insaVar = false; altinYaz(SV.altin || 0); adaCiz();
     }), 900 + n * 55);
   }
+  let INS = null;
+  try { INS = insaKur({ M, SV, A, sayfa: $('in-ic'), ucur2d, yazi, altinYaz, tik, oyna: () => { sekme('ana'); setTimeout(() => bolumKarti(maxL()), 380); } }); } catch (e) { console.error(e); }
   if (ADK) { $('ada-roz').onclick = () => { tik(); const s = ADK.sira(); if (s >= 0) adaKarti(s); }; $('ada-bar').onclick = () => { tik(); adaGenel(); }; }
 
   // ---------------- yardimcilar ----------------
@@ -235,7 +240,7 @@ export function merkezKur(A) {
     $('m-seri').innerHTML = I.seri >= 2 ? IK.alev + ' ' + I.seri + ' bölümlük seri' : '';
     const tilkiAcik = acikMi('tilki', max), kr = KARAKTERLER.find((k) => k.id === 'tilki');
     $('m-sahne').classList.toggle('kilitli', !tilkiAcik); $('m-kilyaz').textContent = 'Bölüm ' + kr.sart + '\'e ulaş, ' + kr.ad + '\'yi kazan!';
-    adaCiz();
+    adaCiz(); if (INS) INS.ciz();
   }
 
   // ---------------- 3B tilki (ana sayfanin ortasi) ----------------
@@ -312,9 +317,10 @@ export function merkezKur(A) {
 
   // ---------------- sekmeler ----------------
   function sekme(ad, hizli) {
-    sekmeAd = ad; const i = ['magaza', 'ana', 'harita'].indexOf(ad), sy = $('m-sayfalar');
+    sekmeAd = ad; const i = ['magaza', 'ana', 'insa', 'harita'].indexOf(ad), sy = $('m-sayfalar');
     if (hizli) { sy.style.transition = 'none'; requestAnimationFrame(() => { sy.style.transition = ''; }); }
-    sy.style.transform = 'translateX(' + (-i * 33.3334) + '%)';
+    sy.style.transform = 'translateX(' + (-i * 25) + '%)';
+    if (INS) INS.goster(ad === 'insa');
     for (const b of M.querySelectorAll('.m-alt button')) b.classList.toggle('on', b.dataset.s === ad);
     if (ad === 'magaza') magazaCiz(); if (ad === 'harita') haritaCiz(); if (ad === 'ana' && T3) T3.boyut();
   }
