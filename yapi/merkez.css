@@ -370,3 +370,25 @@ button,.m-btn,.btn,.m-yb,.gt,.gb,.ib,.p-x,[data-s]{touch-action:manipulation;-we
 
 /* v6.14 (Adem 18 Kas: arkasinda neden isiklar var): gunduz adasinda ucusan isik noktalari yok */
 .m-pus{display:none}
+/* v8.0 (Adem 18 Kas): zorluk egrisi - bolum turleri, cok zor, kaptan, altin yagmuru, sefer basligi, Foxi yardimi */
+.m-oynak.etk .m-zor{display:block}
+.m-oynak.cokzor .m-oyna{border-color:#4a0610;background:linear-gradient(180deg,#ff8a7a 0%,#e8302a 48%,#c41e1e 52%,#a01414 100%);-webkit-text-stroke-color:#4a0610;text-shadow:0 3px 0 #4a0610;box-shadow:0 7px 0 #4a0610,0 12px 18px rgba(0,0,0,.35),inset 0 4px 0 rgba(255,255,255,.5)}
+.m-oynak.cokzor .m-oyna small{text-shadow:0 2px 0 #4a0610}
+.m-oynak.cokzor .m-zor{background:linear-gradient(180deg,#ff8a7a,#e8302a);color:#fff;border-color:#4a0610;text-shadow:0 2px 0 #4a0610}
+.h-n.cokzor{box-shadow:0 6px 0 rgba(60,30,0,.45),0 0 0 3px #e8302a,0 10px 14px rgba(60,30,0,.3),inset 0 4px 0 rgba(255,255,255,.45)}
+.h-n.t-kaptan{width:80px;height:80px;margin-left:-40px;top:6px;border-color:#ffd23f;background:radial-gradient(circle at 50% 30%,#6a6a7a,#1d1d2a)!important}
+.h-n.t-altin{border-color:#ffe36b;background:radial-gradient(circle at 50% 30%,#fff3a8,#f0a81c)!important}
+.h-tur{position:absolute;right:-8px;top:-8px;width:30px;height:30px;border-radius:50%;background:#fff;border:2.5px solid #5a2a00;font:400 16px/25px system-ui,sans-serif;text-shadow:none;box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.h-sefer{position:absolute;left:50%;bottom:-14px;z-index:3;transform:translateX(-50%) rotate(-2deg);padding:5px 18px 6px;border-radius:10px;background:linear-gradient(180deg,#2a3a8c,#1a2460);border:3px solid #ffd23f;color:#fff;text-align:center;box-shadow:0 4px 0 #0c1240;pointer-events:none;white-space:nowrap}
+.h-sefer b{display:block;font:400 18px/1 var(--disp);letter-spacing:1px;color:#ffd84a;text-shadow:0 2px 0 #0c1240}
+.h-sefer small{display:block;margin-top:2px;font:600 11px/1 var(--font);opacity:.85}
+.p-zor.cz{background:linear-gradient(180deg,#ff8a7a,#e8302a);border-color:#4a0610;color:#fff;box-shadow:0 3px 0 #4a0610}
+.p-zor.ay{background:linear-gradient(180deg,#fff3a8,#ffc21a)}
+.y-foxi{margin:6px auto 0;padding:7px 12px;border-radius:12px;background:#fff4d6;border:2px solid #ffb02e;color:#6a3a00;font:600 14px/1.25 var(--font)}
+#nm>i.eg{background:rgba(36,22,100,.9)}
+#nm>i.eg em{display:block;margin-bottom:3px;font:400 15px/1 var(--disp);font-style:normal;letter-spacing:.6px;color:#ffd84a}
+#nm>i.eg-hazine{border-color:#ffd23f;background:rgba(90,52,0,.9)}
+#nm>i.eg-zincir{border-color:#7ad0ff;background:rgba(10,50,100,.9)}
+#nm>i.eg-kaptan,#nm>i.eg-zor{border-color:#ff6a5a;background:rgba(90,10,20,.9)}
+#nm>i.eg-altin{border-color:#ffe36b;background:rgba(120,80,0,.9)}
+#nm>i.eg-yardim{margin-top:8px;border-color:#7be06a;background:rgba(20,80,30,.9)}

@@ -19,7 +19,8 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=26';
+import { merkezKur } from './merkez.js?v=27';
+import * as EG from './egri.js?v=1';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
@@ -44,8 +45,9 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v5.2', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
-const zorMu = (L) => L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0);   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
+const SURUM = 'v8.0', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
+const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
 // 26-TOPLAM arasi bolumler bir kez uretilip (yapi/uretici) fizikle test edildi ve yapi/bolumler/*.json'a kaydedildi; oyun sirasinda bolum uretilmez.
 // yapi/bolumler.json: toplam bolum sayisi, parca boyu, bolum adlari. Parcalar ilk gerektiginde indirilir. ?uret=eski eski uretici (deneme).
@@ -63,7 +65,7 @@ function bolumYukle(L) {
 function bvY(L) {
   if (BV.Y.has(L)) return BV.Y.get(L);
   const p = BV.p.get(bvNo(L)); if (!p) return null; const v = p.b[L - p.ilk]; if (!v) return null;
-  const c = v.c, Y = { ad: v.ad, veri: 1, a: v.a, ip: v.ip, zor: v.zor, engel: v.engel || [], top: v.top, ek: v.ek || 0, yeni: v.yeni, make: () => c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) };
+  const c = v.c, Y = { ad: v.ad, veri: 1, a: v.a, ip: v.ip, zor: v.zor, engel: v.engel || [], top: EGRI ? EG.topSay(L, v) : v.top, ek: v.ek || 0, yeni: v.yeni, make: () => c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) };
   if (v.pl) Y.pl = v.pl; if (v.don) Y.don = v.don; if (v.denge) Y.denge = 1;
   BV.Y.set(L, Y); return Y;
 }
@@ -1377,15 +1379,90 @@ function parcaKur(col, pn, yer, donus) {
     return c;
   }
 }
+// ================= v8.0 (Adem 18 Kas): zorluk egrisi ve bolum turleri (egri.js) =================
+// PLAN: bu bolumun turu ve etiketi (EGRI kapaliysa, 1-25'te ve korsan/pilot/dene kipinde null).
+// hazine: rastgele (bolume gore sabit) 3-6 ust kup 'hedef' olur, ustunde altin elmas isareti doner; hepsi dusunce kazanilir.
+// zincir: tek atista her EG.AYAR.zincirEsik kup icin +1 top. altin: dusen her kup +1 altin (bolum sonunda). Foxi yardimi: SV.kyb.
+let PLAN = null, HZTEX = null, HZCER = null; const HZM = [];
+function hzTex() {
+  return HZTEX || (HZTEX = canvasTex(128, 160, (x, w) => {
+    x.translate(w / 2, 0); x.lineJoin = 'round';
+    x.beginPath(); x.moveTo(0, 8); x.lineTo(46, 44); x.lineTo(0, 104); x.lineTo(-46, 44); x.closePath();
+    const gr = x.createLinearGradient(0, 8, 0, 104); gr.addColorStop(0, '#fff6b0'); gr.addColorStop(0.45, '#ffd23f'); gr.addColorStop(1, '#e07a00');
+    x.fillStyle = gr; x.fill(); x.lineWidth = 8; x.strokeStyle = '#6a2a00'; x.stroke();
+    x.beginPath(); x.moveTo(-46, 44); x.lineTo(46, 44); x.moveTo(-18, 44); x.lineTo(0, 8); x.lineTo(18, 44); x.lineTo(0, 104); x.lineTo(-18, 44); x.lineWidth = 3; x.strokeStyle = 'rgba(106,42,0,.55)'; x.stroke();
+    x.beginPath(); x.moveTo(-22, 120); x.lineTo(22, 120); x.lineTo(0, 152); x.closePath(); x.fillStyle = '#ffd23f'; x.fill(); x.lineWidth = 6; x.strokeStyle = '#6a2a00'; x.stroke();
+  }));
+}
+// hedef kupun onunde altin cerceve + kose parltilari (kupun ustune cizilir, her renkte okunur)
+function hzCer() {
+  return HZCER || (HZCER = canvasTex(128, 128, (x, w, h) => {
+    const r = 18, k = 10; x.lineJoin = 'round';
+    const yol = () => { x.beginPath(); x.moveTo(k + r, k); x.arcTo(w - k, k, w - k, h - k, r); x.arcTo(w - k, h - k, k, h - k, r); x.arcTo(k, h - k, k, k, r); x.arcTo(k, k, w - k, k, r); x.closePath(); };
+    x.shadowColor = '#ffb000'; x.shadowBlur = 14; yol(); x.lineWidth = 12; x.strokeStyle = '#ffd23f'; x.stroke(); x.shadowBlur = 0;
+    yol(); x.lineWidth = 4; x.strokeStyle = '#fff6b0'; x.stroke();
+    x.fillStyle = 'rgba(255,210,63,.18)'; yol(); x.fill();
+    for (const [a, b] of [[k, k], [w - k, k], [k, h - k], [w - k, h - k]]) { x.save(); x.translate(a, b); x.fillStyle = '#fff'; x.beginPath(); for (let i = 0; i < 8; i++) { const t = i * Math.PI / 4, q = i % 2 ? 4 : 13; x.lineTo(Math.cos(t) * q, Math.sin(t) * q); } x.closePath(); x.fill(); x.restore(); }
+  }));
+}
+function hzmSil(m) { const i = HZM.indexOf(m); if (i >= 0) HZM.splice(i, 1); scene.remove(m.isr); scene.remove(m.hale); m.isr.material.dispose(); m.hale.material.dispose(); }
+function hzmKare(dt) {
+  for (const m of HZM) { m.t += dt; const p = m.c.body.position, b = Math.sin(m.t * 4) * 0.12 * S;
+    m.isr.position.set(p.x, p.y + (m.c.h || S) * 0.5 + 0.8 * S + b, p.z); m.hale.position.set(p.x, p.y, p.z); m.hale.material.opacity = 0.8 + 0.2 * Math.sin(m.t * 5); m.hale.scale.setScalar(S * (1.12 + 0.06 * Math.sin(m.t * 5))); }
+}
+function egriBasla(Y) {
+  while (HZM.length) hzmSil(HZM[0]);
+  PLAN = EGRI && !PLT && !DENEQ && !(DENE && DENE.L === LV) && LV > BV.el && LV <= BV.toplam ? EG.planY(LV, Y, BV.el) : null;
+  g.tip = PLAN ? PLAN.tip : 'normal'; g.yagmur = 0;
+  if (PLAN && PLAN.tip === 'hazine') {
+    // hedef secimi: yapinin ust yarisindan, birbirinden uzak kupler (bolum numarasina gore hep ayni)
+    let a = (LV * 2654435761) >>> 0; const rnd = () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const ad = cubes.filter((c) => !c.gone && !c.out && !c.anahtar && c.kind !== 'hediye' && c.kind !== 'yildiz').sort((p, q) => q.body.position.y - p.body.position.y);
+    const ust = ad.slice(0, Math.max(6, Math.ceil(ad.length * 0.5))); for (let i = ust.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [ust[i], ust[j]] = [ust[j], ust[i]]; }
+    const k = Math.min(ust.length, EG.hedefSay(cubes.length)), sec = [];
+    for (const uz of [S * 1.6, S * 0.9, 0]) for (const c of ust) { if (sec.length >= k) break; if (!sec.includes(c) && sec.every((o) => o.body.position.distanceTo(c.body.position) >= uz)) sec.push(c); }
+    for (const c of sec) {
+      c.hedef = true;
+      const isr = new THREE.Sprite(new THREE.SpriteMaterial({ map: hzTex(), transparent: true, depthTest: false, depthWrite: false })); isr.scale.set(S * 0.9, S * 1.125, 1); isr.renderOrder = 9;
+      const hale = new THREE.Sprite(new THREE.SpriteMaterial({ map: hzCer(), transparent: true, opacity: 0.9, depthTest: false, depthWrite: false })); hale.scale.setScalar(S * 1.12); hale.renderOrder = 8;
+      scene.add(isr); scene.add(hale); HZM.push({ c, isr, hale, t: Math.random() * 6 });
+    }
+    if (sec.length) { g.hedef = g.hedef0 = sec.length; hzmKare(0); } else { PLAN.tip = g.tip = 'zincir'; }
+  }
+  // Foxi yardimi: bu bolumde ust uste kaybedene ek top
+  const yrd = PLAN && SV.kyb && SV.kyb.L === LV ? EG.yardim(SV.kyb.n) : 0;
+  if (yrd) { g.shots += yrd; g.max += yrd; g.yardim = yrd; }
+}
+// bolum bandinin altindaki hedef satiri
+function egriYazi() {
+  if (!PLAN) return '';
+  const T = EG.TUR[PLAN.tip], ilk = PLAN.tip !== 'normal' && PLAN.tip !== 'kaptan' && PLAN.tip !== 'altin' && !(SV.egTur || []).includes(PLAN.tip);
+  if (ilk) { SV.egTur = (SV.egTur || []).concat(PLAN.tip); save(); }
+  let h = '';
+  if (PLAN.tip !== 'normal') h += '<i class="eg eg-' + PLAN.tip + '"><em>' + (ilk ? 'YENİ BÖLÜM TÜRÜ · ' : '') + T.ic + ' ' + T.ad.toLocaleUpperCase('tr') + '</em>' + (g.hedef != null ? 'Parlayan ' + g.hedef + ' hazineyi düşür, gerisi kalabilir!' : ilk && T.yeni ? T.yeni : T.hedef) + '</i>';
+  else if (PLAN.etiket) h += '<i class="eg eg-zor"><em>' + EG.ETIKET[PLAN.etiket].toLocaleUpperCase('tr') + '</em>Toplar az, iyi nişan al!</i>';
+  if (g.yardim) h += '<i class="eg eg-yardim">🦊 Foxi yardım etti: <b>+' + g.yardim + ' top</b></i>';
+  return h;
+}
+function egriKnock(c, p, at) {
+  if (c.hedef && g.hedef != null) { c.hedef = false; g.hedef = Math.max(0, g.hedef - 1); const m = HZM.find((q) => q.c === c); if (m) hzmSil(m);
+    floatText('💎 ' + (g.hedef0 - g.hedef) + '/' + g.hedef0, at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 24, 8); sfx('bonus'); buzz(30); }
+  if (PLAN.tip === 'zincir' && g.combo && g.combo.n > 0 && g.combo.n % EG.AYAR.zincirEsik === 0) { g.shots++; floatText('+1 Top ⛓️', at[0], at[1] - 30, 'blue'); sfx('bonus'); buzz(25); }
+  if (PLAN.tip === 'altin') { g.yagmur++; if (g.yagmur <= EG.AYAR.altinTavan && g.yagmur % 3 === 0) floatText('+3 🪙', at[0], at[1] - 20, 'gold'); }
+}
+// kaptan bolumu ilk kez gecilince rastgele bir guclendirici hediye
+function kaptanHediye() { const t = GGT[Math.floor(Math.random() * GGT.length)], s = ggSay(); s[t.k] = (s[t.k] || 0) + 1; return { k: t.k, ad: { roket: 'Roket', bomba: 'Bomba', yildirim: 'Yıldırım', top: '+5 Top' }[t.k] }; }
 // v5.4: parcalar kurulduktan sonra bolumun baslangici (oyun durumu, fon, bolum bandi, sayaclar)
 function bolumBasla(Y) {
   syncMeshes(); fragIsit();
   g = { don: Y.don || 0, L: LV, ad: Y.ad, total: cubes.length, left: cubes.length, shots: shotsFor(cubes.length, Y), max: shotsFor(cubes.length, Y), state: 'play', t: 0, busy: 0, quiet: 0, combo: null, armed: false, bonus: 0, gold: 0 };
   FUSE.length = 0;
+  egriBasla(Y);   // v8.0: bolum turu, hazine hedefleri, Foxi yardimi
   if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + (fo.yeni ? 'yeni/' + fo.r + '.webp?v=2' : fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2')) + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; $('bg').classList.toggle('koyu', !!fo.yeni && LV % 5 === 0); setPlat(tm[1]); setDirt(fo); setSea(fo); if (fo.yeni) DIRT.visible = false; canliFon(fo.yeni ? { f: fo.f, vid: 1 } : fo); videoFon(fo); fonIsi(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); if (fo.yeni) temaKur(); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
   let ipu = ''; if (Y.ip && Y.a && !K) { if (!SV.ark) SV.ark = []; if (!SV.ark.includes(Y.a)) { SV.ark.push(Y.a); ipu = '<i>' + Y.ip + '</i>'; } }   // v5.0: yeni yapi tipinin cozum ipucu (ilk karsilasmada)
   const nm = $('nm'); const dfo = !PLT && !K && FONYENI ? fonOf(LV) : null, dyeni = dfo && (LV === 1 || fonOf(LV - 1) !== dfo);   // v6.6: dunya adi; dunyanin ilk bolumunde 'YENI DUNYA'
-  nm.innerHTML = '<div class="rb1"><small>' + (PLT ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
+  const eu = egriYazi(); if (eu) ipu = eu + ipu;
+  nm.innerHTML = '<div class="rb1' + (PLAN && PLAN.tip !== 'normal' ? ' eg-' + PLAN.tip : '') + '"><small>' + (PLT ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
   hud(true);
 }
 // v6.26: (Adem 8 Kas) sahil fonu canli: Adem'in sahil resminden yaptigi 10 sn'lik video (bas/son 1 sn karistirilip kesintisiz 9 sn donguye cevrildi).
@@ -2691,7 +2768,8 @@ function knock(c, remove) {
   if (c.kind === 'hediye') { g.shots += 2; floatText('+2 Top', at[0], at[1], 'blue'); burst(new THREE.Vector3().copy(p), '#ffd23f', 16, 6); sfx('bonus'); }
   else if (c.kind === 'altin' || c.kind === 'kkA' || c.kind === 'oyA') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
   else if (c.kind === 'yildiz') { g.bonus++; floatText('+1 ★', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#c58bff', 20, 7); sfx('bonus'); }
-  else puanBirik(at);
+  else if (!c.hedef) puanBirik(at);
+  if (PLAN) egriKnock(c, p, at);
   if (VRA()) { VR.yildizlar(p, 5); if (g.combo) { const n = g.combo.n; VR.kombo(n); if ([5, 10, 15, 20, 30, 40, 60].includes(n) && AC && !SV.sessiz) chime([880 * Math.pow(1.122, Math.min(6, n / 5 - 1))], 0, 0.11); } }   // v7.0: yildiz + kombo sayaci; esiklerde yukselen zil   // v4.2: dusen her blok kucuk "+n" (ayni anda dusenler tek yazida toplanir)
 
   if (c.kind === 'kola') kolaFis(c);
@@ -2730,7 +2808,7 @@ function explode(p, kd) {
   }
 }
 function updateCubes(dt) {
-  let moving = false;
+  let moving = false; if (HZM.length) hzmKare(dt);
   for (const c of cubes) {
     if (c.out) continue;
     const p = c.body.position;
@@ -2751,7 +2829,7 @@ function updateCubes(dt) {
     if (lv > g.combo.shown) { g.combo.shown = lv; shake = Math.max(shake, 0.12 + 0.1 * lv); praise(['', 'Süper!', 'Harika!', 'Efsane!'][lv], n + ' blok', lv === 3); }
     if (g.combo.t > 3) { g.combo = null; if (VR) VR.komboBitti(); } }
   if (g.state === 'play') {
-    if (g.left <= 0) { g.state = 'win'; if (VRA() && !VR.azHareket) { SLOW = 1.1; ZOOM = 1.1; }   // v7.0: son blok: kisa agir cekim + hafif yakinlasma
+    if (g.left <= 0 || (g.hedef != null && g.hedef <= 0)) { g.state = 'win'; if (VRA() && !VR.azHareket) { SLOW = 1.1; ZOOM = 1.1; }   // v7.0: son blok: kisa agir cekim + hafif yakinlasma
       confetti(); sfx('win'); praise('Harika!', 'Yapı yıkıldı', true); const g0 = g; setTimeout(() => { if (g === g0 && g.state === 'win') win(); }, 1600); }
     else if (g.shots <= 0 && !balls.length && g.busy <= 0 && !GGA.length && !(g.kuyruk && g.kuyruk.length)) { g.quiet += dt; if (g.quiet > 1.2) { g.state = 'lose'; lose(); } }
     else g.quiet = 0;
@@ -2911,8 +2989,9 @@ function setNum(id, v, anim) { const e = $(id); if (prev[id] !== v) { e.textCont
 function hud(reset) {
   if (!g) return;
   $('lv').textContent = PLT ? 'Pilot' /* PILOT */ : K ? 'Korsan' : 'Yapı'; setNum('lvn', LV, false);
-  setNum('kc', g.left, !reset); setNum('tc', g.shots, !reset);
-  $('pb').style.width = Math.round(100 * (1 - g.left / g.total)) + '%';
+  const hz = g.hedef != null; if (reset) { const tn = $('kc').previousSibling; if (tn && tn.nodeType === 3) tn.nodeValue = hz ? ' · Hazine ' : ' · Küp '; }
+  setNum('kc', hz ? g.hedef : g.left, !reset); setNum('tc', g.shots, !reset);
+  $('pb').style.width = Math.round(100 * (hz ? 1 - g.hedef / g.hedef0 : 1 - g.left / g.total)) + '%';
 }
 function praise(t, s, big) { return;   // v6.14: (Adem) Harika/Super/Efsane/BOOM yazilari istenmiyor
  const p = $('praise'); p.innerHTML = ''; void p.offsetWidth; p.innerHTML = '<div class="p' + (big ? ' big' : '') + '"><b>' + t + '</b>' + (s ? '<i>' + s + '</i>' : '') + '</div>'; }
@@ -2932,12 +3011,15 @@ function win() {
   if (!SV.yil) SV.yil = {}; const ilk = !SV.yil[LV]; SV.yil[LV] = Math.max(SV.yil[LV] || 0, st);
   gorevArt('kazan', 1); if (st >= 3) gorevArt('y3', 1); gorevArt('top', g.shots);
   // her kalan top 5 altin (en cok 60); bolum odulu 10 + yildiz basina 10; tekrar oynanan bolumde yari odul
-  const zorB = zorMu(LV) && ilk ? ZOR_ODUL : 0;
-  const bonus = Math.min(60, g.shots * 5), kaz = Math.round((10 + st * 10 + bonus) * (ilk ? 1 : 0.5)) + zorB, once = SV.altin || 0; SV.altin = once + kaz;
+  const zorB = !ilk ? 0 : PLAN && !PLAN.el ? EG.odul(PLAN) : zorMu(LV) ? ZOR_ODUL : 0;
+  const yag = PLAN && PLAN.tip === 'altin' ? Math.min(EG.AYAR.altinTavan, g.yagmur || 0) : 0;   // v8.0: altin yagmuru
+  const hed = PLAN && PLAN.tip === 'kaptan' && ilk ? kaptanHediye() : null;   // v8.0: kaptan bolumu: hediye guclendirici
+  if (SV.kyb) { delete SV.kyb; }   // v8.0: Foxi yardimi sayaci sifirlanir
+  const bonus = Math.min(60, g.shots * 5), kaz = Math.round((10 + st * 10 + bonus + yag) * (ilk ? 1 : 0.5)) + zorB, once = SV.altin || 0; SV.altin = once + kaz;
   if (M) {   // v3.0: istatistik (ilk denemede kazanma, seri), hazine sandigi ilerlemesi ve yeni kazanma sahnesi
     const I = ist(); I.kazan++; if (SV.dus !== LV) { I.ilk++; I.seri++; I.enSeri = Math.max(I.enSeri, I.seri); } else I.seri = 1; SV.dus = 0;
     if (ilk) SV.sn = (SV.sn || 0) + 1;
-    gorevKaydet(true); if (sonB) { SV.final = 1; save(); finalGoster(); return; } M.kazan({ L: LV, st, kaz, once, kalan: g.shots, bonus, zorB, yeniK, ilk }); return;
+    gorevKaydet(true); if (sonB) { SV.final = 1; save(); finalGoster(); return; } M.kazan({ L: LV, st, kaz, once, kalan: g.shots, bonus, zorB, yeniK, ilk, yag, hed, tip: PLAN && PLAN.tip, etiket: PLAN && PLAN.etiket }); return;
   }
   gorevKaydet(true);
   modal('<div class="rib">Tebrikler!</div><div class="stars">' + yildizHtml(st) + '</div><h2>Bölüm ' + LV + ' tamam</h2>' +
@@ -2967,7 +3049,8 @@ function lose() {
   sfx('lose'); gorevKaydet(true); tilkiDurum('kaybet');
   // v2.0: bolum basina bir kez bedava devam; sonrakiler altinla
   const bedava = !g.devam, yeter = (SV.altin || 0) >= DEVAM_FIYAT;
-  if (M) { M.kaybet({ L: LV, kaldi: g.left, bedava, fiyat: DEVAM_FIYAT }); return; }
+  if (PLAN && !g.devam) { if (!SV.kyb || SV.kyb.L !== LV) SV.kyb = { L: LV, n: 0 }; SV.kyb.n++; save(); }   // v8.0: Foxi yardimi icin kayip sayaci (devam edilen deneme bir kez sayilir)
+  if (M) { M.kaybet({ L: LV, kaldi: g.hedef != null ? g.hedef : g.left, hazine: g.hedef != null, bedava, fiyat: DEVAM_FIYAT, yardim: PLAN ? EG.yardim(((SV.kyb && SV.kyb.L === LV && SV.kyb.n) || 0) + 1) : 0 }); return; }
   modal('<div class="rib r">Toplar bitti!</div><h2>' + g.left + ' blok kaldı</h2><p>' + (g.left <= 5 ? 'Çok az kalmıştı, tekrar dene!' : 'Alt sıraları hedefle, kule devrilsin!') + '</p>' +
     (bedava || yeter ? '<button class="btn o" id="rv">+3 Top ile Devam' + (bedava ? '' : ' <i class="coin"></i> ' + DEVAM_FIYAT) + '</button>' : '') +
     '<button class="btn" id="rt">Tekrar Dene</button><button class="btn o kck" id="hrt">Harita</button>');
@@ -3026,6 +3109,7 @@ function pesEt() { if (g && (g.armed || g.state === 'lose')) { SV.dus = LV; ist(
 function merkezBagla() {
   M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, hazirla: (L) => { bolumYukle(L).then(() => { const ks = gerekliModel(L); modelYukle(ks).then(() => loadPieces(ks)); }); }, toplam: TOPLAM, SURUM, ZOR_ODUL,
     ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
+    plan: (L) => (EGRI && L > BV.el ? EG.planY(L, bvY(L), BV.el) : null), EG,   // v8.0: harita ve bolum karti icin bolum turu
     sesAg: () => (AC && !SV.sessiz ? (out(), { AC, out: MASTER }) : null),   // v4.8: kazanma sahnesinin kodla uretilen sesleri icin
     bolge: (L) => { const fo = fonOf(L); return FONAD[fo.f] || (fo.yeni ? [fo.ad, fo.f === 'y_buz' ? 'k' : 's'] : ['', 'c']); }, bolumAdi: (L) => { if (L > BV.el && L <= BV.toplam && BV.ad[L - BV.el - 1]) return BV.ad[L - BV.el - 1]; try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
 }

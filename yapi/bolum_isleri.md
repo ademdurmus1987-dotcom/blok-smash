@@ -38,3 +38,16 @@ Bitenler:
 
 - Bot (dogrula.js) kusursuz nişan alır ama yapıyı bilmez; bazı bölümlerde top sayısı cömert kalıyor (rapor/denge.md "fazla top"). Telefonda oynayınca zor/kolay hissi bildirilirse `topHesap` katsayıları değiştirilip `node yapi/uretici/top_ayar.mjs` ile kayıt güncellenir (fizik testi gerekmez).
 - Toplam bölüm sayısını artırmak için yukarıdaki 3 adım.
+
+## v8.0 Zorluk eğrisi ve bölüm türleri (18 Kas 2026)
+
+Sorun: kayıtlı 2000 bölüm çeşitliydi ama zorluk 100. bölümden sonra neredeyse sabitti (26-100 ve 751-1000 arasında top başına küp 2,06 → 2,35) ve her bölümün hedefi aynıydı.
+
+- `yapi/egri.js`: tek ayar dosyası (`AYAR`). Oyun, harita ve rapor aynı hesabı kullanır. Kapatma: adrese `?egri=0`.
+- Dünya = 10 bölüm (testere dişi: x1 nefes, x0 zor). Sefer = 50 bölüm; x50 **Kaptan Bölümü** (çok zor, +50 altın, hediye güçlendirici), x51 **Altın Yağmuru** (bol top, düşen her küp +1 altın).
+- Bölüm türleri: **Hazine Avı** (ilk 34. bölüm; parlayan 3-6 küpü düşür), **Zincir Atış** (ilk 47.; tek atışta 6 küp = +1 top). Her dünyada x4 ve x7.
+- 3. seferden sonra tek dünyaların 5. bölümü de zor; 8. seferden sonra her 20 bölümde bir "çok zor".
+- Top sayısı artık oyunda hesaplanır (`EG.topSay`, kayıtlı `bot` atışı alt sınır); JSON değişmedi. Tablo: `node yapi/uretici/egri_rapor.mjs` → `yapi/uretici/rapor/egri.md`.
+- Foxi yardımı: aynı bölümü 2 kez kaybeden +2, 4 kez +4, 6 kez +6 top (`SV.kyb`). Kazanınca sıfırlanır.
+- Doğrulayıcı (`?test`) eski kurallarla çalışır; `?test&egri=1` ile yeni kurallar denenebilir.
+- Telefonda zor/kolay gelirse yalnız `egri.js` `AYAR` değerleri değiştirilir (`egim`, `testere`, `tur`), fizik testi gerekmez.

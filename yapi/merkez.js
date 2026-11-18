@@ -6,7 +6,7 @@
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { kazanSahne, yazi } from './kazan2.js?v=3';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
+import { kazanSahne, yazi } from './kazan2.js?v=4';   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 import { ADA, adaKur } from './ada.js?v=1';
 import { insaKur } from './insa.js?v=1';   // v7.2: (Adem 18 Kas) ayri Insa sayfasi (gemi 10 asama)   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
@@ -227,6 +227,13 @@ export function merkezKur(A) {
   FV.querySelector('.fv-ses').onclick = () => { FVV.muted = false; FV.classList.remove('sessiz'); try { FVV.currentTime = 0; } catch (x) {} FVV.play().catch(() => {}); };
   function sonraki() { if (!acik || P.classList.contains('on') || FV.classList.contains('on')) return; const f = sira.shift(); if (f) setTimeout(f, 250); }
 
+  // v8.0: bolum turu / zorluk rozeti (oyna dugmesi ve bolum karti)
+  function egEtiket(Pl, zor) {
+    if (!Pl) return zor ? 'Zor bölüm' : '';
+    if (Pl.tip === 'kaptan') return '☠️ Kaptan Bölümü';
+    if (Pl.tip !== 'normal') return A.EG.TUR[Pl.tip].ic + ' ' + A.EG.TUR[Pl.tip].ad;
+    return Pl.etiket ? A.EG.ETIKET[Pl.etiket] : '';
+  }
   // ---------------- ana sayfa cizimi ----------------
   function ciz() {
     const Pf = profilOku(), max = maxL(), I = ist();
@@ -235,7 +242,8 @@ export function merkezKur(A) {
     const gn = A.gorevHazir(); $('m-gorevn').textContent = gn || ''; $('m-gorevn').classList.toggle('on', gn > 0); $('m-gorev').classList.toggle('hazir', gn > 0);
     const gun = !SV.go || SV.go.gun !== bugun(); $('m-gunlukn').classList.toggle('on', gun); $('m-gunluk').classList.toggle('hazir', gun);
     const sn = SV.sn || 0, sh = sn >= SANDIK_HEDEF; $('m-sandikn').classList.toggle('on', sh); $('m-sandik').classList.toggle('hazir', sh); $('m-sandikc').style.width = Math.min(100, Math.round(100 * sn / SANDIK_HEDEF)) + '%';
-    const zor = A.zor(max), b = $('m-oyna'); $('m-oynak').classList.toggle('zor', zor);
+    const zor = A.zor(max), b = $('m-oyna'), Pl = A.plan ? A.plan(max) : null, ek = egEtiket(Pl, zor);   // v8.0: bolum turu rozeti
+    const ok = $('m-oynak'); ok.classList.toggle('zor', zor); ok.classList.toggle('etk', !!ek); ok.classList.toggle('cokzor', !!Pl && (Pl.etiket === 'cokzor')); ok.classList.toggle('t-altin', !!Pl && Pl.tip === 'altin'); $('m-oynak').querySelector('.m-zor').textContent = ek || 'Zor bölüm!';
     b.querySelector('b').textContent = 'Bölüm ' + max; b.querySelector('small').textContent = A.bolumAdi(max) || '';
     $('m-seri').innerHTML = I.seri >= 2 ? IK.alev + ' ' + I.seri + ' bölümlük seri' : '';
     const tilkiAcik = acikMi('tilki', max), kr = KARAKTERLER.find((k) => k.id === 'tilki');
@@ -360,12 +368,13 @@ export function merkezKur(A) {
     const xOf = (L) => 50 + 30 * Math.sin(L * 1.05), [tbg, tic] = avIc(Pf.av);
     for (let L = son; L >= 1; L--) {
       if (L === TOP) continue;   // son bolum adada
-      const bl = A.bolge(L), kilit = L > max, cur = L === max, st = yil[L] || 0, x = xOf(L), y = UST + (son - L) * SAT + 46;
+      const bl = A.bolge(L), kilit = L > max, cur = L === max, st = yil[L] || 0, x = xOf(L), y = UST + (son - L) * SAT + 46, Pl = A.plan ? A.plan(L) : null;
       yol += (yol ? ' L' : 'M') + x.toFixed(1) + ' ' + (y - (son === TOP ? SAT : 0));
-      h += '<div class="h-s t-' + bl[1] + '"><button class="h-n' + (kilit ? ' kilit' : '') + (cur ? ' cur' : '') + (A.zor(L) && !kilit ? ' zor' : '') + '" data-l="' + L + '" style="left:' + x.toFixed(1) + '%">' + (kilit ? IK.kilit : L) +
+      h += '<div class="h-s t-' + bl[1] + '"><button class="h-n' + (kilit ? ' kilit' : '') + (cur ? ' cur' : '') + (A.zor(L) && !kilit ? ' zor' : '') + (Pl && Pl.etiket === 'cokzor' ? ' cokzor' : '') + (Pl && Pl.tip !== 'normal' ? ' t-' + Pl.tip : '') + '" data-l="' + L + '" style="left:' + x.toFixed(1) + '%">' + (kilit ? IK.kilit : L) + (Pl && Pl.tip !== 'normal' ? '<b class="h-tur">' + A.EG.TUR[Pl.tip].ic + '</b>' : '') +
         (st ? '<i>' + '★'.repeat(st) + '<u>' + '★'.repeat(3 - st) + '</u></i>' : '') + '</button>' +
         (cur ? '<span class="h-tilki" style="left:' + x.toFixed(1) + '%;background:' + tbg + '">' + tic + '</span>' : '') +
-        ((L - 1) % 3 === 0 ? '<span class="h-b" style="' + (x > 50 ? 'left:5%' : 'right:5%') + '">' + bl[0] + '</span>' : '') + '</div>';
+        ((L - 1) % 3 === 0 ? '<span class="h-b" style="' + (x > 50 ? 'left:5%' : 'right:5%') + '">' + bl[0] + '</span>' : '') +
+        (Pl && L % 50 === 1 ? '<div class="h-sefer"><b>' + (Math.floor((L - 1) / 50) + 1) + '. SEFER</b><small>Bölüm ' + L + '-' + (L + 49) + '</small></div>' : '') + '</div>';   // v8.0: her 50 bolum bir sefer
     }
     if (ADA) { const ac = max >= TOP, st = yil[TOP] || 0;
       h = '<div class="h-ada"><div class="h-ada-c">' + ADASVG + '<b>Hazine Adası</b><small>' + (ac ? TOP + '. bölüm · son macera!' : TOP + '. bölüm · ' + (TOP - max) + ' bölüm kaldı') + '</small>' +
@@ -379,13 +388,13 @@ export function merkezKur(A) {
   // ---------------- bolum karti: guclendirici sec, oyna ----------------
   function bolumKarti(L) {
     if (A.hazirla) A.hazirla(L);   // v4.7: kart okunurken bolumun modelleri arkada iner
-    const s = A.ggSay(), sec = new Set(), zor = A.zor(L), st = (SV.yil || {})[L] || 0;
+    const s = A.ggSay(), sec = new Set(), zor = A.zor(L), st = (SV.yil || {})[L] || 0, Pl = A.plan ? A.plan(L) : null, ek = egEtiket(Pl, zor), od = Pl ? A.EG.odul(Pl) : A.ZOR_ODUL;
     const maliyet = () => { let m = 0; for (const k of sec) if (!(s[k] > 0)) m += A.GGT.find((t) => t.k === k).fiyat; return m; };
     // v3.2: (Adem 11 Kas) daha profesyonel bolum karti: sus cizgili baslik, uc yildiz yuvasi, hedef satiri, adli guclendiriciler
     const GAD = { roket: 'Roket', bomba: 'Bomba', yildirim: 'Yıldırım', top: '+5 Top' };
-    pop(bas('Bölüm ' + L) + (zor ? '<div class="p-zor">Zor bölüm · +' + A.ZOR_ODUL + ' altın</div>' : '') + '<div class="p-ic bk"><h3>' + esc(A.bolumAdi(L) || '') + '</h3>' +
+    pop(bas('Bölüm ' + L) + (ek ? '<div class="p-zor' + (Pl && Pl.etiket === 'cokzor' ? ' cz' : '') + (Pl && Pl.tip === 'altin' ? ' ay' : '') + '">' + ek + (od ? ' · +' + od + ' altın' : '') + '</div>' : '') + '<div class="p-ic bk"><h3>' + esc(A.bolumAdi(L) || '') + '</h3>' +
       '<div class="bk-yil">' + [0, 1, 2].map((i) => i < st ? IK.yildiz : IK.yildizBos).join('') + '</div>' +
-      '<div class="bk-hd"><i></i>Bütün küpleri platformdan düşür!</div>' +
+      '<div class="bk-hd"><i></i>' + (Pl ? A.EG.TUR[Pl.tip].hedef : 'Bütün küpleri platformdan düşür!') + '</div>' +
       '<div class="p-et">Güçlendirici seç</div><div class="ggk">' +
       A.GGT.map((t) => '<button class="gt gt-' + t.k + '" data-k="' + t.k + '"><span class="hl"></span><i>' + t.ic + '</i>' + (s[t.k] > 0 ? '<span class="n">' + s[t.k] + '</span>' : '<span class="p"><em class="coin"></em>' + t.fiyat + '</span>') + '<span class="ok">✓</span><em class="ad">' + (GAD[t.k] || '') + '</em></button>').join('') +
       '</div><div class="p-altin"><i class="coin"></i><b id="p-al">' + (SV.altin || 0) + '</b></div></div><button class="m-btn" id="p-oyna">Oyna</button>', () => { if (!acik) ac(); });
@@ -518,7 +527,7 @@ export function merkezKur(A) {
     KZ.innerHTML = '<canvas></canvas><div class="m-logo k-logo"><b>FOXI</b><span>SMASH</span></div><div class="k-ic"><h1>Tebrikler!</h1><div class="k-bol">Bölüm ' + d.L + ' tamam</div>' +
       '<div class="k-yil">' + [0, 1, 2].map((i) => (i < d.st ? IK.yildiz : IK.yildizBos).replace('<svg ', '<svg ' + (i < d.st ? '' : 'class="off" ') + 'style="animation-delay:' + (1.4 + i * 0.25) + 's" ')).join('') + '</div>' +
       '<div class="k-odul"><div class="m-isin"></div>' + YIGIN + '<b id="k-say">0</b></div>' +
-      '<div class="k-sat"><span>Kalan top <b>' + d.kalan + '</b></span><span>Top bonusu <b>+' + d.bonus + '</b></span>' + (d.zorB ? '<span>Zor bölüm <b>+' + d.zorB + '</b></span>' : '') + (d.ilk ? '' : '<span>Tekrar <b>yarı ödül</b></span>') + '</div>' +
+      '<div class="k-sat"><span>Kalan top <b>' + d.kalan + '</b></span><span>Top bonusu <b>+' + d.bonus + '</b></span>' + (d.zorB ? '<span>' + (d.tip === 'kaptan' ? 'Kaptan ödülü' : 'Zor bölüm') + ' <b>+' + d.zorB + '</b></span>' : '') + (d.yag ? '<span>Altın yağmuru <b>+' + d.yag + '</b></span>' : '') + (d.hed ? '<span>Hediye <b>' + d.hed.ad + '</b></span>' : '') + (d.ilk ? '' : '<span>Tekrar <b>yarı ödül</b></span>') + '</div>' +
       (d.yeniK ? '<div class="k-yeni"><img src="../' + d.yeniK.av + '?v=1" alt=""><div><small>Yeni karakter kazandın!</small><b>' + d.yeniK.ad + '</b></div></div>' : '') +
       '<div class="k-sn' + (dolu ? ' dolu' : '') + '"><small>' + (dolu ? 'Hazine sandığı hazır! Ana sayfada aç.' : 'Hazine sandığına ' + kaldi + ' bölüm kaldı') + '</small><div class="k-cub"><i id="k-snc" style="width:' + Math.round(100 * Math.min(onceSn, SANDIK_HEDEF) / SANDIK_HEDEF) + '%"></i><em>' + Math.min(sn, SANDIK_HEDEF) + ' / ' + SANDIK_HEDEF + '</em></div>' + IK.sandik + '</div>' +
       '<button class="m-btn" id="k-dv">Devam Et</button></div>';
@@ -540,7 +549,8 @@ export function merkezKur(A) {
   // d: { L, kaldi, bedava, fiyat }
   function kaybet(d) {
     const yeter = (SV.altin || 0) >= d.fiyat, I = ist(), dev = d.bedava || yeter;
-    pop(bas('Devam Et?') + '<div class="p-ic"><h3>Toplar bitti!</h3><p>' + d.kaldi + ' blok kaldı. ' + (d.kaldi <= 5 ? 'Çok az kalmıştı!' : 'Alt sıraları hedefle, kule devrilsin.') + '</p>' +
+    pop(bas('Devam Et?') + '<div class="p-ic"><h3>Toplar bitti!</h3><p>' + d.kaldi + (d.hazine ? ' hazine kaldı. ' : ' blok kaldı. ') + (d.kaldi <= (d.hazine ? 1 : 5) ? 'Çok az kalmıştı!' : 'Alt sıraları hedefle, kule devrilsin.') + '</p>' +
+      (d.yardim ? '<p class="y-foxi">🦊 Tekrar denersen Foxi <b>+' + d.yardim + ' top</b> ile yardım edecek!</p>' : '') +
       '<div class="y-kay">' + (dev ? '<div class="y-k">' + IK.top + '<b style="color:#2f9a1e">+3</b>Top kazan</div>' : '') + (I.seri >= 2 ? '<div class="y-k">' + IK.alev + '<b>' + I.seri + '</b>Serin bitecek</div>' : '') + '</div>' +
       '<div class="p-altin"><i class="coin"></i><b>' + (SV.altin || 0) + '</b></div></div>' +
       (dev ? '<button class="m-btn uz" id="p-dv">' + (d.bedava ? 'Bedava Devam Et' : 'Devam Et <i class="coin"></i>' + d.fiyat) + '</button>' : '') +

@@ -91,7 +91,9 @@ export function kazanSahne(KZ, d, o) {
   const st = d.st, BAS = st >= 3 ? 'MÜKEMMEL!' : st === 2 ? 'SÜPER!' : 'TEBRİKLER!';
   const H = o.HEDEF, sn = Math.min(o.sn, H), sandik = o.sn >= H ? 'Hazır!' : sn + ' / ' + H;
   const satir = [['Kalan top', d.kalan], ['Top bonusu', '+' + d.bonus], ['Sandık', sandik]];
-  if (d.zorB) satir.push(['Zor bölüm', '+' + d.zorB]);
+  if (d.zorB) satir.push([d.tip === 'kaptan' ? 'Kaptan ödülü' : d.etiket === 'cokzor' ? 'Çok zor bölüm' : 'Zor bölüm', '+' + d.zorB]);   // v8.0
+  if (d.yag) satir.push(['Altın yağmuru', '+' + d.yag]);
+  if (d.hed) satir.push(['Hediye', d.hed.ad]);
   if (!d.ilk) satir.push(['Tekrar', 'yarı ödül']);
   KZ.className = 'on k2on';
   KZ.innerHTML = '<div class="k2-gok"></div><canvas class="k2-arka"></canvas><div class="k2-vin"></div>' +
