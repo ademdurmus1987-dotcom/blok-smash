@@ -3,7 +3,7 @@ import json, sys, os
 S = 1.55; GX = 1.004
 GEN = {'ksTas2': 2, 'ksTas3': 3, 'ksTas4': 4, 'ksBuz3': 3, 'ksKalas2': 2, 'ksKalas3': 3, 'ksKemer': 3}
 BOY = {'ksKalas1': 0.5, 'ksKalas2': 0.5, 'ksKalas3': 0.5, 'ksDirek': 2, 'ksSutun': 2, 'ksMorSutun': 2, 'ksKemer': 2}
-V = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'pilot', 'resim.json')))
+V = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'pilot', os.environ.get('DOSYA', 'resim.json'))))
 liste = [int(x) for x in sys.argv[1].split(',')] if len(sys.argv) > 1 else [int(k) for k in V['bolumler']]
 for n in liste:
     b = V['bolumler'][str(n)]; L = []

@@ -47,7 +47,7 @@ async def main():
             elif KIP == 'tek':
                 ctx, pg = await sayfa(b, f'test&tilki=0&pilot={N}', hatalar)
                 await pg.wait_for_function('window.YP && YP.g', timeout=300000); await modul(pg)
-                r = await pg.evaluate('PT.botEkran(90, true)'); r.pop('iz', None); print(N, 'tek', json.dumps(r), flush=True); await ctx.close()
+                r = await pg.evaluate('PT.botEkran(+(window.__MAX || 90), true)'); r.pop('iz', None); print(N, 'tek', json.dumps(r), flush=True); await ctx.close()
             elif KIP == 'bot':
                 out = []
                 for th in (12345, 777, 4242):

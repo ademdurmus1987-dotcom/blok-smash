@@ -103,3 +103,10 @@
   Kagit ustu denetim: `python3 yapi/uretici/resim_denetim.py [31,32..]` (ic ice gecen / agirlik merkezi destek disinda kalan blok).
   5 sn fizik: dusen 0; en cok kayma 2.3-3.4 cm (51 tac, 52 direk), digerleri <2.5 cm. Bot 3 tohumda hepsini kazandi; top = en uzun atis x1.15 (+1).
   Karsilastirma: `yapi/uretici/rapor/resim/karsilastirma2_1..6.jpg`.
+- v8.6 (18-19 Kas): Adem'in "Foxi smash gorsel referans" zip'i (10 sayfa) -> 54 duvar bolumu `?pilot=55` .. `108` (`pilot/duvar.json`, kaynak `pilot/duvar_kaynak.py`).
+  Sayfa 1: 6 sekil (55-60, satirlar ortalanir), sayfa 2-10: dolu duvarlar (61-108). Tekrarlanan tasarimlar (Aslan Yuzu x3, Tas Robot x2, Buz Cerceve, Kemerli Ev, Kirmizi Cerceve x2) bir kez alindi.
+  Izgara resimden otomatik cikarildi (`yapi/uretici/izgara/izgara.py` + `ciz.py`: hucre renk/doku -> harf, ustune harf yazilmis kontrol resmi) ve elle duzeltildi.
+  Duvar kurallari: tas yan yana birlesir (2/3, kiris 'B' 4'e kadar), sutun/direk 2 boy, kalas 2 kat (ek yerleri kaydirilir), 'd' koyu ic = arka sirada tas; desteksiz her blogun altina kendi sirasinda duz blok.
+  Fizik (yalniz duvar bolumleri, pilot.js): fici carpismasi kutu (`kutu:1`), alt 3 sira tas normal agirlik, kalas x2.5; cozucu 24 tur, donme sonumu 0.45.
+  5 sn fizik: 54/54 dusen 0, kayma <3 cm. Bot (tohum 12345): 54/54 kazandi, 24-87 atis; top = atis x1.15 + 2 (30-103).
+  Karsilastirma: `yapi/uretici/rapor/resim/karsilastirma3_1..9.jpg`.

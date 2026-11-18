@@ -15,8 +15,9 @@ export function pilotKur(A) {
   const { THREE, CANNON, S } = A, Pi = Math.PI, D2R = Pi / 180;
   const N = Math.floor(+A.Q.get('pilot')) || 0;
   // v8.3 (18 Kas 2026): 31-36 Adem'in cizimindeki 6 yapi (Korsan Gemisi, Kale, Kuru Kafa, Deniz Feneri, Tilki Basi, Tas Kopru): ayri dosya pilot/resim.json
-  const RESIM = N >= 31 && N <= 54;
-  const SIRA = RESIM ? [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54] : [21, 22, 23];   // 1, 7, 13 rafta (adresle yine acilir)
+  const DUVAR = N >= 55 && N <= 199;   // v8.6: gorsel referans zip'i (pilot/duvar.json)
+  const RESIM = (N >= 31 && N <= 54) || DUVAR;
+  let SIRA = DUVAR ? [] : RESIM ? [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54] : [21, 22, 23];   // 1, 7, 13 rafta (adresle yine acilir)
   let VERI = null, B = null;   // B: bu bolumun verisi
   const BOS = { veri: 1, engel: [], ad: 'Pilot', top: 10, make: () => [] };
   let Y = BOS;
@@ -261,6 +262,7 @@ export function pilotKur(A) {
       const c = A.parcaKur(p.t, pi, (h) => [p.x, y0 + h / 2 + 0.003, p.z], q);
       c.pid = p.id || p.t;
       if (p.bos && p.t === 'ksKemer') kemerBos(c);
+      if (p.kutu) { const b = c.body, h = S / 2; while (b.shapes.length) b.removeShape(b.shapes[0]); b.addShape(new CANNON.Box(new CANNON.Vec3(h, h, h))); b.updateMassProperties(); b.aabbNeedsUpdate = true; }   // v8.6: fici kutu carpismali (duvar bolumleri)
       if (p.km) { c.body.mass *= p.km; c.body.updateMassProperties(); }   // v8.4: parca basina kutle carpani (resim bolumlerinde 3 sira tas)   // v8.3: kemer acikligi gercek bosluk (top icinden gecer)
       if (t.govde) Object.assign(c.body, t.govde);   // tur basina govde ayari (domino: az sonum, gec uyku)
       const esik = p.kir != null ? p.kir : t.carp;
@@ -306,6 +308,10 @@ export function pilotKur(A) {
   // ilk atista ~6 cm cokme gibi gorunuyordu), sonra hiz sifirlanir ve uyutulur. Kirilma/dusme sayimi bu sirada kapali (g.armed yok).
   function oturt() {
     const C = A.cubes.filter((c) => !c.gone && !c.out);
+    if (DUVAR) {   // v8.6: 9-10 sira yuksek duvarlar (her derinlik sirasi ayri ince duvar) ilk uyanista esniyordu
+      A.world.solver.iterations = 24;
+      for (const c of C) { c.body.angularDamping = 0.45; c.body.linearDamping = 0.08; }
+    }
     for (const c of C) c.body.wakeUp();
     for (let i = 0; i < 360; i++) A.world.step(1 / 120);
     for (const c of C) { c.body.velocity.set(0, 0, 0); c.body.angularVelocity.set(0, 0, 0); c.body.sleep(); c.mesh.position.copy(c.body.position); c.mesh.quaternion.copy(c.body.quaternion); }
@@ -426,7 +432,8 @@ export function pilotKur(A) {
   function kaybet() { const g = A.g; A.sfx('lose'); kart('Toplar bitti!', true, '<h2>' + g.left + ' parça kaldı</h2><p>Deneme bölümü: ilerleme kaydedilmez.</p>'); }
 
   async function yukle() {
-    try { VERI = await (await fetch(RESIM ? 'pilot/resim.json?v=4' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
+    try { VERI = await (await fetch(DUVAR ? 'pilot/duvar.json?v=3' : RESIM ? 'pilot/resim.json?v=4' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
+    if (DUVAR && VERI) SIRA = VERI.sira;
     B = VERI && VERI.bolumler && VERI.bolumler[N] || null;
     if (B) Y = { veri: 1, engel: [], ad: B.ad, top: B.top, make: () => [] };
     if (B && PS.yukle) await PS.yukle(B.parca.map((p) => p.t));   // v5.6: Blender bloklarinin model dosyalari
