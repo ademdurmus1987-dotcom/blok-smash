@@ -10,7 +10,7 @@ import { kazanSahne, yazi } from './kazan2.js?v=3';   // v4.8: (Adem 14 Kas) yen
 
 import { ADA, adaKur } from './ada.js?v=1';   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
 const $ = (id) => document.getElementById(id);
-const ESKI_MENU = /[?&]eskimenu=1/.test(location.search);   // v7.0: eski ana menu (adasiz)
+const ESKI_MENU = !/[?&]ada=1/.test(location.search);   // v7.1: (Adem 18 Kas) ada ana sayfadan kaldirildi (ayri sayfa olacak); deneme: ?ada=1
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const I3 = (n, c, st) => '<img class="i3 ' + (c || '') + '" src="ikon/3b/' + n + '.webp?v=1" alt="" draggable="false"' + (st ? ' style="' + st + '"' : '') + '>';   // v3.17: Gemini 3B ikonlar
 const svg = (ic, vb = 48) => '<svg viewBox="0 0 ' + vb + ' ' + vb + '" aria-hidden="true">' + ic + '</svg>';
