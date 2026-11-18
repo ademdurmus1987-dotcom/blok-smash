@@ -87,7 +87,12 @@ export function kazanSahne(KZ, d, o) {
   const gur = (t, v, fq, gec = 0, tip = 'bandpass') => { const S = o.sesAg(); if (!S) return; const A = S.AC, n = A.currentTime + gec, len = A.sampleRate * t | 0, b = A.createBuffer(1, len, A.sampleRate), dd = b.getChannelData(0); for (let i = 0; i < len; i++) dd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2); const s = A.createBufferSource(); s.buffer = b; const f = A.createBiquadFilter(); f.type = tip; f.frequency.value = fq; const g = A.createGain(); g.gain.value = v; s.connect(f); f.connect(g); g.connect(S.out); s.start(n); };
   // v8.1 (Adem 18 Kas: yildiz sesi kulagi rahatsiz ediyor): kare/testere dalga yerine yumusak ucgen/sinus, tiz gurultu yok, ses kisik
   const fanfar = () => { [[523, 0], [659, 0.11], [784, 0.22], [1047, 0.34]].forEach(([f, g]) => { ton(f, 0.45, 0.13, 'triangle', g); ton(f * 2, 0.45, 0.03, 'sine', g); }); [523, 659, 784, 1047].forEach((f) => ton(f, 1.2, 0.045, 'sine', 0.5)); ton(131, 1.2, 0.4, 'sine', 0.5); };
-  const yildizSes = (i) => { const f = [523.25, 659.25, 783.99][i] || 784; ton(f, 0.55, 0.11, 'sine'); ton(f * 1.5, 0.4, 0.03, 'sine', 0.03); };   // yumusak do-mi-sol zili
+  // v8.2 (Adem 18 Kas: giris sessiz kaldi): yildiz duserken yumusak 'vinn', otururken tok vurus + sicak zil + oyundaki bonus sesi; her yildizda nota yukselir
+  const yildizSes = (i) => { const f = [523.25, 659.25, 783.99][i] || 784;
+    ton(f, 0.75, 0.24, 'triangle'); ton(f * 2, 0.5, 0.06, 'sine', 0.01); ton(f * 3, 0.35, 0.02, 'sine', 0.02);
+    o.ses('bonus', 0.4, 1 + i * 0.12);
+    if (i === 2) [1046.5, 1318.5, 1568].forEach((q, k) => ton(q, 0.5, 0.045, 'sine', 0.12 + k * 0.07)); };
+  const duser = (i) => { ton(320 + i * 60, 0.32, 0.07, 'sine', 0, 760 + i * 90); gur(0.3, 0.12, 900 + i * 150); };
   const gum = (v = 0.8) => { ton(110, 0.4, v, 'sine', 0, 40); gur(0.25, v * 0.75, 300, 0, 'lowpass'); };
 
   const st = d.st, BAS = st >= 3 ? 'MÜKEMMEL!' : st === 2 ? 'SÜPER!' : 'TEBRİKLER!';
@@ -116,9 +121,9 @@ export function kazanSahne(KZ, d, o) {
 
   sonra(80, () => { $('.k2-flas').classList.add('on'); gur(0.5, 0.12, 900, 0, 'lowpass'); });
   [...ic.querySelectorAll('.k2-yil')].forEach((y, i) => sonra(250 + i * 460, () => {
-    y.style.opacity = 1; y.animate([{ transform: 'translateY(-70vh) scale(2.6) rotate(-220deg)' }, { transform: 'scale(1.3)', offset: 0.75 }, { transform: 'none' }], { duration: 540, easing: 'cubic-bezier(.5,0,.5,1)', fill: 'forwards' });
+    y.style.opacity = 1; if (i < st) duser(i); y.animate([{ transform: 'translateY(-70vh) scale(2.6) rotate(-220deg)' }, { transform: 'scale(1.3)', offset: 0.75 }, { transform: 'none' }], { duration: 540, easing: 'cubic-bezier(.5,0,.5,1)', fill: 'forwards' });
     sonra(520, () => {
-      if (i < st) { y.classList.add('dolu'); yildizSes(i); o.buzz(40); const [x, yy] = merkez(y); fx.isilti(x, yy, 22); const hk = document.createElement('div'); hk.className = 'k2-halka'; hk.style.left = x + 'px'; hk.style.top = yy + 'px'; KZ.appendChild(hk); setTimeout(() => hk.remove(), 650); gum(0.3); sars(); }
+      if (i < st) { y.classList.add('dolu'); yildizSes(i); o.buzz(40); const [x, yy] = merkez(y); fx.isilti(x, yy, 22); const hk = document.createElement('div'); hk.className = 'k2-halka'; hk.style.left = x + 'px'; hk.style.top = yy + 'px'; KZ.appendChild(hk); setTimeout(() => hk.remove(), 650); gum(0.65); sars(); }
       else ton(220, 0.2, 0.08, 'sine');
     });
   }));
