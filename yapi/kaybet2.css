@@ -1,0 +1,34 @@
+/* v10.7 kaybetme karti (merkez.js kaybet, ky2) */
+#mpop.ky2-on .p-kart{background:none;border:0;box-shadow:none;padding:0;overflow:visible}
+.ky2{position:relative;width:min(88vw,350px);margin:60px auto 0;padding:64px 18px 16px;border-radius:28px;text-align:center;font-family:'BS Baslik','Baloo 2',sans-serif;color:#fff;
+  background:linear-gradient(#5a2bd6,#2d0f86);border:4px solid #ffd34a;box-shadow:0 0 0 4px #5a2a00,0 14px 0 #1a0650,0 22px 30px #000b,inset 0 3px 0 #ffffff40;animation:ky2gir .5s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes ky2gir{from{transform:translateY(60px) scale(.7);opacity:0}}
+.ky2-foxi{position:absolute;left:50%;top:-56px;width:112px;height:112px;margin-left:-56px;border-radius:50%;background:radial-gradient(circle at 50% 35%,#8fdcff,#1b6fc0);border:5px solid #ffd34a;box-shadow:0 0 0 4px #5a2a00,0 8px 14px #0009;overflow:hidden;animation:ky2foxi .6s .15s cubic-bezier(.34,1.56,.64,1) both}
+.ky2-foxi img{width:138%;margin:-6% 0 0 -19%;filter:saturate(.85);animation:ky2uz 2.4s 0.8s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes ky2foxi{from{transform:scale(0) rotate(-30deg)}}
+@keyframes ky2uz{0%,100%{transform:rotate(-4deg) translateY(2px)}50%{transform:rotate(4deg) translateY(4px)}}
+.ky2-yas{position:absolute;left:58%;top:52%;width:10px;height:14px;background:#7fd4ff;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;box-shadow:0 0 4px #fff;animation:ky2yas 1.8s 1s ease-in infinite}
+@keyframes ky2yas{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(34px);opacity:0}}
+.ky2-bas{font-size:40px;font-weight:900;line-height:1;color:#ffe14a;-webkit-text-stroke:2px #6a2a00;text-shadow:0 4px 0 #6a2a00,0 8px 10px #0007;animation:ky2bas .5s .25s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes ky2bas{from{transform:scale(1.8);opacity:0}}
+.ky2-kalan{display:inline-block;margin-top:8px;padding:4px 16px;border-radius:20px;background:#00000040;border:2px solid #ffffff30;font-weight:800;font-size:16px}
+.ky2-kalan b{font-size:22px;color:#ff8a8a;margin-right:2px}
+.ky2-ipucu{margin:8px 4px 10px;font-size:14px;font-weight:700;color:#e8dcff}
+.ky2-ipucu b{color:#ffe14a}
+.ky2-teklif{position:relative;display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:22px;border:4px solid #fff;background:linear-gradient(#a6ff8e,#4ee05e 45%,#1fb03a);box-shadow:0 0 0 3px #0b5a1c,0 7px 0 #157a28,0 7px 0 3px #0b5a1c,0 14px 18px #0009;color:#0b4a18;font-family:inherit;cursor:pointer;animation:ky2gir .45s .4s cubic-bezier(.34,1.56,.64,1) both,ky2nabiz 1.2s 1.2s ease-in-out infinite}
+@keyframes ky2nabiz{50%{transform:scale(1.04)}}
+.ky2-teklif:active{transform:translateY(4px)}
+.ky2-hal{position:relative;width:58px;height:58px;flex:none}
+.ky2-hal img{position:absolute;inset:7px;width:44px;height:44px;filter:drop-shadow(0 3px 2px #0006)}
+.ky2-hal svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ky2-hal circle{fill:#ffffff60;stroke:#fff;stroke-width:4;stroke-dasharray:107;stroke-dashoffset:0;stroke-linecap:round;animation:ky2say 8s linear .9s forwards}
+@keyframes ky2say{to{stroke-dashoffset:107}}
+.ky2-t{flex:1;text-align:left;line-height:1.05}
+.ky2-t b{display:block;font-size:28px;font-weight:900;color:#fff;text-shadow:0 3px 0 #0b5a1c,0 0 2px #0b5a1c}
+.ky2-t small{font-size:13px;font-weight:800}
+.ky2-fiyat{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:14px;background:#0b5a1c;color:#ffe14a;font-weight:900;font-size:20px}
+.ky2-yok{padding:10px;border-radius:16px;background:#00000040;font-weight:700}
+.ky2-seri{margin-top:10px;font-size:14px;font-weight:800;color:#ffb38a}
+.ky2-tekrar{margin-top:12px;padding:8px 26px;border-radius:18px;border:3px solid #ffffffb0;background:linear-gradient(#ffb03a,#f07a10);box-shadow:0 0 0 3px #6a2a00,0 5px 0 #8a3a00;color:#fff;font-family:inherit;font-weight:900;font-size:18px;text-shadow:0 2px 0 #8a3a00;cursor:pointer;animation:ky2gir .4s .55s ease-out both}
+.ky2-altin{position:absolute;right:12px;top:10px;display:flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;background:#00000040;font-weight:800;font-size:14px}
+@media (prefers-reduced-motion:reduce){.ky2,.ky2 *{animation:none!important}}
