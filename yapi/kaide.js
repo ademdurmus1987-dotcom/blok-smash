@@ -118,10 +118,11 @@ export function kaideKur({ THREE, canvasTex, ENV }) {
   // Renkler Foxi: tilki turuncusu govde, mor namlu ve tekerlek, altin susler; arkada ve namlu ustunde kabartma altin pati. Eski: ?top=eski2
   function topModeli2() {
     const parlak = (c, o) => new THREE.MeshPhysicalMaterial(Object.assign({ color: c, roughness: 0.26, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.12, envMap: ENV, envMapIntensity: 0.55 }, o));
-    const turuncu = parlak('#e8560c', { emissive: '#3a0e00', emissiveIntensity: 0.18, envMapIntensity: 0.35 });
-    const mor = parlak('#6a2ad8', { emissive: '#1c0650', emissiveIntensity: 0.25 });
-    const altin = new THREE.MeshStandardMaterial({ color: '#ffb81c', metalness: 0.75, roughness: 0.26, emissive: '#6a3600', emissiveIntensity: 0.35, envMap: ENV, envMapIntensity: 1.0 });
+    const turuncu = parlak('#ff3c00', { emissive: '#c01800', emissiveIntensity: 0.45, envMapIntensity: 0.08, clearcoat: 0.35, clearcoatRoughness: 0.3, roughness: 0.45 });   // v9.4b (Adem: 'cok soluk'): doygun turuncu, kendi renginde isik, az yansima
+    const mor = parlak('#3c0cb0', { emissive: '#5a10ff', emissiveIntensity: 0.6, envMapIntensity: 0.15, clearcoat: 0.45, clearcoatRoughness: 0.25, roughness: 0.42 });
+    const altin = new THREE.MeshStandardMaterial({ color: '#ffb000', metalness: 0.55, roughness: 0.3, emissive: '#ff8a00', emissiveIntensity: 0.45, envMap: ENV, envMapIntensity: 0.9 });
     const krem = parlak('#fff1d6', { emissive: '#40301a', emissiveIntensity: 0.1 });
+    const kirmizi = parlak('#e0102a', { emissive: '#a00018', emissiveIntensity: 0.45, envMapIntensity: 0.1, clearcoat: 0.35, roughness: 0.45 });
     const ic = new THREE.MeshBasicMaterial({ color: '#12081e' });
     const G = new THREE.Group(), add = (geo, m, x, y, z, par) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; (par || G).add(o); return o; };
     // pati sekli (taban yastigi + 4 parmak), z+ yonune bakan kabartma
@@ -148,7 +149,8 @@ export function kaideKur({ THREE, canvasTex, ENV }) {
     const halka = [];
     for (const [z, r, t] of [[0.16, 0.76, 0.08], [0.86, 0.68, 0.06], [-0.72, 0.88, 0.05]]) { const h = add(new THREE.TorusGeometry(r, t, 12, 56), altin.clone(), 0, 0, z, N); halka.push(h); }
     // turuncu govdede krem benekler (tilki kurku gibi), arkada iri altin pati damgasi, namlu ustunde kucuk pati
-    for (let i = 0; i < 6; i++) { const a = i / 6 * Pi * 2 + 0.3, zz = -0.55 - (i % 2) * 0.28, rr = 0.9 - (i % 2) * 0.06; add(new THREE.SphereGeometry(0.075, 12, 8), krem, Math.cos(a) * rr, Math.sin(a) * rr, zz, N).scale.set(1, 1, 0.5); }
+    for (let i = 0; i < 6; i++) { const a = i / 6 * Pi * 2 + Pi / 6, pp = pati(0.24, altin); pp.position.set(Math.cos(a) * 0.86, Math.sin(a) * 0.86, -0.42); pp.lookAt(Math.cos(a) * 3, Math.sin(a) * 3, -0.9); N.add(pp); }   // govdeyi saran altin patiler
+    add(new THREE.TorusGeometry(0.89, 0.09, 12, 56), kirmizi, 0, 0, -0.05, N);   // kirmizi kusak
     const pA = pati(0.5, altin); pA.position.set(0, 0.05, -1.24); pA.rotation.y = Pi; N.add(pA);
     const pU = pati(0.3, altin); pU.position.set(0, 0.68, 0.55); pU.rotation.x = -Pi / 2 + 0.06; N.add(pU);
     const kor = new THREE.Mesh(new THREE.CircleGeometry(0.46, 32), new THREE.MeshBasicMaterial({ color: '#ff8a2a', transparent: true, opacity: 0 })); kor.position.z = 1.205; N.add(kor);

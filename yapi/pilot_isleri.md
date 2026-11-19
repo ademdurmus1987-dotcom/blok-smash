@@ -162,3 +162,4 @@
   - Atis (`GUC`, `?guc=0` eski): hiz 95->115, kutle 3.3->4.4, ilk carpmada hiz %60 kalir (eski %45), atis araligi 0.22->0.14 sn (basili tutunca seri). Top sayilari ayni: bolumler kolaylasmis olabilir.
   - Top arabasi (kaide.js `topModeli2`, `?top=eski2` eski): tombul turuncu govde, mor kisa namlu ve iri mor tekerlekler, altin agiz; arkada iri altin pati, tekerlek kapaklarinda krem pati.
   - Golge (`GOLGEZ`, `?golge=0` kapali): zeminde ShadowMaterial duzlemi; platform, ayak ve yapinin golgesi fona duser.
+  - v9.4b: Adem 'top arabasi cok soluk': doygun kirmizi-turuncu govde, kirmizi kusak, govdede altin patiler, koyu mor tekerlek/namlu, az yansima.
