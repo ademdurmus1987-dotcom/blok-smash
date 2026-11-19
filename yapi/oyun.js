@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v9.0', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v9.4', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -1315,7 +1315,7 @@ function buildLevel() {
   else { platBody.addShape(new CANNON.Cylinder(R, R, PT, 32), new CANNON.Vec3(0, -PT / 2, 0)); platBody.addShape(new CANNON.Cylinder(1.05, 1.3, -GY - PT, 16), new CANNON.Vec3(0, (GY - PT) / 2, 0)); }
   POFI.z = RZ + 5.6; pedG.position.copy(POFI); PF.holder.position.copy(POFI); fit(); TC.aimYaw = TC.yaw = Math.PI + CAZ;
   PLS.push({ body: platBody, mesh: SIRK.mesh, leg: LEG, x: 0, z: 0, cx: 0, r: R, rz: RZ, kay: null, ph: 0, den: dengeMu(LV, Y) ? 1 : 0, eg: 0, cy: 0, th: 0.375, dmax: Y.veri && Y.denge ? 0.2 : 0 }); DENGEVAR = !!PLS[0].den; platBody.position.set(0, 0, 0); LEG.position.set(0, 0, 0); if (SIRK.mesh) SIRK.mesh.position.set(0, 0, 0);
-  addCubes(Y, list, () => [ci, ck, 0, 0]);
+  addCubes(Y, list, () => [ci, ck, 0, 0]); if (YER) fit();   // v9.4: cerceve kuplerin kutusuna gore (kupler artik var)
 }
 // v6.13: birden fazla ya da kayan platformlu bolum
 function buildMulti(Y, list, PD) {
@@ -1375,7 +1375,7 @@ function buildMulti(Y, list, PD) {
   });
   DIRT.scale.set(6.4, 5, 1);
   fit(); TC.aimYaw = TC.yaw = Math.PI + CAZ;
-  addCubes(Y, list, (n) => [info[n].ci, info[n].ck, PD[n].x || 0, PD[n].z || 0, PD[n].y || 0]);
+  addCubes(Y, list, (n) => [info[n].ci, info[n].ck, PD[n].x || 0, PD[n].z || 0, PD[n].y || 0]); if (YER) fit();
 }
 function addCubes(Y, list, ctr) {
   for (const [i, j, k, col, pn] of list) {
@@ -3505,7 +3505,7 @@ for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) glc.addEventLis
 // platformun tamami ve altta Pofi ekrana sigar; dar (telefon) ekranda geriye cekilir
 let CPITCH = 9 * Math.PI / 180, CAZ = 0; const CTG = new THREE.Vector3(); let CAMI = 0;   // PILOT: CPITCH/CAZ let (yalniz pilot kurulumunda degisir)   // v2.0: kamera acisi; CAMI: bolum basinda kisa donus
 const YER = Q.get('yer') !== '0';   // v9.4 (Adem 19 Kas): referans oyundaki yerlesim olculdu (390x844 oraninda): tabla ust yuzu ekranin %64'u, yapi tepesi en fazla ~%15, namlu agzi ~%81, araba ekran genisliginin ~%46'si. ?yer=0 eski yerlesim
-const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * 0.81;
+const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * 0.86;   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
 const CGAP = 8;   // v6.27: (Adem) platform ile top arabasi arasi her bolumde esit (kupler arabanin uzerine devriliyordu)
 const YAW = 0;   // v6.2: (Adem) platform kameraya duz baksin; derinligi yukaridan bakis acisi verir
 function fit() {
@@ -3522,14 +3522,19 @@ function fit() {
   const yD = levelOf(LV), reach = yD && yD.don ? Math.hypot(R, RZ) : RZ;   // donen platformda kose disari tasar
   const PC = PLT && PLT.cerceve();   // PILOT: yapinin ve adalarin butun koseleri
   const tops = PC || [[-R, TOPY + 0.2, -(FONYENI ? Math.max(RZ, RZB) : RZ)], [R, TOPY + 0.2, -(FONYENI ? Math.max(RZ, RZB) : RZ)], [-R, TOPY + 0.2, RZ], [R, TOPY + 0.2, RZ]], bots = PC || [[-R, -0.8, RZ], [R, -0.8, RZ]];
+  // v9.4 YER: ana oyunda cerceve platformun yaricapina (R, engeller dahil genis olabilir) degil, kuplerin gercek kutusuna gore; yapi yatayda ortalanir
+  let CX = 0, YB = null;
+  if (YER && !PC && cubes.length) { const bb = new THREE.Box3(); for (const c of cubes) if (!c.out && !c.gone) bb.expandByPoint(V.set(c.body.position.x, c.body.position.y, c.body.position.z)); bb.expandByScalar(S * 0.6);
+    if (!bb.isEmpty()) { YB = bb; CX = (bb.min.x + bb.max.x) / 2; const mz = Math.max(RZ, bb.max.z);
+      tops.length = 0; for (const x of [bb.min.x, bb.max.x]) for (const z of [bb.min.z, mz]) tops.push([x, bb.max.y, z]); bots.length = 0; bots.push([bb.min.x, -0.8, mz], [bb.max.x, -0.8, mz]); } }
   const yOf = (p) => V.set(p[0], p[1], p[2]).project(cam).y;
-  const place = (d, ty) => { tg.set(PC ? PLT.hedef[0] : 0, ty, PC ? PLT.hedef[1] : 0);   /* PILOT: yapi ekranda yatayda ortalanir */ CTG.copy(tg); cam.position.copy(tg).addScaledVector(dir, d); cam.lookAt(tg); cam.updateMatrixWorld(true); };
+  const place = (d, ty) => { tg.set(PC ? PLT.hedef[0] : CX, ty, PC ? PLT.hedef[1] : 0);   /* PILOT: yapi ekranda yatayda ortalanir */ CTG.copy(tg); cam.position.copy(tg).addScaledVector(dir, d); cam.lookAt(tg); cam.updateMatrixWorld(true); };
   const foY = fonOf(LV), ayak = foY && foY.yeni ? 1 - 2 * fonPx(0.5, foY.cy)[1] / H : null;
   let d = YER ? Math.max(6, reach + 3) : PC ? 8 /* PILOT: yapi sigana kadar geri cekilir; araba yuksekte, platforma degmez */ : Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
   for (; d < 120; d += 0.25) {
     let lo = -10, hi = TOPY + 10;
     // v3.19: resim fonda platform ayagi (0, GY, 0) resimdeki bos yuvarlak zeminin ortasina oturur (ekranda sabit nokta); kamera yapi sigana kadar geri cekilir
-    if (YER) { const PY = PC ? PLT.ustY : 0, PZ = PC ? RZ : RZ, PX = PC ? PLT.hedef[0] : 0;   // v9.4: tabla on kenari ekranda sabit yukseklikte (referans), kamera yapi sigana kadar geri cekilir
+    if (YER) { const PY = PC ? PLT.ustY : 0, PZ = PC ? RZ : (YB ? Math.max(RZ, YB.max.z) : RZ), PX = PC ? PLT.hedef[0] : CX;   // v9.4: tabla on kenari ekranda sabit yukseklikte (referans), kamera yapi sigana kadar geri cekilir
       for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); if (yOf([PX, PY, PZ]) > YER_TABLA) lo = ty; else hi = ty; } }
     else if (PC) { const hd = -0.7 + (TC.ustF != null ? TC.ustF : 0.24) + 0.012;   /* v8.7 (Adem 19 Kas): top arabasinin yeri sabit; kamera yukari/asagi kayar, platform yuzeyi arabanin hemen ustunde */
       for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); if (yOf([PLT.hedef[0], PLT.ustY, RZ]) > hd) lo = ty; else hi = ty; } }
@@ -3543,7 +3548,7 @@ function fit() {
   // top arabasi
   if (TC.gun) {
     const dH = Math.hypot(cam.position.x, cam.position.z), dc = Math.max(2.8, Math.min(dH - (reach + CGAP), (dH - reach) / 3.6));   // v6.29: (Adem) gozle gorulen aralik her bolumde ayni: kameranin platforma uzakligi arabaya uzakliginin 3.6 kati
-    const k = ((YER ? 0.46 : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
+    const k = ((YER ? 0.36 : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
     let lo = GY - 30, hi = cam.position.y; const tipY = YER ? YER_NAMLU : PC ? -0.7   /* v8.7 PILOT: top arabasi her bolumde ekranda ayni yerde; platform ona gore (kamera) hizalanir */
       : Math.max(-0.8, Math.min(-0.6, V.set(0, GY + 0.3, 2).project(cam).y - 0.16));   // v6.29: (Adem) namlu ucu ekranda platform ayaginin altinda kalir, ayagin ustune binmez
     const UST = new THREE.Box3(), ustY = () => { UST.setFromObject(TC.gun); let m = -9; for (const x of [UST.min.x, UST.max.x]) for (const z of [UST.min.z, UST.max.z]) m = Math.max(m, V.set(x, UST.max.y, z).project(cam).y); return m; };

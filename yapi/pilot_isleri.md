@@ -156,3 +156,9 @@
     `kvU`+renk uzun kavanoz (yeni renkler); `tas1` tek koyu mavi tas. kavanoz(renk, hS) artik yukseklik alir (hS=2 eski hal aynen).
   - Yapilar: `pilot/yapi_kaynak.py` -> `pilot/yapi.json`, `?pilot=960` .. `967` (Kavanoz Kalesi, Buz Rafli Kule, Silindir Sarayi (doner), Ikiz Renk Duvari,
     Tas ve Kavanoz Kulesi, Sutunlu Tapinak, Kutuk Kosk (doner), Gokkusagi Basamaklari). Hepsi duruyor (dusen 0). Ana oyuna BAGLI DEGIL.
+- v9.4 (19 Kas): Adem "referans oyundaki tabla ve top arabasi yerini olc, o duzende yap; atis guclu ve seri olsun; top arabasi referanstaki gibi ama ozgun renk ve pati damgali; golge; sekiller hala kotu".
+  - Yerlesim (oyun.js `YER`, `?yer=0` eski): referans 390x844'te olculdu: tabla ust yuzu %64, yapi tepesi en fazla %15, araba ust ucu ~%82 (namlu agzi %86), araba genisligi ~%36 (tekerlekler disarida).
+    Ana oyunda cerceve platform yaricapina degil kuplerin gercek kutusuna gore (kupler kurulduktan sonra fit() yeniden).
+  - Atis (`GUC`, `?guc=0` eski): hiz 95->115, kutle 3.3->4.4, ilk carpmada hiz %60 kalir (eski %45), atis araligi 0.22->0.14 sn (basili tutunca seri). Top sayilari ayni: bolumler kolaylasmis olabilir.
+  - Top arabasi (kaide.js `topModeli2`, `?top=eski2` eski): tombul turuncu govde, mor kisa namlu ve iri mor tekerlekler, altin agiz; arkada iri altin pati, tekerlek kapaklarinda krem pati.
+  - Golge (`GOLGEZ`, `?golge=0` kapali): zeminde ShadowMaterial duzlemi; platform, ayak ve yapinin golgesi fona duser.

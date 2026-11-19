@@ -118,7 +118,7 @@ export function kaideKur({ THREE, canvasTex, ENV }) {
   // Renkler Foxi: tilki turuncusu govde, mor namlu ve tekerlek, altin susler; arkada ve namlu ustunde kabartma altin pati. Eski: ?top=eski2
   function topModeli2() {
     const parlak = (c, o) => new THREE.MeshPhysicalMaterial(Object.assign({ color: c, roughness: 0.26, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.12, envMap: ENV, envMapIntensity: 0.55 }, o));
-    const turuncu = parlak('#f2701a', { emissive: '#5a1c00', emissiveIntensity: 0.22 });
+    const turuncu = parlak('#e8560c', { emissive: '#3a0e00', emissiveIntensity: 0.18, envMapIntensity: 0.35 });
     const mor = parlak('#6a2ad8', { emissive: '#1c0650', emissiveIntensity: 0.25 });
     const altin = new THREE.MeshStandardMaterial({ color: '#ffb81c', metalness: 0.75, roughness: 0.26, emissive: '#6a3600', emissiveIntensity: 0.35, envMap: ENV, envMapIntensity: 1.0 });
     const krem = parlak('#fff1d6', { emissive: '#40301a', emissiveIntensity: 0.1 });
@@ -130,13 +130,13 @@ export function kaideKur({ THREE, canvasTex, ENV }) {
       el(0.36, 0.29, 0, -0.18); el(0.13, 0.17, -0.42, 0.14, 0.35); el(0.14, 0.18, -0.15, 0.4, 0.1); el(0.14, 0.18, 0.15, 0.4, -0.1); el(0.13, 0.17, 0.42, 0.14, -0.35); return g; };
     const tek = [];
     for (const sx of [-1, 1]) {   // iri tekerlek: mor lastik, krem jant halkasi, altin gobek ve kapakta pati
-      const W = new THREE.Group(); W.position.set(sx * 1.08, 0.82, -0.1); G.add(W); tek.push(W);
-      const las = add(new THREE.CylinderGeometry(0.82, 0.82, 0.42, 48), mor, 0, 0, 0, W); las.rotation.z = Pi / 2;
-      const yan = add(new THREE.TorusGeometry(0.62, 0.07, 12, 48), krem, sx * 0.22, 0, 0, W); yan.rotation.y = Pi / 2;
+      const W = new THREE.Group(); W.position.set(sx * 1.32, 0.92, -0.25); G.add(W); tek.push(W);
+      const las = add(new THREE.CylinderGeometry(0.95, 0.95, 0.5, 48), mor, 0, 0, 0, W); las.rotation.z = Pi / 2;
+      const yan = add(new THREE.TorusGeometry(0.72, 0.08, 12, 48), krem, sx * 0.26, 0, 0, W); yan.rotation.y = Pi / 2;
       const gob = add(new THREE.CylinderGeometry(0.3, 0.34, 0.5, 32), altin, sx * 0.04, 0, 0, W); gob.rotation.z = Pi / 2;
-      const p = pati(0.42, krem); p.position.x = sx * 0.3; p.rotation.y = sx * Pi / 2; W.add(p);
+      const p = pati(0.42, krem); p.position.x = sx * 0.34; p.rotation.y = sx * Pi / 2; W.add(p);
     }
-    const dingil = add(new THREE.CylinderGeometry(0.14, 0.14, 2.0, 16), altin, 0, 0.82, -0.1); dingil.rotation.z = Pi / 2;
+    const dingil = add(new THREE.CylinderGeometry(0.14, 0.14, 2.6, 16), altin, 0, 0.92, -0.25); dingil.rotation.z = Pi / 2;
     // namlu grubu: arkada turuncu kubbe govde, onde kisa kalin mor namlu, altin agiz dudagi
     const N = new THREE.Group(); N.position.set(0, 1.3, 0.2); G.add(N);
     const gov = [[0.001, -1.25], [0.45, -1.2], [0.72, -1.02], [0.86, -0.72], [0.9, -0.35], [0.86, 0.0], [0.74, 0.25], [0.001, 0.25]].map((q) => new THREE.Vector2(q[0], q[1]));
@@ -148,7 +148,7 @@ export function kaideKur({ THREE, canvasTex, ENV }) {
     const halka = [];
     for (const [z, r, t] of [[0.16, 0.76, 0.08], [0.86, 0.68, 0.06], [-0.72, 0.88, 0.05]]) { const h = add(new THREE.TorusGeometry(r, t, 12, 56), altin.clone(), 0, 0, z, N); halka.push(h); }
     // turuncu govdede krem benekler (tilki kurku gibi), arkada iri altin pati damgasi, namlu ustunde kucuk pati
-    for (let i = 0; i < 10; i++) { const a = i / 10 * Pi * 2 + 0.3, zz = -0.55 - (i % 2) * 0.28, rr = 0.9 - (i % 2) * 0.06; add(new THREE.SphereGeometry(0.075, 12, 8), krem, Math.cos(a) * rr, Math.sin(a) * rr, zz, N).scale.set(1, 1, 0.5); }
+    for (let i = 0; i < 6; i++) { const a = i / 6 * Pi * 2 + 0.3, zz = -0.55 - (i % 2) * 0.28, rr = 0.9 - (i % 2) * 0.06; add(new THREE.SphereGeometry(0.075, 12, 8), krem, Math.cos(a) * rr, Math.sin(a) * rr, zz, N).scale.set(1, 1, 0.5); }
     const pA = pati(0.5, altin); pA.position.set(0, 0.05, -1.24); pA.rotation.y = Pi; N.add(pA);
     const pU = pati(0.3, altin); pU.position.set(0, 0.68, 0.55); pU.rotation.x = -Pi / 2 + 0.06; N.add(pU);
     const kor = new THREE.Mesh(new THREE.CircleGeometry(0.46, 32), new THREE.MeshBasicMaterial({ color: '#ff8a2a', transparent: true, opacity: 0 })); kor.position.z = 1.205; N.add(kor);
