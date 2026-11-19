@@ -148,6 +148,19 @@ def sandik_y(ad):
         P.append(kabartma(o, u, v, SP(serit((0.25, -0.25), (-0.25, 0.25), 0.15)), [(1.0, -0.004), (0.95, 0.05 * S)], GOVDE))
     return uret(ad, P, 0.3, keskin=55.0, klasor=BLOK2)
 
+def fici_y():
+    """v10.2 fici: govde renkli tombul tahta govde, uclarda ve ortada altin kusak, krem kapaklar, kapakta govde renkli pati"""
+    SEG = 18
+    prof = [(0.40, -0.497, KREM), (0.445, -0.48, ALTIN), (0.47, -0.44, ALTIN), (0.47, -0.37, GOVDE), (0.455, -0.36, GOVDE), (0.488, -0.2, GOVDE), (0.497, -0.06, ALTIN), (0.497, 0.06, GOVDE),
+            (0.488, 0.2, GOVDE), (0.455, 0.36, ALTIN), (0.47, 0.37, ALTIN), (0.47, 0.44, KREM), (0.445, 0.48, KREM), (0.40, 0.497, KREM)]
+    # renk: i -> i+1 kusagi. 9-11 ust altin kusak, 11-13 krem kenar
+    prof = [(rr * S, y * S, c) for rr, y, c in prof]
+    P = [torna(prof, SEG)]
+    for yon in ('ust', 'alt'):
+        o, u, v = yuz_cerceve(yon, 0.497 * S)
+        P += pati(o, u, v, 0.62 * S, 0.04 * S, GOVDE)
+    return uret('fici', P, 0.3, klasor=BLOK2)
+
 def main2():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dunya()
@@ -155,7 +168,7 @@ def main2():
     hepsi = {'cubuk1': lambda: cubuk('cubuk1', 1), 'cubuk2': lambda: cubuk('cubuk2', 2), 'cubuk3': lambda: cubuk('cubuk3', 3), 'cubuk4': lambda: cubuk('cubuk4', 4),
              'kavanoz1': lambda: kavanoz('kavanoz1', 1), 'kavanoz2': lambda: kavanoz('kavanoz2', 2), 'silindir': silindir, 'kiris3': lambda: kiris('kiris3', 3),
              'tas1': lambda: tas_y('tas1', 1), 'tas2': lambda: tas_y('tas2', 2), 'tas3': lambda: tas_y('tas3', 3), 'tas4': lambda: tas_y('tas4', 4),
-             'buz1': lambda: buz_y('buz1', 1), 'buz3': lambda: buz_y('buz3', 3), 'sandik': lambda: sandik_y('sandik')}
+             'buz1': lambda: buz_y('buz1', 1), 'buz3': lambda: buz_y('buz3', 3), 'sandik': lambda: sandik_y('sandik'), 'fici': fici_y}
     obs = [f() for kk, f in hepsi.items() if not ist or kk in ist]
     print('BITTI', len(obs))
 

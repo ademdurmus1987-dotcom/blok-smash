@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=11';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=11';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=13';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -41,7 +41,7 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 // Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
 const SKS = SEKQ ? (await import('./pilot/sira.js?v=1')).SEKIL : {};
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=25') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=26') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.1', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.2', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -542,7 +542,7 @@ if (Q.get('parlak') !== '0') {
     // v8.3: resim bolumlerinde (?pilot=31..36) tas, fici ve sise Adem'in cizimindeki gibi gri tas / fici / sise (oyunun Blender modelleri, blok3b.js) kalir
     const RESIMQ = PILOTQ && +Q.get('pilot') >= 31 && +Q.get('pilot') <= 999;
     if (RESIMQ) for (const k of ['ksTas', 'ksFici', 'ksFiciK', 'ksSiseM', 'ksSiseY', 'ksSiseB']) delete ESLE[k];
-    if (Q.get('b2') !== '0' && Q.get('parla') !== '0') for (const k of ['ksTas', 'ksBuz', 'ksBuz3']) delete ESLE[k];   // v9.9: tas ve buz yeni yastik tarzli Blender modeli (blok3b.js)
+    if (Q.get('b2') !== '0' && Q.get('parla') !== '0') for (const k of ['ksTas', 'ksBuz', 'ksBuz3', 'ksFici', 'ksFiciK']) delete ESLE[k];   // v9.9: tas ve buz yeni yastik tarzli Blender modeli (blok3b.js)
     for (const k in ESLE) {
       const t = SEK.TUR[k]; if (!t) continue; const [ad, renk] = ESLE[k], eski = t.yap;
       if (GRIK.includes(k)) { SEK.TUR[k + 'G'] = Object.assign({}, t, { yap: eski }); GRI[k] = k + 'G'; }   // v9.0: ana oyundaki sekil bolumleri icin eski (gri tas, fici, sise) gorunumlu es tur
@@ -566,7 +566,7 @@ if (Q.get('parlak') !== '0') {
 const CILA_T = {};
 function cilaMat(m) {
   if (Array.isArray(m)) return m.map(cilaMat);
-  if (!m || !m.isMeshStandardMaterial) return m;
+  if (!m || !m.isMeshStandardMaterial || (m.userData && m.userData.yeni)) return m;
   let p;
   if (m.isMeshPhysicalMaterial) p = m.clone();
   else { p = new THREE.MeshPhysicalMaterial(); THREE.MeshStandardMaterial.prototype.copy.call(p, m); p.defines = { STANDARD: '', PHYSICAL: '' }; }

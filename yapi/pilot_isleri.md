@@ -191,3 +191,9 @@
 
 ## v10.1 (19 Kas 2026) — Adem: sivi az dagilsin, ince damla, havada kaybolsun
 - Kavanoz (kj, kvU, sise) kirilinca: govde parcasi/renkli kirinti yok; dar bulutta ~30 kucuk damla (0.5-0.85 sn), havada kuculup kaybolur; yere degen damla kucuk leke birakir, 0.9 sn'de silinir. Cam kiriklari 0.35-0.55 sn. Eski: `?sivi=eski`.
+
+## v10.2 (19 Kas 2026) — fici yeni tarzda, sutun/direk/kalas cilali
+- yeni_bloklar.py fici_y -> model/blok2/fici.glb: tombul govde (turun rengi), uclarda ve ortada altin kusak, krem kapakta pati. ksFici (turuncu), ksFiciK (kirmizi); ana oyunda da (ESLE'den cikarildi).
+- ksSutun, ksMorSutun, ksDirek, ksKalas1-3: cilali malzeme.
+- Hata: deneme bolumlerinde (pilot) yeni modeller iki kez cilalaniyordu (cilaMat): soluk gorunuyordu. Artik bir kez.
+- Sergi `?pilot=990` fici, sutun, kalas eklendi.
