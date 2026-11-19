@@ -81,6 +81,8 @@ function fxBasla(cv, ortam, ses) {
   };
 }
 
+// v10.9 (Adem'in Gemini cizimi): kazanma kartinda sevinen Foxi (hareketli, yesil zemin ayiklandi). Yuklenemezse eski yuvarlak avatar.
+let SEVINC = null; { const im = new Image(); im.onload = () => { SEVINC = im.src; }; im.src = '../karakter/tilki_sevinc_anim.webp?v=1'; }
 export function kazanSahne(KZ, d, o) {
   const zaman = [], sonra = (ms, f) => zaman.push(setTimeout(f, ms)), $ = (q) => KZ.querySelector(q);
   // ---- sesler (oyunun ana ses zinciri uzerinden; ses kapaliysa o.sesAg() null doner) ----
@@ -108,7 +110,7 @@ export function kazanSahne(KZ, d, o) {
     '<div class="k2-ic"><div class="k2-yildizlar">' + [0, 1, 2].map((i) => `<div class="k2-yil ${i < st ? '' : 'off'}"><div class="ns"></div><img src="${IK}yildiz.webp?v=1" alt=""></div>`).join('') + '</div>' +
     `<div class="k2-bas">${yazi(BAS, 'pembe', { derin: 14 })}</div>` +
     `<div class="k2-levha">${yazi('BÖLÜM ' + d.L, 'mor', { h: '30px', derin: 5, sade: 1 })}</div>` +
-    `<div class="k2-panel"><div class="k2-ust"><img src="${IK}altin.webp?v=1" alt="">${yazi('+0', 'altin', { h: '56px', derin: 8, sade: 1 })}</div><div class="k2-satir">` + satir.map(([a, b]) => `<div>${esc(a)}<b>${esc(b)}</b></div>`).join('') + '</div></div>' +
+    `<div class="k2-panel">${SEVINC ? '<div class="k2-tilki"><img src="' + SEVINC + '" alt=""></div>' : ''}<div class="k2-ust"><img src="${IK}altin.webp?v=1" alt="">${yazi('+0', 'altin', { h: '56px', derin: 8, sade: 1 })}</div><div class="k2-satir">` + satir.map(([a, b]) => `<div>${esc(a)}<b>${esc(b)}</b></div>`).join('') + '</div></div>' +
     (d.yeniK ? `<div class="k2-yeni"><img src="../${d.yeniK.av}?v=1" alt=""><div><small>Yeni karakter kazandın!</small><b>${esc(d.yeniK.ad)}</b></div></div>` : '') +
     `<button class="k2-devam">${yazi('DEVAM', 'yesil', { h: '46px', derin: 7, sade: 1 })}</button></div>` +
     '<canvas class="k2-fx"></canvas><div class="k2-flas"></div>';
@@ -150,6 +152,7 @@ export function kazanSahne(KZ, d, o) {
     sonra(1500, () => fx.fisek(0.75, 0.2)); if (GUCLU) sonra(1900, () => fx.fisek(0.5, 0.12));
     if (o.sarki) sonra(1900, () => { if (KZ.classList.contains('on')) o.sarki(); });
     gir($('.k2-levha'), 820, kay, 380, YUM); gir($('.k2-panel'), 900, kay, 420, YUM);
+    gir($('.k2-tilki'), 1050, [{ transform: 'translateY(40px) scale(.4)', opacity: 0 }, { transform: 'translateY(-14px) scale(1.08)', opacity: 1, offset: 0.6 }, { transform: 'none', opacity: 1 }], 520, YAY);
     const satirlar = [...ic.querySelectorAll('.k2-satir div')]; satirlar.forEach((e, i) => gir(e, 1250 + i * 70, kay, 340, YUM));
     gir($('.k2-yeni'), 1450, kay, 380, YUM);
     const u = $('.k2-ust'), sv = u.querySelector('svg'); let bitti = false, raf = 0, son = -1;
@@ -160,7 +163,7 @@ export function kazanSahne(KZ, d, o) {
     const dv = $('.k2-devam'); sonra(1800, () => { dv.classList.add('on'); ton(660, 0.1, 0.16); ton(990, 0.15, 0.16, 'triangle', 0.07); });
     const sonaGel = () => { if (bitti) return; bitti = true; zaman.forEach(clearTimeout); zaman.length = 0; cancelAnimationFrame(raf);
       for (const a of anim) try { a.finish(); } catch (e) {}
-      for (const el of ic.querySelectorAll('.k2-yil,.k2-bas,.k2-levha,.k2-panel,.k2-satir div,.k2-yeni')) el.style.opacity = 1;
+      for (const el of ic.querySelectorAll('.k2-yil,.k2-bas,.k2-levha,.k2-panel,.k2-satir div,.k2-yeni,.k2-tilki')) el.style.opacity = 1;
       [...ic.querySelectorAll('.k2-yil')].forEach((y, i) => { if (i < st) y.classList.add('dolu'); }); bas.classList.add('salin'); yaziDegis(sv, '+' + d.kaz); dv.classList.add('on'); };
     KZ.addEventListener('pointerdown', (e) => { if (!e.target.closest('.k2-devam')) sonaGel(); });
     const durdur = () => { zaman.forEach(clearTimeout); zaman.length = 0; cancelAnimationFrame(raf); fx.dur(); arka.dur(); };

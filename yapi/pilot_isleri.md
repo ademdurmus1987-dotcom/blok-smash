@@ -229,3 +229,7 @@
 ## v10.9 (19 Kas 2026) — uzgun Foxi (Adem'in Gemini cizimleri)
 - karakter/tilki_uzgun_anim.webp: Adem'in hareketli GIF'i (30 kare) yesil zemin ayiklanip 15 karelik saydam hareketli WebP (178x260); kaybetme kartinin ustunde ayakta.
 - karakter/tilki_uzgun.webp: buyuk resimden bas portresi (256x256, saydam); hareketli dosya yuklenmezse yuvarlak cercevede.
+
+## v10.10 (19 Kas 2026) — yesil zemin temiz, sevinen Foxi kazanma kartinda
+- Yesil zemin yeni ayiklayici (yapi/uretici/yesil_ayikla.py): yesillik orani (koyu golge de silinir), koyu kiyafette yuksek esik, figur icindeki GIF titresim noktalari komsu renkle dolar, tek tuk kirinti kirpmaya girmez.
+- karakter/tilki_sevinc_anim.webp (Adem'in sevinc GIF'i): kazanma kartinda panelin sol ustunde ayakta, panelle ziplayarak gelir (yuvarlak avatar yerine).

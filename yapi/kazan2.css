@@ -70,3 +70,8 @@
 #mkazan.k2-akici .k2-yil .ns{inset:-30%}
 #mkazan.k2-akici .k2-ic{gap:10px}
 #mkazan.k2-akici .k2-panel{margin-top:14px}
+
+/* v10.9 sevinen Foxi (panelin sol ustunde ayakta; yuvarlak avatar yerine) */
+#mkazan .k2-panel:has(.k2-tilki):after{display:none}
+#mkazan .k2-tilki{position:absolute;left:-14px;bottom:calc(100% - 26px);width:116px;z-index:3;pointer-events:none;transform-origin:50% 100%}
+#mkazan .k2-tilki img{display:block;width:100%;filter:drop-shadow(0 5px 5px #0008)}
