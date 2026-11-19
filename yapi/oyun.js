@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=11';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=7';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=8';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v9.6', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v9.7', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -488,10 +488,27 @@ const NENV = (() => {
   t.mapping = THREE.EquirectangularReflectionMapping;
   const pm = new THREE.PMREMGenerator(ren), e = pm.fromEquirectangular(t).texture; pm.dispose(); return e;
 })();
+// v9.7 (Adem: 'referanstaki gibi islak, seker gibi parlak'): cilali bloklar icin STUDYO yansimasi. Koyu-orta zemin + keskin beyaz isik panolari:
+// vernik (clearcoat) yuzeyde net beyaz parlama seritleri olur, aradaki koyu yansima rengi soldurmaz. Kapatma: ?parla=0
+const PARLA = Q.get('parla') !== '0';
+const SENV = !PARLA ? ENV : (() => {
+  const t = canvasTex(1024, 512, (x, w, h) => {
+    const gr = x.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#f4f6fb'); gr.addColorStop(0.4, '#c9cedb'); gr.addColorStop(0.5, '#8c8898'); gr.addColorStop(1, '#3a3346');
+    x.fillStyle = gr; x.fillRect(0, 0, w, h);
+    const pano = (u0, v0, u1, v1, a) => { const X = u0 * w, Y = v0 * h, W = (u1 - u0) * w, H = (v1 - v0) * h, g = x.createLinearGradient(X, 0, X + W, 0);
+      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.12, 'rgba(255,255,255,' + a + ')'); g.addColorStop(0.88, 'rgba(255,255,255,' + a + ')'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(X, Y, W, H); };
+    pano(0.6, 0.08, 0.9, 0.3, 1);      // kameranin arkasinda ustte buyuk softbox (on yuzlerin ust kenari)
+    pano(0.66, 0.34, 0.69, 0.62, 0.95); pano(0.82, 0.34, 0.845, 0.62, 0.8);   // dikey seritler (kavanoz / silindir uzun parlama)
+    pano(0.1, 0.1, 0.35, 0.26, 0.7);   // arkada tepe isigi (ust yuzler)
+    pano(0.0, 0.0, 1.0, 0.04, 0.9);    // zenit
+  });
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  const pm = new THREE.PMREMGenerator(ren), e = pm.fromEquirectangular(t).texture; pm.dispose(); return e;
+})();
 
 // v3.1: (Adem 10 Kas 2026) kodla cizilen 3B sekiller (sekil.js): parlak oyuncak kup, tas kiris, mermer tambur, buz, ahsap dikme, kavanoz, raf.
 // KIND'e eklenir (sek: 1); olculeri kup kenari cinsinden SEK.TUR'da, govde ve malzemesi ilk kullanimda SEK.al(ad) ile kurulur.
-const B3K = blok3bKur({ THREE, ENV, GLTFLoader }), b3Ready = B3K.yukle();   // v6.1
+const B3K = blok3bKur({ THREE, ENV, SENV, GLTFLoader }), b3Ready = B3K.yukle();   // v6.1
 const SEK = sekilKur({ THREE, S, canvasTex, ENV, b3: B3K });
 // v6.11 (Adem 17 Kas: 'Bagla'): parlak sekil kutuphanesi (gorsel/sekiller.js) bolumlerdeki bloklara baglandi. Yalniz GORUNUM degisir:
 // turun adi, olcusu, fizik govdesi, kirilmasi ve sesi ayni kalir (kavanoz eski sisenin, kutuk eski ficinin yerinde). Eski gorunum: ?parlak=0
@@ -534,7 +551,7 @@ function cilaMat(m) {
   if (m.isMeshPhysicalMaterial) p = m.clone();
   else { p = new THREE.MeshPhysicalMaterial(); THREE.MeshStandardMaterial.prototype.copy.call(p, m); p.defines = { STANDARD: '', PHYSICAL: '' }; }
   p.clearcoat = 1; p.clearcoatRoughness = 0.07; p.roughness = Math.min(0.3, (m.roughness == null ? 0.5 : m.roughness) * 0.6);
-  p.envMapIntensity = Math.max(0.9, (m.envMapIntensity || 0.4) * 1.8); p.needsUpdate = true; return p;
+  p.envMapIntensity = Math.max(0.9, (m.envMapIntensity || 0.4) * 1.8); if (PARLA) { p.envMap = SENV; p.clearcoatRoughness = 0.04; } p.needsUpdate = true; return p;
 }
 if (Q.get('cila') !== '0') for (const k of Object.keys(SEK.TUR)) {
   if (!/^(ks|oy)/.test(k)) continue; const t = SEK.TUR[k];

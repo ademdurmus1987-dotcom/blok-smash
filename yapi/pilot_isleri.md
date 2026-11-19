@@ -168,3 +168,8 @@
 - v9.6 (19 Kas): Blender bu ortama kuruldu (pip `bpy` 5.3, venv). Yeni TEK TARZ blok seti: `yapi/uretici/blender/yeni_bloklar.py` (pilot_bloklar.py yardimcilarini kullanir) -> `yapi/model/blok2/`
   cubuk1-4 (uz1..uz4 + renk), kavanoz1 (kj), kavanoz2 (kvU), silindir (dalga: ana oyunda da), kiris3 (yeni kr3 + renk). Kalin yuvarlak kenar, derin pano, iri pati, kavanozda parlama seridi.
   blok3b.js LISTE'ye govde rengi + `cila` (clearcoat) ile baglandi. Eski cizim: `?b2=0`. Sergi: `?pilot=989`.
+
+## v9.7 (19 Kas 2026) — yastik kenarli tugla, studyo yansimasi
+- Tugla (cubuk1-4): dis kenar r 0.2, pano kenari ve tabani yuvarlatildi (yeni_bloklar.py `yastik_kenar`), pati biraz kucuk ve alcak. Eski model: `yeni_bloklar.py -- --eski cubuk3`. GLB ?v=4.
+- Cilali yeni set: studyo ortam yansimasi SENV (oyun.js), ior 1.6, yansima carpani 1.2 (`?ior=`, `?parlaG=` ile denenir). Kavanozda gri yansima azaldi, kendi rengiyle hafif isik (sari hardal degil). Mor biraz acik (#9842f0).
+- Kapatma: `?parla=0` (eski yansima ve renkler).

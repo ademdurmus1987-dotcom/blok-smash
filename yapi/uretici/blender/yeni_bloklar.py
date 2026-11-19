@@ -13,15 +13,35 @@ BLOK2 = os.path.join(KOK, 'yapi', 'model', 'blok2'); os.makedirs(BLOK2, exist_ok
 
 KR = 0.16    # kenar yaricapi (kup kenari cinsinden)
 
+YASTIK = '--eski' not in sys.argv   # v9.7 (Adem: 'referanstaki gibi kaliteli'): pano kenarlari yastik gibi yuvarlak (referanstaki kalin cerceve)
+
+def yastik_kenar(bm, f, r):
+    """pano cukurunun iki kenarini (cerceve ust kenari ve pano tabani) yuvarlat: keskin basamak yerine yastik gibi kalin cerceve"""
+    import bmesh
+    alt = set(f.edges); fv = set(f.verts); duvar = set()
+    for e in alt:
+        for g in e.link_faces:
+            if g is not f: duvar.add(g)
+    ust = set()
+    for g in duvar:
+        for e in g.edges:
+            if not (set(e.verts) & fv) and all(any(h in duvar for h in vv.link_faces) for vv in e.verts):
+                if sum(1 for h in e.link_faces if h in duvar) == 1: ust.add(e)
+    bmesh.ops.bevel(bm, geom=list(alt | ust), offset=r, offset_type='OFFSET', segments=2, profile=0.5, affect='EDGES', clamp_overlap=True)
+    bm.normal_update()
+
 def cubuk(ad, wS):
     """wS x 1 x 1 parlak oyuncak tugla: kalin yuvarlak kenar, her yuzde sig pano, on ve arkada iri pati (govde renginde kabartma)"""
     w, h, d = wS * S * 0.996, S * 0.994, S * 0.994; r = KR * S; gom = 0.055 * S   # v9.6b: derin pano (golgesi okunur)
+    if YASTIK: r = 0.2 * S; gom = 0.07 * S   # v9.7: daha yuvarlak dis kenar, daha derin pano
     bm = kutu_bm(w, h, d, r, 3)
-    for y in YON.values(): pano(bm, buyuk_yuz(bm, y), 0.1 * S, gom)
+    for y in YON.values():
+        f = pano(bm, buyuk_yuz(bm, y), (0.13 if YASTIK else 0.1) * S, gom)
+        if YASTIK: yastik_kenar(bm, f, 0.035 * S)
     P = [bm_al(bm)]; bm.free()
     for yon in ('on', 'arka'):
         o, u, v = yuz_cerceve(yon, d / 2 - gom)
-        P += pati(o, u, v, 0.86 * S, 0.075 * S, GOVDE)
+        P += pati(o, u, v, (0.74 if YASTIK else 0.86) * S, (0.05 if YASTIK else 0.075) * S, GOVDE)
     return uret(ad, P, 0.25, keskin=55.0, klasor=BLOK2)
 
 def kavanoz(ad, hS):
