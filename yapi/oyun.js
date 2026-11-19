@@ -18,7 +18,7 @@ import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali blokl
 import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
-import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
+import { kaideKur } from './kaide.js?v=3';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=29';
 import * as EG from './egri.js?v=3';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
@@ -310,6 +310,9 @@ const DIRT = (() => {
   const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ transparent: true, depthWrite: false, roughness: 1 }));
   m.rotation.x = -Math.PI / 2; m.position.y = GY + 0.015; scene.add(m); return m;   // v6.29: golge almaz (platform golgesi fonda koyu leke yapiyordu)
 })();
+// v9.4 (Adem 19 Kas: referanstaki golge oyuna hos duruyor): zeminde yalniz golgeyi gosteren saydam duzlem (platform, ayak ve yapi golgesi fona duser). ?golge=0 kapali
+const GOLGEZ = Q.get('golge') === '0' ? null : (() => { const m = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.ShadowMaterial({ color: '#2a1840', opacity: 0.3, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2; m.position.y = GY + 0.02; m.receiveShadow = true; m.renderOrder = 1; scene.add(m); return m; })();
 const DIRTT = {};
 // v4.0: her ayagin dibine kendi toprak lekesi (DIRT ile ayni malzeme, fona gore rengi degisir); LEG.clone() ile kopyalara da gecer
 { const lk = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), DIRT.material); lk.rotation.x = -Math.PI / 2; lk.position.y = GY + 0.016; lk.scale.set(5.6, 4.6, 1); lk.visible = false; lk.userData.leke = 1; LEG.add(lk); }
@@ -1911,7 +1914,7 @@ function updateCannon(dt) {
 // araba geri kayar ve tekerlekler doner, namlu agzi kor gibi parlar; beklerken altin halkalarda isik gezinir, namlu nefes alir.
 // Eksenler eski modelle ayni: namlu +z, zemin y=0. Korsan eski modeli kullanir.
 function topArabasiKur() {
-  if (KAIDE && Q.get('top') !== 'eski') { const t = KAIDE.topModeli(); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; topSon(t.G, t.muzzleZ); return; }   // v4.4: yeni top
+  if (KAIDE && Q.get('top') !== 'eski') { const t = Q.get('top') === 'eski2' ? KAIDE.topModeli() : KAIDE.topModeli2(); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; topSon(t.G, t.muzzleZ); return; }   // v4.4: yeni top
   const odunT = canvasTex(512, 512, (x, w, h) => {
     x.fillStyle = '#9a5a26'; x.fillRect(0, 0, w, h);
     for (let i = 0; i < 4; i++) { const y0 = i * h / 4; const gr = x.createLinearGradient(0, y0, 0, y0 + h / 4); gr.addColorStop(0, '#b87436'); gr.addColorStop(0.5, '#a3622a'); gr.addColorStop(1, '#8a4e1e'); x.fillStyle = gr; x.fillRect(0, y0 + 3, w, h / 4 - 6); x.fillStyle = '#4a2408'; x.fillRect(0, y0, w, 3); }
@@ -2046,13 +2049,14 @@ const BR = 0.47;   // v6.8: (Adem) biraz kucultuldu. v6.5: 3B top mermisi net go
 const BALLGEO = new THREE.SphereGeometry(BR, 32, 20);
 const TRAILGEO = new THREE.SphereGeometry(0.16, 12, 8);
 // Blok Smash 1. asama (Adem 9 Kas, Royal Smash referansi): top 62 yerine 95 birim/sn; kutle 5 yerine 3.3, carpma itisi (kutle x hiz) ayni kalsin diye.
+const GUC = Q.get('guc') !== '0';   // v9.4 (Adem 19 Kas: 'top atisi gucsuz, daha guclu ve seri olsun'): hiz 95->115, kutle 3.3->4.4, carpinca daha az hiz kaybi, atis araligi 0.22->0.14 sn. ?guc=0 eski
 const DUZ = PILOTQ && Q.get('duz') !== '0';   // v9.0: ana oyundaki sekil bolumlerinde de eski yay (oyun fizigi ayni)   // v8.8: duz atis yalniz pilotta (ana oyun eski yay)
 world.addEventListener('preStep', () => { for (const b of balls) if (b.duz && !b.hit && b.t < 1.1) b.body.force.y -= b.body.mass * world.gravity.y; });   /* iskalayan top 1.1 sn sonra duser */   // v8.7: duz atis (yercekimi carpmaya kadar dengelenir)
 function shoot(target) {
   if (!g || g.state !== 'play') return false;
   if (g.kuyruk && g.kuyruk.length) return ggAtis(target);
   if (g.shots <= 0) return false;
-  const now = g.t; if (g.lastShot && now - g.lastShot < 0.22) return false;   // v6.0: daha seri
+  const now = g.t; if (g.lastShot && now - g.lastShot < (GUC ? 0.14 : 0.22)) return false;   // v6.0: daha seri
   g.lastShot = now; g.shots--; g.armed = true; g.kirB = 0; PF.rec = 1; if (TK.t) TK.t.oyna('atis', 0.22);
   PF.aimYaw = Math.atan2(target.x - POFI.x, target.z - POFI.z);
   PF.holder.rotation.y = PF.yaw = PF.aimYaw;   // atis aninda hedefe donuk olsun ki top hortumdan ciksin
@@ -2062,13 +2066,13 @@ function shoot(target) {
   // yay: v = (hedef - baslangic)/T - g*T/2. En kisa ucus suresi secilir ama top platformun on kenarini (z = R) en az
   // 0.9 yukaridan asmali, yoksa kenara carpip geri seker
   const dv = target.clone().sub(st), gy = world.gravity.y, sz = st.x * Math.sin(YAW) + st.z * Math.cos(YAW), tz = target.x * Math.sin(YAW) + target.z * Math.cos(YAW), edge = Math.min(1, Math.max(0, (sz - RZ) / Math.max(0.01, sz - tz)));
-  let T = Math.max(0.08, dv.length() / 95);   // v6.10: (Adem) mermi daha da hizli (v6.9: 44)   // v6.5: biraz yavas, top gozle takip edilir   // v6.1: her yone ayni hiz (~44 birim/sn): yukari da asagi da ayni guc
+  let T = Math.max(0.07, dv.length() / (GUC ? 115 : 95));   // v6.10: (Adem) mermi daha da hizli (v6.9: 44)   // v6.5: biraz yavas, top gozle takip edilir   // v6.1: her yone ayni hiz (~44 birim/sn): yukari da asagi da ayni guc
   // v6.11: (Adem) alt siralara atis kavise girip yavasliyordu, karli koyde kare platformun kenarina takilip hic gitmiyordu:
   // mermi platforma carpmaz (carpisma filtresi), her hedefe duz ve ayni hizla gider
   // v8.7 (Adem 19 Kas: kulenin ustune atista top agir gidiyordu): top ilk carpmaya kadar yercekimsiz, duz ve sabit hizla gider (?duz=0 eski yay)
   const v = DUZ ? new CANNON.Vec3(dv.x / T, dv.y / T, dv.z / T) : new CANNON.Vec3(dv.x / T, dv.y / T - 0.5 * gy * T, dv.z / T);
   const col = PF.col || '#3d9bff';
-  const body = new CANNON.Body({ mass: 3.3, material: PM.ball, linearDamping: 0.01, allowSleep: false }); body.addShape(new CANNON.Sphere(BR)); body.collisionFilterGroup = 2; body.collisionFilterMask = ~4;
+  const body = new CANNON.Body({ mass: GUC ? 4.4 : 3.3, material: PM.ball, linearDamping: 0.01, allowSleep: false }); body.addShape(new CANNON.Sphere(BR)); body.collisionFilterGroup = 2; body.collisionFilterMask = ~4;
   body.position.set(st.x, st.y, st.z); body.velocity.copy(v); world.addBody(body);
   const tg = topGeo(), mesh = tg ? new THREE.Mesh(tg, topMat()) : new THREE.Mesh(BALLGEO, new THREE.MeshStandardMaterial({ color: col, roughness: 0.15, metalness: 0.1, emissive: col, emissiveIntensity: 0.45 })); mesh.castShadow = true; scene.add(mesh);
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#ffe6ff', transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false })); halo.scale.setScalar(BR * 4.2); halo.visible = false; mesh.add(halo);
@@ -2311,7 +2315,7 @@ world.addEventListener('postStep', () => {
   if (K || !g) return;
   const patlama = g.t - BOOMT < 0.9;
   while (YUM.length) { const [p, b] = YUM.pop();
-    if (b && !b.hafif) { b.hafif = 1; b.body.velocity.scale(TOPKAYIP, b.body.velocity); b.body.mass = 2; b.body.updateMassProperties(); }
+    if (b && !b.hafif) { b.hafif = 1; b.body.velocity.scale(GUC ? 0.6 : TOPKAYIP, b.body.velocity); b.body.mass = GUC ? 2.8 : 2; b.body.updateMassProperties(); }
     if (patlama) continue;
     for (const c of cubes) { if (c.out) continue; const q = c.body.position; if ((q.x - p.x) ** 2 + (q.y - p.y) ** 2 + (q.z - p.z) ** 2 > 9) continue;
       const v = c.body.velocity; if (v.y > VUP) v.y = VUP; const h = Math.hypot(v.x, v.z); if (h > VMAX) { v.x *= VMAX / h; v.z *= VMAX / h; }
@@ -3294,7 +3298,7 @@ function ggAyril(e) {
 function ggBomba(st, target) {
   const dv = target.clone().sub(st), gy = world.gravity.y, T = Math.max(0.1, dv.length() / 60);
   const v = new CANNON.Vec3(dv.x / T, dv.y / T - 0.5 * gy * T, dv.z / T);
-  const body = new CANNON.Body({ mass: 3.3, material: PM.ball, linearDamping: 0.01, allowSleep: false }); body.addShape(new CANNON.Sphere(BR)); body.collisionFilterGroup = 2; body.collisionFilterMask = ~4;
+  const body = new CANNON.Body({ mass: GUC ? 4.4 : 3.3, material: PM.ball, linearDamping: 0.01, allowSleep: false }); body.addShape(new CANNON.Sphere(BR)); body.collisionFilterGroup = 2; body.collisionFilterMask = ~4;
   body.position.set(st.x, st.y, st.z); body.velocity.copy(v); world.addBody(body); body.angularVelocity.set(-v.z * 0.3, 0, v.x * 0.3);
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(BR * 1.25, 24, 16), new THREE.MeshStandardMaterial({ color: '#2b2545', roughness: 0.28, metalness: 0.55, emissive: '#3a1478', emissiveIntensity: 0.35 })); mesh.castShadow = true; scene.add(mesh);
   const kap = new THREE.Mesh(new THREE.CylinderGeometry(BR * 0.4, BR * 0.45, BR * 0.4, 14), new THREE.MeshStandardMaterial({ color: '#ffd23f', metalness: 0.6, roughness: 0.3 })); kap.position.y = BR * 1.25; mesh.add(kap);
@@ -3500,6 +3504,8 @@ for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) glc.addEventLis
 // ---------------- kamera ----------------
 // platformun tamami ve altta Pofi ekrana sigar; dar (telefon) ekranda geriye cekilir
 let CPITCH = 9 * Math.PI / 180, CAZ = 0; const CTG = new THREE.Vector3(); let CAMI = 0;   // PILOT: CPITCH/CAZ let (yalniz pilot kurulumunda degisir)   // v2.0: kamera acisi; CAMI: bolum basinda kisa donus
+const YER = Q.get('yer') !== '0';   // v9.4 (Adem 19 Kas): referans oyundaki yerlesim olculdu (390x844 oraninda): tabla ust yuzu ekranin %64'u, yapi tepesi en fazla ~%15, namlu agzi ~%81, araba ekran genisliginin ~%46'si. ?yer=0 eski yerlesim
+const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * 0.81;
 const CGAP = 8;   // v6.27: (Adem) platform ile top arabasi arasi her bolumde esit (kupler arabanin uzerine devriliyordu)
 const YAW = 0;   // v6.2: (Adem) platform kameraya duz baksin; derinligi yukaridan bakis acisi verir
 function fit() {
@@ -3519,23 +3525,26 @@ function fit() {
   const yOf = (p) => V.set(p[0], p[1], p[2]).project(cam).y;
   const place = (d, ty) => { tg.set(PC ? PLT.hedef[0] : 0, ty, PC ? PLT.hedef[1] : 0);   /* PILOT: yapi ekranda yatayda ortalanir */ CTG.copy(tg); cam.position.copy(tg).addScaledVector(dir, d); cam.lookAt(tg); cam.updateMatrixWorld(true); };
   const foY = fonOf(LV), ayak = foY && foY.yeni ? 1 - 2 * fonPx(0.5, foY.cy)[1] / H : null;
-  let d = PC ? 8 /* PILOT: yapi sigana kadar geri cekilir; araba yuksekte, platforma degmez */ : Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
+  let d = YER ? Math.max(6, reach + 3) : PC ? 8 /* PILOT: yapi sigana kadar geri cekilir; araba yuksekte, platforma degmez */ : Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
   for (; d < 120; d += 0.25) {
     let lo = -10, hi = TOPY + 10;
     // v3.19: resim fonda platform ayagi (0, GY, 0) resimdeki bos yuvarlak zeminin ortasina oturur (ekranda sabit nokta); kamera yapi sigana kadar geri cekilir
-    if (PC) { const hd = -0.7 + (TC.ustF != null ? TC.ustF : 0.24) + 0.012;   /* v8.7 (Adem 19 Kas): top arabasinin yeri sabit; kamera yukari/asagi kayar, platform yuzeyi arabanin hemen ustunde */
+    if (YER) { const PY = PC ? PLT.ustY : 0, PZ = PC ? RZ : RZ, PX = PC ? PLT.hedef[0] : 0;   // v9.4: tabla on kenari ekranda sabit yukseklikte (referans), kamera yapi sigana kadar geri cekilir
+      for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); if (yOf([PX, PY, PZ]) > YER_TABLA) lo = ty; else hi = ty; } }
+    else if (PC) { const hd = -0.7 + (TC.ustF != null ? TC.ustF : 0.24) + 0.012;   /* v8.7 (Adem 19 Kas): top arabasinin yeri sabit; kamera yukari/asagi kayar, platform yuzeyi arabanin hemen ustunde */
       for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); if (yOf([PLT.hedef[0], PLT.ustY, RZ]) > hd) lo = ty; else hi = ty; } }
     else if (ayak != null) { for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); if (yOf([0, GY, 0]) > ayak) lo = ty; else hi = ty; } }
     else for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); const top = Math.max(...tops.map(yOf)), bot = Math.min(...bots.map(yOf)); if ((top + bot) / 2 > 0.13) lo = ty; else hi = ty; }
     place(d, (lo + hi) / 2);
     const top = Math.max(...tops.map(yOf)), bot = Math.min(...bots.map(yOf)), side = Math.max(...tops.concat(bots).map((p) => Math.abs(V.set(p[0], p[1], p[2]).project(cam).x)));
-    if (top < 0.74 && (PC || ayak != null || bot > -0.46) && side < (PC ? PLT.genis : 0.92)) break;   /* PILOT: yapi ekran genisliginin ~%70'i */   // v6.5: yapi ekrani daha cok doldurur
+    if (YER) { if (top < YER_TEPE && side < (PC ? Math.min(0.9, PLT.genis) : 0.9)) break; }
+    else if (top < 0.74 && (PC || ayak != null || bot > -0.46) && side < (PC ? PLT.genis : 0.92)) break;   /* PILOT: yapi ekran genisliginin ~%70'i */   // v6.5: yapi ekrani daha cok doldurur
   }
   // top arabasi
   if (TC.gun) {
     const dH = Math.hypot(cam.position.x, cam.position.z), dc = Math.max(2.8, Math.min(dH - (reach + CGAP), (dH - reach) / 3.6));   // v6.29: (Adem) gozle gorulen aralik her bolumde ayni: kameranin platforma uzakligi arabaya uzakliginin 3.6 kati
-    const k = (0.4 * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
-    let lo = GY - 30, hi = cam.position.y; const tipY = PC ? -0.7   /* v8.7 PILOT: top arabasi her bolumde ekranda ayni yerde; platform ona gore (kamera) hizalanir */
+    const k = ((YER ? 0.46 : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
+    let lo = GY - 30, hi = cam.position.y; const tipY = YER ? YER_NAMLU : PC ? -0.7   /* v8.7 PILOT: top arabasi her bolumde ekranda ayni yerde; platform ona gore (kamera) hizalanir */
       : Math.max(-0.8, Math.min(-0.6, V.set(0, GY + 0.3, 2).project(cam).y - 0.16));   // v6.29: (Adem) namlu ucu ekranda platform ayaginin altinda kalir, ayagin ustune binmez
     const UST = new THREE.Box3(), ustY = () => { UST.setFromObject(TC.gun); let m = -9; for (const x of [UST.min.x, UST.max.x]) for (const z of [UST.min.z, UST.max.z]) m = Math.max(m, V.set(x, UST.max.y, z).project(cam).y); return m; };
     for (let it = 0; it < 30; it++) { const by = (lo + hi) / 2; TC.holder.position.set(cam.position.x - Math.sin(CAZ) * dc, by, cam.position.z - Math.cos(CAZ) * dc); TC.holder.rotation.y = Math.PI + CAZ; TC.holder.updateMatrixWorld(true);
