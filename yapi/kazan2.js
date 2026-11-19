@@ -76,6 +76,7 @@ function fxBasla(cv, ortam, ses) {
     dur() { dur = true; }, fisek,
     konfeti(n = 140) { for (let i = 0; i < n; i++) P.push({ x: w * 0.5 + (Math.random() - 0.5) * w, y: -Math.random() * h * 0.4, vx: (Math.random() - 0.5) * 4 * d, vy: (Math.random() * 2 + 1) * d, g: 0.06 * d, s: 0.99, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3, z: (4 + Math.random() * 5) * d, c: R[i % R.length], k: 'k', t: 300 }); },
     isilti(x, y, n = 24) { x *= d; y *= d; for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, v = (2 + Math.random() * 8) * d; P.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.08 * d, s: 0.95, r: Math.random() * 3, vr: 0.1, z: (4 + Math.random() * 6) * d, c: i % 3 ? '#fff6a8' : '#fff', k: i % 2 ? 'y' : 'o', t: 50, T: 50 }); } },
+    top(sol, n = 70) { const x0 = sol ? 0 : w, y0 = h * 0.92; for (let i = 0; i < n; i++) { const a = (sol ? -1.05 : -2.09) + (Math.random() - 0.5) * 0.55, v = (11 + Math.random() * 9) * d; P.push({ x: x0, y: y0, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.16 * d, s: 0.985, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4, z: (4 + Math.random() * 5) * d, c: R[i % R.length], k: 'k', t: 220 }); } },   // v10.6 konfeti topu
     yagmur(n = 30) { for (let i = 0; i < n; i++) P.push({ x: Math.random() * w, y: -Math.random() * h * 0.6 - 30, vx: (Math.random() - 0.5) * d, vy: (3 + Math.random() * 3) * d, g: 0.12 * d, s: 0.995, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.25, z: (13 + Math.random() * 9) * d, k: 'p', t: 320 }); },
   };
 }
@@ -127,14 +128,26 @@ export function kazanSahne(KZ, d, o) {
     const YAY = 'cubic-bezier(.34,1.56,.64,1)', YUM = 'cubic-bezier(.22,1,.36,1)', anim = [];
     const gir = (el, ms, kf, dur, ez) => { if (!el) return; el.style.opacity = 0; sonra(ms, () => { el.style.opacity = 1; anim.push(el.animate(kf, { duration: dur, easing: ez, fill: 'backwards' })); }); };
     const kay = [{ transform: 'translateY(26px)', opacity: 0 }, { transform: 'none', opacity: 1 }];
+    // v10.6 (Adem: 'giris daha havali ve sesli olsun'): yukselen ugultu -> her yildizda gum + halka + parilti -> baslik ekrana carpar
+    // (renkli parlama, tek sarsinti, zil + davul + guclu fanfar) -> iki yandan konfeti topu. Ses: ?kazanses=0 eski yumusak ses
+    const GUCLU = !/[?&]kazanses=0/.test(location.search);
+    const ugultu = () => { const S = o.sesAg(); if (!S) return; const A = S.AC, n = A.currentTime, len = A.sampleRate * 0.7 | 0, b = A.createBuffer(1, len, A.sampleRate), dd = b.getChannelData(0); for (let i = 0; i < len; i++) dd[i] = (Math.random() * 2 - 1) * (i / len) ** 1.5;
+      const sr = A.createBufferSource(); sr.buffer = b; const f = A.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 2; f.frequency.setValueAtTime(400, n); f.frequency.exponentialRampToValueAtTime(5000, n + 0.7); const g = A.createGain(); g.gain.value = 0.32; sr.connect(f); f.connect(g); g.connect(S.out); sr.start(n); ton(180, 0.7, 0.18, 'triangle', 0, 720); };
+    const zil = () => { gur(1.4, 0.3, 7000, 0, 'highpass'); gur(0.5, 0.25, 3200, 0.02); };
+    const davul = (g = 0) => { ton(95, 0.35, 0.9, 'sine', g, 38); gur(0.18, 0.5, 180, g, 'lowpass'); };
+    const fanfar2 = () => { [[523, 0], [659, 0.1], [784, 0.2], [1047, 0.32]].forEach(([f, g]) => { ton(f, 0.5, 0.2, 'triangle', g); ton(f / 2, 0.5, 0.16, 'triangle', g); ton(f * 2, 0.4, 0.05, 'sine', g); });
+      [523, 659, 784, 1047, 1319].forEach((f) => ton(f, 1.6, 0.07, 'triangle', 0.48)); ton(131, 1.6, 0.55, 'sine', 0.48); davul(0.48); };
+    if (GUCLU) sonra(0, ugultu);
     [...ic.querySelectorAll('.k2-yil')].forEach((y, i) => {
+      if (GUCLU) sonra(120 + i * 170 + 300, () => { if (i >= st) return; const [x, yy] = merkez(y); const hk = document.createElement('div'); hk.className = 'k2-halka'; hk.style.left = x + 'px'; hk.style.top = yy + 'px'; KZ.appendChild(hk); setTimeout(() => hk.remove(), 650); davul(); });
       gir(y, 120 + i * 170, [{ transform: 'scale(0) rotate(-25deg)', opacity: 0 }, { transform: 'none', opacity: 1 }], 520, YAY);
       sonra(120 + i * 170 + 300, () => { if (i < st) { y.classList.add('dolu'); yildizSes(i); o.buzz(25); const [x, yy] = merkez(y); fx.isilti(x, yy, 14); } else ton(220, 0.2, 0.06, 'sine'); });
     });
-    const bas = $('.k2-bas'); gir(bas, 640, [{ transform: 'scale(.55)', opacity: 0 }, { transform: 'scale(1.06)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], 480, YUM);
+    const bas = $('.k2-bas'); gir(bas, 640, GUCLU ? [{ transform: 'scale(2.6) rotate(-6deg)', opacity: 0 }, { transform: 'scale(.9,1.1)', opacity: 1, offset: 0.55 }, { transform: 'scale(1.06,.95)', offset: 0.78 }, { transform: 'none', opacity: 1 }] : [{ transform: 'scale(.55)', opacity: 0 }, { transform: 'scale(1.06)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], GUCLU ? 520 : 480, GUCLU ? 'cubic-bezier(.5,0,.4,1)' : YUM);
     sonra(1120, () => bas.classList.add('salin'));
-    sonra(700, () => { fanfar(); fx.konfeti(70); fx.fisek(0.25, 0.22); if (st >= 3) fx.yagmur(10); });
-    sonra(1500, () => fx.fisek(0.75, 0.2));
+    if (GUCLU) sonra(925, () => { zil(); fanfar2(); o.buzz([50, 30, 60]); sars(); const fl = $('.k2-flas'); fl.style.background = 'radial-gradient(circle at 50% 40%, #fff6c0, #ff7ac0aa 45%, #0000 75%)'; fl.classList.remove('on'); void fl.offsetWidth; fl.classList.add('on'); fx.top(true); fx.top(false); fx.konfeti(60); fx.fisek(0.25, 0.22); if (st >= 3) fx.yagmur(14); });
+    else sonra(700, () => { fanfar(); fx.konfeti(70); fx.fisek(0.25, 0.22); if (st >= 3) fx.yagmur(10); });
+    sonra(1500, () => fx.fisek(0.75, 0.2)); if (GUCLU) sonra(1900, () => fx.fisek(0.5, 0.12));
     if (o.sarki) sonra(1900, () => { if (KZ.classList.contains('on')) o.sarki(); });
     gir($('.k2-levha'), 820, kay, 380, YUM); gir($('.k2-panel'), 900, kay, 420, YUM);
     const satirlar = [...ic.querySelectorAll('.k2-satir div')]; satirlar.forEach((e, i) => gir(e, 1250 + i * 70, kay, 340, YUM));

@@ -213,3 +213,6 @@
 - Yakut, elmas, karo: ana oyunda zaten patili kupe ceviriliyordu; artik deneme bolumlerinde de (pilot.js MUC). `?mucevher=1` geri getirir.
 - yeni_bloklar.py: tnt_y (kirmizi yastik govde, krem pano, iri siyah bomba, fitil, kivilcim), direk_y (1x2, iki krem kusak, pati), kalas_y (0.5 yuksek, krem damar). ksTNT, ksDirek, ksKalas1-3 bunlar.
 - Kazanma karti (kazan2.js k2-akici): beyaz flas ve sarsinti yok, yildizlar yerinde yaylanir, yazi/panel kayarak gelir, altin sayaci 0.9 sn yumusak, DEVAM 1.8 sn; dokununca sona atlar; yildizlar ekrana sigar. Eski: `?kazan=eski`.
+
+## v10.6 (19 Kas 2026) — Adem: kazanma girisi daha havali ve sesli
+- Yukselen ugultu (0.7 sn), her yildizda davul + halka, baslik ekrana carpar (2.6x -> 1, ezilip esner), carpista zil + davul + guclu fanfar (bas notalar), renkli (pembe-sari) parlama, tek sarsinti, iki alt koseden konfeti topu, 3 havai fisek. Ses: `?kazanses=0` eski yumusak.
