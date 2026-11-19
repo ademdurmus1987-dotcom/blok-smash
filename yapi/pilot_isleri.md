@@ -203,3 +203,6 @@
 - Kirilinca yildiz (VR.yildizlar, malzemeFx parilti), dusen blok '+n' yazisi, kombo sayaci ve 'Super/Harika' yazilari kapali. Eski: `?sade=0`.
 - Yeni turler: kvL+renk (1x3 uzun kavanoz, model blok2/kavanoz3), kvB+renk (2x2x2 buyuk kavanoz, blok2/kavanozB; yeni_bloklar.py kavanoz(ad, hS, olc)).
 - Yeni yapi `?pilot=968` Dev Kavanozlar.
+
+## v10.4 (19 Kas 2026) — saydam cam kiriklari
+- Kavanoz kirilinca sivi ile birlikte 14 (buyuk kavanozda daha cok) saydam, isikta parlayan cam kirigi; her dorduncusu kavanoz renginde hafif renkli. 0.6-0.95 sn sonra kaybolur.

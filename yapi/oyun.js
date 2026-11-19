@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.3', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.4', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -2517,7 +2517,11 @@ function malzemeFx(c, p, dir) {
         const a = Math.random() * 6.283, h = 0.7 + Math.random() * 2.6, v = new THREE.Vector3(Math.cos(a) * h, 2.2 + Math.random() * 4, Math.sin(a) * h * 0.6).addScaledVector(dir, 0.4 + Math.random() * 0.6);
         const d = damla(mat, geo, p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.5, Math.random() * 0.5, (Math.random() - 0.5) * 0.5)), v, 0.55 + Math.random() * 0.5, col, 0.12, false); d.gk = 0.55; d.ince = 1; d.life = 0.6 + Math.random() * 0.4;
       }
-      for (let i = 0; i < 6; i++) piece(new THREE.Mesh(MFX.kirik, MFX.mat('cs', { color: '#eef8ff', transparent: true, opacity: 0.5, roughness: 0.02, metalness: 0.1, envMapIntensity: 1.6, side: THREE.DoubleSide })), p, dir, S * (0.08 + Math.random() * 0.1), 6, 0.35 + Math.random() * 0.2);
+      // v10.4 (Adem: 'saydam cam parcalari da sacilsin'): renksiz saydam cam kiriklari + kavanoz renginde hafif renkli birkac kirik, isikta parlar
+      const camM = MFX.mat('cs2', { color: '#e8f8ff', transparent: true, opacity: 0.82, roughness: 0.02, metalness: 0.3, envMap: SENV, envMapIntensity: 2.6, emissive: '#bfe8ff', emissiveIntensity: 0.55, side: THREE.DoubleSide, depthWrite: false });
+      const camR = MFX.mat('cr' + col, { color: col, transparent: true, opacity: 0.4, roughness: 0.02, metalness: 0.2, envMap: SENV, envMapIntensity: 2, side: THREE.DoubleSide, depthWrite: false });
+      const nc = Math.round((PARN > 90 ? 8 : 14) * Math.min(1.6, bk));
+      for (let i = 0; i < nc; i++) piece(new THREE.Mesh(MFX.kirik, i % 4 === 3 ? camR : camM), p, dir, S * (0.2 + Math.random() * 0.18), 6.5, 0.6 + Math.random() * 0.35);
       par(3, '#ffffff', true, 0.3); return;
     }
     const n = PARN > 90 ? 18 : 34;
