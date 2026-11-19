@@ -36,6 +36,8 @@ if (!/[?&]b2=0/.test(location.search)) {
     for (const n of [1, 2, 3, 4]) LISTE['uz' + n + c] = ['blok2/cubuk' + n, 0.18, r, { govde: r, cila: 1, env: 0.75 }];
     LISTE['kj' + c] = ['blok2/kavanoz1', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];
     LISTE['kvU' + c] = ['blok2/kavanoz2', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];
+    LISTE['kvL' + c] = ['blok2/kavanoz3', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];   // v10.3
+    LISTE['kvB' + c] = ['blok2/kavanozB', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];
     LISTE['kr3' + c] = ['blok2/kiris3', 0.24, r, { govde: r, cila: 1, env: 0.5 }];
   }
   if (YENI) {   // v9.9: tas, buz, sandik da ayni yastik kenarli tarzda (yeni_bloklar.py tas_y / buz_y / sandik_y)
@@ -51,7 +53,7 @@ if (!/[?&]b2=0/.test(location.search)) {
   }
   LISTE.dalga = ['blok2/silindir', 0.2, '#5b8cf0', { govde: '#4f86f2', cila: 1, env: 0.55, bant: 1 }];
 }
-const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 7 : 1);
+const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 8 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)

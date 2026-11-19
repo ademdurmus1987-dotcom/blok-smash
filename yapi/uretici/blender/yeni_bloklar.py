@@ -44,22 +44,24 @@ def cubuk(ad, wS):
         P += pati(o, u, v, (0.74 if YASTIK else 0.86) * S, (0.05 if YASTIK else 0.075) * S, GOVDE)
     return uret(ad, P, 0.25, keskin=55.0, klasor=BLOK2)
 
-def kavanoz(ad, hS):
+def kavanoz(ad, hS, olc=1):
+    SS = S * olc   # v10.3: olc=2 buyuk kavanoz (2 genis, 2*hS yuksek)
     """cap 1, boy hS: tombul govde, omuz, boyun, cizgili tirtikli kapak (krem / govde rengi), onde krem pati"""
     SEG = 20; k = hS
+    SPS = lambda pts: [(a * SS, b * SS) for a, b in pts]
     cizgi = lambda j: KREM if (j // 2) % 2 == 0 else GOVDE
     # govde y degerleri boy oranli (alt -0.5k .. ust 0.5k), kapak sabit boy 0.24
     yb, yt = -0.5 * k, 0.5 * k; ks = yt - 0.17   # v9.6b: tombul govde (cap ~0.99), kisa kapak
     prof = [(0.42, yb + 0.003, GOVDE), (0.475, yb + 0.035, GOVDE), (0.494, yb + 0.1, GOVDE), (0.494, ks - 0.12, GOVDE), (0.47, ks - 0.05, GOVDE),
             (0.42, ks - 0.012, KREM), (0.405, ks, KREM), (0.46, ks + 0.008, cizgi), (0.46, yt - 0.03, cizgi), (0.43, yt - 0.005, KREM), (0.36, yt, KREM)]
-    prof = [(rr * S, y * S, c) for rr, y, c in prof]
+    prof = [(rr * SS, y * SS, c) for rr, y, c in prof]
     P = [torna(prof, SEG)]
-    o, u, v = yuz_cerceve('on', 0.488 * S); o = (o[0], (yb + (ks - yb) * 0.48) * S, o[2])
-    P += pati(o, u, v, 0.4 * S, 0.025 * S, KREM)
-    oi, ui, vi = yuz_cerceve('on', 0.466 * S)   # v9.6b: sol onde dikey parlama seridi (cam/plastik isigi, referanstaki gibi)
+    o, u, v = yuz_cerceve('on', 0.488 * SS); o = (o[0], (yb + (ks - yb) * 0.48) * SS, o[2])
+    P += pati(o, u, v, 0.4 * SS, 0.025 * SS, KREM)
+    oi, ui, vi = yuz_cerceve('on', 0.466 * SS)   # v9.6b: sol onde dikey parlama seridi (cam/plastik isigi, referanstaki gibi)
     y0, y1 = yb + 0.12, ks - 0.12
-    P.append(kabartma(oi, ui, vi, SP(serit((-0.18, y0), (-0.18, y1), 0.045)), [(1.0, -0.006), (1.0, 0.01 * S)], ISIK))
-    P.append(kabartma(oi, ui, vi, SP(serit((-0.08, y0 + 0.08), (-0.08, y0 + 0.08 + (y1 - y0) * 0.35), 0.018)), [(1.0, -0.006), (1.0, 0.01 * S)], ISIK))
+    P.append(kabartma(oi, ui, vi, SPS(serit((-0.18, y0), (-0.18, y1), 0.045)), [(1.0, -0.006), (1.0, 0.01 * SS)], ISIK))
+    P.append(kabartma(oi, ui, vi, SPS(serit((-0.08, y0 + 0.08), (-0.08, y0 + 0.08 + (y1 - y0) * 0.35), 0.018)), [(1.0, -0.006), (1.0, 0.01 * SS)], ISIK))
     return uret(ad, P, 0.12, klasor=BLOK2)
 
 def silindir():
@@ -166,7 +168,7 @@ def main2():
     dunya()
     ist = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     hepsi = {'cubuk1': lambda: cubuk('cubuk1', 1), 'cubuk2': lambda: cubuk('cubuk2', 2), 'cubuk3': lambda: cubuk('cubuk3', 3), 'cubuk4': lambda: cubuk('cubuk4', 4),
-             'kavanoz1': lambda: kavanoz('kavanoz1', 1), 'kavanoz2': lambda: kavanoz('kavanoz2', 2), 'silindir': silindir, 'kiris3': lambda: kiris('kiris3', 3),
+             'kavanoz1': lambda: kavanoz('kavanoz1', 1), 'kavanoz2': lambda: kavanoz('kavanoz2', 2), 'kavanoz3': lambda: kavanoz('kavanoz3', 3), 'kavanozB': lambda: kavanoz('kavanozB', 1, 2), 'silindir': silindir, 'kiris3': lambda: kiris('kiris3', 3),
              'tas1': lambda: tas_y('tas1', 1), 'tas2': lambda: tas_y('tas2', 2), 'tas3': lambda: tas_y('tas3', 3), 'tas4': lambda: tas_y('tas4', 4),
              'buz1': lambda: buz_y('buz1', 1), 'buz3': lambda: buz_y('buz3', 3), 'sandik': lambda: sandik_y('sandik'), 'fici': fici_y}
     obs = [f() for kk, f in hepsi.items() if not ist or kk in ist]

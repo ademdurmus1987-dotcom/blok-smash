@@ -28,8 +28,8 @@ def duvar(P, z):
     return [(t, x, y, z, *e) for (t, x, y, *e) in P]
 
 
-def wd(t): return W.get(t) or (int(t[2]) if t[:2] in ('uz', 'kr') else 1)
-def hg(t): return H.get(t) or (2 if t[:3] in ('kvU',) else 1)
+def wd(t): return W.get(t) or (int(t[2]) if t[:2] in ('uz', 'kr') else 2 if t[:3] == 'kvB' else 1)
+def hg(t): return H.get(t) or (2 if t[:3] in ('kvU', 'kvB') else 3 if t[:3] == 'kvL' else 1)
 def ikiz(P, zs=(0, -1)):
     """on duvar listesini derinlik sıralarına cogalt"""
     return [(t, x, y, z, *e) for z in zs for (t, x, y, _z, *e) in P]
@@ -146,6 +146,16 @@ for y, n in enumerate((10, 8, 6, 4)):
     for sx in (-1, 1): P.append(('kjN', sx * (n / 2 - 0.5), y + 1, 0))
 P.append(('ksYildiz', 0, 5, 0)); P.append(('ksYildiz', 0, 5, -1))
 T[967] = bolum('Gökkuşağı Basamakları', P)
+
+# 968 v10.3 Dev Kavanozlar: altta buyuk kavanozlar (2x2), ustunde tugla raf, uzun kavanoz sirasi, tepede tugla ve kisa kavanoz
+P = []
+for i, c in enumerate('KSYM'): P.append(('kvB' + c, -3 + 2 * i, 0, -0.5))
+for z in (0, -1): P += [('uz4P', -2, 2, z), ('uz4T', 2, 2, z)]
+for i, c in enumerate('PSKYMTNA'): P.append(('kvL' + c, i - 3.5, 3, 0))
+for i, c in enumerate('SPYK'): P.append(('kvU' + c, -3 + 2 * i + 0.5, 3, -1))
+P += [('uz4K', -2, 6, 0), ('uz4M', 2, 6, 0), ('uz4K', -2, 6, -1), ('uz4M', 2, 6, -1)]
+for i, c in enumerate('TSYP'): P.append(('kj' + c, -1.5 + i, 7, 0))
+T[968] = bolum('Dev Kavanozlar', P)
 
 # 989 yeni blok seti sergisi
 P = []

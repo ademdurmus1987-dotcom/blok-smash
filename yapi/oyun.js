@@ -9,10 +9,10 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=11';
+import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=13';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=14';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -41,7 +41,7 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 // Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
 const SKS = SEKQ ? (await import('./pilot/sira.js?v=1')).SEKIL : {};
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=26') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=27') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.2', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.3', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -2180,7 +2180,7 @@ function breakBlock(c, dir, n) {
   const q = c.mesh.quaternion.clone(), d = dir || new THREE.Vector3(0, 0.3, -1);
   if (!c.gone) knock(c, true); else { c.out = true; world.removeBody(c.body); scene.remove(c.mesh); }
   // v6.16: Blender ile parcalanmis gercek parcalar (Adem'in modeli, kendi dokusuyla); yoksa eski efekt
-  if (INCE && /^kj|^kvU|Sise/.test(c.kind || '')) { malzemeFx(c, p, d); sfx('kir', c.kind); return; }   // v10.1: sivili kavanoz: govde parcasi yok, cam havada kirilip kaybolur, sivi ince damla
+  if (INCE && /^kj|^kv[ULB]|Sise/.test(c.kind || '')) { malzemeFx(c, p, d); sfx('kir', c.kind); return; }   // v10.1: sivili kavanoz: govde parcasi yok, cam havada kirilip kaybolur, sivi ince damla
   const real = realPieces(c, p, q, d, c.landed ? 6 : 99) || fragPieces(c, p, q, d);   // v3.21: Blender parcasi yoksa sekil kendi yuzeyinden parcalara ayrilir
   shatter(p, bColor(c), d, bMat(c), real ? Math.round((n || 14) * 0.3) : Math.round((n || 14) * 0.6), real ? null : bChunk(c)); malzemeFx(c, p, d); sfx('kir', c.kind);
 }
@@ -2498,7 +2498,7 @@ function buzCatla(c, e) {
 }
 function malzemeFx(c, p, dir) {
   if (PARN > 150 || !c.kind) return; const T = SEK.TUR[c.kind]; if (!T) return;
-  const ses = T.ses, renk = T.renk, par = (n, col, add, s0, ust) => { for (let i = 0; i < n; i++) { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: STAR, color: col, transparent: true, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); m.position.copy(p);
+  const ses = T.ses, renk = T.renk, par = (n, col, add, s0, ust) => { if (SADE) return; for (let i = 0; i < n; i++) { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: STAR, color: col, transparent: true, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); m.position.copy(p);
     const v = new THREE.Vector3((Math.random() - 0.5) * 7, (ust || 2) + Math.random() * 4, (Math.random() - 0.5) * 7).addScaledVector(dir, 1.5), sc = s0 * (0.6 + Math.random() * 0.6);
     fx(m, 0.5 + Math.random() * 0.35, (o, k, dt) => { v.y -= 9 * dt; o.position.addScaledVector(v, dt); o.material.rotation += dt * 5; o.scale.setScalar(sc * (k < 0.25 ? k / 0.25 : 1 - (k - 0.25) / 0.75 * 0.7)); o.material.opacity = 1 - k * k; }); } };
   if (c.pati) { par(6, '#ffd65a', true, 0.45); par(3, '#ffffff', true, 0.3); return; }
@@ -2509,13 +2509,13 @@ function malzemeFx(c, p, dir) {
       fx(m, 1.0, (o, k, dt) => { o.position.addScaledVector(v, dt); v.multiplyScalar(1 - dt * 2); o.scale.setScalar(s0 * (1 + k * 2.2)); o.material.opacity = 0.45 * (1 - k); }); } return; }
   // v6.8 (Adem 17 Kas, referans video: 'sise kirilinca icindeki sivi etrafa dagiliyor'): sise kirilinca sivisi parlak damlalar halinde
   // her yone sacilir (hizina gore uzar), platforma/yere degince leke birakir; cam kiriklari renksiz, saydam. Eski: ?sivi=0.
-  if (ses === 'cam' && /Sise|^kj|^kvU/.test(c.kind) && Q.get('sivi') !== '0') {   // v10.0: yeni kavanozlar da sivisini sacar
+  if (ses === 'cam' && /Sise|^kj|^kv[ULB]/.test(c.kind) && Q.get('sivi') !== '0') {   // v10.0: yeni kavanozlar da sivisini sacar
     const col = renk, mat = SIVIM[col] || (SIVIM[col] = new THREE.MeshStandardMaterial({ color: col, roughness: 0.08, metalness: 0, envMap: ENV, envMapIntensity: 1.1, emissive: col, emissiveIntensity: 0.4 })), geo = jarKit().blobGeo;
     if (INCE) {   // v10.1 (Adem: 'referanstaki gibi az dagilsin, ince damlacik, havada yok olsun'): dar bulut, kucuk damlalar, 0.5-0.8 sn omur
-      const n = PARN > 90 ? 18 : 30;
+      const bk = /^kvB/.test(c.kind) ? 2.2 : /^kvL/.test(c.kind) ? 1.4 : 1, n = Math.round((PARN > 90 ? 26 : 44) * bk);   // buyuk kavanoz daha cok sivi
       for (let i = 0; i < n; i++) {
-        const a = Math.random() * 6.283, h = 0.6 + Math.random() * 2.2, v = new THREE.Vector3(Math.cos(a) * h, 2 + Math.random() * 3.5, Math.sin(a) * h * 0.6).addScaledVector(dir, 0.4 + Math.random() * 0.6);
-        const d = damla(mat, geo, p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.5, Math.random() * 0.5, (Math.random() - 0.5) * 0.5)), v, 0.4 + Math.random() * 0.35, col, 0.1, false); d.gk = 0.55; d.ince = 1; d.life = 0.5 + Math.random() * 0.35;
+        const a = Math.random() * 6.283, h = 0.7 + Math.random() * 2.6, v = new THREE.Vector3(Math.cos(a) * h, 2.2 + Math.random() * 4, Math.sin(a) * h * 0.6).addScaledVector(dir, 0.4 + Math.random() * 0.6);
+        const d = damla(mat, geo, p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.5, Math.random() * 0.5, (Math.random() - 0.5) * 0.5)), v, 0.55 + Math.random() * 0.5, col, 0.12, false); d.gk = 0.55; d.ince = 1; d.life = 0.6 + Math.random() * 0.4;
       }
       for (let i = 0; i < 6; i++) piece(new THREE.Mesh(MFX.kirik, MFX.mat('cs', { color: '#eef8ff', transparent: true, opacity: 0.5, roughness: 0.02, metalness: 0.1, envMapIntensity: 1.6, side: THREE.DoubleSide })), p, dir, S * (0.08 + Math.random() * 0.1), 6, 0.35 + Math.random() * 0.2);
       par(3, '#ffffff', true, 0.3); return;
@@ -2870,8 +2870,9 @@ let lastFl = 0;
 function screenAt(p, dy) { V.copy(p); V.y += dy || 0; V.project(cam); return [(V.x + 1) / 2 * innerWidth, (1 - V.y) / 2 * innerHeight]; }
 // kup gitti (dustu, kirildi ya da patladi): sayilir, ozel kuplerin odulu verilir; remove ise sahneden hemen kalkar
 let PB = { n: 0, x: 0, y: 0, t: 0 };
+const SADE = Q.get('sade') !== '0';   // v10.3 (Adem: kirilinca yildiz, kombo ve rakam cikmasin). ?sade=0 eski
 function puanBirik(at) {
-  PB.n++; PB.x += at[0]; PB.y += at[1];
+  if (SADE) return; PB.n++; PB.x += at[0]; PB.y += at[1];
   if (!PB.t) PB.t = setTimeout(() => { const n = PB.n; if (n) floatText('+' + n, Math.max(40, Math.min(innerWidth - 40, PB.x / n)), PB.y / n, 'mini'); PB = { n: 0, x: 0, y: 0, t: 0 }; }, 160);
 }
 function knock(c, remove) {
@@ -2882,7 +2883,7 @@ function knock(c, remove) {
   else if (c.kind === 'yildiz') { g.bonus++; floatText('+1 ★', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#c58bff', 20, 7); sfx('bonus'); }
   else if (!c.hedef) puanBirik(at);
   if (PLAN) egriKnock(c, p, at);
-  if (VRA()) { VR.yildizlar(p, 5); if (g.combo) { const n = g.combo.n; VR.kombo(n); if ([5, 10, 15, 20, 30, 40, 60].includes(n) && AC && !SV.sessiz) chime([880 * Math.pow(1.122, Math.min(6, n / 5 - 1))], 0, 0.11); } }   // v7.0: yildiz + kombo sayaci; esiklerde yukselen zil   // v4.2: dusen her blok kucuk "+n" (ayni anda dusenler tek yazida toplanir)
+  if (VRA() && !SADE) { VR.yildizlar(p, 5); if (g.combo) { const n = g.combo.n; VR.kombo(n); if ([5, 10, 15, 20, 30, 40, 60].includes(n) && AC && !SV.sessiz) chime([880 * Math.pow(1.122, Math.min(6, n / 5 - 1))], 0, 0.11); } }   // v7.0: yildiz + kombo sayaci; esiklerde yukselen zil   // v4.2: dusen her blok kucuk "+n" (ayni anda dusenler tek yazida toplanir)
 
   if (c.kind === 'kola') kolaFis(c);
   sfx('pop', g.combo ? g.combo.n : 1); hud();
@@ -2938,7 +2939,7 @@ function updateCubes(dt) {
   if (g.combo) { g.combo.t += dt; const n = g.combo.n;
     const lv = n >= 24 ? 3 : n >= 12 ? 2 : n >= 5 ? 1 : 0;
     if (n > (g.combo.fl || 0) && g.combo.t > 0.35) { const at = g.combo.at || [innerWidth / 2, innerHeight * 0.45]; g.combo.fl = n; }
-    if (lv > g.combo.shown) { g.combo.shown = lv; shake = Math.max(shake, 0.12 + 0.1 * lv); praise(['', 'Süper!', 'Harika!', 'Efsane!'][lv], n + ' blok', lv === 3); }
+    if (lv > g.combo.shown) { g.combo.shown = lv; shake = Math.max(shake, 0.12 + 0.1 * lv); if (!SADE) praise(['', 'Süper!', 'Harika!', 'Efsane!'][lv], n + ' blok', lv === 3); }
     if (g.combo.t > 3) { g.combo = null; if (VR) VR.komboBitti(); } }
   if (g.state === 'play') {
     if (g.left <= 0 || (g.hedef != null && g.hedef <= 0)) { g.state = 'win'; if (VRA() && !VR.azHareket) { SLOW = 1.1; ZOOM = 1.1; }   // v7.0: son blok: kisa agir cekim + hafif yakinlasma

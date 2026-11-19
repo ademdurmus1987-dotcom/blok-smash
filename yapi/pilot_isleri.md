@@ -197,3 +197,9 @@
 - ksSutun, ksMorSutun, ksDirek, ksKalas1-3: cilali malzeme.
 - Hata: deneme bolumlerinde (pilot) yeni modeller iki kez cilalaniyordu (cilaMat): soluk gorunuyordu. Artik bir kez.
 - Sergi `?pilot=990` fici, sutun, kalas eklendi.
+
+## v10.3 (19 Kas 2026) — Adem: damla biraz iri ve cok, yildiz/kombo/rakam yok, buyuk kavanoz
+- Sivi: 44 damla (buyuk kavanozda 2.2 kat, uzunda 1.4 kat), boy 0.55-1.05, omur 0.6-1.0 sn.
+- Kirilinca yildiz (VR.yildizlar, malzemeFx parilti), dusen blok '+n' yazisi, kombo sayaci ve 'Super/Harika' yazilari kapali. Eski: `?sade=0`.
+- Yeni turler: kvL+renk (1x3 uzun kavanoz, model blok2/kavanoz3), kvB+renk (2x2x2 buyuk kavanoz, blok2/kavanozB; yeni_bloklar.py kavanoz(ad, hS, olc)).
+- Yeni yapi `?pilot=968` Dev Kavanozlar.

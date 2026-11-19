@@ -518,7 +518,9 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
       ['uz2' + c, { w: 2, h: 1, d: 1, mass: 1.6, f: 0.62, r: 0.1, ses: 'tahta', renk: r, kir: 1, carp: 9, yuzer: 1, yap: () => cubuk(r, 2, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
       ['kr3' + c, { w: 3, h: 1, d: 1, mass: 2.4, f: 0.62, r: 0.08, ses: 'tas', renk: r, kir: 1, carp: 10, yuzer: 1, yap: () => cubuk(r, 3, null) }],   // v9.6 kiris (Blender modeli blok2/kiris3)
       ['kj' + c, { w: 1, h: 1, d: 1, mass: 0.6, f: 0.55, r: 0.08, ses: 'cam', renk: r, sekil: 'sil', kir: 1, carp: 7, yap: () => kavanoz(r, 1) }],
-      ['kvU' + c, { w: 1, h: 2, d: 1, mass: 1.0, f: 0.55, r: 0.08, ses: 'cam', renk: r, sekil: 'sil', kir: 1, carp: 8, yap: () => kavanoz(r) }]])),
+      ['kvU' + c, { w: 1, h: 2, d: 1, mass: 1.0, f: 0.55, r: 0.08, ses: 'cam', renk: r, sekil: 'sil', kir: 1, carp: 8, yap: () => kavanoz(r) }],
+      ['kvL' + c, { w: 1, h: 3, d: 1, mass: 1.4, f: 0.55, r: 0.08, ses: 'cam', renk: r, sekil: 'sil', kir: 1, carp: 9, yap: () => kavanoz(r, 3) }],   // v10.3: uzun kavanoz (3 boy)
+      ['kvB' + c, { w: 2, h: 2, d: 2, mass: 3.2, f: 0.55, r: 0.06, ses: 'cam', renk: r, sekil: 'sil', kir: 1, carp: 10, yap: () => kavanoz(r, 1) }]])),   // v10.3: buyuk kavanoz (2 genis 2 boy); eski cizimde kisa kavanoz
     tas1: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.7, r: 0.06, ses: 'tas', renk: '#4a6cdb', sert: 1, yap: () => tas(1, 17) },
     kemik: { w: 2, h: 1, d: 1, mass: 1.3, f: 0.65, r: 0.08, ses: 'tahta', renk: '#f1e6cf', kir: 1, carp: 9, yuzer: 1, yap: kemik }
   };
@@ -526,7 +528,7 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
   if (CL) for (const k in CL.yeni) if (TUR[k]) TUR[k].yap = CL.yeni[k];   // v5.3
   if (b3) for (const k in b3.TUR) if (TUR[k]) { const eski = TUR[k].yap; TUR[k].yap = () => b3.yap(k) || eski(); }   // v6.1: Blender modeli varsa o (blok3b.js), yoksa eski cizim
   const HAZIR = {};
-  function al(k) { if (HAZIR[k]) return HAZIR[k]; const t = TUR[k], y = t.yap(); return (HAZIR[k] = Object.assign({ w: t.w * S, h: t.h * S, d: t.d * S, sil: t.sekil === 'sil', r: S * 0.47 }, y)); }
+  function al(k) { if (HAZIR[k]) return HAZIR[k]; const t = TUR[k], y = t.yap(); return (HAZIR[k] = Object.assign({ w: t.w * S, h: t.h * S, d: t.d * S, sil: t.sekil === 'sil', r: S * 0.47 * (t.w || 1) }, y)); }
   function patiAyar(p) { PT.p = p; for (const k in HAZIR) if (k.startsWith('oy')) delete HAZIR[k]; }
   return { TUR, al, patiAyar };
 }
