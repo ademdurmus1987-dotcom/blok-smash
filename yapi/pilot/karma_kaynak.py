@@ -143,6 +143,7 @@ def k_ikiz(r, W, H, cs):
     kavanoz_sira(P, min(W, 6), y, cs, (0,), 'ayna')
     return P, '%s İkiz Kuleler' % ad_renk(cs[0])
 
+ONEK = ['Liman', 'Mercan', 'Fener', 'Kaptan', 'Korsan', 'Rüzgâr', 'Ada', 'Koy', 'Martı', 'Pusula', 'Dalga', 'Yelken', 'Çapa', 'Hazine', 'Tilki', 'Gün Batımı', 'Şeker', 'Bulut']
 KALIP = [('duvar', k_duvar, (6, 10), (3, 6)), ('tapinak', k_tapinak, (6, 9), (1, 2)), ('basamak', k_basamak, (8, 10), (3, 5)), ('dev', k_dev, (6, 8), (1, 2)),
          ('kale', k_kale, (5, 8), (2, 4)), ('raf', k_raf, (5, 8), (2, 4)), ('ikiz', k_ikiz, (7, 10), (3, 6))]
 
@@ -155,7 +156,9 @@ def uret(adet=105, tohum=2026):
         cs = r.sample(RENK[:7], 3)
         P, ad = f(r, W, H, cs)
         if len(P) > 72 or len(P) < 12: continue
-        if ad in adlar: ad = ad + ' ' + str(sum(1 for a in adlar if a.startswith(ad)) + 2)
+        if ad in adlar:   # v10.7: ayni ad: yer adi on eki (rastgele sayiyi degistirmez; yapilar ayni kalir)
+            for on in ONEK:
+                if on + ' ' + ad not in adlar: ad = on + ' ' + ad; break
         adlar.add(ad)
         don = 0.35 if r.random() < 0.18 and W <= 7 else 0
         T[n] = Y.bolum(ad, P, w=don); T[n]['kalip'] = kad; n += 1

@@ -216,3 +216,8 @@
 
 ## v10.6 (19 Kas 2026) — Adem: kazanma girisi daha havali ve sesli
 - Yukselen ugultu (0.7 sn), her yildizda davul + halka, baslik ekrana carpar (2.6x -> 1, ezilip esner), carpista zil + davul + guclu fanfar (bas notalar), renkli (pembe-sari) parlama, tek sarsinti, iki alt koseden konfeti topu, 3 havai fisek. Ses: `?kazanses=0` eski yumusak.
+
+## v10.7 (19 Kas 2026) — karisik yapilar ana oyunda, yeni kaybetme karti
+- yapi/pilot/karma_kaynak.py: 7 kalip (duvar, tapinak, basamak, dev kavanoz, kale, raf, ikiz kule) x renk/boy = 105 yapi -> karma.json (pilot 3000-3104). Hepsi bot ile olculdu (bot.json), dengeli (kendiliginden dusen 0), hepsi kazanilir; bot atisi 3-31.
+- sira.py: karisik yapilar (karma + elle 960-968; 962 ve 966 cok zor diye disarida) kolaydan zora, ayni kalip art arda gelmez; yer: 7, 13, 19 ve 26'dan sonra her dunyanin 3. ve 8. bolumu (son: 553). Sekil bolumleri (x6) degismedi.
+- Kaybetme karti (merkez.js kaybet, kaybet2.css): Foxi, 'Neredeyse!', kalan blok rozeti, buyuk '+3 Top' teklifi (8 sn geri sayim halkasi), kucuk 'Tekrar Dene'. Eski: `?kaybet=eski`.

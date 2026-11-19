@@ -29,8 +29,14 @@ for f, aralik in (('karma.json', None), ('yapi.json', range(960, 969))):
     for n, b in json.load(open(p))['bolumler'].items():
         if aralik is not None and int(n) not in aralik: continue
         if str(n) not in BOTV: continue   # olculmemis (ya da dengesiz) yapi alinmaz
-        KL.append((round(BOTV[str(n)], 1), int(n), b['ad'], b.get('hareketTip', 'sabit')))
+        KL.append((round(BOTV[str(n)], 1), int(n), b['ad'], b.get('hareketTip', 'sabit'), b.get('kalip', 'el')))
 KL.sort(key=lambda x: (x[0], x[1]))
+# ayni kalip art arda gelmesin: siradaki yerine, kolaylik sirasinda en yakin farkli kalipli yapi (son 2 kaliptan farkli) alinir
+kal, son = KL[:], []
+KL = []
+while kal:
+    i = next((j for j, x in enumerate(kal[:8]) if x[4] not in son[-2:]), 0)
+    x = kal.pop(i); KL.append(x[:4]); son.append(x[4])
 yer = [7, 13, 19] + [L0 + d for L0 in range(30, 2001, 10) for d in (-7, -2)]
 for (bot, n, ad, ht), Lv in zip(KL, yer):
     if Lv in S or Lv > 2000: continue
