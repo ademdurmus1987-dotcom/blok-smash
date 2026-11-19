@@ -27,3 +27,7 @@ html.hud2 .m-yb small{background:linear-gradient(180deg,var(--h-m2),var(--h-m3))
 html.hud2 .m-hap{background:linear-gradient(180deg,var(--h-m2),var(--h-m3))!important;border-color:var(--h-a)!important;box-shadow:0 0 0 2px var(--h-k),0 4px 0 var(--h-g)!important}
 html.hud2 .m-hap b,html.hud2 .m-prof b{-webkit-text-stroke:0!important;text-shadow:0 2px 0 var(--h-g),0 0 2px var(--h-g)!important}
 html.hud2 .m-prof{box-shadow:0 0 0 2px var(--h-k),0 4px 0 var(--h-g)!important}
+/* v10.12 3B logo (logo2.js) */
+.m-logo2{font-size:0!important;line-height:0!important}
+.m-logo2 .logo2{display:block;width:min(74vw,290px);height:auto;margin:0 auto;overflow:visible;filter:drop-shadow(0 8px 10px #0005)}
+@media (max-height:700px){.m-logo2 .logo2{width:min(60vw,230px)}}

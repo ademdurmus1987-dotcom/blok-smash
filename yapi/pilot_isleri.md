@@ -238,3 +238,6 @@
 - Oyun ici: Top sayaci, Yapi/Kup rozeti, ilerleme cubugu, duraklat, yardimci dugmeler, ipucu: mor govde, altin cerceve, kahverengi dis cizgi, 3B altin rakam (kartlarla ayni dil).
 - Ana sayfa: --lac1/2/3 mora cevrildi (Kaptan rozeti, ayar), yan simgeler, etiketler, altin/yildiz sayaclari ayni.
 - Eski gorunum: `?hud=eski`.
+
+## v10.12 (20 Kas 2026) — 3B kabarik logo (logo2.js)
+- Ana sayfa logosu SVG: mor govdeli altin kenarli kahve dis cizgili iki katli rozet, tepede patili top; turuncu-altin FOXI, krem SMASH; harfler tek tek egik ve zipli, altin+kahve dis kenar, 3B yan yuz, ust parlama. Eski: `?logo=eski`.
