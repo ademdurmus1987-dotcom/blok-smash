@@ -206,3 +206,10 @@
 
 ## v10.4 (19 Kas 2026) — saydam cam kiriklari
 - Kavanoz kirilinca sivi ile birlikte 14 (buyuk kavanozda daha cok) saydam, isikta parlayan cam kirigi; her dorduncusu kavanoz renginde hafif renkli. 0.6-0.95 sn sonra kaybolur.
+
+## v10.5 (19 Kas 2026) — Adem: daha cok sacilan, yakut/elmas yok, TNT/direk/kalas yeni tarz, sade vurus, akici kazanma karti
+- Sivi damlasi 62 (buyuk kavanozda 2.2 kat), cam kirigi 22.
+- Vurusta sari halka yok: kucuk kisa beyaz parlama + bum sesi (`?sade=0` eski).
+- Yakut, elmas, karo: ana oyunda zaten patili kupe ceviriliyordu; artik deneme bolumlerinde de (pilot.js MUC). `?mucevher=1` geri getirir.
+- yeni_bloklar.py: tnt_y (kirmizi yastik govde, krem pano, iri siyah bomba, fitil, kivilcim), direk_y (1x2, iki krem kusak, pati), kalas_y (0.5 yuksek, krem damar). ksTNT, ksDirek, ksKalas1-3 bunlar.
+- Kazanma karti (kazan2.js k2-akici): beyaz flas ve sarsinti yok, yildizlar yerinde yaylanir, yazi/panel kayarak gelir, altin sayaci 0.9 sn yumusak, DEVAM 1.8 sn; dokununca sona atlar; yildizlar ekrana sigar. Eski: `?kazan=eski`.

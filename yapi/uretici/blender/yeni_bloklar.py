@@ -91,20 +91,21 @@ def kiris(ad, wS):
         P.append(kabartma(o, u, v, SP(serit((-wS / 2 + 1.05, 0), (wS / 2 - 1.05, 0), 0.05)), [(1.0, -0.004), (1.0, 0.02 * S)], KREM))   # ortada ince krem cizgi
     return uret(ad, P, 0.25, keskin=55.0, klasor=BLOK2)
 
-def yastik_govde(w, renkler=None, kal=0.13, gom=0.07, seg=3):
-    """v9.8: cubuk ile ayni yastik kenarli govde (w genislik). renkler: {'pano': c, 'cerceve': c} (yoksa hepsi GOVDE). Doner: P, gom"""
-    h = d = S * 0.994; r = 0.2 * S; gom = gom * S
+def yastik_govde(w, renkler=None, kal=0.13, gom=0.07, seg=3, h=None, rr=0.2, yk=0.035):
+    """v9.8: cubuk ile ayni yastik kenarli govde (w genislik). renkler: {'pano': c, 'cerceve': c} (yoksa hepsi GOVDE). Doner: P, gom
+    v10.5: h (yukseklik, varsayilan 1 kup), rr (dis kenar yaricapi), yk (pano kenar yuvarlagi)"""
+    d = S * 0.994; h = h or d; r = rr * S; gom = gom * S
     bm = kutu_bm(w, h, d, r, seg); pn = set()
     for y in YON.values():
-        f = pano(bm, buyuk_yuz(bm, y), kal * S, gom); pn.add(f); yastik_kenar(bm, f, 0.035 * S)
+        f = pano(bm, buyuk_yuz(bm, y), kal * S, gom); pn.add(f); yastik_kenar(bm, f, yk * S)
     if renkler:
         # yastik_kenar pano yuzunu daraltir ama ayni yuz kalir; pano duzlemindeki (cukur tabani) yuzler pano rengi
         def sec(f):
             c = f.calc_center_median(); n = f.normal
             ax = max(range(3), key=lambda i: abs(n[i]))
             if abs(n[ax]) < 0.6: return renkler['cerceve']
-            lim = (w if ax == 0 else h) / 2
-            ic = all(abs(c[i]) < (w if i == 0 else h) / 2 - 0.2 * S for i in range(3) if i != ax)   # pano icinde (dis kenar yuvarlagi degil)
+            D = (w, h, d); lim = D[ax] / 2
+            ic = all(abs(c[i]) < D[i] / 2 - r for i in range(3) if i != ax)   # pano icinde (dis kenar yuvarlagi degil)
             return renkler['pano'] if ic and abs(c[ax]) < lim - gom * 0.25 else renkler['cerceve']
         P = [bm_al(bm, sec)]
     else: P = [bm_al(bm)]
@@ -163,6 +164,36 @@ def fici_y():
         P += pati(o, u, v, 0.62 * S, 0.04 * S, GOVDE)
     return uret('fici', P, 0.3, klasor=BLOK2)
 
+def tnt_y():
+    """v10.5 TNT: kirmizi yastik govde, krem pano, on/arka/yanlarda iri siyah bomba + fitil + sari kivilcim"""
+    SIYAH = renk('#22202e'); FITIL = renk('#7a4a22'); KIV = renk('#ffd23a')
+    P, gom = yastik_govde(S * 0.996, {'pano': KREM, 'cerceve': GOVDE}, kal=0.14, gom=0.06)
+    for yon in ('on', 'arka', 'sag', 'sol'):
+        o, u, v = yuz_cerceve(yon, (S * 0.994) / 2 - gom)
+        P.append(kabartma(o, u, v, SP(elips(-0.05, -0.06, 0.2, 0.2, 10)), [(1.0, -0.004), (0.86, 0.04 * S), (0.5, 0.07 * S)], SIYAH))
+        P.append(kabartma(o, u, v, SP(serit((0.08, 0.1), (0.17, 0.2), 0.05)), [(1.0, -0.004), (0.9, 0.03 * S)], FITIL))
+        P.append(kabartma(o, u, v, SP(yildiz(0.2, 0.23, 0.1, 0.035)), [(1.0, -0.004), (0.7, 0.04 * S)], KIV))
+    return uret('tnt', P, 0.3, keskin=55.0, klasor=BLOK2)
+
+def direk_y():
+    """v10.5 direk (1x2 dik): govde renkli yastik govde, on/arkada iki krem kusak ve ortada krem pati"""
+    P, gom = yastik_govde(S * 0.996, None, kal=0.12, gom=0.06, h=2 * S * 0.996)
+    for yon in ('on', 'arka'):
+        o, u, v = yuz_cerceve(yon, (S * 0.994) / 2 - gom)
+        for yy in (-0.62, 0.62): P.append(kabartma(o, u, v, SP(serit((-0.26, yy), (0.26, yy), 0.12)), [(1.0, -0.004), (0.95, 0.035 * S)], KREM))
+        P += pati(o, u, v, 0.6 * S, 0.045 * S, KREM)
+    return uret('direk', P, 0.3, keskin=55.0, klasor=BLOK2)
+
+def kalas_y(ad, wS):
+    """v10.5 kalas (wS x 0.5 x 1): govde renkli ince yastik tahta, on/arka/ustte krem tahta damari cizgileri"""
+    w = wS * S * 0.996; h = S * 0.49
+    P, gom = yastik_govde(w, None, kal=0.07, gom=0.035, h=h, rr=0.12, yk=0.02, seg=2)
+    for yon in ('on', 'arka'):
+        o, u, v = yuz_cerceve(yon, (S * 0.994) / 2 - gom); L = (w / S) / 2 - 0.22
+        P.append(kabartma(o, u, v, SP(serit((-L, 0.04), (L * 0.35, 0.04), 0.035)), [(1.0, -0.004), (1.0, 0.012 * S)], KREM))
+        P.append(kabartma(o, u, v, SP(serit((-L * 0.2, -0.06), (L, -0.06), 0.035)), [(1.0, -0.004), (1.0, 0.012 * S)], KREM))
+    return uret(ad, P, 0.32, keskin=55.0, klasor=BLOK2)
+
 def main2():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dunya()
@@ -170,7 +201,7 @@ def main2():
     hepsi = {'cubuk1': lambda: cubuk('cubuk1', 1), 'cubuk2': lambda: cubuk('cubuk2', 2), 'cubuk3': lambda: cubuk('cubuk3', 3), 'cubuk4': lambda: cubuk('cubuk4', 4),
              'kavanoz1': lambda: kavanoz('kavanoz1', 1), 'kavanoz2': lambda: kavanoz('kavanoz2', 2), 'kavanoz3': lambda: kavanoz('kavanoz3', 3), 'kavanozB': lambda: kavanoz('kavanozB', 1, 2), 'silindir': silindir, 'kiris3': lambda: kiris('kiris3', 3),
              'tas1': lambda: tas_y('tas1', 1), 'tas2': lambda: tas_y('tas2', 2), 'tas3': lambda: tas_y('tas3', 3), 'tas4': lambda: tas_y('tas4', 4),
-             'buz1': lambda: buz_y('buz1', 1), 'buz3': lambda: buz_y('buz3', 3), 'sandik': lambda: sandik_y('sandik'), 'fici': fici_y}
+             'buz1': lambda: buz_y('buz1', 1), 'buz3': lambda: buz_y('buz3', 3), 'sandik': lambda: sandik_y('sandik'), 'fici': fici_y, 'tnt': tnt_y, 'direk': direk_y, 'kalas1': lambda: kalas_y('kalas1', 1), 'kalas2': lambda: kalas_y('kalas2', 2), 'kalas3': lambda: kalas_y('kalas3', 3)}
     obs = [f() for kk, f in hepsi.items() if not ist or kk in ist]
     print('BITTI', len(obs))
 

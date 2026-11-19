@@ -12,21 +12,21 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=14';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=15';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=4';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=29';
+import { merkezKur } from './merkez.js?v=30';
 import * as EG from './egri.js?v=3';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { sesSinirKur } from './fx/ses.js?v=1';
 import { hisKur } from './fx/his.js?v=1';
-import { vurusKur } from './fx/vurus.js?v=2';   // v7.0 (Adem 18 Kas): vurus hissi B+A (sok halkasi, bum, yildizlar, kombo sayaci, son blok agir cekim). Kapatma: ?vurus=0   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
+import { vurusKur } from './fx/vurus.js?v=3';   // v7.0 (Adem 18 Kas): vurus hissi B+A (sok halkasi, bum, yildizlar, kombo sayaci, son blok agir cekim). Kapatma: ?vurus=0   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
@@ -41,7 +41,7 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 // Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
 const SKS = SEKQ ? (await import('./pilot/sira.js?v=1')).SEKIL : {};
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=27') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=28') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.4', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.5', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -2432,6 +2432,7 @@ function muzzleFx(p, dir) {
   }
 }
 function hitFlash(p) {
+  if (SADE) { const a = spr('#ffffff', true, 0.55); a.position.copy(p); fx(a, 0.1, (o, k) => { o.scale.setScalar(0.9 + k * 1.2); o.material.opacity = 0.55 * (1 - k); }); return; }   // v10.5: kucuk, kisa beyaz parlama (sari halka yok)
   const a = spr('#ffffff', true, 1); a.position.copy(p);
   fx(a, 0.16, (o, k) => { o.scale.setScalar(1.5 + k * 3); o.material.opacity = 1 - k; });
   const r = spr('#ffe48a', true, 0.8); r.position.copy(p);
@@ -2512,15 +2513,15 @@ function malzemeFx(c, p, dir) {
   if (ses === 'cam' && /Sise|^kj|^kv[ULB]/.test(c.kind) && Q.get('sivi') !== '0') {   // v10.0: yeni kavanozlar da sivisini sacar
     const col = renk, mat = SIVIM[col] || (SIVIM[col] = new THREE.MeshStandardMaterial({ color: col, roughness: 0.08, metalness: 0, envMap: ENV, envMapIntensity: 1.1, emissive: col, emissiveIntensity: 0.4 })), geo = jarKit().blobGeo;
     if (INCE) {   // v10.1 (Adem: 'referanstaki gibi az dagilsin, ince damlacik, havada yok olsun'): dar bulut, kucuk damlalar, 0.5-0.8 sn omur
-      const bk = /^kvB/.test(c.kind) ? 2.2 : /^kvL/.test(c.kind) ? 1.4 : 1, n = Math.round((PARN > 90 ? 26 : 44) * bk);   // buyuk kavanoz daha cok sivi
+      const bk = /^kvB/.test(c.kind) ? 2.2 : /^kvL/.test(c.kind) ? 1.4 : 1, n = Math.round((PARN > 90 ? 34 : 62) * bk);   // buyuk kavanoz daha cok sivi
       for (let i = 0; i < n; i++) {
-        const a = Math.random() * 6.283, h = 0.7 + Math.random() * 2.6, v = new THREE.Vector3(Math.cos(a) * h, 2.2 + Math.random() * 4, Math.sin(a) * h * 0.6).addScaledVector(dir, 0.4 + Math.random() * 0.6);
+        const a = Math.random() * 6.283, h = 0.8 + Math.random() * 3.0, v = new THREE.Vector3(Math.cos(a) * h, 2.4 + Math.random() * 4.4, Math.sin(a) * h * 0.6).addScaledVector(dir, 0.4 + Math.random() * 0.6);
         const d = damla(mat, geo, p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.5, Math.random() * 0.5, (Math.random() - 0.5) * 0.5)), v, 0.55 + Math.random() * 0.5, col, 0.12, false); d.gk = 0.55; d.ince = 1; d.life = 0.6 + Math.random() * 0.4;
       }
       // v10.4 (Adem: 'saydam cam parcalari da sacilsin'): renksiz saydam cam kiriklari + kavanoz renginde hafif renkli birkac kirik, isikta parlar
       const camM = MFX.mat('cs2', { color: '#e8f8ff', transparent: true, opacity: 0.82, roughness: 0.02, metalness: 0.3, envMap: SENV, envMapIntensity: 2.6, emissive: '#bfe8ff', emissiveIntensity: 0.55, side: THREE.DoubleSide, depthWrite: false });
       const camR = MFX.mat('cr' + col, { color: col, transparent: true, opacity: 0.4, roughness: 0.02, metalness: 0.2, envMap: SENV, envMapIntensity: 2, side: THREE.DoubleSide, depthWrite: false });
-      const nc = Math.round((PARN > 90 ? 8 : 14) * Math.min(1.6, bk));
+      const nc = Math.round((PARN > 90 ? 12 : 22) * Math.min(1.6, bk));
       for (let i = 0; i < nc; i++) piece(new THREE.Mesh(MFX.kirik, i % 4 === 3 ? camR : camM), p, dir, S * (0.2 + Math.random() * 0.18), 6.5, 0.6 + Math.random() * 0.35);
       par(3, '#ffffff', true, 0.3); return;
     }
@@ -3685,7 +3686,7 @@ function impactK(b, e) {
   wakeAll(b.body.position); g.busy = 2.5;
   const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); HIS.vurus(p, b.dir, malzOf(c && c.kind), s);
   withS(Math.min(1.3, 0.75 + 0.3 * s), 1.04 - 0.1 * Math.min(1, s), () => sfx('hit')); if (KLANKKUP && c && MATSND[c.kind] === 'metal') klank(Math.min(1.2, 0.6 + 0.4 * s), 1150);
-  if (VRA()) { VR.vurus(p, s); hitstop(Math.min(0.085, 0.05 + 0.03 * s)); }   // v7.0: her vurusta kisa donma + sok halkasi + bum (ekran sarsintisi eklenmez)
+  if (VRA()) { if (SADE) VR.bum(s); else VR.vurus(p, s); hitstop(Math.min(0.085, 0.05 + 0.03 * s)); }   // v7.0: her vurusta kisa donma + sok halkasi + bum (ekran sarsintisi eklenmez)
   buzz([Math.round(40 + 16 * s), 26, 34], 0); if (s > 0.7) { shake = Math.max(shake, 0.12 * s * s); hitstop(0.05 * Math.min(1, s)); }   /* v4.9: (Adem 14 Kas: atista ekran titriyor) siradan vuruslarda ekran sarsintisi, yakinlasma ve donma yok; yalniz cok sert vurusta hafif */
 }
 // kirilan kavanoz parcalarinin malzemeleri ilk kirilista derleniyordu (200 ms takilma): yuklenince bir kez gorunmez yerde derle

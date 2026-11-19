@@ -73,5 +73,5 @@ export function vurusKur({ THREE, scene, fx, sesAl }) {
     clearTimeout(gizleT); gizleT = setTimeout(komboBitti, 2200);
   }
   function komboBitti() { clearTimeout(gizleT); if (!son) return; son = 0; el.classList.remove('gor'); el.classList.add('git'); }
-  return { vurus, yildizlar, kombo, komboBitti, azHareket, yildizSay: () => yildizSay };
+  return { vurus, bum, yildizlar, kombo, komboBitti, azHareket, yildizSay: () => yildizSay };
 }

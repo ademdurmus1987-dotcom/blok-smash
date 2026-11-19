@@ -171,9 +171,10 @@ P = []
 P += [('ksTas', -3, 0, 0), ('ksTas2', -0.5, 0, 0), ('ksTas', 2, 0, 0), ('ksSandik', 3, 0, 0)]
 P += [('ksBuz', -3, 1, 0), ('ksBuz3', 0, 1, 0), ('ksSandikK', 2, 1, 0), ('ksSandikM', 3, 1, 0)]
 P += [('ksTas4', -1.5, 2, 0), ('ksSandik', 1, 2, 0), ('kjS', 2, 2, 0), ('kjK', 3, 2, 0)]
-P += [('ksTas3', -2, 3, 0), ('uz3P', 1.5, 3, 0)]
+P += [('ksTas3', -2, 3, 0), ('uz4P', 1.5, 3, 0)]
 P += [('ksFici', -3, 4, 0), ('ksFiciK', -2, 4, 0), ('ksSutun', 3, 2, 0) if False else ('ksKalas3', -2, 5, 0)]
 P += [('ksSutun', 0, 4, 0), ('ksMorSutun', 1, 4, 0)]
+P += [('ksTNT', 2, 4, 0), ('ksDirek', 3, 4, 0), ('ksKalas2', 0.5, 6, 0)]
 T[990] = bolum('Taş Buz Sandık Sergisi', P)
 
 if __name__ == '__main__':

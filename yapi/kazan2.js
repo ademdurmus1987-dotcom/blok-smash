@@ -119,6 +119,41 @@ export function kazanSahne(KZ, d, o) {
   const merkez = (el) => { const r = el.getBoundingClientRect(), q = KZ.getBoundingClientRect(); return [r.left + r.width / 2 - q.left, r.top + r.height / 2 - q.top]; };
   const goster = (el, ms) => sonra(ms, () => { if (!el) return; el.style.opacity = 1; el.animate([{ transform: 'translateY(30px) scale(.6)', opacity: 0 }, { transform: 'scale(1.06)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], { duration: 420, easing: 'ease-out' }); });
 
+  // v10.5 (Adem: 'kazanma karti guzel ve akici degil'): tek, kisa ve yumusak zaman cizelgesi. Beyaz flas ve sarsinti yok; yildizlar
+  // yerinde yaylanarak buyur (donerek dusmez), yazi ve panel kayarak gelir, altin sayaci 0,9 sn'de yumusakca dolar, DEVAM 1,8 sn'de hazir.
+  // Ekrana dokununca hepsi hemen sona gelir. Eski sahne: ?kazan=eski
+  if (!/[?&]kazan=eski/.test(location.search)) {
+    KZ.classList.add('k2-akici');
+    const YAY = 'cubic-bezier(.34,1.56,.64,1)', YUM = 'cubic-bezier(.22,1,.36,1)', anim = [];
+    const gir = (el, ms, kf, dur, ez) => { if (!el) return; el.style.opacity = 0; sonra(ms, () => { el.style.opacity = 1; anim.push(el.animate(kf, { duration: dur, easing: ez, fill: 'backwards' })); }); };
+    const kay = [{ transform: 'translateY(26px)', opacity: 0 }, { transform: 'none', opacity: 1 }];
+    [...ic.querySelectorAll('.k2-yil')].forEach((y, i) => {
+      gir(y, 120 + i * 170, [{ transform: 'scale(0) rotate(-25deg)', opacity: 0 }, { transform: 'none', opacity: 1 }], 520, YAY);
+      sonra(120 + i * 170 + 300, () => { if (i < st) { y.classList.add('dolu'); yildizSes(i); o.buzz(25); const [x, yy] = merkez(y); fx.isilti(x, yy, 14); } else ton(220, 0.2, 0.06, 'sine'); });
+    });
+    const bas = $('.k2-bas'); gir(bas, 640, [{ transform: 'scale(.55)', opacity: 0 }, { transform: 'scale(1.06)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], 480, YUM);
+    sonra(1120, () => bas.classList.add('salin'));
+    sonra(700, () => { fanfar(); fx.konfeti(70); fx.fisek(0.25, 0.22); if (st >= 3) fx.yagmur(10); });
+    sonra(1500, () => fx.fisek(0.75, 0.2));
+    if (o.sarki) sonra(1900, () => { if (KZ.classList.contains('on')) o.sarki(); });
+    gir($('.k2-levha'), 820, kay, 380, YUM); gir($('.k2-panel'), 900, kay, 420, YUM);
+    const satirlar = [...ic.querySelectorAll('.k2-satir div')]; satirlar.forEach((e, i) => gir(e, 1250 + i * 70, kay, 340, YUM));
+    gir($('.k2-yeni'), 1450, kay, 380, YUM);
+    const u = $('.k2-ust'), sv = u.querySelector('svg'); let bitti = false, raf = 0, son = -1;
+    const sayac = (t0) => { const k = Math.min(1, (performance.now() - t0) / 900), e = 1 - (1 - k) ** 3, n = Math.round(d.kaz * e);
+      if (n !== son) { yaziDegis(sv, '+' + n); if (n % 3 === 0 || k >= 1) o.ses('para', 0.16, 0.95 + 0.5 * e); son = n; }
+      if (k < 1) raf = requestAnimationFrame(() => sayac(t0)); else { u.classList.add('pop'); o.buzz(25); } };
+    sonra(1000, () => sayac(performance.now()));
+    const dv = $('.k2-devam'); sonra(1800, () => { dv.classList.add('on'); ton(660, 0.1, 0.16); ton(990, 0.15, 0.16, 'triangle', 0.07); });
+    const sonaGel = () => { if (bitti) return; bitti = true; zaman.forEach(clearTimeout); zaman.length = 0; cancelAnimationFrame(raf);
+      for (const a of anim) try { a.finish(); } catch (e) {}
+      for (const el of ic.querySelectorAll('.k2-yil,.k2-bas,.k2-levha,.k2-panel,.k2-satir div,.k2-yeni')) el.style.opacity = 1;
+      [...ic.querySelectorAll('.k2-yil')].forEach((y, i) => { if (i < st) y.classList.add('dolu'); }); bas.classList.add('salin'); yaziDegis(sv, '+' + d.kaz); dv.classList.add('on'); };
+    KZ.addEventListener('pointerdown', (e) => { if (!e.target.closest('.k2-devam')) sonaGel(); });
+    const durdur = () => { zaman.forEach(clearTimeout); zaman.length = 0; cancelAnimationFrame(raf); fx.dur(); arka.dur(); };
+    dv.onclick = () => { o.tik(); if (o.sarkiDur) o.sarkiDur(); const r = $('.k2-ust img').getBoundingClientRect(); durdur(); o.bitir(r); };
+    return durdur;
+  }
   sonra(80, () => { $('.k2-flas').classList.add('on'); gur(0.5, 0.12, 900, 0, 'lowpass'); });
   [...ic.querySelectorAll('.k2-yil')].forEach((y, i) => sonra(250 + i * 460, () => {
     y.style.opacity = 1; if (i < st) duser(i); y.animate([{ transform: 'translateY(-70vh) scale(2.6) rotate(-220deg)' }, { transform: 'scale(1.3)', offset: 0.75 }, { transform: 'none' }], { duration: 540, easing: 'cubic-bezier(.5,0,.5,1)', fill: 'forwards' });

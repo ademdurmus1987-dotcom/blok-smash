@@ -62,3 +62,11 @@
 #mkazan .k2-devam.on{opacity:1;pointer-events:auto;animation:k2devin .5s cubic-bezier(.3,2,.4,1),k2nabiz 1.3s 1s ease-in-out infinite}
 @keyframes k2devin{from{transform:scale(0)}}
 @keyframes k2nabiz{50%{transform:scale(1.07)}}
+
+/* v10.5 akici kart: yildizlar ekrana sigar, icerik dikeyde ortali */
+#mkazan.k2-akici .k2-yildizlar{height:min(42vw,170px)}
+#mkazan.k2-akici .k2-yil{width:min(27vw,110px);height:min(27vw,110px)}
+#mkazan.k2-akici .k2-yil:nth-child(2){width:min(36vw,146px);height:min(36vw,146px);margin:0 -4px min(8vw,32px)}
+#mkazan.k2-akici .k2-yil .ns{inset:-30%}
+#mkazan.k2-akici .k2-ic{gap:10px}
+#mkazan.k2-akici .k2-panel{margin-top:14px}

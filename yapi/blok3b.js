@@ -46,14 +46,17 @@ if (!/[?&]b2=0/.test(location.search)) {
     LISTE.ksBuz3 = ['blok2/buz3', 0.1, '#8fd8ff', { govde: '#12a4ee', emis: '#0a5cc0', emisG: 0.14, cila: 1, env: 0.6 }];
     LISTE.ksFici = ['blok2/fici', 0.3, '#f08c30', { govde: '#e8801e', cila: 1, env: 0.5, bant: 1 }];   // v10.2
     LISTE.ksFiciK = ['blok2/fici', 0.3, '#e0382c', { govde: '#d8322a', cila: 1, env: 0.5, bant: 1 }];
-    for (const k of ['ksSutun', 'ksMorSutun', 'ksDirek', 'ksKalas1', 'ksKalas2', 'ksKalas3']) if (LISTE[k]) LISTE[k] = [LISTE[k][0], Math.min(0.3, LISTE[k][1]), LISTE[k][2], Object.assign({}, LISTE[k][3] || {}, { cila: 1, env: 0.5 })];   // v10.2: cilali
+    LISTE.ksTNT = ['blok2/tnt', 0.3, '#e5302a', { govde: '#e5302a', cila: 1, env: 0.5 }];   // v10.5: TNT, direk, kalas yeni tarzda
+    LISTE.ksDirek = ['blok2/direk', 0.3, '#f08a24', { govde: '#ee8420', cila: 1, env: 0.5 }];
+    for (const n of [1, 2, 3]) LISTE['ksKalas' + n] = ['blok2/kalas' + n, 0.3, '#ffa232', { govde: '#f39a2e', cila: 1, env: 0.5 }];
+    for (const k of ['ksSutun', 'ksMorSutun']) if (LISTE[k]) LISTE[k] = [LISTE[k][0], Math.min(0.3, LISTE[k][1]), LISTE[k][2], Object.assign({}, LISTE[k][3] || {}, { cila: 1, env: 0.5 })];   // v10.2: cilali
     LISTE.ksSandik = ['blok2/sandik', 0.3, '#ff9f30', { govde: '#f07a14', cila: 1, env: 0.5 }];
     LISTE.ksSandikK = ['blok2/sandik', 0.3, '#ec3d31', { govde: '#e0302a', cila: 1, env: 0.5 }];
     LISTE.ksSandikM = ['blok2/sandik', 0.3, '#a453e6', { govde: '#9842f0', cila: 1, env: 0.5 }];
   }
   LISTE.dalga = ['blok2/silindir', 0.2, '#5b8cf0', { govde: '#4f86f2', cila: 1, env: 0.55, bant: 1 }];
 }
-const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 8 : 1);
+const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 9 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)

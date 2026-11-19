@@ -22,12 +22,13 @@ export function pilotKur(A, ana) {
   let DUVAR = false, RESIM = false;
   const ayarla = (n) => { N = n; DUVAR = N >= 55 && N <= 999; RESIM = (N >= 31 && N <= 54) || DUVAR; };
   ayarla(N);
-  const dosyaOf = (n) => n >= 960 ? 'pilot/yapi.json?v=5' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
+  const dosyaOf = (n) => n >= 960 ? 'pilot/yapi.json?v=6' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
   const DOS = {}, DOSV = {}, HAZ = new Set();
   const veriAl = (n) => { const u = dosyaOf(n); return DOS[u] || (DOS[u] = fetch(u).then((r) => r.json()).then((v) => (DOSV[u] = v)).catch(() => { delete DOS[u]; return null; })); };
   // v9.0: ana oyunda tas, fici ve sise Adem'in cizimindeki gibi gri tas / fici / sise (oyun.js GRI: ayni turun eski gorunumlu esi)
   // v9.2: sekil bolumlerinde cilali es tur (oyun.js CILA_T, ?cila=0 kapatir)
-  const tur = (t) => { const k = (ana && A.GRI && A.GRI[t]) || t; return (A.CILA_T && A.CILA_T[k]) || k; };
+  const MUC = /[?&]mucevher=1/.test(location.search) ? {} : { ksYakut: 'oyK', ksElmas: 'oyM', ksKaro: 'oyM' };   // v10.5 (Adem: yakut ve elmas istemiyorum)
+  const tur = (t) => { t = MUC[t] || t; const k = (ana && A.GRI && A.GRI[t]) || t; return (A.CILA_T && A.CILA_T[k]) || k; };
   let SIRA = DUVAR ? [] : RESIM ? [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54] : [21, 22, 23];   // 1, 7, 13 rafta (adresle yine acilir)
   let VERI = null, B = null;   // B: bu bolumun verisi
   const BOS = { veri: 1, engel: [], ad: 'Pilot', top: 10, make: () => [] };
