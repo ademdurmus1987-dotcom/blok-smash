@@ -31,3 +31,5 @@ html.hud2 .m-prof{box-shadow:0 0 0 2px var(--h-k),0 4px 0 var(--h-g)!important}
 .m-logo2{font-size:0!important;line-height:0!important}
 .m-logo2 .logo2{display:block;width:min(74vw,290px);height:auto;margin:0 auto;overflow:visible;filter:drop-shadow(0 8px 10px #0005)}
 @media (max-height:700px){.m-logo2 .logo2{width:min(60vw,230px)}}
+.m-logo2 .logo3{display:block;width:min(80vw,320px);height:auto;margin:0 auto;filter:drop-shadow(0 8px 10px #0006)}
+@media (max-height:700px){.m-logo2 .logo3{width:min(64vw,250px)}}

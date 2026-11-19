@@ -241,3 +241,8 @@
 
 ## v10.12 (20 Kas 2026) — 3B kabarik logo (logo2.js)
 - Ana sayfa logosu SVG: mor govdeli altin kenarli kahve dis cizgili iki katli rozet, tepede patili top; turuncu-altin FOXI, krem SMASH; harfler tek tek egik ve zipli, altin+kahve dis kenar, 3B yan yuz, ust parlama. Eski: `?logo=eski`.
+
+## v10.13 (20 Kas 2026) — gercek 3B logo (Blender)
+- yapi/uretici/blender/logo3d.py: FOXI / SMASH harfleri ayri ayri 3B yazi nesnesi (Baloo 800, kalin pah = sisirilmis kenar, parlak vernik), egik ve zipli; iki satiri saran tek parca kabarik rozet (koyu mor dis, altin cerceve, mor ic; boolean birlesim), patili top; Cycles ile isik, saydam zemin -> yapi/ikon/logo3d.webp (640 genis, 28 KB).
+- Font: yazi/baloo_lat.woff2 -> fontTools instancer wght=800 -> TTF (betik bunu arguman olarak alir).
+- Eski logo: `?logo=eski`. (logo2.js SVG denemesi yedek olarak duruyor.)

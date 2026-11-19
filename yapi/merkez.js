@@ -7,7 +7,7 @@
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { kazanSahne, yazi } from './kazan2.js?v=9';
-import { logoSVG } from './logo2.js?v=4';   // v10.12: 3B logo (eski: ?logo=eski)
+import { logoSVG } from './logo2.js?v=4';   // v10.13: Blender ile gercek 3B logo resmi (ikon/logo3d.webp, uretici/blender/logo3d.py); eski: ?logo=eski
 const LOGO2 = !/[?&]logo=eski/.test(location.search);   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 import { ADA, adaKur } from './ada.js?v=1';
@@ -82,7 +82,7 @@ export function merkezKur(A) {
     '<div class="m-hap">' + I3('yildiz') + '<b id="m-yil">0</b></div><button class="m-yuv" id="m-ayar" aria-label="Ayarlar">' + I3('disli') + '</button></header>' +
     '<main class="m-sayfalar" id="m-sayfalar">' +
     '<section class="m-sayfa" id="s-magaza"><div class="m-ic"><h2 class="m-sb">Mağaza</h2><div class="m-kay" id="d-liste"></div></div></section>' +
-    '<section class="m-sayfa" id="s-ana"><div class="m-ic">' + (LOGO2 ? '<h1 class="m-logo m-logo2">' + logoSVG() + '</h1>' : '<h1 class="m-logo"><b>FOXI</b><span>SMASH</span></h1>') +
+    '<section class="m-sayfa" id="s-ana"><div class="m-ic">' + (LOGO2 ? '<h1 class="m-logo m-logo2"><img class="logo3" src="ikon/logo3d.webp?v=1" alt="Foxi Smash"></h1>' : '<h1 class="m-logo"><b>FOXI</b><span>SMASH</span></h1>') +
     (ESKI_MENU ? '' : '<button class="ada-bar" id="ada-bar" aria-label="Foxi\'nin Adası"><span class="ab-ik">' + IK.bayrak + '</span><span class="ab-t"><b>Foxi\'nin Adası</b><span class="ab-cub"><i id="ada-cub"></i></span></span><em id="ada-say">0/8</em></button>') +
     '<div class="m-sahne" id="m-sahne"><div class="m-isin"></div><canvas id="m-kc" aria-label="Korsan Tilki"></canvas><div class="m-kil">' + IK.kilit + '<b id="m-kilyaz"></b></div><div class="m-balon" id="m-balon"></div>' +
     '<div class="m-yan sol"><button class="m-yb" id="m-gorev"><span class="m-yk">' + I3('gorev') + '<em class="m-rz" id="m-gorevn"></em></span><small>Görevler</small></button>' +
