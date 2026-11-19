@@ -37,3 +37,7 @@
 .ky2-t .yz{height:34px;margin:0}
 .ky2-tekrar .yz{height:24px}
 .ky2-tekrar{padding:8px 22px}
+/* v10.9 tam boy uzgun Foxi (hareketli), kartin ustunde ayakta */
+.ky2.boy{margin-top:178px;padding-top:26px}
+.ky2-boy{position:absolute;left:50%;bottom:calc(100% - 22px);width:150px;margin-left:-75px;z-index:2;animation:ky2foxi .55s .15s cubic-bezier(.34,1.56,.64,1) both;transform-origin:50% 100%}
+.ky2-boy img{display:block;width:100%;filter:drop-shadow(0 6px 6px #0008)}

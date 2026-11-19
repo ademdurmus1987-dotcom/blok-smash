@@ -550,15 +550,15 @@ export function merkezKur(A) {
   // ---------------- kaybetme: devam et? ----------------
   // d: { L, kaldi, bedava, fiyat }
   // v10.8: uzgun Foxi cizimi (Adem'in Gemini cizimi gelince karakter/tilki_uzgun.webp); yoksa normal avatar, basi egik
-  let UZGUN = null; { const im = new Image(); im.onload = () => { UZGUN = im.src; }; im.src = '../karakter/tilki_uzgun.webp?v=1'; }
+  let UZGUN = null, UZANIM = null; { const im = new Image(); im.onload = () => { UZGUN = im.src; }; im.src = '../karakter/tilki_uzgun.webp?v=1'; const ia = new Image(); ia.onload = () => { UZANIM = ia.src; }; ia.src = '../karakter/tilki_uzgun_anim.webp?v=1'; }   // v10.9: Adem'in Gemini cizimleri (yesil zemin ayiklandi)
   function kaybet(d) {
     const yeter = (SV.altin || 0) >= d.fiyat, I = ist(), dev = d.bedava || yeter;
     // v10.7 (Adem: ticari kalite): yeni kaybetme karti: uzgun Foxi, 'Neredeyse!' basligi, kalan blok rozeti, buyuk +3 top teklifi (geri sayim halkasi),
     // kucuk 'Tekrar Dene'. Kart yayla gelir, teklif nabiz atar. Eski kart: ?kaybet=eski
     if (!/[?&]kaybet=eski/.test(location.search)) {
       const az = d.kaldi <= (d.hazine ? 1 : 5), K3 = '../yapi/ikon/3b/';
-      pop('<div class="ky2">' +
-        '<div class="ky2-foxi"><img src="' + (UZGUN ? UZGUN : '../karakter/tilki_avatar.webp?v=1') + '" alt=""' + (UZGUN ? ' class="uz"' : '') + '></div>' +
+      pop('<div class="ky2' + (UZANIM ? ' boy' : '') + '">' +
+        (UZANIM ? '<div class="ky2-boy"><img src="' + UZANIM + '" alt=""></div>' : '<div class="ky2-foxi"><img src="' + (UZGUN ? UZGUN : '../karakter/tilki_avatar.webp?v=1') + '" alt=""' + (UZGUN ? ' class="uz"' : '') + '></div>') +
         '<div class="ky2-bas">' + yazi(az ? 'NEREDEYSE!' : 'TOPLAR BİTTİ!', 'altin', { derin: 10 }) + '</div>' +
         '<div class="ky2-kalan"><b>' + d.kaldi + '</b>' + (d.hazine ? ' hazine kaldı' : ' blok kaldı') + '</div>' +
         (d.yardim ? '<p class="ky2-ipucu">🦊 Tekrar denersen Foxi <b>+' + d.yardim + ' top</b> ile yardım edecek!</p>' : '<p class="ky2-ipucu">' + (az ? 'Çok az kalmıştı, bir atış daha!' : 'Alt sıraları hedefle, kule devrilsin.') + '</p>') +

@@ -225,3 +225,7 @@
 ## v10.8 (19 Kas 2026) — kaybetme karti yazilari, uzgun Foxi yeri
 - Baslik ('NEREDEYSE!' / 'TOPLAR BİTTİ!'), '+3 TOP' ve 'TEKRAR DENE' kazanma kartindaki 3B SVG yazi (kazan2.js yazi) ile; goz yasi kaldirildi, avatar basi egik.
 - Uzgun Foxi cizimi: karakter/tilki_uzgun.webp dosyasi eklenince kendiliginden kullanilir (kare, yuz ortada).
+
+## v10.9 (19 Kas 2026) — uzgun Foxi (Adem'in Gemini cizimleri)
+- karakter/tilki_uzgun_anim.webp: Adem'in hareketli GIF'i (30 kare) yesil zemin ayiklanip 15 karelik saydam hareketli WebP (178x260); kaybetme kartinin ustunde ayakta.
+- karakter/tilki_uzgun.webp: buyuk resimden bas portresi (256x256, saydam); hareketli dosya yuklenmezse yuvarlak cercevede.
