@@ -38,9 +38,17 @@ if (!/[?&]b2=0/.test(location.search)) {
     LISTE['kvU' + c] = ['blok2/kavanoz2', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];
     LISTE['kr3' + c] = ['blok2/kiris3', 0.24, r, { govde: r, cila: 1, env: 0.5 }];
   }
+  if (YENI) {   // v9.9: tas, buz, sandik da ayni yastik kenarli tarzda (yeni_bloklar.py tas_y / buz_y / sandik_y)
+    for (const n of [1, 2, 3, 4]) LISTE['ksTas' + (n > 1 ? n : '')] = ['blok2/tas' + n, 0.5, '#9aa2c0', { cila: 1, env: 0.45 }];
+    LISTE.ksBuz = ['blok2/buz1', 0.1, '#8fd8ff', { govde: '#12a4ee', emis: '#0a5cc0', emisG: 0.14, cila: 1, env: 0.6 }];
+    LISTE.ksBuz3 = ['blok2/buz3', 0.1, '#8fd8ff', { govde: '#12a4ee', emis: '#0a5cc0', emisG: 0.14, cila: 1, env: 0.6 }];
+    LISTE.ksSandik = ['blok2/sandik', 0.3, '#ff9f30', { govde: '#f07a14', cila: 1, env: 0.5 }];
+    LISTE.ksSandikK = ['blok2/sandik', 0.3, '#ec3d31', { govde: '#e0302a', cila: 1, env: 0.5 }];
+    LISTE.ksSandikM = ['blok2/sandik', 0.3, '#a453e6', { govde: '#9842f0', cila: 1, env: 0.5 }];
+  }
   LISTE.dalga = ['blok2/silindir', 0.2, '#5b8cf0', { govde: '#4f86f2', cila: 1, env: 0.55, bant: 1 }];
 }
-const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 4 : 1);
+const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 6 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)

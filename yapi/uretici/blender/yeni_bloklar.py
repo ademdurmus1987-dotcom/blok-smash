@@ -89,12 +89,73 @@ def kiris(ad, wS):
         P.append(kabartma(o, u, v, SP(serit((-wS / 2 + 1.05, 0), (wS / 2 - 1.05, 0), 0.05)), [(1.0, -0.004), (1.0, 0.02 * S)], KREM))   # ortada ince krem cizgi
     return uret(ad, P, 0.25, keskin=55.0, klasor=BLOK2)
 
+def yastik_govde(w, renkler=None, kal=0.13, gom=0.07, seg=3):
+    """v9.8: cubuk ile ayni yastik kenarli govde (w genislik). renkler: {'pano': c, 'cerceve': c} (yoksa hepsi GOVDE). Doner: P, gom"""
+    h = d = S * 0.994; r = 0.2 * S; gom = gom * S
+    bm = kutu_bm(w, h, d, r, seg); pn = set()
+    for y in YON.values():
+        f = pano(bm, buyuk_yuz(bm, y), kal * S, gom); pn.add(f); yastik_kenar(bm, f, 0.035 * S)
+    if renkler:
+        # yastik_kenar pano yuzunu daraltir ama ayni yuz kalir; pano duzlemindeki (cukur tabani) yuzler pano rengi
+        def sec(f):
+            c = f.calc_center_median(); n = f.normal
+            ax = max(range(3), key=lambda i: abs(n[i]))
+            if abs(n[ax]) < 0.6: return renkler['cerceve']
+            lim = (w if ax == 0 else h) / 2
+            ic = all(abs(c[i]) < (w if i == 0 else h) / 2 - 0.2 * S for i in range(3) if i != ax)   # pano icinde (dis kenar yuvarlagi degil)
+            return renkler['pano'] if ic and abs(c[ax]) < lim - gom * 0.25 else renkler['cerceve']
+        P = [bm_al(bm, sec)]
+    else: P = [bm_al(bm)]
+    bm.free(); return P, gom
+
+def tas_y(ad, wS):
+    """gri-mavi yastik tas: cerceve acik tas, cukurda iri yuvarlak tas kabartmalari (on/arka 2 sira, yanlarda 1)"""
+    w = wS * S * 0.996
+    CER, PAN, T = renk('#8e97b4'), renk('#4c5474'), [renk('#c2c9e0'), renk('#b0b8d4'), renk('#cbd1e6')]
+    P, gom = yastik_govde(w, {'pano': PAN, 'cerceve': CER}, seg=2 if wS > 1 else 3)
+    import random; rnd = random.Random(wS * 31 + 5)
+    for yon in ('on', 'arka'):
+        o, u, v = yuz_cerceve(yon, (S * 0.994) / 2 - gom)
+        uh, vh = (w / S) / 2 - 0.2, 0.5 - 0.2; g = 0.05
+        rh = (2 * vh - g) / 2
+        for j in range(2):
+            n = max(1, round((2 * uh) / 0.85)) if j == 0 else max(1, round((2 * uh) / 0.85) + (1 if wS > 1 else 0))
+            bw = (2 * uh - g * (n - 1)) / n; x = -uh; yc = -vh + j * (rh + g) + rh / 2
+            if j == 1 and wS > 1: x += bw * 0.0
+            for _ in range(n):
+                P.append(kabartma(o, u, v, SP(yuvdik(x + bw / 2, yc, bw, rh, 0.07, 2)), [(1.0, -0.004), (0.9, 0.05 * S)], rnd.choice(T)))
+                x += bw + g
+    return uret(ad, P, 0.55, keskin=55.0, klasor=BLOK2)
+
+def buz_y(ad, wS):
+    """buz: govde rengi (oyunda buz mavisi), yastik kenar, on/arka/ust capraz isik seritleri ve pirilti"""
+    w = wS * S * 0.996
+    P, gom = yastik_govde(w, None, kal=0.11, gom=0.05)
+    for yon in ('on', 'arka', 'ust'):
+        o, u, v = yuz_cerceve(yon, (S * 0.994) / 2 - gom)
+        x0 = -(w / S) / 2 + 0.26
+        P.append(kabartma(o, u, v, SP(serit((x0, -0.02), (x0 + 0.2, 0.22), 0.075)), [(1.0, -0.004), (0.9, 0.02 * S)], ISIK))
+        P.append(kabartma(o, u, v, SP(serit((x0 + 0.13, -0.08), (x0 + 0.23, 0.04), 0.04)), [(1.0, -0.004), (0.9, 0.012 * S)], ISIK))
+        P.append(kabartma(o, u, v, SP(yildiz((w / S) / 2 - 0.3, -0.16, 0.09, 0.026)), [(1.0, -0.004), (0.7, 0.02 * S)], ISIK))
+    return uret(ad, P, 0.1, keskin=55.0, klasor=BLOK2)
+
+def sandik_y(ad):
+    """sandik: govde renkli yastik cerceve, krem tahta pano, govde renkli kabarik X destek, koselerde civi"""
+    P, gom = yastik_govde(S * 0.996, {'pano': KREM, 'cerceve': GOVDE}, kal=0.14, gom=0.06)
+    for yon in ('on', 'arka', 'sag', 'sol', 'ust'):
+        o, u, v = yuz_cerceve(yon, (S * 0.994) / 2 - gom)
+        P.append(kabartma(o, u, v, SP(serit((-0.25, -0.25), (0.25, 0.25), 0.15)), [(1.0, -0.004), (0.95, 0.04 * S)], GOVDE))
+        P.append(kabartma(o, u, v, SP(serit((0.25, -0.25), (-0.25, 0.25), 0.15)), [(1.0, -0.004), (0.95, 0.05 * S)], GOVDE))
+    return uret(ad, P, 0.3, keskin=55.0, klasor=BLOK2)
+
 def main2():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dunya()
     ist = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     hepsi = {'cubuk1': lambda: cubuk('cubuk1', 1), 'cubuk2': lambda: cubuk('cubuk2', 2), 'cubuk3': lambda: cubuk('cubuk3', 3), 'cubuk4': lambda: cubuk('cubuk4', 4),
-             'kavanoz1': lambda: kavanoz('kavanoz1', 1), 'kavanoz2': lambda: kavanoz('kavanoz2', 2), 'silindir': silindir, 'kiris3': lambda: kiris('kiris3', 3)}
+             'kavanoz1': lambda: kavanoz('kavanoz1', 1), 'kavanoz2': lambda: kavanoz('kavanoz2', 2), 'silindir': silindir, 'kiris3': lambda: kiris('kiris3', 3),
+             'tas1': lambda: tas_y('tas1', 1), 'tas2': lambda: tas_y('tas2', 2), 'tas3': lambda: tas_y('tas3', 3), 'tas4': lambda: tas_y('tas4', 4),
+             'buz1': lambda: buz_y('buz1', 1), 'buz3': lambda: buz_y('buz3', 3), 'sandik': lambda: sandik_y('sandik')}
     obs = [f() for kk, f in hepsi.items() if not ist or kk in ist]
     print('BITTI', len(obs))
 

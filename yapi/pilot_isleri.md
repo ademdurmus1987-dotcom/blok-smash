@@ -177,3 +177,8 @@
 ## v9.8 (19 Kas 2026) — kavanozda genis parlama bandi, cilali patili kup
 - Kavanoz (kj, kvU) ve dalgali silindir: karanlik studyo yansimasi JENV (siyah zemin + genis isik kutulari): renk solmadan referanstaki gibi genis parlama bandi. `?bantG=` (guc, 3), `?bantR=` (puruz, 0.16); kapatma `?bant=0`.
 - Ana oyundaki patili kup (oyK, oyM...): cilali (clearcoat). Kapatma `?kupcila=0`.
+
+## v9.9 (19 Kas 2026) — tas, buz, sandik da yeni tarzda
+- yeni_bloklar.py: yastik_govde (tugla ile ayni yastik kenar), tas_y (tas1-4: koyu harc cukurunda iri acik taslar), buz_y (buz1, buz3: isik seritleri), sandik_y (govde renkli cerceve ve X, krem pano). -> model/blok2.
+- blok3b.js: ksTas/2/3/4, ksBuz/ksBuz3, ksSandik/K/M bu modeller (ana oyunda da: oyun.js ESLE'den ksTas, ksBuz cikarildi). Kapatma: `?b2=0` ya da `?parla=0`.
+- Sergi: `?pilot=990`.

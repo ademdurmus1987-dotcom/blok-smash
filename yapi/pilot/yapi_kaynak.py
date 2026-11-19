@@ -156,6 +156,14 @@ P += [('kr3A', -1.5, 4, 0), ('dalga', 1, 4, 0), ('dalga', 2, 4, 0), ('uz1Y', 3, 
 P += [('uz4M', -2, 5, 0), ('uz4T', 2, 5, 0)]
 T[989] = bolum('Yeni Blok Sergisi', P)
 
+# 990 v9.9 sergi: yeni tarzda tas, buz, sandik (ana oyunun turleri)
+P = []
+P += [('ksTas', -3, 0, 0), ('ksTas2', -0.5, 0, 0), ('ksTas', 2, 0, 0), ('ksSandik', 3, 0, 0)]
+P += [('ksBuz', -3, 1, 0), ('ksBuz3', 0, 1, 0), ('ksSandikK', 2, 1, 0), ('ksSandikM', 3, 1, 0)]
+P += [('ksTas4', -1.5, 2, 0), ('ksSandik', 1, 2, 0), ('kjS', 2, 2, 0), ('kjK', 3, 2, 0)]
+P += [('ksTas3', -2, 3, 0), ('uz3P', 1.5, 3, 0)]
+T[990] = bolum('Taş Buz Sandık Sergisi', P)
+
 if __name__ == '__main__':
     J = {'surum': 1, 'sira': sorted(T), 'bolumler': T}
     json.dump(J, open(OUT, 'w'), ensure_ascii=False, separators=(',', ':'))
