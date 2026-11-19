@@ -1,0 +1,29 @@
+/* v10.11 (Adem: 'gostergeler tek tarz'): oyun ici gostergeler kartlarla ayni dilde: mor govde, altin cerceve, kahverengi dis cizgi,
+   3B altin rakam (kartlardaki SVG yazi gibi: koyu kahve gölge katmani). Eski gorunum: ?hud=eski (html.hud2 sinifi eklenmez) */
+html.hud2{--lac1:#7a46f0;--lac2:#4a1cb8;--lac3:#2d0f86;--h-m1:#7a46f0;--h-m2:#4a1cb8;--h-m3:#2d0f86;--h-a:#ffd34a;--h-a2:#ffe98a;--h-k:#5a2a00;--h-g:#1a0650}
+html.hud2 .topc{width:88px!important;border-radius:20px!important;background:linear-gradient(180deg,var(--h-m1),var(--h-m2) 55%,var(--h-m3))!important;border:3px solid var(--h-a)!important;
+  box-shadow:0 0 0 3px var(--h-k),0 7px 0 var(--h-g),0 7px 0 3px var(--h-k),0 12px 16px #0007,inset 0 3px 0 #ffffff55,inset 0 -4px 0 #00000030!important;padding:2px 5px 4px!important}
+html.hud2 .topc small{font:900 17px/1.1 'BS Baslik','Baloo 2',sans-serif!important;color:#fff!important;-webkit-text-stroke:0!important;text-shadow:0 2px 0 var(--h-g),0 0 2px var(--h-g)!important;letter-spacing:.5px}
+html.hud2 .topc b{font:900 38px/1.12 'BS Baslik','Baloo 2',sans-serif!important;color:var(--h-a)!important;-webkit-text-stroke:0!important;
+  text-shadow:0 1px 0 #e89a00,0 2px 0 #c86e00,0 3px 0 #a04e00,0 4px 0 var(--h-k),0 0 3px var(--h-k),0 6px 6px #0006!important;background:none!important;box-shadow:none!important}
+html.hud2 .lvp{border-radius:99px!important;background:linear-gradient(180deg,var(--h-m1),var(--h-m2) 60%,var(--h-m3))!important;border:3px solid var(--h-a)!important;
+  box-shadow:0 0 0 3px var(--h-k),0 5px 0 var(--h-g),0 5px 0 3px var(--h-k),0 9px 12px #0006,inset 0 2px 0 #ffffff45!important;
+  font:900 15px/1.1 'BS Baslik','Baloo 2',sans-serif!important;color:#fff!important;-webkit-text-stroke:0!important;text-shadow:0 2px 0 var(--h-g)!important;padding:6px 16px 7px!important}
+html.hud2 .lvp b{color:var(--h-a)!important;text-shadow:0 2px 0 var(--h-k),0 0 2px var(--h-k)!important}
+html.hud2 #prog{height:16px!important;border-radius:10px!important;border:3px solid var(--h-a)!important;background:linear-gradient(180deg,#14063a,#2a0f6e)!important;
+  box-shadow:0 0 0 3px var(--h-k),0 4px 0 var(--h-g),inset 0 3px 4px #000a!important;margin-top:10px!important}
+html.hud2 #pb{border-radius:6px!important;background:linear-gradient(180deg,#d4ff9a 0%,#6ee03a 45%,#3fb82a 55%,#1f8a1e 100%)!important;box-shadow:inset 0 2px 0 #ffffffa0,0 0 8px #8cf05aa0!important}
+html.hud2 .ib{border-radius:50%!important;border:3px solid var(--h-a)!important;background:radial-gradient(circle at 50% 30%,var(--h-m1),var(--h-m2) 60%,var(--h-m3))!important;
+  box-shadow:0 0 0 3px var(--h-k),0 6px 0 var(--h-g),0 6px 0 3px var(--h-k),0 10px 14px #0007,inset 0 3px 0 #ffffff50!important}
+html.hud2 .ib svg{fill:#fff!important;filter:drop-shadow(0 2px 0 var(--h-g))!important}
+html.hud2 .ib:active{transform:translateY(4px)!important}
+/* alt yardimci dugmeler: ayni altin cerceve + kahve dis cizgi (kendi renkleri kalir) */
+html.hud2 .gb,html.hud2 .gt{border-color:var(--h-a)!important;box-shadow:0 0 0 3px var(--h-k),0 6px 0 var(--h-g),0 6px 0 3px var(--h-k),0 10px 14px #0006!important}
+html.hud2 .gb .n,html.hud2 .gt .n{border-color:var(--h-a)!important;box-shadow:0 0 0 2px var(--h-k)!important}
+html.hud2 #hint{background:linear-gradient(180deg,var(--h-m1),var(--h-m2) 55%,var(--h-m3))!important;border:3px solid var(--h-a)!important;box-shadow:0 0 0 3px var(--h-k),0 6px 0 var(--h-g),0 10px 14px #0006!important}
+/* ana sayfa gostergeleri: yan simgeler, etiketler, altin/yildiz sayaclari ayni mor-altin */
+html.hud2 .m-yb .m-yk{background:linear-gradient(180deg,var(--h-m1),var(--h-m2) 60%,var(--h-m3))!important;border-color:var(--h-a)!important}
+html.hud2 .m-yb small{background:linear-gradient(180deg,var(--h-m2),var(--h-m3))!important;border-color:var(--h-a)!important;-webkit-text-stroke:0!important;text-shadow:0 2px 0 var(--h-g)!important;box-shadow:0 0 0 2px var(--h-k),0 3px 0 var(--h-g)!important}
+html.hud2 .m-hap{background:linear-gradient(180deg,var(--h-m2),var(--h-m3))!important;border-color:var(--h-a)!important;box-shadow:0 0 0 2px var(--h-k),0 4px 0 var(--h-g)!important}
+html.hud2 .m-hap b,html.hud2 .m-prof b{-webkit-text-stroke:0!important;text-shadow:0 2px 0 var(--h-g),0 0 2px var(--h-g)!important}
+html.hud2 .m-prof{box-shadow:0 0 0 2px var(--h-k),0 4px 0 var(--h-g)!important}

@@ -233,3 +233,8 @@
 ## v10.10 (19 Kas 2026) — yesil zemin temiz, sevinen Foxi kazanma kartinda
 - Yesil zemin yeni ayiklayici (yapi/uretici/yesil_ayikla.py): yesillik orani (koyu golge de silinir), koyu kiyafette yuksek esik, figur icindeki GIF titresim noktalari komsu renkle dolar, tek tuk kirinti kirpmaya girmez.
 - karakter/tilki_sevinc_anim.webp (Adem'in sevinc GIF'i): kazanma kartinda panelin sol ustunde ayakta, panelle ziplayarak gelir (yuvarlak avatar yerine).
+
+## v10.11 (19 Kas 2026) — gostergeler tek tarz (hud2.css)
+- Oyun ici: Top sayaci, Yapi/Kup rozeti, ilerleme cubugu, duraklat, yardimci dugmeler, ipucu: mor govde, altin cerceve, kahverengi dis cizgi, 3B altin rakam (kartlarla ayni dil).
+- Ana sayfa: --lac1/2/3 mora cevrildi (Kaptan rozeti, ayar), yan simgeler, etiketler, altin/yildiz sayaclari ayni.
+- Eski gorunum: `?hud=eski`.
