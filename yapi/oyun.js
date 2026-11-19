@@ -2015,7 +2015,7 @@ const BR = 0.47;   // v6.8: (Adem) biraz kucultuldu. v6.5: 3B top mermisi net go
 const BALLGEO = new THREE.SphereGeometry(BR, 32, 20);
 const TRAILGEO = new THREE.SphereGeometry(0.16, 12, 8);
 // Blok Smash 1. asama (Adem 9 Kas, Royal Smash referansi): top 62 yerine 95 birim/sn; kutle 5 yerine 3.3, carpma itisi (kutle x hiz) ayni kalsin diye.
-const DUZ = Q.get('duz') !== '0';
+const DUZ = PILOTQ && Q.get('duz') !== '0';   // v8.8: duz atis yalniz pilotta (ana oyun eski yay)
 world.addEventListener('preStep', () => { for (const b of balls) if (b.duz && !b.hit && b.t < 1.1) b.body.force.y -= b.body.mass * world.gravity.y; });   /* iskalayan top 1.1 sn sonra duser */   // v8.7: duz atis (yercekimi carpmaya kadar dengelenir)
 function shoot(target) {
   if (!g || g.state !== 'play') return false;
@@ -3527,7 +3527,7 @@ const MAT_P = { tahta: { v: 1, r: 1, w: 1 }, tas: { v: 1.15, r: 0.88, w: 1.2 }, 
 const MAT_H = { tahta: (s) => [Math.round(30 + 24 * s)], tas: (s) => [Math.round(40 + 36 * s)], metal: (s) => [34, 26, Math.round(30 + 20 * s)], cam: (s) => [30, 20, 30, 20, Math.round(26 + 12 * s)], buz: (s) => [28, 18, Math.round(28 + 14 * s)] };
 function withS(s, rs, fn) { const a = VS, b = RS; VS = s; RS = rs; try { fn(); } finally { VS = a; RS = b; } }
 let HST = -9;
-function hitstop(sec) { const n = performance.now() / 1000; if (n - HST < 0.6) return; HST = n; HS = Math.max(HS, sec); TS = 0.12; }   // v8.7 (Adem: ust uste atista oyun yavasliyordu): vurus donmasi en fazla 0.6 sn'de bir
+function hitstop(sec) { const n = performance.now() / 1000; if (PILOTQ && n - HST < 0.6) return;   /* v8.8: sinir yalniz pilotta */ HST = n; HS = Math.max(HS, sec); TS = 0.12; }   // v8.7 (Adem: ust uste atista oyun yavasliyordu): vurus donmasi en fazla 0.6 sn'de bir
 function darbeHaptik(kind, s) { if (s < 0.35) return; buzz((MAT_H[matSnd(kind)] || MAT_H.tahta)(Math.min(1.4, s)), 70); }
 // bir kupun baska bir seye carpma sesi: yalniz yeterince sert ve sik degil; kirilacak cam/kavanoz kendi kirilma sesini cikarir
 function darbeSesi(c, vn) {

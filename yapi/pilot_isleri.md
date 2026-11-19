@@ -115,3 +115,16 @@
   (3) seri atista yavaslama: vurus donmasi (hitstop) en fazla 0.6 sn'de bir; pilotta 120+ parcali yapida her vurusta yalniz 7 birim cevre uyanir (wakeAll(p)); duvar cozucu turu 24 -> 18.
   (4) denizde ayak tabansiz duz direk (pilot.js `suAyak`). (5) hareketli platformlar: `B.hareket` {tip: don|asansor|kay} ana platformda (gorunus ayri mesh, kamera hareket yolunu kapsar);
   `pilot/hareket.py` 31-108'e dagitir: (n-31)%6 -> sabit, donen, asansor, kayan, iki platform (yanda 2x3x3 kucuk yapi), sabit.
+- v8.8 (19 Kas): duz atis (`DUZ`) ve hitstop 0.6 sn siniri yalniz pilotta (`PILOTQ`); ana oyun 2000 bolum tamamen v8.6 davranisinda.
+
+## KALDIGIM YER (19 Kas 2026, yeni oturum buradan baslar)
+- Pilot bolumler: 31-36 + 37-54 (`pilot/resim.json`), 55-108 (`pilot/duvar.json`). Ana oyuna BAGLI DEGIL; yalniz `?pilot=N` ile aciliyor.
+- Ana oyunun 2000 bolumu, platformu, kamerasi, top arabasi, kaydi DEGISMEDI (v8.8 ile duz atis/hitstop da pilota cekildi).
+- Adem'in karari bekleniyor: sekiller ana oyuna nasil tasinacak? Oneri: (1) mevcut bolumlerin arasina serpistir (or. her 10 bolumde bir sekil bolumu);
+  diger yollar (2) haritada ayri sefer, (3) 2000 sonuna ekle. Tasirken ana oyunun kendi platform/kamera/top arabasi kullanilir, pilot kamera ayari tasinmaz.
+- Adem oyunun cogunlugu icin yeni gorseller verecek. Kurallar ayni: yalniz oyundaki bloklar, 3 sira derinlik, koyu ic tas, havada blok yok,
+  bosluk yalniz kapi/kemer/goz; once pilot bolum + ekran goruntusu + fizik + bot testi; Adem onaylamadan yeni bolume gecme.
+- Zorluk/top sayisi testi (31-108, duz atis + hareketli platformlarla) BILEREK ERTELENDI: tasima yeri belli olunca ana oyun ayarlariyla yapilacak.
+- Acik not: sise ustune konan kalas/sandik havada gibi gorunebilir (sise modeli kisa): 41, 96, 102, 108.
+- Araclar: `python3 -m http.server 8770` (repo kokunden), `python3 yapi/uretici/resim_test.py ekran|fizik|bot|tek|hareket 31,32`,
+  `DOSYA=... python3 yapi/uretici/resim_denetim.py`, izgara cikarma `yapi/uretici/izgara/izgara.py` + `ciz.py`. Kaynaklar: `pilot/resim_kaynak.py`, `pilot/duvar_kaynak.py`, `pilot/hareket.py`.
