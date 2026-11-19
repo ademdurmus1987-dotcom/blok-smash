@@ -182,3 +182,9 @@
 - yeni_bloklar.py: yastik_govde (tugla ile ayni yastik kenar), tas_y (tas1-4: koyu harc cukurunda iri acik taslar), buz_y (buz1, buz3: isik seritleri), sandik_y (govde renkli cerceve ve X, krem pano). -> model/blok2.
 - blok3b.js: ksTas/2/3/4, ksBuz/ksBuz3, ksSandik/K/M bu modeller (ana oyunda da: oyun.js ESLE'den ksTas, ksBuz cikarildi). Kapatma: `?b2=0` ya da `?parla=0`.
 - Sergi: `?pilot=990`.
+
+## v10.0 (19 Kas 2026) — Adem: yayvan isik, kati buz, sivi saçan kavanoz, sade top
+- Yayvan isik: kavanoz/silindir yansima kutulari genis ve yumusak kenarli, puruz 0.26, guc 4 (`?yayvan=0` eski).
+- Buz (ses 'buz'): ilk sert vurusta catlar (kucuk kup kirintilar + kiragi), kirilmaz; ancak SONRAKI atista ya da yere dusunce kirilir. Kirilinca iri kati kup parcalar (kristal/parilti yok). `?buz2=0` eski.
+- Yeni kavanozlar (kj, kvU) kirilinca icindeki renkli sivi damla damla sacilir (eskiden yalniz sise); cam kiriklari havada kisa surede kaybolur.
+- Top izi seyrek ve ince, carpinca biter; namlu dumani 3 parca (`?iz=eski`).
