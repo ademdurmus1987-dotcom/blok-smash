@@ -18,7 +18,7 @@ const LISTE = {
   ksYildiz: ['yildiz', 0.3, '#ffc21a', { emis: '#ffb400', emisG: 0.16, env: 0.6, metal: 0.25 }],
   ksYakut: ['pilot/pl_elmas', 0.14, '#ff2a44', TAS('#e8122e')], ksElmas: ['pilot/pl_elmas', 0.14, '#40a8ff', TAS('#1a6cf4')],
   // v6.4: patili oyuncak kupler (sekil.js oy*) tek dosyadan, govde rengi tur basina; TNT, sutunlar ve direk pilot modelleri
-  oyK: KUP('#e8242c'), oyY: KUP('#22b84a'), oyM: KUP('#2276f0'), oyS: KUP('#f6b400'), oyP: KUP('#8a34e6'), oyT: KUP('#f2620f'), oyN: KUP('#ff3d9e'), oyB: KUP('#f1ede4'),
+  oyK: KUP('#e8242c'), oyY: KUP('#22b84a'), oyM: KUP('#2276f0'), oyS: KUP('#ffc400'), oyP: KUP('#8a34e6'), oyT: KUP('#f2620f'), oyN: KUP('#ff3d9e'), oyB: KUP('#f1ede4'),
   oyA: ['pilot/pl_kup', 0.26, '#f5b81c', { govde: '#f5b81c', emis: '#c07800', emisG: 0.18, env: 0.7, metal: 0.35 }],
   ksTNT: ['pilot/pl_tnt', 0.4, '#e5302a'], ksDirek: ['pilot/pl_direk', 0.42, '#f08a24'],
   ksSutun: ['pilot/pl_sutun', 0.38, '#b3bad2', { govde: '#b3bad2' }], ksMorSutun: ['pilot/pl_sutun', 0.34, '#9a3ae8', { govde: '#9a3ae8', emis: '#5a12a0', emisG: 0.12 }],

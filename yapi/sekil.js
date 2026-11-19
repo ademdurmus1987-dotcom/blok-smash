@@ -5,6 +5,7 @@
 // Olculer kup kenari (S) cinsindendir: w genislik (x), h yukseklik (y), d derinlik (z).
 import { kaleKur } from './kale.js?v=4';
 import { CILA, cilaKur } from './cila.js?v=1';   // v5.3: oyun kamerasina gore yeniden cizilen bloklar (?cila=0 eski gorunum)   // v4.3: Korsan Kalesi blok seti
+const KONT = !/[?&]kontrast=0/.test(location.search);   // v9.5b: oyun.js KONT ile ayni
 export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
   const col = (h) => new THREE.Color(h);
   const mix = (a, b, t) => '#' + col(a).lerp(col(b), t).getHexString();
@@ -82,8 +83,8 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
   }
   function cubuk(renk, wS, amblem = 'pati') {
     const o = (a) => new THREE.MeshPhysicalMaterial({ map: cubukYuz(renk, wS === 1 ? 1 : wS, a), bumpMap: cubukYuz(renk, wS === 1 ? 1 : wS, a, 1), bumpScale: 2.2, roughness: 0.3, metalness: 0, envMap: ENV, envMapIntensity: 0.6,
-      emissive: renk, emissiveIntensity: 0.13, clearcoat: 1, clearcoatRoughness: 0.08 });
-    const on = o(amblem), ust = wS === 1 ? on : o(null), yan = wS === 1 ? on : new THREE.MeshPhysicalMaterial({ map: cubukYuz(renk, 1, amblem), bumpMap: cubukYuz(renk, 1, amblem, 1), bumpScale: 2.2, roughness: 0.3, envMap: ENV, envMapIntensity: 0.6, emissive: renk, emissiveIntensity: 0.13, clearcoat: 1, clearcoatRoughness: 0.08 });
+      emissive: renk, emissiveIntensity: KONT ? 0.05 : 0.13, clearcoat: 1, clearcoatRoughness: 0.08 });
+    const on = o(amblem), ust = wS === 1 ? on : o(null), yan = wS === 1 ? on : new THREE.MeshPhysicalMaterial({ map: cubukYuz(renk, 1, amblem), bumpMap: cubukYuz(renk, 1, amblem, 1), bumpScale: 2.2, roughness: 0.3, envMap: ENV, envMapIntensity: 0.6, emissive: renk, emissiveIntensity: KONT ? 0.05 : 0.13, clearcoat: 1, clearcoatRoughness: 0.08 });
     return { geo: kutu(wS * S, S, S, S * 0.12, 3), mat: wS === 1 ? on : [yan, yan, ust, ust, on, on], parca: mat(null, { color: renk, roughness: 0.3 }) };
   }
 
@@ -221,7 +222,7 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
     const prof = pr.map(([r, y]) => [R * r, y0 + y, T(y)]); prof[0][2] = 0.001; prof[prof.length - 1][2] = 0.999;
     const map = canvasTex(512, 512, (x, w, h) => {
       const Y = (y) => h * (1 - T(y * kk)), kap = Y(1.665 * S);
-      let g = x.createLinearGradient(0, kap, 0, h); g.addColorStop(0, acik(renk, 0.1)); g.addColorStop(0.25, renk); g.addColorStop(1, koyu(renk, 0.25)); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      let g = x.createLinearGradient(0, kap, 0, h); g.addColorStop(0, acik(renk, 0.1)); g.addColorStop(0.25, renk); g.addColorStop(1, koyu(renk, KONT ? 0.42 : 0.25)); x.fillStyle = g; x.fillRect(0, 0, w, h);
       // govdede dikey parlak yansimalar (cam hissi)
       for (const [u, ww, a] of [[0.12, 0.045, 0.5], [0.2, 0.016, 0.34], [0.62, 0.035, 0.22], [0.9, 0.012, 0.2]]) { g = x.createLinearGradient((u - ww) * w, 0, (u + ww) * w, 0); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,' + a + ')'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; yuvar(x, (u - ww) * w, Y(1.3 * S), 2 * ww * w, Y(0.2 * S) - Y(1.3 * S), ww * w); x.fill(); }
       // omuz isigi ve dip golgesi
@@ -232,7 +233,7 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
       g = x.createLinearGradient(0, 0, 0, k0); g.addColorStop(0, acik(renk, 0.55)); g.addColorStop(1, acik(renk, 0.3)); x.fillStyle = g; x.fillRect(0, 0, w, k0 - 6);
       g = x.createLinearGradient(0, k0 - 6, 0, kap); g.addColorStop(0, 'rgba(255,255,255,.35)'); g.addColorStop(0.3, 'rgba(255,255,255,0)'); g.addColorStop(0.75, 'rgba(0,0,40,0)'); g.addColorStop(1, 'rgba(0,0,40,.28)'); x.fillStyle = g; x.fillRect(0, k0 - 6, w, kap - k0 + 6);
     });
-    return { geo: torna(prof, 28), mat: mat(map, { roughness: 0.2, envMapIntensity: 0.65, emissive: renk, emissiveIntensity: 0.16 }), parca: mat(null, { color: renk, roughness: 0.2, envMapIntensity: 1.1 }) };
+    return { geo: torna(prof, 28), mat: mat(map, { roughness: 0.2, envMapIntensity: KONT ? 0.45 : 0.65, emissive: renk, emissiveIntensity: KONT ? 0.06 : 0.16 }), parca: mat(null, { color: renk, roughness: 0.2, envMapIntensity: 1.1 }) };
   }
 
   // ---------------- raf tahtasi (yarim kat) ve dalgali tambur ----------------
@@ -510,7 +511,7 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
     kkA: { w: 1, h: 1, d: 1, mass: 1.5, f: 0.6, r: 0.1, ses: 'tas', renk: '#ffc531', sert: 1, yap: () => kafaKup('a') },
     kkL: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.6, r: 0.1, ses: 'tas', renk: '#7a4cc0', boom: 1.8, guc: 11, yap: () => kafaKup('l') },
     // v9.3 (Adem 19 Kas, "kaliteli gorunumlu yapilar"): uzun parlak cubuklar, kisa kavanozlar, yeni renk uzun kavanozlar, tek tas
-    ...Object.fromEntries([['K', '#e3242f'], ['M', '#2b6ef0'], ['S', '#f5b400'], ['Y', '#1fae48'], ['P', '#8a34e6'], ['T', '#f2620f'], ['N', '#ff4aa6'], ['A', '#8fc8ff']].flatMap(([c, r]) => [
+    ...Object.fromEntries([['K', '#e3242f'], ['M', '#2b6ef0'], ['S', '#ffcc00'], ['Y', '#1fae48'], ['P', '#8a34e6'], ['T', '#f2620f'], ['N', '#ff4aa6'], ['A', '#8fc8ff']].flatMap(([c, r]) => [
       ['uz3' + c, { w: 3, h: 1, d: 1, mass: 2.3, f: 0.62, r: 0.1, ses: 'tahta', renk: r, kir: 1, carp: 10, yuzer: 1, yap: () => cubuk(r, 3, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
       ['uz4' + c, { w: 4, h: 1, d: 1, mass: 3.0, f: 0.62, r: 0.1, ses: 'tahta', renk: r, kir: 1, carp: 11, yuzer: 1, yap: () => cubuk(r, 4, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
       ['uz1' + c, { w: 1, h: 1, d: 1, mass: 0.85, f: 0.62, r: 0.12, ses: 'tahta', renk: r, kir: 1, yuzer: 1, yap: () => cubuk(r, 1, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],

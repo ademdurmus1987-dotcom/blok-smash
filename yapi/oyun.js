@@ -9,10 +9,10 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=9';
+import { sekilKur, YAPI } from './sekil.js?v=10';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=5';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=6';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -109,8 +109,9 @@ if (Q.get('ton') !== 'aces') {
 ren.shadowMap.enabled = true; ren.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
 const cam = new THREE.PerspectiveCamera(40, 1, 0.5, 200);
-scene.add(new THREE.HemisphereLight(0xfffaf0, 0x6a5a7a, 1.15));   // v5.2: ortam isigi azaldi, gunes artti: hacim ve golge belirgin
-const sun = new THREE.DirectionalLight(0xfff0d0, 3.2); sun.position.set(-8, 18, 10); sun.castShadow = true;
+const KONT = Q.get('kontrast') !== '0';   // v9.5b (Adem: 'turuncu, her acik renk soluk'): ortam isigi azaldi, gunes artti: golgeli yuz koyulasir, renk derinlesir (referanstaki gibi). ?kontrast=0 eski
+scene.add(new THREE.HemisphereLight(0xfffaf0, 0x6a5a7a, KONT ? 0.78 : 1.15));   // v5.2: ortam isigi azaldi, gunes artti: hacim ve golge belirgin
+const sun = new THREE.DirectionalLight(0xfff0d0, KONT ? 3.6 : 3.2); sun.position.set(-8, 18, 10); sun.castShadow = true;
 sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 16, bottom: -14, near: 2, far: 60 }); sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.03;
 scene.add(sun);
 const rim = new THREE.DirectionalLight(0xcfe0ff, 0.9); rim.position.set(9, 6, -8); scene.add(rim);
