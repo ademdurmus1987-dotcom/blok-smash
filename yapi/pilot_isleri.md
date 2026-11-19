@@ -147,3 +147,7 @@
 - Yeni gorsel gelince: tasarimi `yeni_kaynak.py`'ye ekle (ek(...)), `python3 yapi/pilot/yeni_kaynak.py`, bot (pilot no listesi), bot.json'a yaz, `python3 yapi/pilot/sira.py`.
 - v9.1 (19 Kas): Adem "ornek 10 gorsel yap" dedi: Claude'un kendi tasarimi 10 sekil, `pilot/ornek_kaynak.py` -> `pilot/ornek.json`, `?pilot=900` .. `909`
   (Kalpli Duvar, Gokkusagi Piramidi, Yildiz Kapisi, Kurbaga, Penguen, Dogum Gunu Pastasi, Dev Hamburger, Bacali Ev, Basamakli Tapinak, Panda). Ana oyuna BAGLI DEGIL; Adem'in onayi bekleniyor.
+- v9.2 (19 Kas): Adem "eksigimiz parlak cilali sekiller; platformda duran 3B de yap, donen platformda her taraf farkli gorunsun" dedi.
+  - Cila: oyun.js `CILA_T` / `cilaMat` — sekil bolumlerindeki (pilot ve ana oyun) ks*/oy* bloklarin MeshPhysicalMaterial clearcoat'lu esi (k+'C'). Fizik ayni. Kapatma `?cila=0`.
+  - 3B voksel sekiller: `pilot/ucb_kaynak.py` -> `pilot/ucb.json`, `?pilot=950` .. `955` (Dort Yuzlu Kale, Tilki Kafasi, Dort Renkli Piramit, Yilbasi Agaci, Catili Ev, Deniz Feneri).
+    Her yuz baska desen; platform bastan doner (`hareket.hemen` -> oyun.js `g.donHemen`). Ana oyuna BAGLI DEGIL; Adem'in onayi bekleniyor.

@@ -41,7 +41,7 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 // Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
 const SKS = SEKQ ? (await import('./pilot/sira.js?v=1')).SEKIL : {};
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=20') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=22') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -511,6 +511,22 @@ if (Q.get('parlak') !== '0') {
       };
     }
   } catch (e) { /* kutuphane kurulamazsa bloklar eski gorunumde kalir */ }
+}
+// v9.2 (19 Kas 2026, Adem: 'bizim eksik olan sey parlak cilali sekiller'): sekil bolumlerinde blok turlerinin CILALI esi (k + 'C'):
+// ayni geometri ve doku, ustune vernik katmani (clearcoat) ve guclu yansima. Normal bolumler degismez. Kapatma: ?cila=0
+const CILA_T = {};
+function cilaMat(m) {
+  if (Array.isArray(m)) return m.map(cilaMat);
+  if (!m || !m.isMeshStandardMaterial) return m;
+  let p;
+  if (m.isMeshPhysicalMaterial) p = m.clone();
+  else { p = new THREE.MeshPhysicalMaterial(); THREE.MeshStandardMaterial.prototype.copy.call(p, m); p.defines = { STANDARD: '', PHYSICAL: '' }; }
+  p.clearcoat = 1; p.clearcoatRoughness = 0.07; p.roughness = Math.min(0.3, (m.roughness == null ? 0.5 : m.roughness) * 0.6);
+  p.envMapIntensity = Math.max(0.9, (m.envMapIntensity || 0.4) * 1.8); p.needsUpdate = true; return p;
+}
+if (Q.get('cila') !== '0') for (const k of Object.keys(SEK.TUR)) {
+  if (!/^(ks|oy)/.test(k)) continue; const t = SEK.TUR[k];
+  SEK.TUR[k + 'C'] = Object.assign({}, t, { yap: () => { const y = t.yap(); return Object.assign({}, y, { mat: cilaMat(y.mat) }); } }); CILA_T[k] = k + 'C';
 }
 const ORNEK = ornekKur({ THREE, scene, S, kontur: CILA ? 0 : 0.04, rim: CILA ? 0.1 : 0.28 });   // v5.3: cila setinde siyah kontur yok, kenar parlamasi hafif
 let PATI = null; const patiReady = (CILA ? Promise.resolve(null) : patiYukle({ THREE, S, ENV, GLTFLoader })).then((p) => { PATI = p; if (p) SEK.patiAyar(p); });
@@ -1524,7 +1540,7 @@ let PANG = 0; const QSPIN = new CANNON.Quaternion(), QAX = new CANNON.Vec3(0, 1,
 function spin(dt) {
   let w = (g && g.don) || 0; if (!w) return;
   // v3.21: (Adem) bolum acilinca platform sabit durur; ilk atistan sonra yavasca hizlanarak donmeye baslar
-  if (!g.armed) return; g.donT = (g.donT || 0) + dt; w *= Math.min(1, g.donT / 1.5);
+  if (!g.armed && !g.donHemen) return; g.donT = (g.donT || 0) + dt; w *= Math.min(1, g.donT / 1.5);
   // platform statik govde, elle dondurulur (uyuyan kupleri uyandirmaz); platformdaki her kup (uyuyan ya da hareketli) donen
   // cerceveyle birlikte tasinir, hizi da doner. Platformdan dusen (gone) kup artik donmez.
   const a = w * dt; PANG += a; QSPIN.setFromAxisAngle(QAX, a); const ca = Math.cos(a), sa = Math.sin(a);
@@ -3705,7 +3721,7 @@ world.addEventListener('postStep', () => {
 function pilotBag() {
   return { THREE, CANNON, scene, world, PM, platBody, GB, SIRK, LEG, legBoy, PLS, cubes, balls, S, KAIDE, SEK, KIND, SEKSH, MATSND, KIRILGAN, FLOAT, ORNEK, ren, cam, TC, Q, $, canvasTex, ENV,
     parcaKur, bolumBasla, fit, breakBlock, wakeAll, start, modal, closeModal, sfx, buzz, kamera(p, a) { CPITCH = p; CAZ = a; }, get CAZ() { return CAZ; },
-    HAVUZ, setLeg, zoneAt, GRI, fonAd: () => (fonOf(LV) || {}).f || '', fonZem: () => (fonOf(LV) || {}).zem || '', get ZW() { return ZW; }, get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
+    HAVUZ, setLeg, zoneAt, GRI, CILA_T, fonAd: () => (fonOf(LV) || {}).f || '', fonZem: () => (fonOf(LV) || {}).zem || '', get ZW() { return ZW; }, get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
 }
 if (PILOTQ) PLT = PLTM.pilotKur(pilotBag());   // PILOT
 else if (PLTM) PLTA = PLTM.pilotKur(pilotBag(), true);   // v9.0: ana kip
