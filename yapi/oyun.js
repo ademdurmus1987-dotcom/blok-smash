@@ -41,7 +41,7 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 // Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
 const SKS = SEKQ ? (await import('./pilot/sira.js?v=1')).SEKIL : {};
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=19') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=20') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez

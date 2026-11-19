@@ -145,3 +145,5 @@
 - Bot: `pilot/bot.json` (oyuncu botu, yay atis, hareketli platformla, sinirsiz top, tohum 12345). sira.py bunu kullanir.
 - Acik isler: Adem telefonda deneyip begenmedigi tasarimi soyler; ozellikle Baykus, Kollu Robot (kollar direge donustu), Patili Kuru Kafa. 300+ parcali duvarlar (Sandik Pati Mozaigi, TNT Carpi Kalesi, Yesil Cerceveli Fici Deposu) telefonda agir olabilir.
 - Yeni gorsel gelince: tasarimi `yeni_kaynak.py`'ye ekle (ek(...)), `python3 yapi/pilot/yeni_kaynak.py`, bot (pilot no listesi), bot.json'a yaz, `python3 yapi/pilot/sira.py`.
+- v9.1 (19 Kas): Adem "ornek 10 gorsel yap" dedi: Claude'un kendi tasarimi 10 sekil, `pilot/ornek_kaynak.py` -> `pilot/ornek.json`, `?pilot=900` .. `909`
+  (Kalpli Duvar, Gokkusagi Piramidi, Yildiz Kapisi, Kurbaga, Penguen, Dogum Gunu Pastasi, Dev Hamburger, Bacali Ev, Basamakli Tapinak, Panda). Ana oyuna BAGLI DEGIL; Adem'in onayi bekleniyor.
