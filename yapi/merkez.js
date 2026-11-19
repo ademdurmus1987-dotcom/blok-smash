@@ -549,6 +549,8 @@ export function merkezKur(A) {
 
   // ---------------- kaybetme: devam et? ----------------
   // d: { L, kaldi, bedava, fiyat }
+  // v10.8: uzgun Foxi cizimi (Adem'in Gemini cizimi gelince karakter/tilki_uzgun.webp); yoksa normal avatar, basi egik
+  let UZGUN = null; { const im = new Image(); im.onload = () => { UZGUN = im.src; }; im.src = '../karakter/tilki_uzgun.webp?v=1'; }
   function kaybet(d) {
     const yeter = (SV.altin || 0) >= d.fiyat, I = ist(), dev = d.bedava || yeter;
     // v10.7 (Adem: ticari kalite): yeni kaybetme karti: uzgun Foxi, 'Neredeyse!' basligi, kalan blok rozeti, buyuk +3 top teklifi (geri sayim halkasi),
@@ -556,13 +558,13 @@ export function merkezKur(A) {
     if (!/[?&]kaybet=eski/.test(location.search)) {
       const az = d.kaldi <= (d.hazine ? 1 : 5), K3 = '../yapi/ikon/3b/';
       pop('<div class="ky2">' +
-        '<div class="ky2-foxi"><img src="../karakter/tilki_avatar.webp?v=1" alt=""><i class="ky2-yas"></i></div>' +
-        '<div class="ky2-bas">' + (az ? 'Neredeyse!' : 'Toplar Bitti!') + '</div>' +
+        '<div class="ky2-foxi"><img src="' + (UZGUN ? UZGUN : '../karakter/tilki_avatar.webp?v=1') + '" alt=""' + (UZGUN ? ' class="uz"' : '') + '></div>' +
+        '<div class="ky2-bas">' + yazi(az ? 'NEREDEYSE!' : 'TOPLAR BİTTİ!', 'altin', { derin: 10 }) + '</div>' +
         '<div class="ky2-kalan"><b>' + d.kaldi + '</b>' + (d.hazine ? ' hazine kaldı' : ' blok kaldı') + '</div>' +
         (d.yardim ? '<p class="ky2-ipucu">🦊 Tekrar denersen Foxi <b>+' + d.yardim + ' top</b> ile yardım edecek!</p>' : '<p class="ky2-ipucu">' + (az ? 'Çok az kalmıştı, bir atış daha!' : 'Alt sıraları hedefle, kule devrilsin.') + '</p>') +
-        (dev ? '<button class="ky2-teklif" id="p-dv"><span class="ky2-hal"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/></svg><img src="' + K3 + 'top5.webp?v=1" alt=""></span><span class="ky2-t"><b>+3 Top</b><small>' + 'Kaldığın yerden' + '</small></span><span class="ky2-fiyat">' + (d.bedava ? 'BEDAVA' : '<i class="coin"></i>' + d.fiyat) + '</span></button>' : '<div class="ky2-yok">Devam için ' + d.fiyat + ' altın gerekiyor</div>') +
+        (dev ? '<button class="ky2-teklif" id="p-dv"><span class="ky2-hal"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/></svg><img src="' + K3 + 'top5.webp?v=1" alt=""></span><span class="ky2-t">' + yazi('+3 TOP', 'yesil', { h: '34px', derin: 5, sade: 1 }) + '<small>' + 'Kaldığın yerden' + '</small></span><span class="ky2-fiyat">' + (d.bedava ? 'BEDAVA' : '<i class="coin"></i>' + d.fiyat) + '</span></button>' : '<div class="ky2-yok">Devam için ' + d.fiyat + ' altın gerekiyor</div>') +
         (I.seri >= 2 ? '<div class="ky2-seri">🔥 <b>' + I.seri + '</b> bölümlük serin bitecek</div>' : '') +
-        '<button class="ky2-tekrar" id="p-td">Tekrar Dene</button>' +
+        '<button class="ky2-tekrar" id="p-td">' + yazi('TEKRAR DENE', 'altin', { h: '24px', derin: 4, sade: 1 }) + '</button>' +
         '<div class="ky2-altin"><i class="coin"></i><b>' + (SV.altin || 0) + '</b></div></div>', () => { A.pes(); ac(); });
       P.classList.add('ky2-on');
       const kapat0 = () => P.classList.remove('ky2-on');

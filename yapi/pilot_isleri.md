@@ -221,3 +221,7 @@
 - yapi/pilot/karma_kaynak.py: 7 kalip (duvar, tapinak, basamak, dev kavanoz, kale, raf, ikiz kule) x renk/boy = 105 yapi -> karma.json (pilot 3000-3104). Hepsi bot ile olculdu (bot.json), dengeli (kendiliginden dusen 0), hepsi kazanilir; bot atisi 3-31.
 - sira.py: karisik yapilar (karma + elle 960-968; 962 ve 966 cok zor diye disarida) kolaydan zora, ayni kalip art arda gelmez; yer: 7, 13, 19 ve 26'dan sonra her dunyanin 3. ve 8. bolumu (son: 553). Sekil bolumleri (x6) degismedi.
 - Kaybetme karti (merkez.js kaybet, kaybet2.css): Foxi, 'Neredeyse!', kalan blok rozeti, buyuk '+3 Top' teklifi (8 sn geri sayim halkasi), kucuk 'Tekrar Dene'. Eski: `?kaybet=eski`.
+
+## v10.8 (19 Kas 2026) — kaybetme karti yazilari, uzgun Foxi yeri
+- Baslik ('NEREDEYSE!' / 'TOPLAR BİTTİ!'), '+3 TOP' ve 'TEKRAR DENE' kazanma kartindaki 3B SVG yazi (kazan2.js yazi) ile; goz yasi kaldirildi, avatar basi egik.
+- Uzgun Foxi cizimi: karakter/tilki_uzgun.webp dosyasi eklenince kendiliginden kullanilir (kare, yuz ortada).
