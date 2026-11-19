@@ -9,7 +9,7 @@ import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
 import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { sekilKur, YAPI } from './sekil.js?v=8';
+import { sekilKur, YAPI } from './sekil.js?v=9';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
 import { blok3bKur } from './blok3b.js?v=5';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
@@ -41,7 +41,7 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 // Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
 const SKS = SEKQ ? (await import('./pilot/sira.js?v=1')).SEKIL : {};
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=22') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=23') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez

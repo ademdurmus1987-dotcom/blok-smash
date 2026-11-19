@@ -55,6 +55,38 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
     kivilcim(x, s) { x.beginPath(); for (let i = 0; i < 4; i++) { const a = -Math.PI / 2 + i * Math.PI / 2, b = a + Math.PI / 4, c = a + Math.PI / 2; if (!i) x.moveTo(Math.cos(a) * s, Math.sin(a) * s); x.quadraticCurveTo(Math.cos(b) * s * 0.2, Math.sin(b) * s * 0.2, Math.cos(c) * s, Math.sin(c) * s); } x.closePath(); }
   };
 
+  // ---------------- v9.3: uzun parlak oyuncak cubuk (Adem 19 Kas: referanstaki renkli uzun bloklar) ----------------
+  // on/arka yuz: tam boy ic pano + ortada kabartma amblem; uclar: kare pano + kucuk amblem; ust/alt: duz pano. Parlak kaplama (clearcoat).
+  function cubukYuz(renk, wS, amblem, kabartma) {
+    const N = 256, Wd = Math.round(N * wS), m = N * 0.13;
+    const ciz = (x, w, h, k) => {
+      const mm = m * k, iw = w - 2 * mm, ih = h - 2 * mm, rr = N * 0.09 * k, s = N * 0.25 * k;
+      if (!kabartma) {
+        let g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, acik(renk, 0.06)); g.addColorStop(0.5, renk); g.addColorStop(1, koyu(renk, 0.26)); x.fillStyle = g; x.fillRect(0, 0, w, h);
+        kenarIsik(x, w, h, 0.9); x.lineJoin = 'round'; x.lineCap = 'round';
+        yuvar(x, mm, mm + 4 * k, iw, ih, rr); x.strokeStyle = acik(renk, 0.3); x.lineWidth = 6 * k; x.globalAlpha = 0.75; x.stroke(); x.globalAlpha = 1;
+        yuvar(x, mm, mm, iw, ih, rr); g = x.createLinearGradient(0, mm, 0, mm + ih); g.addColorStop(0, acik(renk, 0.03)); g.addColorStop(1, koyu(renk, 0.16)); x.fillStyle = g; x.fill(); x.strokeStyle = koyu(renk, 0.42); x.lineWidth = 8 * k; x.stroke();
+        if (amblem) { x.save(); x.translate(w / 2, h / 2 + 2 * k);
+          x.save(); x.translate(0, 7 * k); AMB[amblem](x, s); x.fillStyle = koyu(renk, 0.4); x.strokeStyle = koyu(renk, 0.4); x.lineWidth = 12 * k; x.stroke(); x.fill(); x.restore();
+          AMB[amblem](x, s); x.strokeStyle = koyu(renk, 0.42); x.lineWidth = 12 * k; x.stroke(); g = x.createLinearGradient(0, -s, 0, s); g.addColorStop(0, acik(renk, 0.26)); g.addColorStop(1, renk); x.fillStyle = g; x.fill();
+          x.save(); AMB[amblem](x, s); x.clip(); x.fillStyle = 'rgba(255,255,255,.2)'; x.beginPath(); x.ellipse(-s * 0.2, -s * 0.75, s * 1.1, s * 0.6, -0.3, 0, 6.2832); x.fill(); x.restore(); x.restore(); }
+        g = x.createLinearGradient(0, h * 0.06, 0, h * 0.4); g.addColorStop(0, 'rgba(255,255,255,.22)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; yuvar(x, mm + 10 * k, mm + 6 * k, iw - 20 * k, ih * 0.32, rr * 0.8); x.fill();   // ust parlama seridi
+      } else {
+        x.fillStyle = '#808080'; x.fillRect(0, 0, w, h); x.lineJoin = 'round';
+        yuvar(x, mm, mm, iw, ih, rr); x.fillStyle = '#6c6c6c'; x.fill(); x.strokeStyle = '#3c3c3c'; x.lineWidth = 5 * k; x.stroke();
+        if (amblem) { x.translate(w / 2, h / 2 + k); for (const [lw, c] of [[8, '#9a9a9a'], [4, '#c4c4c4'], [0, '#eaeaea']]) { AMB[amblem](x, s); x.fillStyle = c; x.strokeStyle = c; if (lw) { x.lineWidth = lw * k; x.stroke(); } x.fill(); } }
+      }
+    };
+    const k = kabartma ? 0.5 : 1, t = canvasTex(Math.round(Wd * k), Math.round(N * k), (x, w, h) => ciz(x, w, h, k));
+    if (kabartma) t.colorSpace = THREE.NoColorSpace; return t;
+  }
+  function cubuk(renk, wS, amblem = 'pati') {
+    const o = (a) => new THREE.MeshPhysicalMaterial({ map: cubukYuz(renk, wS === 1 ? 1 : wS, a), bumpMap: cubukYuz(renk, wS === 1 ? 1 : wS, a, 1), bumpScale: 2.2, roughness: 0.3, metalness: 0, envMap: ENV, envMapIntensity: 0.6,
+      emissive: renk, emissiveIntensity: 0.13, clearcoat: 1, clearcoatRoughness: 0.08 });
+    const on = o(amblem), ust = wS === 1 ? on : o(null), yan = wS === 1 ? on : new THREE.MeshPhysicalMaterial({ map: cubukYuz(renk, 1, amblem), bumpMap: cubukYuz(renk, 1, amblem, 1), bumpScale: 2.2, roughness: 0.3, envMap: ENV, envMapIntensity: 0.6, emissive: renk, emissiveIntensity: 0.13, clearcoat: 1, clearcoatRoughness: 0.08 });
+    return { geo: kutu(wS * S, S, S, S * 0.12, 3), mat: wS === 1 ? on : [yan, yan, ust, ust, on, on], parca: mat(null, { color: renk, roughness: 0.3 }) };
+  }
+
   // ---------------- parlak oyuncak kup ----------------
   function oyuncak(renk, amblem) {
     const N = 256, m = N * 0.13, ic = N - 2 * m;
@@ -182,12 +214,13 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
   }
 
   // ---------------- seker kavanozu (iki kat boyunda) ----------------
-  function kavanoz(renk) {
-    const R = S * 0.46, H = 2 * S, y0 = -S, T = (y) => y / H;   // y: tabandan yukseklik
-    const pr = [[0, 0], [0.8, 0], [0.95, 0.05 * S], [1, 0.14 * S], [1, 1.36 * S], [0.97, 1.48 * S], [0.86, 1.58 * S], [0.76, 1.63 * S], [0.76, 1.66 * S], [0.9, 1.67 * S], [0.92, 1.72 * S], [0.92, 1.9 * S], [0.86, 1.97 * S], [0.7, 2 * S], [0, 2 * S]];
+  function kavanoz(renk, hS = 2) {   // v9.3: hS=1 kisa kavanoz (profil dikeyde olceklenir; hS=2 eski hal aynen)
+    const R = S * 0.46, H = hS * S, y0 = -H / 2, T = (y) => y / H, kk = hS / 2;   // y: tabandan yukseklik
+    const pr0 = [[0, 0], [0.8, 0], [0.95, 0.05 * S], [1, 0.14 * S], [1, 1.36 * S], [0.97, 1.48 * S], [0.86, 1.58 * S], [0.76, 1.63 * S], [0.76, 1.66 * S], [0.9, 1.67 * S], [0.92, 1.72 * S], [0.92, 1.9 * S], [0.86, 1.97 * S], [0.7, 2 * S], [0, 2 * S]];
+    const pr = pr0.map(([r, y]) => [r, y * kk]);
     const prof = pr.map(([r, y]) => [R * r, y0 + y, T(y)]); prof[0][2] = 0.001; prof[prof.length - 1][2] = 0.999;
     const map = canvasTex(512, 512, (x, w, h) => {
-      const Y = (y) => h * (1 - T(y)), kap = Y(1.665 * S);
+      const Y = (y) => h * (1 - T(y * kk)), kap = Y(1.665 * S);
       let g = x.createLinearGradient(0, kap, 0, h); g.addColorStop(0, acik(renk, 0.1)); g.addColorStop(0.25, renk); g.addColorStop(1, koyu(renk, 0.25)); x.fillStyle = g; x.fillRect(0, 0, w, h);
       // govdede dikey parlak yansimalar (cam hissi)
       for (const [u, ww, a] of [[0.12, 0.045, 0.5], [0.2, 0.016, 0.34], [0.62, 0.035, 0.22], [0.9, 0.012, 0.2]]) { g = x.createLinearGradient((u - ww) * w, 0, (u + ww) * w, 0); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,' + a + ')'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; yuvar(x, (u - ww) * w, Y(1.3 * S), 2 * ww * w, Y(0.2 * S) - Y(1.3 * S), ww * w); x.fill(); }
@@ -476,6 +509,15 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
     kkK: { w: 1, h: 1, d: 1, mass: 0.9, f: 0.6, r: 0.12, ses: 'tas', renk: '#f3ead6', kir: 1, carp: 7, yuzer: 1, yap: () => kafaKup('k') },
     kkA: { w: 1, h: 1, d: 1, mass: 1.5, f: 0.6, r: 0.1, ses: 'tas', renk: '#ffc531', sert: 1, yap: () => kafaKup('a') },
     kkL: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.6, r: 0.1, ses: 'tas', renk: '#7a4cc0', boom: 1.8, guc: 11, yap: () => kafaKup('l') },
+    // v9.3 (Adem 19 Kas, "kaliteli gorunumlu yapilar"): uzun parlak cubuklar, kisa kavanozlar, yeni renk uzun kavanozlar, tek tas
+    ...Object.fromEntries([['K', '#e3242f'], ['M', '#2b6ef0'], ['S', '#f5b400'], ['Y', '#1fae48'], ['P', '#8a34e6'], ['T', '#f2620f'], ['N', '#ff4aa6'], ['A', '#8fc8ff']].flatMap(([c, r]) => [
+      ['uz3' + c, { w: 3, h: 1, d: 1, mass: 2.3, f: 0.62, r: 0.1, ses: 'tahta', renk: r, kir: 1, carp: 10, yuzer: 1, yap: () => cubuk(r, 3, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
+      ['uz4' + c, { w: 4, h: 1, d: 1, mass: 3.0, f: 0.62, r: 0.1, ses: 'tahta', renk: r, kir: 1, carp: 11, yuzer: 1, yap: () => cubuk(r, 4, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
+      ['uz1' + c, { w: 1, h: 1, d: 1, mass: 0.85, f: 0.62, r: 0.12, ses: 'tahta', renk: r, kir: 1, yuzer: 1, yap: () => cubuk(r, 1, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
+      ['uz2' + c, { w: 2, h: 1, d: 1, mass: 1.6, f: 0.62, r: 0.1, ses: 'tahta', renk: r, kir: 1, carp: 9, yuzer: 1, yap: () => cubuk(r, 2, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
+      ['kj' + c, { w: 1, h: 1, d: 1, mass: 0.6, f: 0.55, r: 0.08, ses: 'cam', renk: r, sekil: 'sil', kir: 1, carp: 7, yap: () => kavanoz(r, 1) }],
+      ['kvU' + c, { w: 1, h: 2, d: 1, mass: 1.0, f: 0.55, r: 0.08, ses: 'cam', renk: r, sekil: 'sil', kir: 1, carp: 8, yap: () => kavanoz(r) }]])),
+    tas1: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.7, r: 0.06, ses: 'tas', renk: '#4a6cdb', sert: 1, yap: () => tas(1, 17) },
     kemik: { w: 2, h: 1, d: 1, mass: 1.3, f: 0.65, r: 0.08, ses: 'tahta', renk: '#f1e6cf', kir: 1, carp: 9, yuzer: 1, yap: kemik }
   };
   Object.assign(TUR, kaleKur({ THREE, S, canvasTex, ENV, kutu, torna, rng, acik, koyu }));   // v4.3

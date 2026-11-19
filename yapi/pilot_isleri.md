@@ -151,3 +151,8 @@
   - Cila: oyun.js `CILA_T` / `cilaMat` — sekil bolumlerindeki (pilot ve ana oyun) ks*/oy* bloklarin MeshPhysicalMaterial clearcoat'lu esi (k+'C'). Fizik ayni. Kapatma `?cila=0`.
   - 3B voksel sekiller: `pilot/ucb_kaynak.py` -> `pilot/ucb.json`, `?pilot=950` .. `955` (Dort Yuzlu Kale, Tilki Kafasi, Dort Renkli Piramit, Yilbasi Agaci, Catili Ev, Deniz Feneri).
     Her yuz baska desen; platform bastan doner (`hareket.hemen` -> oyun.js `g.donHemen`). Ana oyuna BAGLI DEGIL; Adem'in onayi bekleniyor.
+- v9.3 (19 Kas): Adem pilot 901 (patili kup piramidi) icin "boyle kalitesiz sekil istemiyorum" dedi, karisik bloklu kaliteli yapi ornekleri gonderdi.
+  - Yeni bloklar (sekil.js): `uz1/uz2/uz3/uz4` + renk (K M S Y P T N A) uzun parlak oyuncak cubuk (clearcoat, ortada kabartma amblem); `kj`+renk kisa kavanoz;
+    `kvU`+renk uzun kavanoz (yeni renkler); `tas1` tek koyu mavi tas. kavanoz(renk, hS) artik yukseklik alir (hS=2 eski hal aynen).
+  - Yapilar: `pilot/yapi_kaynak.py` -> `pilot/yapi.json`, `?pilot=960` .. `967` (Kavanoz Kalesi, Buz Rafli Kule, Silindir Sarayi (doner), Ikiz Renk Duvari,
+    Tas ve Kavanoz Kulesi, Sutunlu Tapinak, Kutuk Kosk (doner), Gokkusagi Basamaklari). Hepsi duruyor (dusen 0). Ana oyuna BAGLI DEGIL.
