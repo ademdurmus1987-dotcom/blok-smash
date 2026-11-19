@@ -173,3 +173,7 @@
 - Tugla (cubuk1-4): dis kenar r 0.2, pano kenari ve tabani yuvarlatildi (yeni_bloklar.py `yastik_kenar`), pati biraz kucuk ve alcak. Eski model: `yeni_bloklar.py -- --eski cubuk3`. GLB ?v=4.
 - Cilali yeni set: studyo ortam yansimasi SENV (oyun.js), ior 1.6, yansima carpani 1.2 (`?ior=`, `?parlaG=` ile denenir). Kavanozda gri yansima azaldi, kendi rengiyle hafif isik (sari hardal degil). Mor biraz acik (#9842f0).
 - Kapatma: `?parla=0` (eski yansima ve renkler).
+
+## v9.8 (19 Kas 2026) — kavanozda genis parlama bandi, cilali patili kup
+- Kavanoz (kj, kvU) ve dalgali silindir: karanlik studyo yansimasi JENV (siyah zemin + genis isik kutulari): renk solmadan referanstaki gibi genis parlama bandi. `?bantG=` (guc, 3), `?bantR=` (puruz, 0.16); kapatma `?bant=0`.
+- Ana oyundaki patili kup (oyK, oyM...): cilali (clearcoat). Kapatma `?kupcila=0`.

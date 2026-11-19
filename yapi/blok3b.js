@@ -7,7 +7,7 @@ export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]
 const BUZ = { govde: '#2a8ef4', emis: '#0b48c0', emisG: 0.3, env: 0.4 };   // pilotta denendi: saydamlik ve guclu yansima buzu soluk gosteriyordu
-const KUP = (r) => ['pilot/pl_kup', 0.3, r, { govde: r }];
+const KUP = (r) => ['pilot/pl_kup', 0.3, r, /[?&]kupcila=0/.test(location.search) ? { govde: r } : { govde: r, cila: 1, env: 0.55 }];   // v9.8: patili kup de cilali (?kupcila=0 eski)
 const SISE = (r) => ['blok/sise', 0.15, r, { govde: r, emis: r, emisG: 0.22, env: 0.8 }];   // cam: parlak, kendi isigi
 const TAS = (r) => ({ govde: r, emis: r, emisG: 0.32, env: 0.6, metal: 0.15 });
 const LISTE = {
@@ -34,16 +34,17 @@ if (!/[?&]b2=0/.test(location.search)) {
   const R2 = { K: '#e3242f', M: '#2b6ef0', S: '#ffcc00', Y: '#1fae48', P: YENI ? '#9842f0' : '#8a34e6', T: '#f2620f', N: '#ff4aa6', A: '#8fc8ff' };
   for (const [c, r] of Object.entries(R2)) {
     for (const n of [1, 2, 3, 4]) LISTE['uz' + n + c] = ['blok2/cubuk' + n, 0.18, r, { govde: r, cila: 1, env: 0.75 }];
-    LISTE['kj' + c] = ['blok2/kavanoz1', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26 } : { govde: r, cila: 1, env: 0.95 }];
-    LISTE['kvU' + c] = ['blok2/kavanoz2', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26 } : { govde: r, cila: 1, env: 0.95 }];
+    LISTE['kj' + c] = ['blok2/kavanoz1', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];
+    LISTE['kvU' + c] = ['blok2/kavanoz2', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];
     LISTE['kr3' + c] = ['blok2/kiris3', 0.24, r, { govde: r, cila: 1, env: 0.5 }];
   }
-  LISTE.dalga = ['blok2/silindir', 0.2, '#5b8cf0', { govde: '#4f86f2', cila: 1, env: 0.55 }];
+  LISTE.dalga = ['blok2/silindir', 0.2, '#5b8cf0', { govde: '#4f86f2', cila: 1, env: 0.55, bant: 1 }];
 }
 const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 4 : 1);
 
-export function blok3bKur({ THREE, ENV, SENV, GLTFLoader }) {
+export function blok3bKur({ THREE, ENV, SENV, JENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)
+  const BG = +(new URLSearchParams(location.search).get('bantG') || 3), BR = +(new URLSearchParams(location.search).get('bantR') || 0.16);
   const PG = +(new URLSearchParams(location.search).get('parlaG') || 1.2);   // v9.7: studyo yansima gucu
   const GLB = {}, HAZ = {};
   // butun dosyalar acilista paralel iner (her biri 20-80 KB); bolum kurulmadan once beklenir
@@ -67,7 +68,8 @@ export function blok3bKur({ THREE, ENV, SENV, GLTFLoader }) {
     }
     const ozel = Object.assign({ map: G.map, vertexColors: !!geo.attributes.color, roughness: L[1], metalness: o.metal || 0, envMap: ENV, envMapIntensity: o.env || 0.4 },
       o.emis ? { emissive: o.emis, emissiveIntensity: o.emisG || 0.2 } : {});
-    if (o.cila && SENV && SENV !== ENV) { ozel.envMap = SENV; ozel.envMapIntensity = (o.env || 0.4) * PG; }   // v9.7: studyo yansimasi
+    if (o.bant && JENV) { ozel.envMap = JENV; ozel.envMapIntensity = BG; ozel.roughness = BR; }   // v9.8: genis parlama bandi (karanlik studyo)
+    else if (o.cila && SENV && SENV !== ENV) { ozel.envMap = SENV; ozel.envMapIntensity = (o.env || 0.4) * PG; }   // v9.7: studyo yansimasi
     const mat = o.cila ? new THREE.MeshPhysicalMaterial(Object.assign(ozel, { clearcoat: 1, clearcoatRoughness: SENV && SENV !== ENV ? 0.035 : 0.08 }, SENV && SENV !== ENV ? { ior: IOR } : {})) : new THREE.MeshStandardMaterial(ozel);   // v9.6: cilali (clearcoat) yeni set
     return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: L[2], roughness: 0.6 }) });
   }
