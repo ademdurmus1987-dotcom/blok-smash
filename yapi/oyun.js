@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v9.4', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v9.5', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -97,7 +97,15 @@ const GONE_Y = -0.45;    // bunun altina inen kup platformdan dusmus sayilir
 const glc = $('gl');
 const ren = new THREE.WebGLRenderer({ canvas: glc, antialias: true, alpha: true, preserveDrawingBuffer: TEST }); ren.setClearColor(0, 0);
 ren.setPixelRatio(Math.min(Math.min(innerWidth, innerHeight) < 600 ? (CILA ? 1.75 : 1.25) : 2, devicePixelRatio || 1));   // v5.3: (Adem: sekiller kalitesiz) 1.25 bloklari bulanik ve tirtikli gosteriyordu; kontur cizimleri kalkti, yerine cozunurluk   // v3.18: (Adem: telefon cok isiniyor) 1.5 -> 1.25   // v6.29: (Adem: telefon cok isiniyor) telefonda en cok 1.5 (2 yerine %44 daha az piksel)
-ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.12;   // v6.1: daha parlak · v5.2: (Adem: referans kalitesi) 1.32 renkleri pastele kaydiriyordu
+ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.12;
+// v9.5 (Adem 19 Kas: 'acik renkler, mesela sari, referansa yaklasmadi'): ACES parlak renkleri kremlestiriyordu (sari -> soluk krem).
+// Khronos PBR Neutral ton eslemesi rengi korur; three r160'ta yok, CustomToneMapping olarak yazildi. ?ton=aces eski
+if (Q.get('ton') !== 'aces') {
+  THREE.ShaderChunk.tonemapping_pars_fragment = THREE.ShaderChunk.tonemapping_pars_fragment.replace('vec3 CustomToneMapping( vec3 color ) { return color; }',
+    'vec3 CustomToneMapping( vec3 color ) { const float SC = 0.76; const float DS = 0.15; color *= toneMappingExposure; float x = min( color.r, min( color.g, color.b ) ); float off = x < 0.08 ? x - 6.25 * x * x : 0.04; color -= off;' +
+    ' float pk = max( color.r, max( color.g, color.b ) ); if ( pk < SC ) return color; float d = 1.0 - SC; float np = 1.0 - d * d / ( pk + d - SC ); color *= np / pk; float gg = 1.0 - 1.0 / ( DS * ( pk - np ) + 1.0 ); return mix( color, vec3( np ), gg ); }');
+  ren.toneMapping = THREE.CustomToneMapping; ren.toneMappingExposure = +(Q.get('pozlama') || 0.92);
+}   // v6.1: daha parlak · v5.2: (Adem: referans kalitesi) 1.32 renkleri pastele kaydiriyordu
 ren.shadowMap.enabled = true; ren.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
 const cam = new THREE.PerspectiveCamera(40, 1, 0.5, 200);

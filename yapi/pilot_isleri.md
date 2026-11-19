@@ -163,3 +163,4 @@
   - Top arabasi (kaide.js `topModeli2`, `?top=eski2` eski): tombul turuncu govde, mor kisa namlu ve iri mor tekerlekler, altin agiz; arkada iri altin pati, tekerlek kapaklarinda krem pati.
   - Golge (`GOLGEZ`, `?golge=0` kapali): zeminde ShadowMaterial duzlemi; platform, ayak ve yapinin golgesi fona duser.
   - v9.4b: Adem 'top arabasi cok soluk': doygun kirmizi-turuncu govde, kirmizi kusak, govdede altin patiler, koyu mor tekerlek/namlu, az yansima.
+- v9.5 (19 Kas): Adem 'acik renkler (sari) referansa yaklasmadi': ACES ton eslemesi parlak renkleri kremlestiriyordu. Khronos PBR Neutral (oyun.js, CustomToneMapping), pozlama 0.92 (`?pozlama=`). Eski: `?ton=aces`.
