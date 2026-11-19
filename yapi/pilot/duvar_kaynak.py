@@ -208,13 +208,14 @@ SAYFA10 = [
 ]
 # top sayisi: 19 Kas 2026 bot testi (tohum 12345) atis x1.15 + 2
 TOP = {"55": 47, "56": 57, "57": 51, "58": 68, "59": 53, "60": 61, "61": 58, "62": 89, "63": 69, "64": 61, "65": 71, "66": 74, "67": 58, "68": 103, "69": 71, "70": 73, "71": 47, "72": 65, "73": 59, "74": 71, "75": 65, "76": 75, "77": 66, "78": 83, "79": 68, "80": 62, "81": 68, "82": 77, "83": 67, "84": 47, "85": 76, "86": 43, "87": 63, "88": 50, "89": 45, "90": 59, "91": 63, "92": 54, "93": 77, "94": 39, "95": 67, "96": 62, "97": 84, "98": 53, "99": 71, "100": 30, "101": 59, "102": 59, "103": 65, "104": 37, "105": 88, "106": 57, "107": 47, "108": 55}
-TUM = {}; n = 55; SAYFA = {}
-for sno, liste in ((1, SAYFA1), (2, SAYFA2), (3, SAYFA3), (4, SAYFA4), (5, SAYFA5), (6, SAYFA6), (7, SAYFA7), (8, SAYFA8), (9, SAYFA9), (10, SAYFA10)):
-    for ad, G in liste:
-        TUM[n] = bolum(ad, G, top=TOP.get(str(n), 60), ortala=(sno == 1)); TUM[n]['sayfa'] = sno; n += 1
-import sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); from hareket import ekle   # v8.7 hareketli platformlar
-V = {'surum': 1, 'sira': sorted(TUM), 'bolumler': TUM}
-for _n, _b in V['bolumler'].items(): ekle(int(_n), _b)
-json.dump(V, open(OUT, 'w'), ensure_ascii=False, separators=(',', ':'))
-for k, b in TUM.items(): print(k, b['ad'], len(b['parca']), 'parca, dolgu', b['dolgu'])
-print('dosya', os.path.getsize(OUT) // 1024, 'KB')
+if __name__ == '__main__':   # v9.0: yeni_kaynak.py fonksiyonlari ice aktarir
+    TUM = {}; n = 55; SAYFA = {}
+    for sno, liste in ((1, SAYFA1), (2, SAYFA2), (3, SAYFA3), (4, SAYFA4), (5, SAYFA5), (6, SAYFA6), (7, SAYFA7), (8, SAYFA8), (9, SAYFA9), (10, SAYFA10)):
+        for ad, G in liste:
+            TUM[n] = bolum(ad, G, top=TOP.get(str(n), 60), ortala=(sno == 1)); TUM[n]['sayfa'] = sno; n += 1
+    import sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); from hareket import ekle   # v8.7 hareketli platformlar
+    V = {'surum': 1, 'sira': sorted(TUM), 'bolumler': TUM}
+    for _n, _b in V['bolumler'].items(): ekle(int(_n), _b)
+    json.dump(V, open(OUT, 'w'), ensure_ascii=False, separators=(',', ':'))
+    for k, b in TUM.items(): print(k, b['ad'], len(b['parca']), 'parca, dolgu', b['dolgu'])
+    print('dosya', os.path.getsize(OUT) // 1024, 'KB')

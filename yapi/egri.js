@@ -95,3 +95,10 @@ export const TUR = {
   altin: { ad: 'Altın Yağmuru', hedef: 'Düşen her küp +1 altın! Bol top, keyfine bak.', ic: '🪙' }
 };
 export const ETIKET = { zor: 'Zor bölüm', cokzor: 'Çok zor bölüm' };
+
+// v9.0 (19 Kas 2026): ana oyunun arasina serpistirilen sekil bolumleri (pilot/sira.js). bot: oyuncu botunun ortalama atisi (yay atis, hareketsiz).
+// Top: botun atisi x1.2 x genel egri + 2 (hareketli platformda +2); en az botun %75'i (normal bolumlerin tabani gibi), en az 12.
+export function sekilTop(L, bot, hareket) {
+  const k = genel(L) * AYAR.testere[L % AYAR.dunya];
+  return Math.max(12, Math.round(bot * 1.2 * k) + 2 + (hareket && hareket !== 'sabit' ? 2 : 0), Math.ceil(bot * 0.75));
+}

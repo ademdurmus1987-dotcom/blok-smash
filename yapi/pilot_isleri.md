@@ -128,3 +128,20 @@
 - Acik not: sise ustune konan kalas/sandik havada gibi gorunebilir (sise modeli kisa): 41, 96, 102, 108.
 - Araclar: `python3 -m http.server 8770` (repo kokunden), `python3 yapi/uretici/resim_test.py ekran|fizik|bot|tek|hareket 31,32`,
   `DOSYA=... python3 yapi/uretici/resim_denetim.py`, izgara cikarma `yapi/uretici/izgara/izgara.py` + `ciz.py`. Kaynaklar: `pilot/resim_kaynak.py`, `pilot/duvar_kaynak.py`, `pilot/hareket.py`.
+
+## 19 Kas 2026 (Opus): v9.0 — sekil bolumleri ANA OYUNDA + ikinci zip (98 yeni tasarim)
+- Adem'in karari: "zorluk egrisine gore araya serpistir; kayan, asansor, donen, ikili/uclu platform olsun". Yeni gorseller gelmeye devam edecek.
+- Ana oyun baglantisi (pilot.js ANA KIPI, `pilotKur(A, true)`): `yapi/pilot/sira.js` (uretilir: `python3 yapi/pilot/sira.py`) bolum -> [pilot no, ad, bot atisi, hareket].
+  Sekiller kolaydan zora (bot atisi) siralanir; 26'dan baslayip her 10 bolumde bir (dunyanin 6. bolumu, egri.js'te 'normal') o bolumun yerine gecer. 2000 bolum ve kayit ayni.
+  - Kayit, ilerleme, altin, kartlar, guclendirici: ana oyunun. Platform gorunusu ana oyunun temali platformu (temaKur); pilot.js yalniz fizik govdesi, parcalar, kamera cercevesi, hareket kurar.
+  - Atis ana oyunun yayli atisi (DUZ yalniz ?pilot kipinde). Kamera pilot standardi (pitch 1, top arabasi sabit); normal bolume donunce `birak()` kamerayi (9 derece), cozucuyu (14), araba kaidesini geri alir.
+  - Top: `egri.js sekilTop(L, bot, hareket)` = bot x1.2 x genel egri x testere + 2 (+2 hareketli), en az botun %75'i, en az 12.
+  - Tas/fici/sise sekil bolumlerinde Adem'in cizimindeki gibi gri tas / fici / sise: oyun.js `GRI` (ksTasG vb., ayni turun parlak kutuphane oncesi gorunumu). Normal bolumler degismedi.
+  - Kapatma: `?sekil=0` (o bolumlerde eski uretilmis yapi). Test kipinde yalniz `?test&sekil=1` ile acik.
+- Hareket (`pilot/hareket.py`): (n-31)%6 -> sabit, donen, asansor, kayan, iki platform, UC platform (yapi dar ise; kaide yarim genisligi > 7.3 ise iki).
+- Ikinci zip (29 resim): `pilot/yeni_kaynak.py` -> `pilot/yeni.json`, pilot 109-206 (98 tasarim). Ayni harfler ve kurallar (duvar_kaynak.py; fonksiyonlari ice aktarilir).
+  Lacivert tas -> S, lacivert sandik -> P, yesil sandik -> g, bombali kutu -> T. Tekrar eden resimler bir kez alindi (406650=591129=384272, 410889=391432, 537414=376517, 544711=363409, 695710=621718, 799943=972870, 807485=951960, 929709 = 946164'un dikey hali).
+  Alinmayanlar: yel degirmenleri (capraz kanat havada kalir), helikopter, balik, ucak, 835846/847092 (tren/baykus/fil tekrarlari), 814975'in gemi/fener/tilki/kopru tekrarlari.
+- Bot: `pilot/bot.json` (oyuncu botu, yay atis, hareketli platformla, sinirsiz top, tohum 12345). sira.py bunu kullanir.
+- Acik isler: Adem telefonda deneyip begenmedigi tasarimi soyler; ozellikle Baykus, Kollu Robot (kollar direge donustu), Patili Kuru Kafa. 300+ parcali duvarlar (Sandik Pati Mozaigi, TNT Carpi Kalesi, Yesil Cerceveli Fici Deposu) telefonda agir olabilir.
+- Yeni gorsel gelince: tasarimi `yeni_kaynak.py`'ye ekle (ek(...)), `python3 yapi/pilot/yeni_kaynak.py`, bot (pilot no listesi), bot.json'a yaz, `python3 yapi/pilot/sira.py`.

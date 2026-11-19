@@ -11,12 +11,22 @@
 //   kam:   { pitch, yaw } derece. top: top sayisi.
 import { pilotSekilKur } from './pilot_sekil.js?v=6';
 
-export function pilotKur(A) {
+// v9.0 (19 Kas 2026, Adem: 'zorluk egrisine gore araya serpistir'): ana: true -> ANA OYUN KIPI. Sekil bolumleri ana oyunun 2000 bolumunun arasinda
+//   (yapi/pilot/sira.js) normal bolum gibi oynanir: kayit, ilerleme, top sayisi (egri.js sekilTop), kartlar ana oyunun. Platform gorunusu ana oyunun
+//   temali platformu (oyun.js temaKur); burada yalniz fizik govdeleri, parcalar, kamera cercevesi ve hareket kurulur. Bolum her kurulumda kur(n, Y) ile secilir.
+export function pilotKur(A, ana) {
   const { THREE, CANNON, S } = A, Pi = Math.PI, D2R = Pi / 180;
-  const N = Math.floor(+A.Q.get('pilot')) || 0;
+  let N = ana ? 0 : Math.floor(+A.Q.get('pilot')) || 0;
   // v8.3 (18 Kas 2026): 31-36 Adem'in cizimindeki 6 yapi (Korsan Gemisi, Kale, Kuru Kafa, Deniz Feneri, Tilki Basi, Tas Kopru): ayri dosya pilot/resim.json
-  const DUVAR = N >= 55 && N <= 199;   // v8.6: gorsel referans zip'i (pilot/duvar.json)
-  const RESIM = (N >= 31 && N <= 54) || DUVAR;
+  // v8.6: 55-108 gorsel referans zip'i (pilot/duvar.json); v9.0: 109+ ikinci zip (pilot/yeni.json), ayni duvar kurallari
+  let DUVAR = false, RESIM = false;
+  const ayarla = (n) => { N = n; DUVAR = N >= 55 && N <= 999; RESIM = (N >= 31 && N <= 54) || DUVAR; };
+  ayarla(N);
+  const dosyaOf = (n) => n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
+  const DOS = {}, DOSV = {}, HAZ = new Set();
+  const veriAl = (n) => { const u = dosyaOf(n); return DOS[u] || (DOS[u] = fetch(u).then((r) => r.json()).then((v) => (DOSV[u] = v)).catch(() => { delete DOS[u]; return null; })); };
+  // v9.0: ana oyunda tas, fici ve sise Adem'in cizimindeki gibi gri tas / fici / sise (oyun.js GRI: ayni turun eski gorunumlu esi)
+  const tur = (t) => (ana && A.GRI && A.GRI[t]) || t;
   let SIRA = DUVAR ? [] : RESIM ? [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54] : [21, 22, 23];   // 1, 7, 13 rafta (adresle yine acilir)
   let VERI = null, B = null;   // B: bu bolumun verisi
   const BOS = { veri: 1, engel: [], ad: 'Pilot', top: 10, make: () => [] };
@@ -208,7 +218,8 @@ export function pilotKur(A) {
     A.modal('<div class="rib r">Pilot ' + N + ' yok</div><p>Hazır pilotlar: ' + SIRA.join(', ') + '</p>' + SIRA.map((n) => '<button class="btn kck" data-p="' + n + '">Pilot ' + n + '</button>').join(''));
     for (const b of document.querySelectorAll('[data-p]')) b.onclick = () => { location.search = '?pilot=' + b.dataset.p; };
   }
-  function kur() {
+  function kur(n, Ya) {
+    if (ana) { ayarla(n); const V = DOSV[dosyaOf(n)]; B = V && V.bolumler && V.bolumler[n] || null; Y = Ya || BOS; A.world.solver.iterations = 14; }
     KUYRUK.length = 0; PATLAYAN.length = 0; KATLAR = []; CERCEVE = null;
     for (const o of EK) { A.scene.remove(o); o.geometry.dispose(); } EK.length = 0; GOLGE = false;
     const pb = A.platBody; while (pb.shapes.length) pb.removeShape(pb.shapes[0]); pb.position.set(0, 0, 0); pb.quaternion.set(0, 0, 0, 1); pb.angularVelocity.set(0, 0, 0);
@@ -221,26 +232,27 @@ export function pilotKur(A) {
       const ax = ada.x || 0, az = ada.z || 0, GL = []; adaKat[ada.id] = [];
       ada.katlar.forEach((k, ki) => {
         const P = ccw(cevre(k)).map(([x, z]) => [x + ax, z + az]), Pl = ccw(cevre(k)), alt = ki === 0 ? k.ust - (k.kal || 0.75) : ada.katlar[ki - 1].ust;
-        const body = ilk ? pb : yeniGovde(); katGovde(body, k, Pl, ax, az, alt, k.ust);
-        katParca(GL, Pl, k.ust, alt);
+        const body = ilk ? pb : yeniGovde(); katGovde(body, k, Pl, ana ? 0 : ax, ana ? 0 : az, alt, k.ust);   // v9.0 ana: govde adanin yerinde (temali platform govdenin yerine cizilir)
+        if (ana) body.position.set(ax, 0, az); else katParca(GL, Pl, k.ust, alt);
         // ada gorunusu ilk katin kaydinda; diger katlarin kaydinda bos yer tutucu (clearPX her kaydin mesh'ini kaldirir)
         const mesh = new THREE.Mesh(new THREE.BufferGeometry());   // yer tutucu: gorunus asagida tek birlesik mesh'te
         let leg = null;
         if (ki === 0 && ada.ayak !== 0) {
-          if (ilk) { leg = A.LEG; leg.visible = true; leg.position.set(ax, 0, az); A.legBoy(leg, alt + 0.75); }
+          if (ana) leg = ilk ? A.LEG : null;   // v9.0: ayagi temaKur cizer
+          else if (ilk) { leg = A.LEG; leg.visible = true; leg.position.set(ax, 0, az); A.legBoy(leg, alt + 0.75); }
           else { for (const e of ayakParca(ax, az, alt)) TUM.push(e); LEKE.push([ax, az, Math.max(1.6, Math.min(2.6, k.r * 1.1))]); }
-          body.addShape(new CANNON.Box(new CANNON.Vec3(0.55, (alt - A.GY) / 2, 0.55)), new CANNON.Vec3(ax, (alt + A.GY) / 2, az));
+          body.addShape(new CANNON.Box(new CANNON.Vec3(0.55, (alt - A.GY) / 2, 0.55)), new CANNON.Vec3(ana ? 0 : ax, (alt + A.GY) / 2, ana ? 0 : az));
         }
         if (!ilk) A.world.addBody(body);
         // cy: 'dustu' siniri (oyun: parca merkezi cy - 0.45'in altina inince dustu). Alcak basamakta (alt kattan < 1.3) alt kata dusen
         // kup merkezi bu sinirin ustunde kalirdi; sinir alt katin 1.3 ustune cekilir. ust: katin gercek yuzu (yerlesim, kirinti).
-        const q = { body, mesh, leg, x: ax, z: az, cx: ax, r: k.r, rz: k.r, cy: ki > 0 ? Math.max(k.ust, alt + 1.3) : k.ust, ust: k.ust, yb: 0, kay: null, ph: 0, den: 0, eg: 0, th: 0.375, P, kat: k, ada: ada.id };
+        const q = { body, mesh, leg, x: ax, z: az, cx: ax, r: k.r, rz: ana ? (k.rz || k.r) : k.r, cy: ki > 0 ? Math.max(k.ust, alt + 1.3) : k.ust, ust: k.ust, yb: 0, kay: null, ph: 0, den: 0, eg: 0, th: 0.375, P, kat: k, ada: ada.id };
         if (ilk) A.SIRK.mesh = mesh;
         adaKat[ada.id].push(A.PLS.length); A.PLS.push(q); KATLAR.push(q);
         for (const [x, z] of P) { pts.push([x, k.ust, z]); pts.push([x, alt - 0.35, z]); }
         ilk = false;
       });
-      const ML = B.kaide === 'mor' ? morMat() : MLIST;   // v8.3
+      const ML = ana ? MLIST : B.kaide === 'mor' ? morMat() : MLIST;   // v8.3
       const HED = B.hareket && ada === B.ada[0] ? TUM0 : TUM;   // v8.7: hareketli ana platformun gorunusu ayri mesh
       for (const [g, mm] of GL) { g.translate(ax, 0, az); for (const gr of g.groups) HED.push([parcaAl(g, gr.start, gr.count), ML[Array.isArray(mm) ? mm[gr.materialIndex] : mm]]); }
       if (ada.katlar.length > 1) GOLGE = true;   // ust katlar alt kata golge dusurur
@@ -250,7 +262,12 @@ export function pilotKur(A) {
     { const ML = [], L = []; for (const [g, m] of TUM) { let i = ML.indexOf(m); if (i < 0) { i = ML.length; ML.push(m); } L.push([g, i]); }
       const tm = new THREE.Mesh(birlestirMat(L), ML); tm.receiveShadow = true; tm.castShadow = GOLGE; A.scene.add(tm); EK.push(tm); TUM.length = 0; if (window.PLT_DBG) window.PLT_DBG.plat = tm; }
     HM = null; HQ = null;
-    if (B.hareket && TUM0.length) {   // v8.7 (Adem 19 Kas: donen, asansor, kayan platform yoktu): ana platform hareketli
+    if (ana && B.hareket) {   // v9.0: ana oyunda hareket ana oyunun kendi yolu (slide: asansor/kayan, spin: donen)
+      HQ = A.PLS[adaKat[B.ada[0].id][0]]; const h = B.hareket;
+      if (h.tip === 'asansor') { HQ.asn = { a: h.a || 1.4, h: h.h || 0.85 }; HQ.ah = 0; HQ.yb = 0; }
+      else if (h.tip === 'kay') { HQ.kay = { a: h.a || 2, h: h.h || 0.8 }; HQ.ph = 0; HQ.cx = HQ.x; }
+    }
+    if (!ana && B.hareket && TUM0.length) {   // v8.7 (Adem 19 Kas: donen, asansor, kayan platform yoktu): ana platform hareketli
       const ML = [], L = []; for (const [g, m] of TUM0) { let i = ML.indexOf(m); if (i < 0) { i = ML.length; ML.push(m); } L.push([g, i]); }
       HM = new THREE.Mesh(birlestirMat(L), ML); HM.receiveShadow = true; A.scene.add(HM); EK.push(HM); TUM0.length = 0;
       HQ = A.PLS[adaKat[B.ada[0].id][0]]; HQ.mesh = HM; const h = B.hareket;
@@ -269,7 +286,7 @@ export function pilotKur(A) {
       const [aid, ki] = String(p.p || (B.ada[0].id + '.0')).split('.'), pi = adaKat[aid][+ki || 0], kat = A.PLS[pi];
       const t = A.SEK.TUR[p.t]; if (!t) { console.warn('pilot: bilinmeyen tur', p.t); continue; }
       const y0 = p.y != null ? p.y : (kat.ust != null ? kat.ust : kat.cy), q = new CANNON.Quaternion(); q.setFromEuler((p.rx || 0) * D2R, (p.ry || 0) * D2R, (p.rz || 0) * D2R, 'YXZ');
-      const c = A.parcaKur(p.t, pi, (h) => [p.x, y0 + h / 2 + 0.003, p.z], q);
+      const c = A.parcaKur(tur(p.t), pi, (h) => [p.x, y0 + h / 2 + 0.003, p.z], q);
       c.pid = p.id || p.t;
       if (p.bos && p.t === 'ksKemer') kemerBos(c);
       if (p.kutu) { const b = c.body, h = S / 2; while (b.shapes.length) b.removeShape(b.shapes[0]); b.addShape(new CANNON.Box(new CANNON.Vec3(h, h, h))); b.updateMassProperties(); b.aabbNeedsUpdate = true; }   // v8.6: fici kutu carpismali (duvar bolumleri)
@@ -314,13 +331,11 @@ export function pilotKur(A) {
       on = Math.max(on, ...ek.map((q) => q[0] * Math.sin(ky) + q[2] * Math.cos(ky)));
     }
     CERCEVE = pts; A.R = rmax; A.RZ = on; A.RZB = rmax; A.TOPY = tepe;   // RZ: kameraya dogru en on nokta (top arabasinin yeri buna gore)
-    ortala(); suAyak(); A.TC.aimYaw = A.TC.yaw = Math.PI + A.CAZ;
+    ortala(); if (!ana) suAyak(); A.TC.aimYaw = A.TC.yaw = Math.PI + A.CAZ;
     if (A.TC.pad) { A.TC.pad.visible = false; if (A.TC.rim2) A.TC.rim2.visible = false; }   // yukseltilmis kamerada arabanin beyaz kaidesi gorunuyordu; normal bolumlerde gorunmez
     A.bolumBasla(Y);
     if (B.hareket && B.hareket.tip === 'don') A.g.don = B.hareket.w || 0.4;   // v8.7: ilk atistan sonra yavasca doner
-    ayakDibi();
-    hoyuk();
-    if (B.kaide === 'mor') elmasSus();
+    if (!ana) { ayakDibi(); hoyuk(); if (B.kaide === 'mor') elmasSus(); }
     if (RESIM) oturt();
   }
   // v8.3: resim bolumleri oyuncu gormeden once oturtulur: bloklar 3 sn fizikle yerine iner (siralar arasi 3 mm bosluk + temas sikismasi
@@ -471,15 +486,29 @@ export function pilotKur(A) {
   function kazan() { const g = A.g; kart('Pilot ' + N + ' tamam!', false, '<h2>' + (B ? B.ad : '') + '</h2><div class="stat"><div>ATILAN TOP<b>' + (g.max - g.shots) + '</b></div><div>KALAN TOP<b>' + g.shots + '</b></div></div><p>Deneme bölümü: ilerleme ve altın kaydedilmez.</p>'); }
   function kaybet() { const g = A.g; A.sfx('lose'); kart('Toplar bitti!', true, '<h2>' + g.left + ' parça kaldı</h2><p>Deneme bölümü: ilerleme kaydedilmez.</p>'); }
 
+  // v9.0 ana kip: sekil bolumunden normal bolume gecerken pilotun degistirdigi ortak ayarlar geri alinir
+  function birak() {
+    for (const o of EK) { A.scene.remove(o); o.geometry.dispose(); } EK.length = 0;
+    if (KOPUK) A.scene.remove(KOPUK); if (SUS && SUS.parent) SUS.parent.remove(SUS);
+    A.world.solver.iterations = 14; A.kamera(9 * D2R, 0);
+    if (A.TC.pad) { A.TC.pad.visible = true; if (A.TC.rim2) A.TC.rim2.visible = true; }
+    CERCEVE = null; B = null; HQ = null; HM = null; KUYRUK.length = 0; PATLAYAN.length = 0; KATLAR = [];
+  }
+  // v9.0 ana kip: bolumun verisi ve Blender modelleri bolum kurulmadan once iner
+  async function onyukle(n) {
+    if (HAZ.has(n)) return; const V = await veriAl(n), b = V && V.bolumler && V.bolumler[n];
+    if (b && PS.yukle) await PS.yukle(b.parca.map((p) => tur(p.t)));
+    if (b) HAZ.add(n);
+  }
   async function yukle() {
-    try { VERI = await (await fetch(DUVAR ? 'pilot/duvar.json?v=5' : RESIM ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5')).json(); } catch (e) { VERI = null; }
+    VERI = await veriAl(N);
     if (DUVAR && VERI) SIRA = VERI.sira;
     B = VERI && VERI.bolumler && VERI.bolumler[N] || null;
     if (B) Y = { veri: 1, engel: [], ad: B.ad, top: B.top, make: () => [] };
     if (B && PS.yukle) await PS.yukle(B.parca.map((p) => p.t));   // v5.6: Blender bloklarinin model dosyalari
     window.PLT_DBG = { world: A.world, B, ad: (b) => { const c = A.cubes.find((q) => q.body === b); return c ? c.pid : null; } };
   }
-  return { get ustY() { return B && B.ada ? B.ada[0].katlar[0].ust : 0; }, get L() { return N || 1; }, get Y() { return Y; }, yukle, kur, kare, zemin, cerceve: () => CERCEVE, hedef: HEDEF, get genis() { return B && B.kam && B.kam.genis || 0.74; }, kazan, kaybet,
+  return { birak, onyukle, hazir: (n) => HAZ.has(n), get aktif() { return !!B; }, get ustY() { return B && B.ada ? B.ada[0].katlar[0].ust : 0; }, get L() { return N || 1; }, get Y() { return Y; }, yukle, kur, kare, zemin, cerceve: () => CERCEVE, hedef: HEDEF, get genis() { return B && B.kam && B.kam.genis || 0.74; }, kazan, kaybet,
     // top cikis noktasi: kameradan namluya giden isin uzerinde (ekranda yine namlunun agzinda gorunur), 'atis' orani kadar kameraya yakin.
     // Alcak namludan cikan top derin yapida on siradaki parcalara takiliyordu; boylece atis hatti oyuncunun bakis hattina yaklasir.
     cikis(st, kp) { const k = B && B.kam && B.kam.atis != null ? B.kam.atis : 0.5; D0 = st.distanceTo(kp); st.lerp(kp, k); } };

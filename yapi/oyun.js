@@ -20,7 +20,7 @@ import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek Instance
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=2';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=29';
-import * as EG from './egri.js?v=2';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
+import * as EG from './egri.js?v=3';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
 import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
@@ -37,7 +37,11 @@ const SKEY = K ? 'blokpop_korsan_v1' : 'blokpop_yapi_v3';
 // PILOT v5.4 (16 Kas 2026): ?pilot=N yeni bolum bicimi denemesi (yapi/pilot.js, pilot_sekil.js, pilot/pilot.json). Pilot kipte kayda HIC yazilmaz.
 // Geri donus: o uc dosya/klasor ve bu dosyadaki 'PILOT' isaretli satirlar silinir; eski oyun aynen kalir.
 const PILOTQ = !K && Q.has('pilot');   // PILOT
-const PLTM = PILOTQ ? await import('./pilot.js?v=18') : null; let PLT = null;   // PILOT
+// v9.0 (19 Kas 2026, Adem: 'zorluk egrisine gore araya serpistir'): sekil bolumleri (pilot 31+) ana oyunun bolumleri arasinda (pilot/sira.js).
+// Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
+const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
+const SKS = SEKQ ? (await import('./pilot/sira.js?v=1')).SEKIL : {};
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=19') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -45,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v8.2', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v9.0', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -56,6 +60,7 @@ try { const a = await (await fetch('bolumler.json?v=3')).json(); Object.assign(B
 const TOPLAM = () => BV.toplam;
 const bvNo = (L) => Math.floor((L - 1) / BV.parca);
 function bolumYukle(L) {
+  if (SKS[L] && PLTA) return PLTA.onyukle(SKS[L][0]);   // v9.0: sekil bolumu
   if (K || L <= BV.el || L > BV.toplam || Q.get('uret') === 'eski') return Promise.resolve();
   const n = bvNo(L); if (BV.p.has(n)) return Promise.resolve();
   if (!BV.yuk.has(n)) BV.yuk.set(n, fetch('bolumler/p' + String(n).padStart(2, '0') + '.json?v=' + (BV.surum || 1)).then((r) => r.json()).then((a) => { BV.p.set(n, a); }).catch(() => { BV.yuk.delete(n); }));
@@ -68,6 +73,13 @@ function bvY(L) {
   const c = v.c, Y = { ad: v.ad, veri: 1, a: v.a, ip: v.ip, zor: v.zor, engel: v.engel || [], top: EGRI ? EG.topSay(L, v) : v.top, ek: v.ek || 0, yeni: v.yeni, make: () => c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) };
   if (v.pl) Y.pl = v.pl; if (v.don) Y.don = v.don; if (v.denge) Y.denge = 1;
   BV.Y.set(L, Y); return Y;
+}
+// v9.0: sekil bolumunun oyun nesnesi (yapi pilot.js ana kipinde kurulur; make bos). Top sayisi egri.js sekilTop (botun atisi + egri).
+const SKY = new Map();
+function sekilY(L) {
+  if (SKY.has(L)) return SKY.get(L);
+  const [n, ad, bot, ht] = SKS[L], Y = { ad, veri: 1, engel: [], sekil: n, top: EG.sekilTop(L, bot, ht), make: () => [] };
+  SKY.set(L, Y); return Y;
 }
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
 
@@ -471,6 +483,7 @@ const B3K = blok3bKur({ THREE, ENV, GLTFLoader }), b3Ready = B3K.yukle();   // v
 const SEK = sekilKur({ THREE, S, canvasTex, ENV, b3: B3K });
 // v6.11 (Adem 17 Kas: 'Bagla'): parlak sekil kutuphanesi (gorsel/sekiller.js) bolumlerdeki bloklara baglandi. Yalniz GORUNUM degisir:
 // turun adi, olcusu, fizik govdesi, kirilmasi ve sesi ayni kalir (kavanoz eski sisenin, kutuk eski ficinin yerinde). Eski gorunum: ?parlak=0
+const GRI = {}, GRIK = ['ksTas', 'ksFici', 'ksFiciK', 'ksSiseM', 'ksSiseY', 'ksSiseB'];
 if (Q.get('parlak') !== '0') {
   try {
     const PK = sekilKutuphanesi({ THREE, env: hdrOrtam(ren), mergeGeometries, dusuk: true });   // dusuk: buzda saydamlik gecisi yok (telefon)
@@ -479,10 +492,11 @@ if (Q.get('parlak') !== '0') {
       ksSiseM: ['kavanoz-kisa', 'mor'], ksSiseY: ['kavanoz-kisa', 'yesil'], ksSiseB: ['kavanoz-kisa', 'mavi'] };
     const PARCA = { kirmizi: '#d4142f', yesil: '#12a83c', mavi: '#1270e0', sari: '#f0b000', mor: '#7426d9', turuncu: '#ef6400' };
     // v8.3: resim bolumlerinde (?pilot=31..36) tas, fici ve sise Adem'in cizimindeki gibi gri tas / fici / sise (oyunun Blender modelleri, blok3b.js) kalir
-    const RESIMQ = PILOTQ && +Q.get('pilot') >= 31 && +Q.get('pilot') <= 199;
+    const RESIMQ = PILOTQ && +Q.get('pilot') >= 31 && +Q.get('pilot') <= 999;
     if (RESIMQ) for (const k of ['ksTas', 'ksFici', 'ksFiciK', 'ksSiseM', 'ksSiseY', 'ksSiseB']) delete ESLE[k];
     for (const k in ESLE) {
       const t = SEK.TUR[k]; if (!t) continue; const [ad, renk] = ESLE[k], eski = t.yap;
+      if (GRIK.includes(k)) { SEK.TUR[k + 'G'] = Object.assign({}, t, { yap: eski }); GRI[k] = k + 'G'; }   // v9.0: ana oyundaki sekil bolumleri icin eski (gri tas, fici, sise) gorunumlu es tur
       t.yap = () => {
         try {
           const geo = PK.geometri(ad).clone(); geo.computeBoundingBox(); const b = geo.boundingBox, hb = b.max.y - b.min.y;
@@ -909,7 +923,7 @@ function engelOf(L, Y) {
 }
 const UCACHE = new Map(); let DENE = null;   // v5.0: DENE: dogrulayicinin verdigi bolum (YP.dene)
 function asansorMu(L) { return Q.get('asansor') === '1' || (Q.get('asansor') !== '0' && L >= 5 && L % 4 === 1); }
-function levelOf(L) { if (PLT) return PLT.Y;   /* PILOT */ if (DENEQ) return DENEQ; if (K) return K.bolum(L); if (Q.get('eski') === '1' ? L <= LSIRA.length : L <= BOLUMLER.length) return Q.get('eski') === '1' ? LSIRA[L - 1] : BOLUMLER[L - 1]; if (DENE && DENE.L === L) return DENE.Y; { const v = bvY(L); if (v) return v; } if (!UCACHE.has(L)) UCACHE.set(L, uretBolum(L)); return UCACHE.get(L); }
+function levelOf(L) { if (PILOTQ && PLT) return PLT.Y;   /* PILOT */ if (DENEQ) return DENEQ; if (K) return K.bolum(L); if (SKS[L]) return sekilY(L); if (Q.get('eski') === '1' ? L <= LSIRA.length : L <= BOLUMLER.length) return Q.get('eski') === '1' ? LSIRA[L - 1] : BOLUMLER[L - 1]; if (DENE && DENE.L === L) return DENE.Y; { const v = bvY(L); if (v) return v; } if (!UCACHE.has(L)) UCACHE.set(L, uretBolum(L)); return UCACHE.get(L); }
 // v6.13: kup listesindeki 5. alan platform numarasi (0, 1, ...); bolumun pl dizisi platformlarin yeri ve hareketi
 
 // ---------------- fizik ----------------
@@ -1250,7 +1264,8 @@ function kolaFis(c) {
 function kapaliKur(list) { const ek = []; for (let n = 0; n < list.length; n++) { const r = kapaliHucre(list[n]); list[n] = r[0]; if (r[1]) ek.push(r[1]); } for (const c of ek) list.push(c); return list; }
 function buildLevel() {
   clearLevel(); RZB = 0; DENGEVAR = false;   // v5.0: tahterevalli her fonda (PLS[0].den)
-  if (PLT) return PLT.kur();   // PILOT: platform + parcalar pilot.js'te (parcaKur / bolumBasla ortak)
+  if (PILOTQ) return PLT.kur();   // PILOT: platform + parcalar pilot.js'te (parcaKur / bolumBasla ortak)
+  if (PLTA) { const Ys = levelOf(LV); if (Ys.sekil && PLTA.hazir(Ys.sekil)) { PLT = PLTA; return PLT.kur(Ys.sekil, Ys); } if (PLT) { PLT.birak(); PLT = null; } }   // v9.0: sekil bolumu ana oyunda
   let Y = levelOf(LV); AKUP = -1; if (!K && engelOf(LV, Y).some((e) => e.t === 'kapi2')) { Y = anahtarBolum(Y); AKUP = Y.anahtarI; }   // v3.21: anahtarli kapi bolumu: arkada kapili yapi, onde anahtar kuplu kucuk yapi
   const made = Y.make(), list = convertLevel(made, LV);
   list.forEach((c, n) => { c[4] = made[n][4] || 0; });
@@ -1405,7 +1420,7 @@ function hzmKare(dt) {
 }
 function egriBasla(Y) {
   while (HZM.length) hzmSil(HZM[0]);
-  PLAN = EGRI && !PLT && !DENEQ && !(DENE && DENE.L === LV) && LV > BV.el && LV <= BV.toplam ? EG.planY(LV, Y, BV.el) : null;
+  PLAN = EGRI && !PILOTQ && !DENEQ && !(DENE && DENE.L === LV) && LV > BV.el && LV <= BV.toplam ? EG.planY(LV, Y, BV.el) : null;
   g.tip = PLAN ? PLAN.tip : 'normal'; g.yagmur = 0;
   if (PLAN && PLAN.tip === 'hazine') {
     // hedef secimi: yapinin ust yarisindan, birbirinden uzak kupler (bolum numarasina gore hep ayni)
@@ -1452,9 +1467,9 @@ function bolumBasla(Y) {
   egriBasla(Y);   // v8.0: bolum turu, hazine hedefleri, Foxi yardimi
   if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + (fo.yeni ? 'yeni/' + fo.r + '.webp?v=2' : fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2')) + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; $('bg').classList.toggle('koyu', !!fo.yeni && LV % 5 === 0); setPlat(tm[1]); setDirt(fo); setSea(fo); if (fo.yeni) DIRT.visible = false; canliFon(fo.yeni ? { f: fo.f, vid: 1 } : fo); videoFon(fo); fonIsi(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); if (fo.yeni) temaKur(); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
   let ipu = ''; if (Y.ip && Y.a && !K) { if (!SV.ark) SV.ark = []; if (!SV.ark.includes(Y.a)) { SV.ark.push(Y.a); ipu = '<i>' + Y.ip + '</i>'; } }   // v5.0: yeni yapi tipinin cozum ipucu (ilk karsilasmada)
-  const nm = $('nm'); const dfo = !PLT && !K && FONYENI ? fonOf(LV) : null, dyeni = dfo && (LV === 1 || fonOf(LV - 1) !== dfo);   // v6.6: dunya adi; dunyanin ilk bolumunde 'YENI DUNYA'
+  const nm = $('nm'); const dfo = !PILOTQ && !K && FONYENI ? fonOf(LV) : null, dyeni = dfo && (LV === 1 || fonOf(LV - 1) !== dfo);   // v6.6: dunya adi; dunyanin ilk bolumunde 'YENI DUNYA'
   const eu = egriYazi(); if (eu) ipu = eu + ipu;
-  nm.innerHTML = '<div class="rb1' + (PLAN && PLAN.tip !== 'normal' ? ' eg-' + PLAN.tip : '') + '"><small>' + (PLT ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
+  nm.innerHTML = '<div class="rb1' + (PLAN && PLAN.tip !== 'normal' ? ' eg-' + PLAN.tip : '') + '"><small>' + (PILOTQ ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
   hud(true);
 }
 // v6.26: (Adem 8 Kas) sahil fonu canli: Adem'in sahil resminden yaptigi 10 sn'lik video (bas/son 1 sn karistirilip kesintisiz 9 sn donguye cevrildi).
@@ -2015,7 +2030,7 @@ const BR = 0.47;   // v6.8: (Adem) biraz kucultuldu. v6.5: 3B top mermisi net go
 const BALLGEO = new THREE.SphereGeometry(BR, 32, 20);
 const TRAILGEO = new THREE.SphereGeometry(0.16, 12, 8);
 // Blok Smash 1. asama (Adem 9 Kas, Royal Smash referansi): top 62 yerine 95 birim/sn; kutle 5 yerine 3.3, carpma itisi (kutle x hiz) ayni kalsin diye.
-const DUZ = PILOTQ && Q.get('duz') !== '0';   // v8.8: duz atis yalniz pilotta (ana oyun eski yay)
+const DUZ = PILOTQ && Q.get('duz') !== '0';   // v9.0: ana oyundaki sekil bolumlerinde de eski yay (oyun fizigi ayni)   // v8.8: duz atis yalniz pilotta (ana oyun eski yay)
 world.addEventListener('preStep', () => { for (const b of balls) if (b.duz && !b.hit && b.t < 1.1) b.body.force.y -= b.body.mass * world.gravity.y; });   /* iskalayan top 1.1 sn sonra duser */   // v8.7: duz atis (yercekimi carpmaya kadar dengelenir)
 function shoot(target) {
   if (!g || g.state !== 'play') return false;
@@ -2987,7 +3002,7 @@ const prev = {};
 function setNum(id, v, anim) { const e = $(id); if (prev[id] !== v) { e.textContent = v; if (anim && prev[id] != null) { e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump'); } prev[id] = v; } }
 function hud(reset) {
   if (!g) return;
-  $('lv').textContent = PLT ? 'Pilot' /* PILOT */ : K ? 'Korsan' : 'Yapı'; setNum('lvn', LV, false);
+  $('lv').textContent = PILOTQ ? 'Pilot' /* PILOT */ : K ? 'Korsan' : 'Yapı'; setNum('lvn', LV, false);
   const hz = g.hedef != null; if (reset) { const tn = $('kc').previousSibling; if (tn && tn.nodeType === 3) tn.nodeValue = hz ? ' · Hazine ' : ' · Küp '; }
   setNum('kc', hz ? g.hedef : g.left, !reset); setNum('tc', g.shots, !reset);
   $('pb').style.width = Math.round(100 * (hz ? 1 - g.hedef / g.hedef0 : 1 - g.left / g.total)) + '%';
@@ -2999,7 +3014,7 @@ function modal(h) { $('card').innerHTML = h; $('modal').classList.add('on'); }
 function closeModal() { $('modal').classList.remove('on'); }
 function yildizHtml(st) { return [0, 1, 2].map((i) => '<span' + (i < st ? '' : ' class="off"') + '>★</span>').join(''); }
 function win() {
-  if (PLT) return PLT.kazan();   // PILOT: kayit yok, ilerleme yok
+  if (PILOTQ) return PLT.kazan();   // PILOT: kayit yok, ilerleme yok
   if (K) return K.kart();   // v6.19: korsan kazanma karti (yildiz, altin sayaci, sandik, harita)
   // v2.0: ilerleme kazanildigi an yazilir (kartta uygulama kapansa da bolum gecilmis sayilir); yildizlar bolum bolum saklanir
   const sonB = LV >= TOPLAM();   // v5.0: son bolum: final sahnesi
@@ -3044,7 +3059,7 @@ function finalGoster() {
 }
 window.BSFINAL = finalGoster;   // deneme: konsoldan final sahnesi
 function lose() {
-  if (PLT) return PLT.kaybet();   // PILOT
+  if (PILOTQ) return PLT.kaybet();   // PILOT
   sfx('lose'); gorevKaydet(true); tilkiDurum('kaybet');
   // v2.0: bolum basina bir kez bedava devam; sonrakiler altinla
   const bedava = !g.devam, yeter = (SV.altin || 0) >= DEVAM_FIYAT;
@@ -3110,7 +3125,7 @@ function merkezBagla() {
     ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
     plan: (L) => (EGRI && L > BV.el ? EG.planY(L, bvY(L), BV.el) : null), EG,   // v8.0: harita ve bolum karti icin bolum turu
     sesAg: () => (AC && !SV.sessiz ? (out(), { AC, out: MASTER }) : null),   // v4.8: kazanma sahnesinin kodla uretilen sesleri icin
-    bolge: (L) => { const fo = fonOf(L); return FONAD[fo.f] || (fo.yeni ? [fo.ad, fo.f === 'y_buz' ? 'k' : 's'] : ['', 'c']); }, bolumAdi: (L) => { if (L > BV.el && L <= BV.toplam && BV.ad[L - BV.el - 1]) return BV.ad[L - BV.el - 1]; try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
+    bolge: (L) => { const fo = fonOf(L); return FONAD[fo.f] || (fo.yeni ? [fo.ad, fo.f === 'y_buz' ? 'k' : 's'] : ['', 'c']); }, bolumAdi: (L) => { if (SKS[L]) return SKS[L][1]; if (L > BV.el && L <= BV.toplam && BV.ad[L - BV.el - 1]) return BV.ad[L - BV.el - 1]; try { return levelOf(L).ad || ''; } catch (e) { return ''; } } });
 }
 // ================= v3.13: muzik =================
 // (Adem 11 Kas) kodla calinan eski notalar yerine Adem'in Gemini ile urettigi muzikler (ses/muzik/):
@@ -3527,7 +3542,7 @@ const MAT_P = { tahta: { v: 1, r: 1, w: 1 }, tas: { v: 1.15, r: 0.88, w: 1.2 }, 
 const MAT_H = { tahta: (s) => [Math.round(30 + 24 * s)], tas: (s) => [Math.round(40 + 36 * s)], metal: (s) => [34, 26, Math.round(30 + 20 * s)], cam: (s) => [30, 20, 30, 20, Math.round(26 + 12 * s)], buz: (s) => [28, 18, Math.round(28 + 14 * s)] };
 function withS(s, rs, fn) { const a = VS, b = RS; VS = s; RS = rs; try { fn(); } finally { VS = a; RS = b; } }
 let HST = -9;
-function hitstop(sec) { const n = performance.now() / 1000; if (PILOTQ && n - HST < 0.6) return;   /* v8.8: sinir yalniz pilotta */ HST = n; HS = Math.max(HS, sec); TS = 0.12; }   // v8.7 (Adem: ust uste atista oyun yavasliyordu): vurus donmasi en fazla 0.6 sn'de bir
+function hitstop(sec) { const n = performance.now() / 1000; if (PLT && n - HST < 0.6) return;   /* v8.8: sinir yalniz pilotta */ HST = n; HS = Math.max(HS, sec); TS = 0.12; }   // v8.7 (Adem: ust uste atista oyun yavasliyordu): vurus donmasi en fazla 0.6 sn'de bir
 function darbeHaptik(kind, s) { if (s < 0.35) return; buzz((MAT_H[matSnd(kind)] || MAT_H.tahta)(Math.min(1.4, s)), 70); }
 // bir kupun baska bir seye carpma sesi: yalniz yeterince sert ve sik degil; kirilacak cam/kavanoz kendi kirilma sesini cikarir
 function darbeSesi(c, vn) {
@@ -3642,7 +3657,8 @@ function gerekliModel(L) {
 let STARTN = 0;
 function start(L) {
   L = Math.max(1, Math.min(K ? 1e9 : TOPLAM(), Math.floor(+L) || 1)); const n = ++STARTN;   // v5.0: oyun TOPLAM bolum
-  if (!K && L > BV.el && !BV.p.has(bvNo(L)) && Q.get('uret') !== 'eski') { bolumYukle(L).then(() => { if (n === STARTN) start(L); }); return; }   // bolum parcasi once iner
+  if (SKS[L] && PLTA && !PLTA.hazir(SKS[L][0])) { bolumYukle(L).then(() => { if (n === STARTN) start(L); }); return; }   // v9.0: sekil bolumunun verisi once iner
+  if (!K && !SKS[L] && L > BV.el && !BV.p.has(bvNo(L)) && Q.get('uret') !== 'eski') { bolumYukle(L).then(() => { if (n === STARTN) start(L); }); return; }   // bolum parcasi once iner
   const ks = gerekliModel(L);
   const bitti = () => { if (n !== STARTN) return; start0(L); loadPieces(ks);
     setTimeout(() => { if (n === STARTN && L < TOPLAM()) bolumYukle(L + 1).then(() => { const s2 = gerekliModel(L + 1); modelYukle(s2).then(() => loadPieces(s2)); }); }, 2500); };   // sonraki bolum arkada hazirlanir, gecis beklemesiz olur
@@ -3655,7 +3671,7 @@ function start0(L) {
   if (OYUN_TILKI && !K && !TEST_TILKISIZ && seciliKarakter(SV.max) === 'tilki') tilkiGoster().then(() => { TK.gor = !!TK.t; tilkiDurum('oyun'); if (TK.t) TK.t.oyna('selam', 1.4); }); else TK.gor = false;
   engKur(LV, levelOf(LV));
   STARTT = performance.now();
-  if (PLT) ggHud(); /* PILOT: guclendirici karti yok */ else if (M) { ggKur(); ggHud(); yeniSekil(); } else ggOnce();   // v3.0: guclendirici secimi bolum kartinda (merkez.js), bolum kurulmadan once
+  if (PILOTQ) ggHud(); /* PILOT: guclendirici karti yok */ else if (M) { ggKur(); ggHud(); yeniSekil(); } else ggOnce();   // v3.0: guclendirici secimi bolum kartinda (merkez.js), bolum kurulmadan once
   if (KAL()) isitma();
 }
 if (!K) window.BSTUS = () => sfx('tik');   // v3.3: her dugmeye dokununca tus sesi (yapi/index.html)
@@ -3689,14 +3705,15 @@ world.addEventListener('postStep', () => {
 function pilotBag() {
   return { THREE, CANNON, scene, world, PM, platBody, GB, SIRK, LEG, legBoy, PLS, cubes, balls, S, KAIDE, SEK, KIND, SEKSH, MATSND, KIRILGAN, FLOAT, ORNEK, ren, cam, TC, Q, $, canvasTex, ENV,
     parcaKur, bolumBasla, fit, breakBlock, wakeAll, start, modal, closeModal, sfx, buzz, kamera(p, a) { CPITCH = p; CAZ = a; }, get CAZ() { return CAZ; },
-    HAVUZ, setLeg, zoneAt, fonAd: () => (fonOf(LV) || {}).f || '', fonZem: () => (fonOf(LV) || {}).zem || '', get ZW() { return ZW; }, get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
+    HAVUZ, setLeg, zoneAt, GRI, fonAd: () => (fonOf(LV) || {}).f || '', fonZem: () => (fonOf(LV) || {}).zem || '', get ZW() { return ZW; }, get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
 }
-if (PLTM) PLT = PLTM.pilotKur(pilotBag());   // PILOT
-const L0 = PLT ? PLT.L /* PILOT */ : Math.min(K ? 1e9 : TOPLAM(), Math.floor(+(Q.get('sv') || SV.L || 1)) || 1), modelReady = bolumYukle(L0).then(() => modelYukle(gerekliModel(L0)));   // v5.0: once bolum parcasi   // v4.7: acilista yalniz kayitli bolumun modelleri
+if (PILOTQ) PLT = PLTM.pilotKur(pilotBag());   // PILOT
+else if (PLTM) PLTA = PLTM.pilotKur(pilotBag(), true);   // v9.0: ana kip
+const L0 = PILOTQ ? PLT.L /* PILOT */ : Math.min(K ? 1e9 : TOPLAM(), Math.floor(+(Q.get('sv') || SV.L || 1)) || 1), modelReady = bolumYukle(L0).then(() => modelYukle(gerekliModel(L0)));   // v5.0: once bolum parcasi   // v4.7: acilista yalniz kayitli bolumun modelleri
 { let n = 0; const P5 = [faceReady, pofiReady, texReady, modelReady]; for (const p of P5) p.then(() => { n++; if (window.BSYUK) window.BSYUK(0.15 + 0.75 * n / P5.length); }); }
-Promise.all([faceReady, pofiReady, texReady, modelReady, patiReady, b3Ready, K ? K.yukle() : 0, PLT ? PLT.yukle() : 0 /* PILOT */]).then(() => {
+Promise.all([faceReady, pofiReady, texReady, modelReady, patiReady, b3Ready, K ? K.yukle() : 0, PILOTQ ? PLT.yukle() : 0 /* PILOT */]).then(() => {
   makeCannon(); fit();
-  if (!K && !TEST && !PLT) merkezBagla();   // PILOT: ana sayfa yok
+  if (!K && !TEST && !PILOTQ) merkezBagla();   // PILOT: ana sayfa yok
   for (const k in KMAT) delete KMAT[k];
   start(L0);
   if (M && !Q.has('sv')) M.ac({ ilk: true });
