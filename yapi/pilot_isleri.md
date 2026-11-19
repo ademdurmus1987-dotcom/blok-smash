@@ -165,3 +165,6 @@
   - v9.4b: Adem 'top arabasi cok soluk': doygun kirmizi-turuncu govde, kirmizi kusak, govdede altin patiler, koyu mor tekerlek/namlu, az yansima.
 - v9.5 (19 Kas): Adem 'acik renkler (sari) referansa yaklasmadi': ACES ton eslemesi parlak renkleri kremlestiriyordu. Khronos PBR Neutral (oyun.js, CustomToneMapping), pozlama 0.92 (`?pozlama=`). Eski: `?ton=aces`.
   - v9.5b: Adem 'turuncu ve her acik renk soluk': ortam isigi 1.15->0.78, gunes 3.2->3.6 (oyun.js KONT, `?kontrast=0` eski); kavanoz ve cubuklarda kendi isigi azaldi, alt golge koyu; sari daha saf (#ffcc00 / #ffc400).
+- v9.6 (19 Kas): Blender bu ortama kuruldu (pip `bpy` 5.3, venv). Yeni TEK TARZ blok seti: `yapi/uretici/blender/yeni_bloklar.py` (pilot_bloklar.py yardimcilarini kullanir) -> `yapi/model/blok2/`
+  cubuk1-4 (uz1..uz4 + renk), kavanoz1 (kj), kavanoz2 (kvU), silindir (dalga: ana oyunda da), kiris3 (yeni kr3 + renk). Kalin yuvarlak kenar, derin pano, iri pati, kavanozda parlama seridi.
+  blok3b.js LISTE'ye govde rengi + `cila` (clearcoat) ile baglandi. Eski cizim: `?b2=0`. Sergi: `?pilot=989`.

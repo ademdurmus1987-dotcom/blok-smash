@@ -28,7 +28,7 @@ def duvar(P, z):
     return [(t, x, y, z, *e) for (t, x, y, *e) in P]
 
 
-def wd(t): return W.get(t) or (int(t[2]) if t[:2] == 'uz' else 1)
+def wd(t): return W.get(t) or (int(t[2]) if t[:2] in ('uz', 'kr') else 1)
 def hg(t): return H.get(t) or (2 if t[:3] in ('kvU',) else 1)
 def ikiz(P, zs=(0, -1)):
     """on duvar listesini derinlik sıralarına cogalt"""
@@ -109,10 +109,10 @@ T[964] = bolum('Taş ve Kavanoz Kulesi', P)
 # 965 Sutunlu Tapinak: altin kupler ustunde gri sutunlar, buz kirisler, uzun turuncu kavanozlar, tepede yildizlar
 P = []
 for x in (-4, -2, 0, 2, 4): P += [('oyA', x, 0, 0), ('ksSutun', x, 1, 0), ('ksTas', x, 3, 0)]
-for x in (-3, 0, 3): P.append(('buzP3', x, 4, 0))
+for x in (-3, 0, 3): P.append(('kr3A', x, 4, 0))
 for x in (-4, -2, 0, 2, 4): P.append(('kvUT' if x % 4 else 'kvUM', x, 5, 0))
 for x in (-3, -1, 1, 3): P.append(('kjS', x, 5, 0)); P.append(('kjS', x, 6, 0))
-for x in (-3, 0, 3): P.append(('buzP3', x, 7, 0))
+for x in (-3, 0, 3): P.append(('kr3A', x, 7, 0))
 for x in (-3, 0, 3): P.append(('ksYildiz', x, 8, 0))
 P = ikiz(P)
 T[965] = bolum('Sütunlu Tapınak', P)
@@ -146,6 +146,15 @@ for y, n in enumerate((10, 8, 6, 4)):
     for sx in (-1, 1): P.append(('kjN', sx * (n / 2 - 0.5), y + 1, 0))
 P.append(('ksYildiz', 0, 5, 0)); P.append(('ksYildiz', 0, 5, -1))
 T[967] = bolum('Gökkuşağı Basamakları', P)
+
+# 989 yeni blok seti sergisi
+P = []
+for i, c in enumerate('KTSYMP'): P.append(('kvU' + c, i - 2.5, 0, 0))
+for i, c in enumerate('KTSYMPNA'): P.append(('kj' + c, i - 3.5, 2, 0))
+P += [('uz3K', -3, 3, 0), ('uz2S', -0.5, 3, 0), ('uz3P', 2, 3, 0)]
+P += [('kr3A', -1.5, 4, 0), ('dalga', 1, 4, 0), ('dalga', 2, 4, 0), ('uz1Y', 3, 4, 0)]
+P += [('uz4M', -2, 5, 0), ('uz4T', 2, 5, 0)]
+T[989] = bolum('Yeni Blok Sergisi', P)
 
 if __name__ == '__main__':
     J = {'surum': 1, 'sira': sorted(T), 'bolumler': T}

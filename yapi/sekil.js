@@ -516,6 +516,7 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
       ['uz4' + c, { w: 4, h: 1, d: 1, mass: 3.0, f: 0.62, r: 0.1, ses: 'tahta', renk: r, kir: 1, carp: 11, yuzer: 1, yap: () => cubuk(r, 4, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
       ['uz1' + c, { w: 1, h: 1, d: 1, mass: 0.85, f: 0.62, r: 0.12, ses: 'tahta', renk: r, kir: 1, yuzer: 1, yap: () => cubuk(r, 1, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
       ['uz2' + c, { w: 2, h: 1, d: 1, mass: 1.6, f: 0.62, r: 0.1, ses: 'tahta', renk: r, kir: 1, carp: 9, yuzer: 1, yap: () => cubuk(r, 2, c === 'S' ? 'yildiz' : c === 'M' || c === 'A' ? 'elmas' : 'pati') }],
+      ['kr3' + c, { w: 3, h: 1, d: 1, mass: 2.4, f: 0.62, r: 0.08, ses: 'tas', renk: r, kir: 1, carp: 10, yuzer: 1, yap: () => cubuk(r, 3, null) }],   // v9.6 kiris (Blender modeli blok2/kiris3)
       ['kj' + c, { w: 1, h: 1, d: 1, mass: 0.6, f: 0.55, r: 0.08, ses: 'cam', renk: r, sekil: 'sil', kir: 1, carp: 7, yap: () => kavanoz(r, 1) }],
       ['kvU' + c, { w: 1, h: 2, d: 1, mass: 1.0, f: 0.55, r: 0.08, ses: 'cam', renk: r, sekil: 'sil', kir: 1, carp: 8, yap: () => kavanoz(r) }]])),
     tas1: { w: 1, h: 1, d: 1, mass: 1.0, f: 0.7, r: 0.06, ses: 'tas', renk: '#4a6cdb', sert: 1, yap: () => tas(1, 17) },

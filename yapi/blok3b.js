@@ -28,7 +28,18 @@ const LISTE = {
   ksSiseM: SISE('#a040ff'), ksSiseY: SISE('#30c850'), ksSiseB: SISE('#2f8cff'),
   ksKaro: ['karo', 0.3, '#2a8cff', { emis: '#0a3a9a', emisG: 0.08 }], ksKemer: ['kemer', 0.8, '#9aa2c0']
 };
-const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=1';
+// v9.6 (Adem 19 Kas: referans kalitesi): TEK TARZDA yeni blok seti (yapi/uretici/blender/yeni_bloklar.py -> model/blok2). Parlak kaplama (cila). ?b2=0 eski cizim
+if (!/[?&]b2=0/.test(location.search)) {
+  const R2 = { K: '#e3242f', M: '#2b6ef0', S: '#ffcc00', Y: '#1fae48', P: '#8a34e6', T: '#f2620f', N: '#ff4aa6', A: '#8fc8ff' };
+  for (const [c, r] of Object.entries(R2)) {
+    for (const n of [1, 2, 3, 4]) LISTE['uz' + n + c] = ['blok2/cubuk' + n, 0.18, r, { govde: r, cila: 1, env: 0.75 }];
+    LISTE['kj' + c] = ['blok2/kavanoz1', 0.1, r, { govde: r, cila: 1, env: 0.95 }];
+    LISTE['kvU' + c] = ['blok2/kavanoz2', 0.1, r, { govde: r, cila: 1, env: 0.95 }];
+    LISTE['kr3' + c] = ['blok2/kiris3', 0.24, r, { govde: r, cila: 1, env: 0.5 }];
+  }
+  LISTE.dalga = ['blok2/silindir', 0.2, '#5b8cf0', { govde: '#4f86f2', cila: 1, env: 0.55 }];
+}
+const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 3 : 1);
 
 export function blok3bKur({ THREE, ENV, GLTFLoader }) {
   const GLB = {}, HAZ = {};
@@ -51,8 +62,9 @@ export function blok3bKur({ THREE, ENV, GLTFLoader }) {
       geo = G.geo.clone(); const c = geo.attributes.color, kr = new THREE.Color(o.govde);
       if (c) for (let i = 0; i < c.count; i++) if (c.getX(i) > 0.97 && c.getY(i) > 0.97 && c.getZ(i) > 0.97) c.setXYZ(i, kr.r, kr.g, kr.b);
     }
-    const mat = new THREE.MeshStandardMaterial(Object.assign({ map: G.map, vertexColors: !!geo.attributes.color, roughness: L[1], metalness: o.metal || 0, envMap: ENV, envMapIntensity: o.env || 0.4 },
-      o.emis ? { emissive: o.emis, emissiveIntensity: o.emisG || 0.2 } : {}));
+    const ozel = Object.assign({ map: G.map, vertexColors: !!geo.attributes.color, roughness: L[1], metalness: o.metal || 0, envMap: ENV, envMapIntensity: o.env || 0.4 },
+      o.emis ? { emissive: o.emis, emissiveIntensity: o.emisG || 0.2 } : {});
+    const mat = o.cila ? new THREE.MeshPhysicalMaterial(Object.assign(ozel, { clearcoat: 1, clearcoatRoughness: 0.08 })) : new THREE.MeshStandardMaterial(ozel);   // v9.6: cilali (clearcoat) yeni set
     return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: L[2], roughness: 0.6 }) });
   }
   return { yukle, yap, TUR: LISTE };
