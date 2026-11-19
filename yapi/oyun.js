@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.0', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.1', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -771,17 +771,19 @@ function updateDebris(dt) {
     else { m.rotation.x += d.w.x * dt; m.rotation.y += d.w.y * dt; m.rotation.z += d.w.z * dt; }
     const f0 = floorAt(m.position.x, m.position.z), fy = f0 + (d.h || 0.04);
     if (m.position.y < fy && d.v.y < 0 && m.position.y > fy - 0.8) {
-      if (d.kind === 'blob') { const hz = Math.hypot(d.v.x, d.v.z), col = d.col || '#c4142c';
+      if (d.kind === 'blob' && d.ince) { splat(m.position.x, f0, m.position.z, 0.1 + Math.random() * 0.08, d.col || '#c4142c', null, 1); SPL[SPL.length - 1].sure = 0.9; d.life = 0; }   // v10.1: ince damla: kucuk leke, kisa surede silinir
+      else if (d.kind === 'blob') { const hz = Math.hypot(d.v.x, d.v.z), col = d.col || '#c4142c';
         splat(m.position.x, f0, m.position.z, d.sr || 0.3 + Math.random() * 0.25, col, hz > 0.5 ? -Math.atan2(d.v.z, d.v.x) : null, 1 + Math.min(1.4, hz * 0.16));
         if (d.cok || d.sr > 0.5) for (let j = 0; j < (d.sr > 0.5 ? 9 : 4); j++) { const a = Math.random() * 6.283, sp = 1.5 + Math.random() * 2.5; damla(d.mat || jarKit().jam, jarKit().blobGeo, new THREE.Vector3(m.position.x, f0 + 0.08, m.position.z), new THREE.Vector3(Math.cos(a) * sp + d.v.x * 0.15, 2.5 + Math.random() * 3, Math.sin(a) * sp + d.v.z * 0.15), 0.18 + Math.random() * 0.2, col, 0.08 + Math.random() * 0.1, false); }
         burst(new THREE.Vector3(m.position.x, f0 + 0.1, m.position.z), col, d.sr ? 10 : 3, 3); d.life = 0; }
       else if (f0 <= GY + 0.01) { if (!d.gr) { d.gr = true; d.life = Math.min(d.life, 0.9); } d.v.set(0, -0.9, 0); d.w.set(0, 0, 0); }   // v6.5: yerde sekmez, gomulur
       else { m.position.y = fy; d.v.y *= -0.18; d.v.x *= 0.5; d.v.z *= 0.5; d.w.multiplyScalar(0.5); }
     }
-    if (d.life < 0.5) m.scale.copy(d.s).multiplyScalar(Math.max(0, d.life / 0.5));
+    { const fz = d.ince ? 0.2 : 0.5; if (d.life < fz) m.scale.copy(d.s).multiplyScalar(Math.max(0, d.life / fz)); }
     if (d.life <= 0 || m.position.y < GY - 3) { scene.remove(m); DEB.splice(i, 1); }
   }
   for (const s of SPL) if (s.k < 1) { s.k = Math.min(1, s.k + dt * 7); const f = s.r * (0.3 + 0.7 * (1 - (1 - s.k) ** 3)); s.m.scale.set(f * s.el, f / Math.sqrt(s.el), 1); }
+  for (let i = SPL.length - 1; i >= 0; i--) { const s = SPL[i]; if (s.sure == null) continue; s.sure -= dt; if (s.sure < 0.35) s.m.scale.multiplyScalar(Math.max(0.001, s.sure / 0.35) / Math.max(0.001, (s.sure + dt) / 0.35)); if (s.sure <= 0) { scene.remove(s.m); SPL.splice(i, 1); } }   // v10.1: gecici leke
 }
 function breakJar(c) {
   const K = jarKit(), p = new THREE.Vector3().copy(c.body.position), q = new THREE.Quaternion().copy(c.body.quaternion);
@@ -2178,6 +2180,7 @@ function breakBlock(c, dir, n) {
   const q = c.mesh.quaternion.clone(), d = dir || new THREE.Vector3(0, 0.3, -1);
   if (!c.gone) knock(c, true); else { c.out = true; world.removeBody(c.body); scene.remove(c.mesh); }
   // v6.16: Blender ile parcalanmis gercek parcalar (Adem'in modeli, kendi dokusuyla); yoksa eski efekt
+  if (INCE && /^kj|^kvU|Sise/.test(c.kind || '')) { malzemeFx(c, p, d); sfx('kir', c.kind); return; }   // v10.1: sivili kavanoz: govde parcasi yok, cam havada kirilip kaybolur, sivi ince damla
   const real = realPieces(c, p, q, d, c.landed ? 6 : 99) || fragPieces(c, p, q, d);   // v3.21: Blender parcasi yoksa sekil kendi yuzeyinden parcalara ayrilir
   shatter(p, bColor(c), d, bMat(c), real ? Math.round((n || 14) * 0.3) : Math.round((n || 14) * 0.6), real ? null : bChunk(c)); malzemeFx(c, p, d); sfx('kir', c.kind);
 }
@@ -2483,7 +2486,7 @@ const MFX = (() => {
   return { kiymik, moloz, kirik, kristal, kup, mat };
 })();
 const SIVIM = {};
-const SAGBUZ = Q.get('buz2') !== '0';
+const SAGBUZ = Q.get('buz2') !== '0', INCE = Q.get('sivi') !== 'eski';
 // v10.0: buz catlamasi: blok yerinde kalir, yuzeyinden kucuk buz kirintilari ve kiragi tozu sacilir, kirilma sesi
 function buzCatla(c, e) {
   const p = new THREE.Vector3().copy(c.body.position); if (e && e.contact) { const r = e.contact.bi === c.body ? e.contact.ri : e.contact.rj; p.x += r.x; p.y += r.y; p.z += r.z; }
@@ -2508,6 +2511,15 @@ function malzemeFx(c, p, dir) {
   // her yone sacilir (hizina gore uzar), platforma/yere degince leke birakir; cam kiriklari renksiz, saydam. Eski: ?sivi=0.
   if (ses === 'cam' && /Sise|^kj|^kvU/.test(c.kind) && Q.get('sivi') !== '0') {   // v10.0: yeni kavanozlar da sivisini sacar
     const col = renk, mat = SIVIM[col] || (SIVIM[col] = new THREE.MeshStandardMaterial({ color: col, roughness: 0.08, metalness: 0, envMap: ENV, envMapIntensity: 1.1, emissive: col, emissiveIntensity: 0.4 })), geo = jarKit().blobGeo;
+    if (INCE) {   // v10.1 (Adem: 'referanstaki gibi az dagilsin, ince damlacik, havada yok olsun'): dar bulut, kucuk damlalar, 0.5-0.8 sn omur
+      const n = PARN > 90 ? 18 : 30;
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * 6.283, h = 0.6 + Math.random() * 2.2, v = new THREE.Vector3(Math.cos(a) * h, 2 + Math.random() * 3.5, Math.sin(a) * h * 0.6).addScaledVector(dir, 0.4 + Math.random() * 0.6);
+        const d = damla(mat, geo, p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.5, Math.random() * 0.5, (Math.random() - 0.5) * 0.5)), v, 0.4 + Math.random() * 0.35, col, 0.1, false); d.gk = 0.55; d.ince = 1; d.life = 0.5 + Math.random() * 0.35;
+      }
+      for (let i = 0; i < 6; i++) piece(new THREE.Mesh(MFX.kirik, MFX.mat('cs', { color: '#eef8ff', transparent: true, opacity: 0.5, roughness: 0.02, metalness: 0.1, envMapIntensity: 1.6, side: THREE.DoubleSide })), p, dir, S * (0.08 + Math.random() * 0.1), 6, 0.35 + Math.random() * 0.2);
+      par(3, '#ffffff', true, 0.3); return;
+    }
     const n = PARN > 90 ? 18 : 34;
     for (let i = 0; i < n; i++) {
       const a = Math.random() * 6.283, h = 1.5 + Math.random() * 4.5, v = new THREE.Vector3(Math.cos(a) * h, 4 + Math.random() * 7, Math.sin(a) * h * 0.6).addScaledVector(dir, 0.8 + Math.random() * 1.2);

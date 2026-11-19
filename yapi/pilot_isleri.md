@@ -188,3 +188,6 @@
 - Buz (ses 'buz'): ilk sert vurusta catlar (kucuk kup kirintilar + kiragi), kirilmaz; ancak SONRAKI atista ya da yere dusunce kirilir. Kirilinca iri kati kup parcalar (kristal/parilti yok). `?buz2=0` eski.
 - Yeni kavanozlar (kj, kvU) kirilinca icindeki renkli sivi damla damla sacilir (eskiden yalniz sise); cam kiriklari havada kisa surede kaybolur.
 - Top izi seyrek ve ince, carpinca biter; namlu dumani 3 parca (`?iz=eski`).
+
+## v10.1 (19 Kas 2026) — Adem: sivi az dagilsin, ince damla, havada kaybolsun
+- Kavanoz (kj, kvU, sise) kirilinca: govde parcasi/renkli kirinti yok; dar bulutta ~30 kucuk damla (0.5-0.85 sn), havada kuculup kaybolur; yere degen damla kucuk leke birakir, 0.9 sn'de silinir. Cam kiriklari 0.35-0.55 sn. Eski: `?sivi=eski`.
