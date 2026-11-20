@@ -877,6 +877,35 @@ Object.assign(YFON, {
   liman2: { f: 'y_liman2', r: 'liman2', cy: 0.70, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Körfezi', zem: 'su', hep: 1 }
 });
 for (const k in YFON) Object.assign(YFON[k], { yeni: 1, dirt: ['200,170,120', '180,150,100', '150,120,80'] });
+// v10.23 (Adem 20 Kas: 'fonun her yeri su efekti var, cisim karaya dusuyor ama suya batiyor'; 'ucurumdan dusen kup havada kalip yok oluyor'):
+// ZEMIN HARITASI. Her fonda resmin uzerinde (x, y oranlari) bolgeler: su (batar), cim (sert zemin, iskele, kaya: kirilir), bos (ucurum: kup
+// gercekten asagi duser, kenarin arkasinda kaybolur). Haritada olmayan yer fonun kendi zemini (zb, yoksa zem). Dusen cismin zemindeki noktasi
+// kameradan ekrana, ekrandan resme cevrilir. Eski hesap (su cizgisi / her yer su): ?harita=0
+const ZHARITA = {
+  tropik: [['su', [[0, 0.545], [1, 0.545], [1, 0.72], [0.75, 0.73], [0.5, 0.738], [0.25, 0.742], [0, 0.745]]]],
+  liman: { zb: 'su', zp: [['cim', [[0, 0.4], [0.17, 0.42], [0.4, 0.465], [0.4, 0.495], [0.26, 0.5], [0.24, 0.6], [0.12, 0.66], [0, 0.69]]], ['cim', [[0.64, 0.535], [0.85, 0.52], [1, 0.48], [1, 0.64], [0.93, 0.64], [0.86, 0.6], [0.64, 0.572]]], ['cim', [[0, 0.74], [0.2, 0.755], [0.19, 0.83], [0, 0.85]]], ['cim', [[0.72, 0.8], [1, 0.74], [1, 1], [0.8, 1]]]] },
+  col2: [['su', [[0.12, 0.385], [0.56, 0.38], [0.55, 0.415], [0.4, 0.44], [0.12, 0.45]]]],
+  kar2: [],
+  gunbatimi2: [['su', [[0, 0.55], [1, 0.55], [1, 0.77], [0.7, 0.776], [0.4, 0.78], [0, 0.77]]], ['cim', [[0, 0.55], [0.12, 0.6], [0.14, 0.7], [0.08, 0.76], [0, 0.78]]]],
+  liman2: { zb: 'su', zp: [['cim', [[0, 0.24], [0.55, 0.3], [0.55, 0.37], [0, 0.38]]], ['cim', [[0, 0.36], [0.26, 0.42], [0.25, 0.6], [0.12, 0.61], [0, 0.62]]], ['cim', [[0.7, 0.33], [1, 0.26], [1, 0.52], [0.86, 0.51], [0.72, 0.47]]]] },
+  volkan2: [['su', [[0, 0.43], [1, 0.43], [1, 0.672], [0.85, 0.668], [0.6, 0.658], [0.3, 0.656], [0.1, 0.645], [0, 0.64]]], ['cim', [[0, 0.5], [0.08, 0.55], [0.12, 0.62], [0.08, 0.66], [0, 0.66]]], ['cim', [[0.9, 0.5], [1, 0.5], [1, 0.66], [0.9, 0.62]]]],
+  kanyon: [['bos', [[0.2, 0.3], [0.78, 0.3], [0.78, 0.5], [0.73, 0.56], [0.7, 0.62], [0.6, 0.66], [0.45, 0.668], [0.3, 0.664], [0.22, 0.62], [0.17, 0.6], [0.2, 0.5]]]],
+  orman: { zb: 'cim', zp: [['su', [[0.14, 0.5], [0.86, 0.5], [0.8, 0.7], [0.72, 0.755], [0.64, 0.8], [0.2, 0.81], [0.1, 0.76], [0.12, 0.66]]]] },
+  gece2: [['su', [[0, 0.6], [1, 0.6], [1, 0.84], [0.7, 0.845], [0.4, 0.85], [0, 0.835]]], ['cim', [[0, 0.48], [0.3, 0.5], [0.34, 0.66], [0.2, 0.7], [0, 0.72]]]],
+  cayir: [['su', [[0, 0.34], [0.6, 0.35], [0.52, 0.46], [0.36, 0.53], [0.3, 0.6], [0, 0.61]]], ['su', [[0.6, 0.6], [0.9, 0.59], [0.9, 0.75], [0.72, 0.735], [0.6, 0.665]]]]
+};
+const HARITA = Q.get('harita') !== '0';
+if (HARITA) for (const k in ZHARITA) { const h = ZHARITA[k]; YFON[k].zp = Array.isArray(h) ? h : h.zp; if (h.zb) YFON[k].zb = h.zb; }
+function icinde(P, x, y) { let ic = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) ic = !ic; } return ic; }
+// ekran pikselinin (sx, sy) fon resmindeki bolgesi
+function ekranZon(fo, sx, sy) {
+  let fx, fy; if (BGT) { fx = (sx - BGT.ox) / BGT.iw; fy = (sy - BGT.oy) / BGT.ih; } else { const W = innerWidth, H = innerHeight, k = Math.max(W / 768, H / 1376); fx = (sx - (W - 768 * k) / 2) / (768 * k); fy = (sy - (H - 1376 * k) / 2) / (1376 * k); }
+  let zn = fo.zb || fo.zem || 'kum'; for (const [t, P] of fo.zp) if (icinde(P, fx, fy)) zn = t; return zn;
+}
+const ZK = new THREE.Vector3();
+function zemPx(x, z) { const c0 = cam.userData.base; let cp = null; if (c0) { cp = cam.position.clone(); cam.position.copy(c0); cam.updateMatrixWorld(true); }   // kamera sarsintisi bolgeyi oynatmasin
+  ZK.set(x, GY, z).project(cam); if (cp) { cam.position.copy(cp); cam.updateMatrixWorld(true); } return [(ZK.x + 1) / 2 * innerWidth, (1 - ZK.y) / 2 * innerHeight]; }
+
 const FON2 = Q.get('fon2') !== '0';
 const YSIRA = FON2 ? ['tropik', 'liman', 'col2', 'kar2', 'gunbatimi2', 'liman2', 'volkan2', 'kanyon', 'orman', 'gece2', 'cayir'] : Q.get('seker') === '1' ? ['dalga', 'koy', 'col', 'seker', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'] : ['dalga', 'koy', 'col', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'];   // v10.17 (Adem: 'Seker Diyari olmasin'): 8 dunya; eski: ?seker=1   // 1-10 dalgali koy (video), 11-20 kumsal koy, ... 81-90 magara, sonra basa doner
 let ZW = -1e9;   // v3.21: resim fonda suyun basladigi z (fit hesaplar); bunun arkasi su
@@ -1556,6 +1585,8 @@ function egriKnock(c, p, at) {
 // kaptan bolumu ilk kez gecilince rastgele bir guclendirici hediye
 function kaptanHediye() { const t = GGT[Math.floor(Math.random() * GGT.length)], s = ggSay(); s[t.k] = (s[t.k] || 0) + 1; return { k: t.k, ad: { roket: 'Roket', bomba: 'Bomba', yildirim: 'Yıldırım', top: '+5 Top' }[t.k] }; }
 // v5.4: parcalar kurulduktan sonra bolumun baslangici (oyun durumu, fon, bolum bandi, sayaclar)
+// v10.23 (Adem 20 Kas: 'oyun basinda cikan yazilar cikmasin'): bolum bandi (bolum no, dunya, ad, zor bolum/tur yazisi) gosterilmez. Eski hal: ?yazi=1
+const BASYAZI = Q.get('yazi') === '1';
 function bolumBasla(Y) {
   syncMeshes(); fragIsit();
   g = { don: Y.don || 0, L: LV, ad: Y.ad, total: cubes.length, left: cubes.length, shots: shotsFor(cubes.length, Y), max: shotsFor(cubes.length, Y), state: 'play', t: 0, busy: 0, quiet: 0, combo: null, armed: false, bonus: 0, gold: 0 };
@@ -1565,7 +1596,7 @@ function bolumBasla(Y) {
   let ipu = ''; if (Y.ip && Y.a && !K) { if (!SV.ark) SV.ark = []; if (!SV.ark.includes(Y.a)) { SV.ark.push(Y.a); ipu = '<i>' + Y.ip + '</i>'; } }   // v5.0: yeni yapi tipinin cozum ipucu (ilk karsilasmada)
   const nm = $('nm'); const dfo = !PILOTQ && !K && FONYENI ? fonOf(LV) : null, dyeni = dfo && (LV === 1 || fonOf(LV - 1) !== dfo);   // v6.6: dunya adi; dunyanin ilk bolumunde 'YENI DUNYA'
   const eu = egriYazi(); if (eu) ipu = eu + ipu;
-  nm.innerHTML = '<div class="rb1' + (PLAN && PLAN.tip !== 'normal' ? ' eg-' + PLAN.tip : '') + '"><small>' + (PILOTQ ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
+  nm.innerHTML = '<div class="rb1' + (PLAN && PLAN.tip !== 'normal' ? ' eg-' + PLAN.tip : '') + '"><small>' + (PILOTQ ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; if (BASYAZI) nm.classList.add('on'); $('hint').style.opacity = 1;
   hud(true);
   rehberKur();
 }
@@ -1765,7 +1796,7 @@ function ptAyak(tip, tm, h) {
   const golge = LEG.userData.shade.clone(); golge.visible = true; golge.position.y = 0.012; golge.scale.setScalar(0.62); g.add(golge);
   const sil = (r0, r1, y0, y1, mat, n, x, z) => ptMesh(new THREE.CylinderGeometry(r1, r0, Math.max(0.05, y1 - y0), n || 20), mat, x || 0, (y0 + y1) / 2, z || 0);
   if (tip === 'piston') {
-    const ho = Math.min(1.5, h * 0.42), cel = ptMat('#4a5866', 0.35, 0.6), krom = ptMat('#e4ebf2', 0.15, 0.8, { emissive: '#56606a', emissiveIntensity: 0.3 });
+    const ho = Math.min(1.5, h * 0.42), cel = YENIPLAT ? pMat('yan') : ptMat('#4a5866', 0.35, 0.6), krom = ptMat('#e4ebf2', 0.15, 0.8, { emissive: '#56606a', emissiveIntensity: 0.3 });
     g.add(sil(1.4, 1.25, 0, 0.3, pir, 28), sil(0.64, 0.64, 0.3, 0.3 + ho, cel, 24));
     for (const yy of [0.5, 0.2 + ho]) { const t = ptMesh(new THREE.TorusGeometry(0.66, 0.08, 8, 24), pir, 0, yy, 0, 0); t.rotation.x = Math.PI / 2; g.add(t); }
     const rod = ptMesh(new THREE.CylinderGeometry(0.38, 0.38, 1, 20), krom), fl = ptMesh(new THREE.CylinderGeometry(0.95, 0.6, 0.28, 24), pir);
@@ -1843,21 +1874,178 @@ function ptAyak(tip, tm, h) {
   if (u.upd) u.upd(h);
   return g;
 }
+// ================= v10.23 YENI PLATFORMLAR (Adem 20 Kas: 'platformlar tekrardan yapilsin, oyuna uygun renk ve gorunum; yuvarlak, kare,
+// dikdortgen vs; ayaklar zemine gercek otursun, yapmacik durmasin') =================
+// Tek tarz: oyunun mor-altin kimligi. Ust yuzey krem tas karolar, yanlar parlak mor, ust kenarda altin serit, yanlarda altin percinler.
+// Sekil: ada bolumlerinde verideki gercek sekil (disk, cokgen, kare); eski bolumlerde bolume gore yuvarlatilmis dikdortgen ya da sekizgen,
+// donen bolumde daire. Fizik govdesi gorunusle ayni sekle cevrilir (kosesi kesilen yerde kup durmaz). Kupun durdugu alan hic daralmaz:
+// kose kesigi ve yuvarlatma yalniz kuplerin disindaki kenar payinda kalir, daire kuplerin hepsini icine alir.
+// Ayak: mor sutun, altin bilezikler, genis basamakli taban. Taban zemine biraz gomulu (yerin alti gizli), altinda yumusak temas golgesi;
+// kumda/karda tabanin cevresinde resimle ayni renkte itilmis zemin seti, suda taban gorunmez, sutun suya girer ve kopuk halkasi olur.
+// Genis platformda iki sutun. Eski platform gorunusu: ?plat=eski
+const YENIPLAT = Q.get('plat') !== 'eski';
+const PRENK = { mor: '#6a3fd8', morKoyu: '#3d1f8a', altin: '#ffc93a', altinKoyu: '#c88a12' };
+let PKARO = null;
+function platKaro() {   // krem tas karolar (yuvarlak koseli, hafif kabartma, aralari sicak bej derz)
+  if (PKARO) return PKARO;
+  PKARO = canvasTex(256, 256, (x, w, h) => {
+    x.fillStyle = '#b08a5c'; x.fillRect(0, 0, w, h);
+    const n = 2, s = w / n, rr = 16, g = 10;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      const v = ((i * 7 + j * 13) % 5) * 4 - 8, x0 = i * s + g / 2, y0 = j * s + g / 2, ww = s - g;
+      const gr = x.createLinearGradient(x0, y0, x0 + ww, y0 + ww); gr.addColorStop(0, 'rgb(' + (255 + v) + ',' + (246 + v) + ',' + (226 + v) + ')'); gr.addColorStop(1, 'rgb(' + (238 + v) + ',' + (222 + v) + ',' + (192 + v) + ')');
+      x.fillStyle = gr; x.beginPath(); x.roundRect(x0, y0, ww, ww, rr); x.fill();
+      x.strokeStyle = 'rgba(255,255,255,.55)'; x.lineWidth = 3; x.beginPath(); x.roundRect(x0 + 3, y0 + 3, ww - 6, ww - 6, rr - 3); x.stroke();
+      x.fillStyle = 'rgba(150,110,60,.06)'; for (let k = 0; k < 40; k++) { x.beginPath(); x.arc(x0 + Math.random() * ww, y0 + Math.random() * ww, 1 + Math.random() * 3, 0, 6.283); x.fill(); }
+    }
+  }, [1, 1]);
+  PKARO.wrapS = PKARO.wrapT = THREE.RepeatWrapping; PKARO.anisotropy = 8; return PKARO;
+}
+function pMat(ad) {
+  if (PTMAT['p_' + ad]) return PTMAT['p_' + ad];
+  const o = {
+    ust: () => new THREE.MeshStandardMaterial({ map: platKaro(), roughness: 0.55, metalness: 0, envMap: ENV, envMapIntensity: 0.35 }),
+    yan: () => new THREE.MeshStandardMaterial({ color: PRENK.mor, roughness: 0.32, metalness: 0.05, envMap: ENV, envMapIntensity: 0.7, emissive: '#2a1060', emissiveIntensity: 0.18 }),
+    koyu: () => new THREE.MeshStandardMaterial({ color: PRENK.morKoyu, roughness: 0.5, envMap: ENV, envMapIntensity: 0.4 }),
+    altin: () => new THREE.MeshStandardMaterial({ color: PRENK.altin, roughness: 0.25, metalness: 0.65, envMap: ENV, envMapIntensity: 1.0, emissive: '#5a3a00', emissiveIntensity: 0.22 }),
+    altinKoyu: () => new THREE.MeshStandardMaterial({ color: PRENK.altinKoyu, roughness: 0.35, metalness: 0.6, envMap: ENV, envMapIntensity: 0.8, emissive: '#3a2400', emissiveIntensity: 0.15 })
+  }[ad]();
+  return (PTMAT['p_' + ad] = o);
+}
+// dis bukey cokgeni d kadar disari (d<0 iceri) kaydir
+function pKaydir(P, d) {
+  const n = P.length, o = [];
+  for (let i = 0; i < n; i++) {
+    const a = P[(i + n - 1) % n], b = P[i], c = P[(i + 1) % n];
+    const n1 = [b[1] - a[1], -(b[0] - a[0])], n2 = [c[1] - b[1], -(c[0] - b[0])], l1 = Math.hypot(...n1) || 1, l2 = Math.hypot(...n2) || 1;
+    const m = [n1[0] / l1 + n2[0] / l2, n1[1] / l1 + n2[1] / l2], ml = m[0] * n1[0] / l1 + m[1] * n1[1] / l1 || 1;
+    o.push([b[0] + m[0] * d / ml, b[1] + m[1] * d / ml]);
+  }
+  return o;
+}
+function pCcw(P) { let a = 0; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length]; a += p[0] * q[1] - q[0] * p[1]; } return a < 0 ? P : P.slice().reverse(); }   // ustten bakista (x, z) saat yonunun tersi = a<0
+// platformun dis cizgisi (yerel x, z) ve sekil adi
+function pSekil(q, n) {
+  if (q.P && q.P.length > 2) return { ad: q.kat && q.kat.sekil || 'kare', P: pCcw(q.P.map(([x, z]) => [x - (q.x || 0), z - (q.z || 0)])) };
+  const r = q.r, rz = q.rz, P = [];
+  if (g && g.don && n === 0) {   // donen: daire, kuplerin hepsini icine alir
+    const rd = Math.max(r, rz, Math.hypot(r - S * 0.5, rz - S * 0.45) + S * 0.4);
+    for (let i = 0; i < 40; i++) { const a = i / 40 * 6.283; P.push([Math.cos(a) * rd, Math.sin(a) * rd]); } return { ad: 'disk', P: pCcw(P), rd };
+  }
+  const tur = ((LV * 7 + n * 3) % 3);   // 0, 1: yuvarlatilmis dikdortgen (yari yuvarlak uclu da olabilir), 2: sekizgen
+  if (tur === 2) { const e = Math.min(S * 0.9, r * 0.45, rz * 0.45); P.push([r, rz - e], [r - e, rz], [-r + e, rz], [-r, rz - e], [-r, -rz + e], [-r + e, -rz], [r - e, -rz], [r, -rz + e]); return { ad: 'sekizgen', P: pCcw(P) }; }
+  const rho = Math.min(tur === 1 ? 2.4 : 1.1, rz * 0.98, r * 0.98);
+  for (const [cx, cz, a0] of [[r - rho, rz - rho, 0], [-r + rho, rz - rho, 0.5], [-r + rho, -rz + rho, 1], [r - rho, -rz + rho, 1.5]]) for (let k = 0; k <= 6; k++) { const a = (a0 + k / 12) * Math.PI; P.push([cx + Math.cos(a) * rho, cz + Math.sin(a) * rho]); }
+  return { ad: 'yuvarlak', P: pCcw(P) };
+}
+function pPrizma(P, y0, y1) {   // pilot.js prizma ile ayni: dis bukey prizma fizik sekli
+  const v = [], f = [], n = P.length;
+  for (const [x, z] of P) v.push(new CANNON.Vec3(x, y0, z)); for (const [x, z] of P) v.push(new CANNON.Vec3(x, y1, z));
+  const alt = [], ust = []; for (let i = 0; i < n; i++) { alt.push(i); ust.push(n + i); } f.push(alt, ust);
+  for (let i = 0; i < n; i++) { const j = (i + 1) % n; f.push([i, j, n + j, n + i]); }
+  const c = new CANNON.Vec3(0, (y0 + y1) / 2, 0);
+  const F = f.map((qq) => { const a = v[qq[0]], b = v[qq[1]], d = v[qq[2]], nn = b.vsub(a).cross(d.vsub(a)), m = new CANNON.Vec3(); for (const i of qq) m.vadd(v[i], m); m.scale(1 / qq.length, m); return nn.dot(m.vsub(c)) < 0 ? qq.slice().reverse() : qq; });
+  return new CANNON.ConvexPolyhedron({ vertices: v, faces: F });
+}
+// eski bolum platformunun fizik tablasini (kutu) secilen sekle cevir; ada bolumlerinde govde zaten verideki sekilde
+function pFizik(q, sk) {
+  if (q.P || !q.body || sk.ad === 'kutu') return;
+  const b = q.body, i = b.shapes.findIndex((s) => s instanceof CANNON.Box && Math.abs(b.shapeOffsets[b.shapes.indexOf(s)].y + 0.375) < 0.01 && s.halfExtents.x > 1.5);
+  if (i < 0) return; const s0 = b.shapes[i], o0 = b.shapeOffsets[i].clone(); b.removeShape(s0); b.addShape(pPrizma(sk.P, -0.375, 0.375), o0); b.aabbNeedsUpdate = true;
+}
+// cokgen cizgisinden yuvarlak kenarli kalin tabla: ust yuzu y=0
+function pTabla(P, th) {
+  const bs = 0.16, ic = pKaydir(P, -bs), sh = new THREE.Shape(); ic.forEach(([x, z], i) => (i ? sh.lineTo(x, -z) : sh.moveTo(x, -z)));
+  const geo = new THREE.ExtrudeGeometry(sh, { depth: Math.max(0.05, th - 2 * bs), bevelEnabled: true, bevelThickness: bs, bevelSize: bs, bevelSegments: 3, curveSegments: 4 });
+  geo.rotateX(-Math.PI / 2); geo.translate(0, -th + bs, 0);
+  // ust yuz (normal yukari) karo, digerleri mor: yuz grubu normal yonune gore yeniden ayrilir
+  const nr = geo.attributes.normal, pos = geo.attributes.position, uv = geo.attributes.uv, idx = []; const ustI = [], yanI = [];
+  for (let t = 0; t < pos.count; t += 3) { const ny = (nr.getY(t) + nr.getY(t + 1) + nr.getY(t + 2)) / 3, yy = (pos.getY(t) + pos.getY(t + 1) + pos.getY(t + 2)) / 3; (ny > 0.92 && yy > -0.02 ? ustI : yanI).push(t, t + 1, t + 2); }
+  for (let i = 0; i < pos.count; i++) uv.setXY(i, pos.getX(i) / 2.6, pos.getZ(i) / 2.6);   // karo: dunya olcusunde ~1.3 birim
+  idx.push(...ustI, ...yanI); geo.setIndex(idx); geo.clearGroups(); geo.addGroup(0, ustI.length, 0); geo.addGroup(ustI.length, yanI.length, 1);
+  return geo;
+}
+function ptUst2(q, sk) {
+  const g = new THREE.Group(), th = q.th, P = sk.P;
+  g.add(ptMesh(pTabla(P, th), [pMat('ust'), pMat('yan')]));
+  // ust kenarda altin serit (tablanin biraz disinda ince halka)
+  const dis = pKaydir(P, 0.07), ic = pKaydir(P, -0.06), sh = new THREE.Shape(); dis.forEach(([x, z], i) => (i ? sh.lineTo(x, -z) : sh.moveTo(x, -z)));
+  const de = new THREE.Path(); ic.slice().reverse().forEach(([x, z], i) => (i ? de.lineTo(x, -z) : de.moveTo(x, -z))); sh.holes.push(de);
+  const sg = new THREE.ExtrudeGeometry(sh, { depth: 0.12, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 2 }); sg.rotateX(-Math.PI / 2); sg.translate(0, -0.14, 0);
+  g.add(ptMesh(sg, pMat('altin'), 0, 0, 0, 0));
+  // alt kenarda koyu mor kusak (tablanin altinda biraz iceride): kalinlik hissi
+  const ak = pKaydir(P, -0.22), ash = new THREE.Shape(); ak.forEach(([x, z], i) => (i ? ash.lineTo(x, -z) : ash.moveTo(x, -z)));
+  const ag = new THREE.ExtrudeGeometry(ash, { depth: 0.18, bevelEnabled: false }); ag.rotateX(-Math.PI / 2); ag.translate(0, -th - 0.16, 0);
+  g.add(ptMesh(ag, pMat('koyu'), 0, 0, 0, 0));
+  // yan yuzde esit aralikli altin percinler
+  const pr = [], cev = pKaydir(P, 0.01); let top = 0; for (let i = 0; i < cev.length; i++) { const a = cev[i], b = cev[(i + 1) % cev.length]; top += Math.hypot(b[0] - a[0], b[1] - a[1]); }
+  const adim = top / Math.max(6, Math.round(top / 1.6)); let kalan = adim / 2;
+  for (let i = 0; i < cev.length; i++) { const a = cev[i], b = cev[(i + 1) % cev.length], L = Math.hypot(b[0] - a[0], b[1] - a[1]); while (kalan <= L) { const t = kalan / L; pr.push([a[0] + (b[0] - a[0]) * t, -th * 0.55, a[1] + (b[1] - a[1]) * t]); kalan += adim; } kalan -= L; }
+  if (pr.length) g.add(ptDizi(new THREE.SphereGeometry(0.15, 12, 8).scale(1, 1, 1), pMat('altin'), pr.map((p) => { const l = Math.hypot(p[0], p[2]) || 1; return [p[0] + p[0] / l * 0.05, p[1], p[2] + p[2] / l * 0.05]; })));
+  return g;
+}
+// v10.23 ayak: mor sutun(lar) + altin bilezik + basamakli genis taban; tabani zemine gomulu, temas golgesi, zemin seti / kopuk
+let PGOLGE = null;
+function pGolgeMat() { return PGOLGE || (PGOLGE = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, color: '#000000', alphaMap: canvasTex(128, 128, (x, w, h) => { const gr = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gr.addColorStop(0, '#bbb'); gr.addColorStop(0.35, '#999'); gr.addColorStop(0.7, '#333'); gr.addColorStop(1, '#000'); x.fillStyle = gr; x.fillRect(0, 0, w, h); }), opacity: 0.95 })); }
+function pAyak(q, sk, h) {
+  const G = new THREE.Group(), u = G.userData, yan = pMat('yan'), altin = pMat('altin'), koyu = pMat('koyu');
+  // sutun yerleri: genis platformda iki sutun
+  const xs = q.r > 5.2 && sk.ad !== 'disk' ? [-q.r * 0.48, q.r * 0.48] : [0];
+  const sil = (r0, r1, y0, y1, mat, n) => ptMesh(new THREE.CylinderGeometry(r1, r0, Math.max(0.04, y1 - y0), n || 28), mat, 0, (y0 + y1) / 2, 0);
+  u.sut = []; u.taban = []; u.set = []; u.kopuk = [];
+  for (const x of xs) {
+    const s = new THREE.Group(); s.position.x = x; G.add(s);
+    // taban: yere gomulu genis basamaklar (alt basamak GY'nin 0.12 altindan baslar)
+    const tb = new THREE.Group(); tb.add(sil(1.35, 1.25, -0.12, 0.16, koyu, 36), sil(1.12, 1.02, 0.16, 0.36, altin, 36), sil(0.86, 0.78, 0.36, 0.5, yan, 32)); s.add(tb); u.taban.push(tb);
+    // govde: sutun (yukseklige gore uzar), iki altin bilezik, platformun altinda altin baslik
+    const gv = ptMesh(new THREE.CylinderGeometry(0.5, 0.56, 1, 28), yan); s.add(gv);
+    const b1 = ptMesh(new THREE.TorusGeometry(0.56, 0.08, 10, 28), altin, 0, 0, 0, 0), b2 = b1.clone(); b1.rotation.x = b2.rotation.x = Math.PI / 2; s.add(b1, b2);
+    const bas = new THREE.Group(); bas.add(sil(0.58, 0.82, 0, 0.22, altin, 32), sil(0.82, 0.95, 0.22, 0.34, pMat('altinKoyu'), 32)); s.add(bas);
+    u.sut.push({ gv, b1, b2, bas });
+    // temas golgesi ve zemin seti (kum/kar), kopuk (su)
+    const go = new THREE.Mesh(SPLGEO, pGolgeMat()); go.rotation.x = -Math.PI / 2; go.scale.setScalar(2.1); go.position.y = 0.02; go.renderOrder = 2; s.add(go); u.golge = (u.golge || []).concat(go);
+    const st = pSet(); s.add(st); u.set.push(st);
+    const kp = suKopuk(0); kp.scale.setScalar(0.95); s.add(kp); u.kopuk.push(kp);
+  }
+  u.upd = (hh) => { for (const o of u.sut) { const y0 = 0.5, y1 = hh - 0.34; o.gv.scale.y = Math.max(0.05, y1 - y0); o.gv.position.y = (y0 + y1) / 2; o.b1.position.y = y0 + 0.25; o.b2.position.y = y1 - 0.2; o.bas.position.y = hh - 0.34; } };
+  u.zon = (zn, dip) => {   // ayagin bastigi zemin: su ise taban/golge/set gizli, sutun suya girer
+    const su = zn === 'su', yum = zn === 'kum' || zn === 'kar';
+    for (const t of u.taban) t.visible = !su; for (const go of u.golge) go.visible = !su; for (const k of u.kopuk) { k.visible = su; k.position.y = dip + 0.05; k.scale.setScalar(1.45); k.material.opacity = 0.9; }
+    for (const s of u.set) { s.visible = yum; if (yum) pSetRenk(s, zn); }
+  };
+  u.upd(h); return G;
+}
+// tabanin cevresinde itilmis zemin seti: alcak, duzensiz halka; rengi fon resminden (ayagin bastigi nokta)
+let PSETGEO = null;
+function pSet() {
+  if (!PSETGEO) { const gg = new THREE.TorusGeometry(1.4, 0.26, 8, 40), p = gg.attributes.position, v = new THREE.Vector3();
+    for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); const a = Math.atan2(v.y, v.x), k = 1 + 0.18 * Math.sin(a * 5 + 1.3) + 0.1 * Math.sin(a * 11); v.z *= k; p.setXYZ(i, v.x, v.y, v.z); }
+    gg.rotateX(Math.PI / 2); gg.scale(1, 0.3, 1); gg.computeVertexNormals(); PSETGEO = gg; }
+  const m = new THREE.Mesh(PSETGEO, new THREE.MeshStandardMaterial({ color: '#d8c090', roughness: 1 })); m.position.y = -0.02; m.receiveShadow = true; m.userData.kopuk = 1; return m;
+}
+function pSetRenk(m, zn) {
+  const fo = fonOf(LV); if (zn === 'kar') { m.material.color.set('#eef4ff'); m.material.emissive.set('#9db4d8'); m.material.emissiveIntensity = 0.12; return; }
+  m.material.color.set(fo.tb || '#d8c090'); if (fo && fo.r) fonRenk(fo, (c) => m.material.color.copy(c).multiplyScalar(1.02));
+}
 function dengeMu(L, Y) { if (Y.veri) return !!Y.denge; return FONYENIQ && !Y.pl && !Y.don && !asansorMu(L) && (Q.get('denge') === '1' || (Q.get('denge') !== '0' && L >= 7 && (L % 10 === 7 || L % 10 === 8))); }
 function ptAt(o) { o.traverse((m) => { if (m.userData.kopuk) { m.material.dispose(); return; } if (m.geometry && m !== o) m.geometry.dispose(); }); }
 function temaKur() {
   const tm = PTEM[fonOf(LV).f.slice(2)] || PTEM.koy;
-  for (const q of PLS) {
+  PLS.forEach((q, qi) => {
     if (q.cy == null) q.cy = 0; q.th = q.den ? 0.4 : 0.75; q.eg = 0;
     if (q.mesh) q.mesh.visible = false; if (q.leg) q.leg.visible = false;
+    if (YENIPLAT && q.kopru) return;   // v10.23: kopru tabliyesi kendi gorunusuyle (pilot.js)
     const tip = q.den ? 'denge' : q.asn ? (tm.ayak === 'piston' ? 'piston' : 'makas') : g.don ? 'disli' : tm.ayak;
+    // v10.23: yeni platform; ayagin bastigi zemin resimdeki haritadan (su / kum / kar / sert)
+    const sk = YENIPLAT ? pSekil(q, qi) : null, yeniAyak = sk && !q.den && !q.asn, zn = sk ? zoneAt(q.x || 0, q.z || 0) : null;
     // v3.21: (Adem) suyun icindeki platformun alt tablasi gorunmez: ayak suyun yuzeyinden 1.1 asagidan baslar (yerin alti OCC ile gizli)
-    q.dip = fonOf(LV).hep ? (tip === 'piston' ? 2.0 : 1.1) : 0;   // pistonun govdesi (alt tabla, halkalar) tamamen suyun altinda, yalniz krom mil cikar
-    q.tu = ptUst(tm, q.r, q.rz, q.th); q.ta = ptAyak(tip, tm, q.cy - q.th - GY + q.dip); q.ta.position.set(q.x || 0, GY - q.dip, q.z || 0); q.ah0 = q.cy; scene.add(q.tu, q.ta);
-    q.kp = null; if (q.dip) { q.ta.children[0].visible = false; q.kp = suKopuk(q.dip); q.ta.add(q.kp); }
-    { const fo = fonOf(LV), tb = zeminTaban(fo, q, q.cy - q.th - GY + q.dip); if (tb) { tb.position.y = q.dip; q.ta.add(tb); } }
+    q.dip = (sk ? zn === 'su' : fonOf(LV).hep) ? (tip === 'piston' && !yeniAyak ? 2.0 : 1.1) : 0;   // pistonun govdesi (alt tabla, halkalar) tamamen suyun altinda, yalniz krom mil cikar
+    if (sk) pFizik(q, sk);
+    q.tu = sk ? ptUst2(q, sk) : ptUst(tm, q.r, q.rz, q.th); q.ta = yeniAyak ? pAyak(q, sk, q.cy - q.th - GY + q.dip) : ptAyak(tip, tm, q.cy - q.th - GY + q.dip); q.ta.position.set(q.x || 0, GY - q.dip, q.z || 0); q.ah0 = q.cy; scene.add(q.tu, q.ta);
+    q.kp = null; if (yeniAyak) q.ta.userData.zon(zn, q.dip); else if (q.dip) { q.ta.children[0].visible = false; q.kp = suKopuk(q.dip); q.ta.add(q.kp); }
+    if (!yeniAyak) { const fo = fonOf(LV), tb = zeminTaban(fo, q, q.cy - q.th - GY + q.dip); if (tb) { tb.position.y = q.dip; q.ta.add(tb); } }
     if (q.kay) q.ta.add(kayRay(tm, q.kay.a, q.cy - q.th - GY + q.dip, q.r)), q.tu.add(kayAraba(q.th));
-  }
+  });
   temaKare();
 }
 // v3.21: (Adem) kayan platformda ayak yerinde sabit: ayagin tepesinde ray, platform altindaki kizakla rayin ustunde kayar
@@ -2491,8 +2679,9 @@ function updateBalls(dt) {
       b.lp = pos.clone(); }
     for (let j = b.trail.length - 1; j >= 0; j--) { const p = b.trail[j]; p.life -= dt; const k = Math.max(0, p.life / (p.az ? 0.12 : p.vr ? 0.26 : 0.2)); p.m.scale.setScalar(p.az ? BR * 0.7 * k : p.vr ? BR * (0.5 + 1.1 * k) : BR * 1.3 * (1.6 - 0.6 * k)); p.m.material.opacity = (p.az ? (p.vr ? 0.3 : 0.2) : p.vr ? 0.6 : 0.35) * k; if (p.life <= 0) { sprBirak(p.m); b.trail.splice(j, 1); } }
     if (!b.pc && b.body.position.y > BR + 0.05) { b.pc = 1; b.body.collisionFilterMask = -1; }   // v6.12: (hata) top platformun icinden dusuyordu: platform hizasini asinca platforma carpar
-    if (!b.sunk && b.body.position.y < GY + BR * 1.1) { b.sunk = 1; const bx = b.body.position.x, bz = b.body.position.z; b.zn = zoneAt(bx, bz); if (b.zn === 'su') { splash(bx, bz, 0.9, true); if (K) sfx('su', 0); else sfx('yer', 'su'); } else if (b.zn === 'cim') { groundFx(bx, bz, 0.6); sfx('yer', 'kum'); } else { softBurst(b.zn, bx, bz, 0.6, b.body.velocity); sfx('yer', b.zn); } world.removeBody(b.body); }   // v6.17
-    if (b.sunk) { b.sunk += dt; b.mesh.position.y = GY + BR - Math.min(1, b.sunk / (b.zn === 'su' ? 0.9 : 0.5)) * BR * (b.zn === 'kum' ? 1.1 : b.zn === 'kar' ? 1.5 : 2.4); }
+    if (!b.sunk && b.body.position.y < GY + BR * 1.1) { b.sunk = 1; const bx = b.body.position.x, bz = b.body.position.z; b.zn = zoneAt(bx, bz); if (b.zn === 'bos') { b.vy = b.body.velocity.y; } else if (b.zn === 'su') { splash(bx, bz, 0.9, true); if (K) sfx('su', 0); else sfx('yer', 'su'); } else if (b.zn === 'cim') { groundFx(bx, bz, 0.6); sfx('yer', 'kum'); } else { softBurst(b.zn, bx, bz, 0.6, b.body.velocity); sfx('yer', b.zn); } world.removeBody(b.body); }   // v6.17
+    if (b.sunk && b.zn === 'bos') { b.sunk += dt * 0.5; b.vy -= 24 * dt; b.mesh.position.y += b.vy * dt; }
+    else if (b.sunk) { b.sunk += dt; b.mesh.position.y = GY + BR - Math.min(1, b.sunk / (b.zn === 'su' ? 0.9 : 0.5)) * BR * (b.zn === 'kum' ? 1.1 : b.zn === 'kar' ? 1.5 : 2.4); }
     else if (b.t > 1.2 && b.body.velocity.length() < 1.2) b.rest = (b.rest || 0) + dt;
     if (b.rest > 0.6) b.mesh.scale.setScalar(Math.max(0.001, 1 - (b.rest - 0.6) / 0.4));
     if (b.body.position.y < -16 || b.t > 7 || b.sunk > 0.6 || b.rest > 1) { for (const p of b.trail) sprBirak(p.m); world.removeBody(b.body); scene.remove(b.mesh); b.halo.material.dispose(); if (b.mesh.material !== TOPM) b.mesh.material.dispose(); balls.splice(i, 1); }
@@ -2654,6 +2843,7 @@ const ZFX = { kar: { toz: '#ffffff', toz2: 3, par: ['#ffffff', '#eef6ff', '#dfee
 // parcalar zemine batar; zemine gore buyuk su sicramasi + halkalar, kar bulutu ya da kum puskurmesi.
 function land(c) {
   const p = new THREE.Vector3().copy(c.body.position), h = c.h || S, zn0 = zoneAt(p.x, p.z);
+  if (zn0 === 'bos' && c.mesh) { bosaDus(c); return; }   // v10.23: ucurum: yere degmez, asagi duser
   if (zn0 !== 'cim' && c.mesh) { softLand(c, zn0); return; }   // v6.17: (Adem) kuma/kara dusen gomulur, suya dusen batar
   c.landed = 2;
   groundFx(p.x, p.z, 1);
@@ -2778,6 +2968,7 @@ function fonFy(x, z) { const H = innerHeight, ih = Math.max(H, innerWidth * 16 /
 function zoneAt(x, z) {
   if (K) return K.zone(x, z);
   const fo = fonOf(LV) || {}, f = fo.f || '';
+  if (fo.yeni && fo.zp) { const [sx, sy] = zemPx(x, z); return ekranZon(fo, sx, sy); }   // v10.23: zemin haritasi
   if (fo.yeni) return fo.hep || (fo.sy && z < ZW) ? 'su' : fo.zem || 'kum';   // v3.21: (Adem) resim fonlarda da suya dusen batar, kuma/kara dusen gomulur
   if (f.startsWith('kar')) return 'kar';
   // v5.5 (Adem 16 Kas): zemin turu resimde gorunen yere gore: koyda alttaki tahta iskeleye dusen batmaz (kara gibi kirilir), denize dusen batar;
@@ -2804,8 +2995,32 @@ function softLand(c, zn) {
   c.bat = (zn === 'kar' ? h * (0.3 + 0.12 * Math.random()) : zn === 'kum' ? h * (0.16 + 0.08 * Math.random()) : 0) * Math.min(1.25, 0.6 + Math.abs(v.y) / 30);   // v6.18: hizla dusen daha derine saplanir
   sfx('yer', zn); buzz(18, 90); shake = Math.max(shake, 0.05);
 }
+// v10.23 (Adem 20 Kas: 'ucurumdan dusen kup gercekten ucurumdan dussun, havada kalip yok oluyor'): zemin haritasinda 'bos' olan yere gelen kup
+// fizikten cikar ve yercekimiyle dusmeye devam eder. Yerin altini gizleyen duzlemden once cizilir (gorunur kalir); resimdeki ucurum kenarinda
+// (asagi dogru ilk sert zemin cizgisi) ekran cizgisiyle kesilir: kenarin arkasina dusuyormus gibi kaybolur.
+const BOSD = new THREE.Vector3(), BOSA = new THREE.Vector3(), BOSB = new THREE.Vector3();
+function bosKenar(x, z) {   // kupun zemindeki noktasindan asagi dogru ekranda ucurum kenari (piksel y)
+  const fo = fonOf(LV) || {}; if (!fo.zp) return innerHeight; const [sx, sy0] = zemPx(x, z);
+  for (let y = sy0; y < innerHeight; y += 3) if (ekranZon(fo, sx, y) !== 'bos') return y; return innerHeight;
+}
+function bosaDus(c) {
+  const b = c.body, p = new THREE.Vector3().copy(b.position);
+  world.removeBody(b); c.landed = true; c.lt = 0; c.zn = 'bos'; c.v = new THREE.Vector3().copy(b.velocity); c.v.y = Math.min(c.v.y, -1.5);
+  c.w = new THREE.Vector3().copy(b.angularVelocity); c.mesh.position.copy(p); c.mesh.quaternion.copy(b.quaternion);
+  // ekranda kenar cizgisinden gecen, kameradan cikan duzlem: kenarin ustu gorunur, alti kesilir
+  const ky = 1 - 2 * bosKenar(p.x, p.z) / innerHeight, c0 = cam.userData.base || cam.position;
+  BOSA.set(-1, ky, 0.5).unproject(cam); BOSB.set(1, ky, 0.5).unproject(cam);
+  const pl = new THREE.Plane().setFromCoplanarPoints(c0.clone(), BOSA, BOSB); BOSD.set(0, Math.min(1, ky + 0.2), 0.5).unproject(cam); if (pl.distanceToPoint(BOSD) < 0) pl.negate();
+  ren.localClippingEnabled = true;
+  c.mesh.traverse((o) => { if (!o.isMesh) return; o.renderOrder = -20; o.material = Array.isArray(o.material) ? o.material.map((m) => { const k = m.clone(); k.clippingPlanes = [pl]; return k; }) : Object.assign(o.material.clone(), { clippingPlanes: [pl] }); o.userData.bosMat = 1; });
+}
 function landTick(c, dt) {
   c.lt += dt; const m = c.mesh, h = c.h || S;
+  if (c.zn === 'bos') {
+    c.v.y -= 24 * dt; m.position.addScaledVector(c.v, dt); m.rotateX(c.w.x * dt * 0.5); m.rotateZ(c.w.z * dt * 0.5);
+    if (c.lt > 2.2 || m.position.y < GY - 40) { c.out = true; scene.remove(m); m.traverse((o) => { if (o.userData.bosMat) (Array.isArray(o.material) ? o.material : [o.material]).forEach((k) => k.dispose()); }); }
+    return;
+  }
   if (c.zn === 'su') {
     const sy = seaY(m.position.x, m.position.z);
     if (c.flt && c.lt < 3.4) {   // yuzer: bir dalar, geri cikar, dalgayla iner kalkar, yavasca duz yatar
@@ -2893,10 +3108,11 @@ function softPiece(o, v, w, st, hs, dt) {
   if (!st.in) {
     if (o.position.y - hs > GY + 0.06 || floorAt(o.position.x, o.position.z) !== GY) return false;
     const zn = zoneAt(o.position.x, o.position.z); if (zn === 'cim') return false;
-    st.in = zn;
+    st.in = zn; if (zn === 'bos') return true;   // v10.23: ucuruma dusen parca dusmeye devam eder
     if (zn === 'su') { if (PIECEFX++ < 40) splash(o.position.x, o.position.z, 0.3 + hs, false); v.multiplyScalar(0.3); }
     else { if (PIECEFX++ < 40) softBurst(zn, o.position.x, o.position.z, 0.25 + hs * 0.6, null); v.set(0, 0, 0); w.set(0, 0, 0); st.y = GY + hs * 0.15; o.position.y = st.y; }
   }
+  if (st.in === 'bos') { v.y -= 22 * dt; o.position.addScaledVector(v, dt); o.rotation.x += w.x * dt; o.rotation.z += w.z * dt; return true; }
   if (st.in === 'su') { v.x *= 1 - dt * 3; v.z *= 1 - dt * 3; v.y += (-1.3 - v.y) * dt * 4; o.position.addScaledVector(v, dt); w.multiplyScalar(1 - dt * 2); o.rotation.x += w.x * dt; o.rotation.z += w.z * dt; }
   return true;
 }
@@ -3037,7 +3253,8 @@ function updateCubes(dt) {
     if (c.landed === true) { landTick(c, dt); continue; }
     if (c.gone && !c.landed && c.kind !== 'recel' && (c.yer || p.y < GY + (c.h || S) * 0.55)) { land(c); continue; }
     if (c.gone && !c.landed && c.kind === 'recel' && p.y < GY + (c.h || S) * 0.62) { c.landed = 2; dust(p.x, GY, p.z, 1); }
-    if (c.gone) { c.gt = (c.gt || 0) + dt; if (c.gt > 1.4) { const k = Math.max(0, 1 - (c.gt - 1.4) / 0.4); c.mesh.scale.setScalar(k); if (k <= 0) { c.out = true; world.removeBody(c.body); scene.remove(c.mesh); continue; } } }
+    // v10.23 (Adem: 'dusen kup havada kalip yok oluyor'): dusen kup havadayken kuculup silinmez; yalniz bir yerde takili kalirsa (yavas) ya da cok uzun surerse
+    if (c.gone) { c.gt = (c.gt || 0) + dt; if (c.gt > 1.4 && (c.kt || (c.kt = c.gt > 6 || c.body.velocity.lengthSquared() < 2.5))) { const k = Math.max(0, 1 - (c.gt - 1.4) / 0.4); c.mesh.scale.setScalar(k); if (k <= 0) { c.out = true; world.removeBody(c.body); scene.remove(c.mesh); continue; } } }
     if (SPL.length && !c.gone && !c.sticky && p.y > 0 && p.y < S * 0.75) for (const s of SPL) if (s.y > -0.5 && (p.x - s.x) ** 2 + (p.z - s.z) ** 2 < (s.r + S * 0.3) ** 2) { c.sticky = true; c.body.linearDamping = 0.9; c.body.angularDamping = 0.95; break; }   // recel lekesine basan yapisir
     if (c.body.sleepState !== CANNON.Body.SLEEPING && c.body.velocity.lengthSquared() > 0.6) moving = true;
   }
@@ -3311,7 +3528,7 @@ function ayarDegis(k) {
 function oyna(L, sec) {
   { const ks = gerekliModel(L); if (!ks.every((k) => MHAZIR.has(k) || !MFILE[k])) { modelYukle(ks).then(() => oyna(L, sec)); return; } }   // v4.7: modeller inmeden bolum kurulmaz
   if (L !== LV || !g || g.state !== 'play' || g.armed) start(L);
-  else { CAMI = 0; STARTT = performance.now(); const nm = $('nm'); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1; if (TK.t && TK.gor) TK.t.oyna('selam', 1.4); }
+  else { CAMI = 0; STARTT = performance.now(); const nm = $('nm'); nm.classList.remove('on'); void nm.offsetWidth; if (BASYAZI) nm.classList.add('on'); $('hint').style.opacity = 1; if (TK.t && TK.gor) TK.t.oyna('selam', 1.4); }
   muzikBasla(); ggKur();
   let gec = 0;
   for (const t of GGT) { if (!sec || !sec.has(t.k) || !ggOde(t.k)) continue;
@@ -3642,7 +3859,7 @@ function ggOnce() {
   };
   $('ggo').onclick = () => {
     sfx('tik'); closeModal();
-    const nm = $('nm'); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on');
+    const nm = $('nm'); nm.classList.remove('on'); void nm.offsetWidth; if (BASYAZI) nm.classList.add('on');
     let gec = 0;
     for (const t of GGT) { if (!sec.has(t.k) || !ggOde(t.k)) continue;
       if (t.k === 'yildirim') { const gg0 = g; setTimeout(() => { if (g === gg0 && g.state === 'play') ggYildirim(); }, 900); }
@@ -3717,7 +3934,9 @@ function fit() {
   const yOf = (p) => V.set(p[0], p[1], p[2]).project(cam).y;
   const place = (d, ty) => { tg.set(PC ? PLT.hedef[0] : CX, ty, PC ? PLT.hedef[1] : 0);   /* PILOT: yapi ekranda yatayda ortalanir */ CTG.copy(tg); cam.position.copy(tg).addScaledVector(dir, d); cam.lookAt(tg); cam.updateMatrixWorld(true); };
   const foY = fonOf(LV), ayak = foY && foY.yeni ? 1 - 2 * fonPx(0.5, foY.cy)[1] / H : null;
-  let d = YER ? Math.max(6, reach + 3) : PC ? 8 /* PILOT: yapi sigana kadar geri cekilir; araba yuksekte, platforma degmez */ : Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
+  // v10.23 (Adem 20 Kas: 'bazi bolumlerde platform cok yakin, ideal mesafe 1196'): kamera hicbir bolumde 1196'daki uzakliktan yakina gelmez
+  // (yakin kamera kucuk yapiyi dev gosteriyordu). Ekrandaki olcek her bolumde ayni; yalniz yapi sigmazsa geri cekilir. Eski hal: ?kam=0
+  let d = YER ? Math.max(6, reach + 3, Q.get('kam') === '0' || PC ? 0 : 10.6 / thx) : PC ? 8 /* PILOT: yapi sigana kadar geri cekilir; araba yuksekte, platforma degmez */ : Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
   for (; d < 120; d += 0.25) {
     let lo = -10, hi = TOPY + 10;
     // v3.19: resim fonda platform ayagi (0, GY, 0) resimdeki bos yuvarlak zeminin ortasina oturur (ekranda sabit nokta); kamera yapi sigana kadar geri cekilir
@@ -3749,6 +3968,8 @@ function fit() {
   ZW = -1e9;   // v3.21: resimdeki su cizgisinin zemindeki yeri (kameradan resimdeki o noktaya isin, zemin duzlemiyle kesisim)
   if (foY && foY.yeni && foY.sy) { V.set(0, 1 - 2 * fonPx(0.5, foY.sy)[1] / H, 0.5).unproject(cam).sub(cam.position).normalize(); if (V.y < -1e-4) ZW = cam.position.z + V.z * (GY - cam.position.y) / V.y; }
   cam.userData.base = cam.position.clone(); tilkiYer(); if (FONYENI) fonIsi(fonOf(LV));
+  if (Q.has('olc')) { window.__zon = (x, z) => zoneAt(x, z); window.__px = (x, z) => zemPx(x, z); window.__fon = () => ({ B: BGT, zp: (fonOf(LV) || {}).zp }); window.__cs = () => cubes.map((c) => [c.gone ? 1 : 0, c.out ? 1 : 0, c.landed || 0, +c.body.position.x.toFixed(1), +c.body.position.y.toFixed(1), +c.body.position.z.toFixed(1)]); window.__it = (vz, vx) => { for (const c of cubes) { c.body.wakeUp(); c.body.velocity.set(vx || (Math.random() - 0.5) * 3, 5, vz); } }; }
+  if (Q.has('olc')) window.__kam = { YB: YB && [YB.min.toArray(), YB.max.toArray()], S, cam: cam.position.toArray(), tg: CTG.toArray(), fov: cam.fov, R, RZ };
 }
 addEventListener('resize', fit); fit();
 
