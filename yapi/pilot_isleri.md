@@ -337,3 +337,8 @@
 - Adem: 'siseleri gelistir, kalite olarak referanstaki gibi'. blender-skills (prop-artist, stylized-style) ilkeleriyle uretici/blender/kavanoz2.py -> model/blok2/kav2_1/2/3/B.glb (716 ucgen): kalin tirtikli kapak (6 beyaz + 6 govde renkli dilim, govdeden hafif tasar), beyaz dudak, boyun, yuvarlak omuz ve dip; pati ve boyali parlama cizgisi yok.
 - Malzeme: ic isik (emissive) 0.26 -> 0.14 (golge ve hacim gorunsun); kavanozlara ozel studyo KENV (oyun.js): siyah ortam, kameranin sol onunde genis dikey isik kutusu (govdede soldan ~%30 parlama), ust onde yatay kutu, karsi kenarda ince kenar isigi; guc 4.5, puruz 0.14.
 - Ayar/deneme: `?kemis=`, `?kenv=`, `?krough=`, `?ku=`, `?kg=`, `?kG=`. Eski kavanoz: `?sise=eski`.
+
+## v10.31b (20 Kas 2026) — kavanozlar referansa yaklastirildi (matcap)
+- Adem: 'referansa yaklasamamis, yan yana koy'. Yan yana: gercekci isik koyu kenar ve dar parlama veriyordu; referans mobil oyunlarin yontemi BOYALI ISIK (matcap).
+- blok3b.js mcMat: MeshMatcapMaterial + ikinci doku (MH) ustune beyaz karisim. MC: govde rengi korunur, sol acik, sag ve alt hafif koyu. MH: sol-ortada tek parlama (genis gauss + ayni merkezde keskin cekirdek), sag kenarda ince isik, ust yuzde hafif. Pisirilmis golge dokusu kavanozda kullanilmaz (silindirde serit yapiyordu). Ayar: `?mcH=` `?mcB=` `?mcW=` `?mcK=`; eski: `?matcap=0`.
+- kavanoz2.py: 40 dilim (dar bant dilimler arasinda zikzak yapiyordu), govdenin iki ucunda ara halka (normal dik, bant duz), kapakta 20 beyaz + 20 renkli ince dilim, 0.15 kalinlik (referans). 1036 ucgen (uret 830 sinirinin disinda, kendi yapiyor).

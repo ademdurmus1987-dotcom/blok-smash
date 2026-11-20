@@ -61,13 +61,44 @@ if (!/[?&]b2=0/.test(location.search)) {
   }
   LISTE.dalga = ['blok2/silindir', 0.2, '#5b8cf0', { govde: '#4f86f2', cila: 1, env: 0.55, bant: 1 }];
 }
-const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 9 : 1);
+const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 12 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)
   const BG = +(new URLSearchParams(location.search).get('bantG') || (/[?&]yayvan=0/.test(location.search) ? 3 : 4)), BR = +(new URLSearchParams(location.search).get('bantR') || (/[?&]yayvan=0/.test(location.search) ? 0.16 : 0.26));
   const PG = +(new URLSearchParams(location.search).get('parlaG') || 1.2);   // v9.7: studyo yansima gucu
   const GLB = {}, HAZ = {};
+  // v10.31b (Adem: 'referansa yaklasamamis'): kavanozlar referanstaki gibi BOYALI ISIKLA (matcap) cizilir. Gercekci isik koyu kenar ve dar
+  // parlama veriyordu; referans mobil oyunlarin yontemi: yuzeyin kameraya gore yonune bakip onceden cizilmis bir kureden renk okunur.
+  // MC: carpim (govde rengi korunur, sol yari acik, sag ve alt hafif koyu), MH: ustune beyaz (sol-orta genis yumusak bant + ince sert cekirdek,
+  // sag kenarda ince isik, ust yuzde hafif parlaklik). Golge almaz (referanstaki gibi temiz). Ayar: ?mcH= parlama gucu, ?mcB= bant yeri. Eski: ?matcap=0
+  const Qs = new URLSearchParams(location.search), MCAP = !/[?&]matcap=0/.test(location.search);
+  const mcH = +(Qs.get('mcH') || 0.85), mcB = +(Qs.get('mcB') || -0.4), mcK = +(Qs.get('mcK') || 1.05), mcW = +(Qs.get('mcW') || 1);
+  function mcTex(f) { const N = 256, c = document.createElement('canvas'); c.width = c.height = N; const x = c.getContext('2d'), im = x.createImageData(N, N);
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { const nx = (i + 0.5) / N * 2 - 1, ny = 1 - (j + 0.5) / N * 2, v = f(nx, ny), k = (j * N + i) * 4;
+      const r = Math.max(0, Math.min(1, v[0])), g = Math.max(0, Math.min(1, v.length > 1 ? v[1] : v[0])), b = Math.max(0, Math.min(1, v.length > 2 ? v[2] : v[0]));
+      im.data[k] = r * 255; im.data[k + 1] = g * 255; im.data[k + 2] = b * 255; im.data[k + 3] = 255; }
+    x.putImageData(im, 0, 0); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
+  const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  let MC = null, MH = null;
+  function mcHazirla() {
+    if (MC) return;
+
+    MC = mcTex((nx, ny) => { const v = 1.02 - 0.2 * sm(0.1, 1, nx) - 0.28 * sm(0.0, -1, ny) - 0.1 * sm(-0.8, -1, nx) + 0.04 * sm(0.5, 1, ny); return [v, v, v * 1.02]; });
+    MH = mcTex((nx, ny) => { const yb = 1 - sm(0.55, 0.95, Math.abs(ny)) * 0.6;
+      const bant = mcH * (0.6 * Math.exp(-(((nx - mcB) / (0.22 * mcW)) ** 2)) + 0.45 * Math.exp(-(((nx - mcB) / (0.07 * mcW)) ** 2))) * yb, cek = 0;   // yumusak genis parlama + ortada keskin cekirdek (ayni merkez)
+      const kenar = 0.28 * sm(0.74, 0.84, nx) * (1 - sm(0.9, 0.97, nx)) * yb, ust = 0.16 * sm(0.55, 0.9, ny);
+      const v = bant + cek + kenar + ust; return [v, v, v]; });
+    MH.colorSpace = THREE.NoColorSpace;
+  }
+  function mcMat(ozel) {
+    mcHazirla();
+    const m = new THREE.MeshMatcapMaterial({ matcap: MC, map: /[?&]mcMap=1/.test(location.search) ? ozel.map : null, vertexColors: ozel.vertexColors });   // pisirilmis golge dokusu silindirde seritler yapiyordu: kapali
+    m.onBeforeCompile = (sh) => { sh.uniforms.mcHl = { value: MH };
+      sh.fragmentShader = 'uniform sampler2D mcHl;\n' + sh.fragmentShader.replace('vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb;',
+        'vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb * ' + mcK.toFixed(3) + '; outgoingLight = mix(outgoingLight, vec3(1.0), clamp(texture2D(mcHl, uv).r, 0.0, 1.0));'); };
+    m.customProgramCacheKey = () => 'mcHl' + mcK; m.userData.yeni = 1; return m;
+  }
   // butun dosyalar acilista paralel iner (her biri 20-80 KB); bolum kurulmadan once beklenir
   function yukle() {
     if (!B3) return Promise.resolve();
@@ -92,7 +123,7 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
     if (o.kav && KENV) { ozel.envMap = KENV; ozel.envMapIntensity = o.kenv || 2.2; ozel.roughness = o.krough || 0.2; }   // v10.31: kavanoz studyosu
     else if (o.bant && JENV) { ozel.envMap = JENV; ozel.envMapIntensity = BG; ozel.roughness = BR; }   // v9.8: genis parlama bandi (karanlik studyo)
     else if (o.cila && SENV && SENV !== ENV) { ozel.envMap = SENV; ozel.envMapIntensity = (o.env || 0.4) * PG; }   // v9.7: studyo yansimasi
-    const mat = o.cila ? new THREE.MeshPhysicalMaterial(Object.assign(ozel, { clearcoat: 1, clearcoatRoughness: SENV && SENV !== ENV ? 0.035 : 0.08 }, SENV && SENV !== ENV ? { ior: IOR } : {})) : new THREE.MeshStandardMaterial(ozel);   // v9.6: cilali (clearcoat) yeni set
+    const mat = o.kav && MCAP ? mcMat(ozel) : o.cila ? new THREE.MeshPhysicalMaterial(Object.assign(ozel, { clearcoat: 1, clearcoatRoughness: SENV && SENV !== ENV ? 0.035 : 0.08 }, SENV && SENV !== ENV ? { ior: IOR } : {})) : new THREE.MeshStandardMaterial(ozel);   // v9.6: cilali (clearcoat) yeni set
     if (o.cila) mat.userData.yeni = 1;   // v10.2: oyun.js cilaMat ikinci kez cilalamasin
     return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: L[2], roughness: 0.6 }) });
   }

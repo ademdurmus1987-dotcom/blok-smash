@@ -11,30 +11,31 @@ _src = _src[:_src.rindex('\nmain2()')]   # yalniz tanimlar (yeni_bloklar main2 c
 exec(compile(_src, 'yeni_bloklar.py', 'exec'))
 
 BEYAZ = renk('#fbf6ee')
+KALIN = '--kalin' in sys.argv   # v10.31 ilk hal: kalin kapak, genis dilim
 
 def kav2(ad, hS, olc=1):
-    SS = S * olc; k = hS; SEG = 24
+    # v10.31c: 40 dilim (dar parlama bandi dilimler arasinda zikzak yapmasin), az halka. Kapakta 20 beyaz + 20 renkli ince dilim.
+    SS = S * olc; k = hS; SEG = 40
     yb, yt = -0.5 * k, 0.5 * k
-    kh = 0.2; ka = yt - kh            # kapak: ust 0.2 (kalin), alt kenari ka
-    bo = ka - 0.035                    # boyun ust
-    cizgi = lambda j: BEYAZ if (j // 2) % 2 == 0 else GOVDE   # 6 beyaz + 6 renkli dilim
+    kh = 0.15; ka = yt - kh; bo = ka - 0.035
+    cizgi = lambda j: BEYAZ if j % 2 == 0 else GOVDE
     R = 0.47
     prof = [
-        (0.43, yb, GOVDE), (0.462, yb + 0.03, GOVDE), (R, yb + 0.09, GOVDE),                                   # yuvarlak dip
-        (R, bo - 0.17, GOVDE), (0.455, bo - 0.09, GOVDE), (0.405, bo - 0.02, GOVDE), (0.39, bo, GOVDE),       # yuvarlak omuz -> boyun
-        (0.39, ka - 0.004, cizgi),                                                                             # boyun (kapagin altinda)
-        (0.455, ka, cizgi), (0.49, ka + 0.025, cizgi), (0.495, ka + 0.06, cizgi), (0.495, yt - 0.06, cizgi),  # tirtikli kapak
-        (0.49, yt - 0.03, BEYAZ), (0.465, yt - 0.006, BEYAZ), (0.42, yt, GOVDE)                                 # beyaz dudak, ust yuz govde renginde
+        (0.42, yb, GOVDE), (R, yb + 0.06, GOVDE), (R, yb + 0.1, GOVDE), (R, bo - 0.19, GOVDE), (R, bo - 0.15, GOVDE),   # ara halkalar: govde yuzu duz dik normal
+        (0.43, bo - 0.045, GOVDE), (0.39, bo, GOVDE),   # dip, govde, omuz
+        (0.39, ka - 0.004, cizgi), (0.475, ka + 0.008, cizgi), (0.495, ka + 0.04, cizgi), (0.495, yt - 0.04, cizgi),   # boyun, tirtikli kapak
+        (0.47, yt - 0.004, BEYAZ), (0.42, yt, GOVDE)                                                                    # beyaz dudak, ust yuz
     ]
     prof = [(rr * SS, y * SS, c) for rr, y, c in prof]
-    dalga = {i: 0.95 for i in (9, 10, 11)}   # tirtik: tek dilimler iceride
-    P = [torna(prof, SEG, dalga)]
-    return uret(ad, P, 0.1, keskin=70.0, klasor=BLOK2)
+    P = [torna(prof, SEG, {i: 0.975 for i in (8, 9, 10)})]
+    print('==', ad); ob = nesne(ad, P, 70.0); print('  ucgen', len(ob.data.polygons))   # uret'in 830 siniri 40 dilimde biraz asilir (~876)
+    uv_ac(ob); img = pisir(ob, ad); malzeme(ob, ad, img, 0.1); aktar(ob, ad, BLOK2); ob.hide_render = True
+    return ob
 
 def main2():
     bpy.ops.wm.read_factory_settings(use_empty=True); dunya()
     T = {'kav2_1': lambda: kav2('kav2_1', 1), 'kav2_2': lambda: kav2('kav2_2', 2), 'kav2_3': lambda: kav2('kav2_3', 3), 'kav2_B': lambda: kav2('kav2_B', 1, 2)}
-    sec = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else list(T)
+    sec = [a for a in (sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []) if a in T] or list(T)
     for a in sec: T[a]()
 
 main2()
