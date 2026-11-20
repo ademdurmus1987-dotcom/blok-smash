@@ -2011,7 +2011,7 @@ function pAyak(q, sk, h) {
   u.zon = (zn, dip) => {   // ayagin bastigi zemin: su ise taban/golge/set gizli, sutun suya girer
     const su = zn === 'su', yum = zn === 'kum' || zn === 'kar';
     for (const t of u.taban) t.visible = !su; for (const go of u.golge) go.visible = !su; for (const k of u.kopuk) { k.visible = su; k.position.y = dip + 0.05; k.scale.setScalar(1.45); k.material.opacity = 0.9; }
-    for (const s of u.set) { s.visible = yum; if (yum) pSetRenk(s, zn); }
+    for (const s of u.set) { s.visible = false; if (yum && Q.get('set') === '1') { s.visible = true; pSetRenk(s, zn); } }   // v10.24 (Adem: 'ayak dibinde ay seklinde isik'): set halkasinin on yarisi isik alip acik renkli hilal gibi parliyordu; kapali. Eski: ?set=1
   };
   u.upd(h); return G;
 }
