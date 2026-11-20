@@ -73,7 +73,7 @@ if (!/[?&]b2=0/.test(location.search)) {
   const GR = [[/^(oy[KYMSPTNB]|uz\d|kr3|ksSandik|ksKalas|ksDirek|ksFici|ksTNT)/, 'yari'], [/^(dalga|ksSutun|ksMorSutun)/, 'parlak'], [/^(ksTas|ksKemer)/, 'mat'], [/^(oyA|ksYildiz)$/, 'metal']];
   for (const [k, L] of Object.entries(LISTE)) { if (L[3] && L[3].kav) continue; const g = GR.find(([r]) => r.test(k)); if (g) L[3] = Object.assign({}, L[3] || {}, { mc: g[1] }, /^ksFici/.test(k) ? { mcMap: 1 } : {}); }   // fici rengi dokuda
 }
-const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 16 : 1);
+const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 17 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)
@@ -151,7 +151,7 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
     let geo = G.geo;
     if (o.govde) {
       geo = G.geo.clone(); const c = geo.attributes.color, kr = new THREE.Color(o.govde);
-      const ka = kr.clone().lerp(new THREE.Color(1, 1, 1), +(new URLSearchParams(location.search).get('cerA') || 0.2));   // v10.35: acik ton (cerceve, pati)
+      const cq = new URLSearchParams(location.search), ka = cq.get('cerA') ? kr.clone().lerp(new THREE.Color(1, 1, 1), +cq.get('cerA')) : kr.clone().offsetHSL(0, +(cq.get('cerS') || 0.06), +(cq.get('cerL') || 0.07));   // v10.35b: acik ton rengi soldurmadan (HSL: ayni doygunluk, biraz acik). Eski: ?cerA=0.2
       if (c) for (let i = 0; i < c.count; i++) { const x = c.getX(i), y = c.getY(i), z = c.getZ(i);
         if (x > 0.97 && y > 0.97 && z > 0.97) c.setXYZ(i, kr.r, kr.g, kr.b);
         else if (x > 0.97 && y < 0.03 && z > 0.97) c.setXYZ(i, ka.r, ka.g, ka.b); }   // mor isaret (1,0,1) = turun acik tonu

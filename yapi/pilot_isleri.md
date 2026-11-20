@@ -369,3 +369,4 @@
 - Patili kupler (oyK..oyT) artik sekil kutuphanesi plakasi yerine kup3 (oyun.js ESLE).
 - Dürüst: kupte cerceve/girinti rakibe yakin ama renk eskisinden biraz soluk; kavanozda kapak daha iyi, govde omzu eskisinden daha az yuvarlak. Karsilastirma: rapor/resim/v1035_oyunda.jpg.
 - Eski hal: ?b35=0. blok3b.js?v=24, oyun.js?v=188, CACHE v136.
+- v10.35b (ayni gun, Adem: 'evet, duzelt'): cerceve acik tonu artik HSL ile (ayni doygunluk, +0.07 aciklik; beyaza karistirma rengi solduruyordu): kupler eskisi kadar canli. Ayar ?cerS= ?cerL=, onceki hal ?cerA=0.2. Kavanoz govdesi tornada (yuvarlak dip ve omuz, kisa boyun; kup3.py torna_govde). Karsilastirma: rapor/resim/v1035b_oyunda.jpg. blok3b.js?v=25, oyun.js?v=189, CACHE v137.

@@ -67,11 +67,25 @@ def kup3():
     for o in p: boya(o, BEY)   # krem pati: 30 px'te okunur (ayni renk pati kayboluyordu)
     return birlestir('kup3', [cer, ic] + p, x, 0.5)
 
+def torna_govde(x, Hg, olc):
+    """kavanoz govdesi tornada: genis yuvarlak dip, dik govde, dolgun omuz, kisa boyun (kapak ustune oturur)"""
+    import bmesh
+    o_ = olc; prof = [(0.0, 0.0), (0.30, 0.0), (0.38, 0.015), (0.425, 0.05), (0.45, 0.11), (0.455, 0.18),
+                      (0.455, Hg / o_ - 0.2), (0.445, Hg / o_ - 0.12), (0.41, Hg / o_ - 0.06), (0.37, Hg / o_ - 0.02), (0.36, Hg / o_), (0.0, Hg / o_)]
+    bm = bmesh.new(); vs = [bm.verts.new((r * o_, 0, y * o_)) for r, y in prof]
+    es = [bm.edges.new((vs[i], vs[i + 1])) for i in range(len(vs) - 1)]
+    bmesh.ops.spin(bm, geom=vs + es, cent=(0, 0, 0), axis=(0, 0, 1), angle=math.tau, steps=40, use_merge=True)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+    me = bpy.data.meshes.new('govde'); bm.to_mesh(me); bm.free()
+    g = bpy.data.objects.new('govde', me); bpy.context.scene.collection.objects.link(g); g.location = (x, 0, 0)
+    bpy.context.view_layer.objects.active = g; bpy.ops.object.select_all(action='DESELECT'); g.select_set(True)
+    bpy.ops.object.transform_apply(location=True); bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT'); bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.object.mode_set(mode='OBJECT')
+    return g
+
 def kav3(ad, h, olc=1):
     """h: kup cinsinden boy (1, 2, 3); olc: buyuk kavanozda 2. Govde + dik cizgili kapak (20 serit beyaz / govde rengi)."""
     x = 30.0; H = h * olc; R = 0.42 * olc; kh = 0.26 * olc
-    bpy.ops.mesh.primitive_cylinder_add(vertices=40, radius=R, depth=H - kh * 0.6, location=(x, 0, (H - kh * 0.6) / 2)); g = bpy.context.active_object
-    bev(g, 0.16 * olc, 5); boya(g, GOV)
+    g = torna_govde(x, H - kh * 0.55, olc); boya(g, GOV)   # v10.35b: yuvarlak dip ve omuz (eski kav2 gibi)
     bpy.ops.mesh.primitive_cylinder_add(vertices=40, radius=0.46 * olc, depth=kh, location=(x, 0, H - kh / 2)); k = bpy.context.active_object
     me = k.data; a = me.color_attributes.new('Col', 'FLOAT_COLOR', 'CORNER'); me.color_attributes.active_color = a
     for f in me.polygons:
