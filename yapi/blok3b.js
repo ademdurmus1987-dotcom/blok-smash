@@ -124,13 +124,14 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
         'vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb * ' + K.toFixed(3) + '; ' + karis); };
     const ck = 'mcHl' + (c ? c.ad + (c.map ? 'm' : '') : '') + K + '_' + S + '_' + T; m.customProgramCacheKey = () => ck; m.userData.yeni = 1; return m;
   }
+  // v10.35c (Adem: 'soluk duruyor'): olculen doygunluk kupte 0.71 -> 0.84, kavanozda 0.57 -> 0.79 (rakip 0.78): parlama beyaza gitmez (T kucuk).
   // malzeme gruplari (Adem'in istedigi): kavanoz parlak, kup ve tahta yari, silindir parlak, tas mat, altin ve engel metal. Her biri adresten ayarlanir:
   // ?kvAd= ?kvK= ?kvS= ?kvT=  (kavanoz), ?yaAd= ?yaK= ... (yari), ?paAd= (silindir), ?maAd= (tas), ?meAd= (metal)
   const grup = (on, ad, K, S, T) => ({ ad: Qs.get(on + 'Ad') || ad, K: qn(on + 'K', K), S: qn(on + 'S', S), T: qn(on + 'T', T) });
   const MCG = {
-    kav: grup('kv', 'parlakE', 1.25, 0.9, 0.3),
-    yari: grup('ya', 'yariK', 1.2, 0.85, 0.45),
-    parlak: grup('pa', 'parlakE', 1.2, 0.75, 0.35),
+    kav: grup('kv', 'parlakE', 1.28, 0.6, 0),
+    yari: grup('ya', 'yariK', 1.32, 0.7, 0.15),
+    parlak: grup('pa', 'parlakE', 1.25, 0.6, 0.1),
     mat: grup('ma', 'matK', 1.0, 0.3, 0.25),
     metal: grup('me', 'metalK', 1.5, 0.9, 0.5)
   };
@@ -151,7 +152,7 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
     let geo = G.geo;
     if (o.govde) {
       geo = G.geo.clone(); const c = geo.attributes.color, kr = new THREE.Color(o.govde);
-      const cq = new URLSearchParams(location.search), ka = cq.get('cerA') ? kr.clone().lerp(new THREE.Color(1, 1, 1), +cq.get('cerA')) : kr.clone().offsetHSL(0, +(cq.get('cerS') || 0.06), +(cq.get('cerL') || 0.07));   // v10.35b: acik ton rengi soldurmadan (HSL: ayni doygunluk, biraz acik). Eski: ?cerA=0.2
+      const cq = new URLSearchParams(location.search), ka = cq.get('cerA') ? kr.clone().lerp(new THREE.Color(1, 1, 1), +cq.get('cerA')) : kr.clone().offsetHSL(0, +(cq.get('cerS') || 0.08), +(cq.get('cerL') || 0));   // v10.35c: aciklik 0 (Adem: 'soluk duruyor')   // v10.35b: acik ton rengi soldurmadan (HSL: ayni doygunluk, biraz acik). Eski: ?cerA=0.2
       if (c) for (let i = 0; i < c.count; i++) { const x = c.getX(i), y = c.getY(i), z = c.getZ(i);
         if (x > 0.97 && y > 0.97 && z > 0.97) c.setXYZ(i, kr.r, kr.g, kr.b);
         else if (x > 0.97 && y < 0.03 && z > 0.97) c.setXYZ(i, ka.r, ka.g, ka.b); }   // mor isaret (1,0,1) = turun acik tonu
