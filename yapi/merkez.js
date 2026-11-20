@@ -14,6 +14,7 @@ import { ADA, adaKur } from './ada.js?v=1';
 import { insaKur } from './insa.js?v=2';   // v7.2: (Adem 18 Kas) ayri Insa sayfasi (gemi 10 asama)   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
 const $ = (id) => document.getElementById(id);
 const ESKI_MENU = !/[?&]ada=1/.test(location.search);   // v7.1: (Adem 18 Kas) ada ana sayfadan kaldirildi (ayri sayfa olacak); deneme: ?ada=1
+const ANAVID = !/[?&]anavid=0/.test(location.search);   // v10.29: ana sayfa videosu
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const I3 = (n, c, st) => '<img class="i3 ' + (c || '') + '" src="ikon/3b/' + n + '.webp?v=1" alt="" draggable="false"' + (st ? ' style="' + st + '"' : '') + '>';   // v3.17: Gemini 3B ikonlar
 const svg = (ic, vb = 48) => '<svg viewBox="0 0 ' + vb + ' ' + vb + '" aria-hidden="true">' + ic + '</svg>';
@@ -76,7 +77,7 @@ export function merkezKur(A) {
   // ---------------- iskelet ----------------
   const M = document.createElement('div'); M.id = 'merkez';
   let pus = ''; for (let i = 0; i < 14; i++) pus += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;--dx:' + ((Math.random() - 0.5) * 80).toFixed(0) + 'px;animation-duration:' + (7 + Math.random() * 8).toFixed(1) + 's;animation-delay:' + (-Math.random() * 14).toFixed(1) + 's"></i>';
-  M.innerHTML = '<div class="m-bg"></div><div class="m-pus">' + pus + '</div>' +
+  M.innerHTML = '<div class="m-bg">' + (ANAVID ? '<video class="m-vid" muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture><source src="fon/ana_ada2.webm?v=1" type="video/webm; codecs=vp9"><source src="fon/ana_ada2.mp4?v=1" type="video/mp4"></video>' : '') + '</div><div class="m-pus">' + pus + '</div>' +
     '<header class="m-ust"><button class="m-prof" id="m-prof" aria-label="Profil"><span class="m-av" id="m-av"></span><span class="m-pt"><b id="m-ad"></b><small id="m-lv"></small></span></button>' +
     '<div class="m-hap" id="m-ahap"><i class="coin"></i><b id="m-altin">0</b><button class="m-arti" id="m-arti" aria-label="Mağaza">+</button></div>' +
     '<div class="m-hap">' + I3('yildiz') + '<b id="m-yil">0</b></div><button class="m-yuv" id="m-ayar" aria-label="Ayarlar">' + I3('disli') + '</button></header>' +
@@ -588,7 +589,11 @@ export function merkezKur(A) {
 
   // ---------------- ac / kapat ----------------
   // o.ilk: oyun yeni acildi (gunluk odul karti cikar); o.ucan: kazanilan altinlar sayaca ucar
+  // v10.29 (Adem: ana sayfa resminin Gemini videosu): dalgalar, gemi, bayraklar, martilar. 9 sn dikissiz dongu (son 1 sn basa karistirildi).
+  // Resim altta kalir (video yuklenene kadar o gorunur); ana sayfa kapaninca video durur (oyunda pil yemesin). Eski (yalniz resim): ?anavid=0
+  function anaVid(on) { const v = M.querySelector('.m-vid'); if (!v) return; if (on) { v.muted = true; const r = v.play(); if (r && r.catch) r.catch(() => {}); } else v.pause(); }
   function ac(o = {}) {
+    anaVid(true);
     durak = false; sekme('ana', true); if (ADK) ADK.goster(true); ciz(); if (o.sekme) { hOdak = o.odak || 0; setTimeout(() => sekme(o.sekme), 30); }   /* v5.0: final sahnesinden haritaya */ acik = true; M.classList.remove('cik'); M.classList.add('on', 'gir'); setTimeout(() => M.classList.remove('gir'), 450);
     tilkiKur().then((t) => { if (t) { t.boyut(); if (o.ucan) t.t.oyna('sevin', 2.2); else t.t.oyna('selam', 1.6); } });
     A.muzikBasla();
@@ -599,7 +604,7 @@ export function merkezKur(A) {
     if (o.ucan) { const u = o.ucan; altinYaz(u.eski); setTimeout(() => ucur(u.x, u.y, u.n, u.eski, u.yeni), 380); setTimeout(sonraki, 1900); }
     else setTimeout(sonraki, o.ilk ? 900 : 300);
   }
-  function kapat() { acik = false; if (ADK) setTimeout(() => { if (!acik) ADK.goster(false); }, 460); M.classList.add('cik'); setTimeout(() => { if (!acik) M.classList.remove('on', 'cik'); }, 440); }
+  function kapat() { setTimeout(() => { if (!acik) anaVid(false); }, 460); acik = false; if (ADK) setTimeout(() => { if (!acik) ADK.goster(false); }, 460); M.classList.add('cik'); setTimeout(() => { if (!acik) M.classList.remove('on', 'cik'); }, 440); }
 
   $('m-prof').onclick = () => { tik(); profilKarti(); };
   $('m-ayar').onclick = () => { tik(); ayarKarti(false); };

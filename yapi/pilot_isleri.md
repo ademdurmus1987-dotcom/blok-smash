@@ -325,3 +325,7 @@
 
 ## v10.28 (20 Kas 2026) — yeni ana sayfa resmi
 - Adem'in koy resmi (gemi, kuru kafa kayasi, gozetleme kulesi, hazine) ana sayfa fonu: fon/ana_ada2.webp (1080x1920, 395 KB). Foxi ortadaki cimende. Eski resim fon/ana_ada.webp duruyor (merkez.css .m-bg).
+
+## v10.29 (20 Kas 2026) — ana sayfa videosu
+- Adem'in Gemini videosu (ana sayfa resminden, 10 sn, 720x1280, filigran yok): dongu yeri son 1 sn basa karistirilarak (xfade) 9 sn dikissiz donguye cevrildi; ses atildi. fon/ana_ada2.webm (VP9, 875 KB) + .mp4 (H.264, 1.37 MB, faststart).
+- merkez.js: .m-bg icinde sessiz, donen video (resim altta, video yuklenene kadar o). Ana sayfa acilinca oynar, kapaninca (oyunda) durur. Eski: `?anavid=0`.
