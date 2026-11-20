@@ -347,3 +347,7 @@
 - uretici/blender/matcap.py: ortografik kamera + kure, isik yayan paneller (sol onde genis dikey ana panel, ustte genis panel, sag arkada ince kenar, sag onde zayif dolgu). Her malzeme icin iki gecis: _d (yayinik, normalize 0.62..1; oyunda govde rengiyle carpilir) ve _s (yalniz parlama, siyah gok, dolgu yok; oyunda beyaz olarak karisir). doku/matcap/{parlak,yari,mat,metal}_{d,s}.png (256 px).
 - Kavanozlar parlak matcap ile (blok3b.js mcYukle). Parlama gucu 0.45 (`?mcS=`). Kodla cizilen onceki matcap: `?mc=kod`; matcap tamamen kapali: `?matcap=0`.
 - yari / mat / metal uretildi, henuz kullanilmiyor (kup, tahta, tas, altin icin sirada).
+
+## v10.33 (20 Kas 2026) — matcap referansa yaklastirildi
+- matcap.py MC2 duzeni (ortam degiskenleriyle ayar): sol onde dar ana panel + ortasinda keskin cekirdek serit, ustte panel, kenar isigi kurenin tam kenarinda (arkaya alindi), dolgu cok zayif, gok dolgusu az. Uc varyant denendi; referansla ayni renkte (kvRenk) karsilastirinca C secildi: doku/matcap/parlakC_{d,s}.png.
+- blok3b.js: kavanoz matcapi parlakC, parlama 1.3, govde parlakligi 1.45. Deneme: `?mcAd=<ad>`, `?mcS=`, `?mcK=`, `?kvRenk=rrggbb` (butun kavanozlar o renkte). Onceki hal: `?mcAd=parlak&mcS=0.45&mcK=1.05`.

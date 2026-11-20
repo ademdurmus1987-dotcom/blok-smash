@@ -32,13 +32,15 @@ const LISTE = {
 if (!/[?&]b2=0/.test(location.search)) {
   const YENI = !/[?&]parla=0/.test(location.search);   // v9.7: biraz daha acik mor, altin sari; kavanozda gri yansima azaldi
   const R2 = { K: '#e3242f', M: '#2b6ef0', S: '#ffcc00', Y: '#1fae48', P: YENI ? '#9842f0' : '#8a34e6', T: '#f2620f', N: '#ff4aa6', A: '#8fc8ff' };
-  for (const [c, r] of Object.entries(R2)) {
+  for (let [c, r] of Object.entries(R2)) {
     for (const n of [1, 2, 3, 4]) LISTE['uz' + n + c] = ['blok2/cubuk' + n, 0.18, r, { govde: r, cila: 1, env: 0.75 }];
     // v10.31 (Adem: 'siseleri gelistir, referans kalitesi'): yeni kavanoz modeli (uretici/blender/kavanoz2.py: kalin tirtikli kapak, boyun, yuvarlak omuz,
     // pati ve boyali parlama yok) ve daha az ic isik (golge ve hacim gorunsun). Eski: ?sise=eski
     const KV2 = !/[?&]sise=eski/.test(location.search), KE = +((/[?&]kemis=([0-9.]+)/.exec(location.search) || [])[1] || 0.14);
     const KG = +((/[?&]kenv=([0-9.]+)/.exec(location.search) || [])[1] || 4.5), KR = +((/[?&]krough=([0-9.]+)/.exec(location.search) || [])[1] || 0.14);
-    const kvo = YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: KV2 ? KE : 0.26, bant: 1, kav: KV2 ? 1 : 0, kenv: KG, krough: KR } : { govde: r, cila: 1, env: 0.95 };
+    const KVR = (/[?&]kvRenk=([0-9a-f]{6})/.exec(location.search) || [])[1];   // deneme: butun kavanozlar bu renkte
+    const rk = KVR ? '#' + KVR : r;
+    const kvo = YENI ? { govde: rk, cila: 1, env: 0.7, emis: rk, emisG: KV2 ? KE : 0.26, bant: 1, kav: KV2 ? 1 : 0, kenv: KG, krough: KR } : { govde: r, cila: 1, env: 0.95 };
     LISTE['kj' + c] = [KV2 ? 'blok2/kav2_1' : 'blok2/kavanoz1', 0.1, r, kvo];
     LISTE['kvU' + c] = [KV2 ? 'blok2/kav2_2' : 'blok2/kavanoz2', 0.1, r, kvo];
     LISTE['kvL' + c] = [KV2 ? 'blok2/kav2_3' : 'blok2/kavanoz3', 0.1, r, kvo];   // v10.3
@@ -73,7 +75,7 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   // MC: carpim (govde rengi korunur, sol yari acik, sag ve alt hafif koyu), MH: ustune beyaz (sol-orta genis yumusak bant + ince sert cekirdek,
   // sag kenarda ince isik, ust yuzde hafif parlaklik). Golge almaz (referanstaki gibi temiz). Ayar: ?mcH= parlama gucu, ?mcB= bant yeri. Eski: ?matcap=0
   const Qs = new URLSearchParams(location.search), MCAP = !/[?&]matcap=0/.test(location.search);
-  const mcH = +(Qs.get('mcH') || 0.85), mcB = +(Qs.get('mcB') || -0.4), mcK = +(Qs.get('mcK') || 1.05), mcW = +(Qs.get('mcW') || 1);
+  const mcH = +(Qs.get('mcH') || 0.85), mcB = +(Qs.get('mcB') || -0.4), mcK = +(Qs.get('mcK') || (/[?&]mc=kod/.test(location.search) ? 1.05 : 1.45)), mcW = +(Qs.get('mcW') || 1);
   function mcTex(f) { const N = 256, c = document.createElement('canvas'); c.width = c.height = N; const x = c.getContext('2d'), im = x.createImageData(N, N);
     for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { const nx = (i + 0.5) / N * 2 - 1, ny = 1 - (j + 0.5) / N * 2, v = f(nx, ny), k = (j * N + i) * 4;
       const r = Math.max(0, Math.min(1, v[0])), g = Math.max(0, Math.min(1, v.length > 1 ? v[1] : v[0])), b = Math.max(0, Math.min(1, v.length > 2 ? v[2] : v[0]));
@@ -82,12 +84,12 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   let MC = null, MH = null;
   // v10.32: matcap Blender stüdyosundan (uretici/blender/matcap.py -> doku/matcap/<ad>_d.png golgelendirme, _s.png parlama). Kodla cizilen eski hal: ?mc=kod
-  const MCB = !/[?&]mc=kod/.test(location.search), MCT = {}, mcS = +(Qs.get('mcS') || (MCB ? 0.45 : 1));
+  const MCB = !/[?&]mc=kod/.test(location.search), MCVAR = 'parlakC', MCT = {}, mcS = +(Qs.get('mcS') || (MCB ? 1.3 : 1));
   function mcYukle(ad) { if (MCT[ad]) return MCT[ad]; const L = new THREE.TextureLoader(), d = L.load('doku/matcap/' + ad + '_d.png?v=1'), s2 = L.load('doku/matcap/' + ad + '_s.png?v=1');
     d.colorSpace = THREE.SRGBColorSpace; s2.colorSpace = THREE.NoColorSpace; return (MCT[ad] = [d, s2]); }
   function mcHazirla() {
     if (MC) return;
-    if (MCB) { [MC, MH] = mcYukle('parlak'); return; }
+    if (MCB) { [MC, MH] = mcYukle(Qs.get('mcAd') || MCVAR); return; }
 
     MC = mcTex((nx, ny) => { const v = 1.02 - 0.2 * sm(0.1, 1, nx) - 0.28 * sm(0.0, -1, ny) - 0.1 * sm(-0.8, -1, nx) + 0.04 * sm(0.5, 1, ny); return [v, v, v * 1.02]; });
     MH = mcTex((nx, ny) => { const yb = 1 - sm(0.55, 0.95, Math.abs(ny)) * 0.6;

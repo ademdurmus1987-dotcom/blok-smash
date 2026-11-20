@@ -4,6 +4,8 @@
 #   <ad>_d.png : yalniz yayinik (diffuse) isik, beyaz kure -> oyunda govde rengiyle CARPILIR (renk solmaz, hacim verir)
 #   <ad>_s.png : yalniz parlama (glossy), siyah zemin -> oyunda ustune BEYAZ olarak karisir
 # Isiklar: sol onde buyuk yumusak ana panel (parlama bandi), ustte genis panel (ust yuzler), sag arkada ince kenar isigi, hafif gok dolgu.
+# v10.33 secilen kavanoz matcap'i (parlakC): MC2=1 AD=C KW=1.2 KG=5 CW=0.25 CG=35 RG=35 WD=0.2 LO=0.5 GA=1.3 python -I matcap.py -- parlak
+#   oyunda mcS 1.3 (parlama), mcK 1.45 (govde parlakligi).
 # Cikti: yapi/doku/matcap/. Oyun: blok3b.js (kavanoz ve digerleri).
 import bpy, math, os, sys
 BURASI = os.path.dirname(os.path.abspath(__file__))
@@ -52,7 +54,15 @@ def panel(ad, konum, boyut, guc):
     o.data.materials.append(m); o.visible_camera = False; o['guc'] = guc
     return o
 
+E = lambda k, v: float(os.environ.get(k, v))
 def isiklar(gen):
+    if os.environ.get('MC2'):   # v10.33 duzen: dar ana panel + keskin cekirdek serit, guclu kenar isigi
+        panel('ana', (-3.0, -3.6, 0.3), (E('KW', 1.0), 7.0), E('KG', 6))
+        panel('cek', (-2.9, -3.7, 0.3), (E('CW', 0.22), 7.0), E('CG', 30))
+        panel('ust', (0.4, -2.2, 4.2), (4.0, 1.2), E('UG', 5))
+        panel('kenar', (E('RX', 3.4), E('RY', 3.4), 0.0), (E('RW', 0.5), 7.0), E('RG', 22))
+        panel('dolgu', (3.0, -4.5, -1.5), (4.0, 4.0), E('DG', 0.25))
+        return
     panel('ana', (-3.0, -3.6, 0.3), (2.4 * gen, 7.0), 9)          # sol onde dikey uzun panel: govdede genis parlama bandi
     panel('ust', (0.4, -2.2, 4.2), (5.0, 1.6), 6)                  # ustte genis panel: ust yuz, kapak
     panel('kenar', (4.2, 1.6, 0.0), (0.35, 7.0), 8)                # sag arkada ince kenar isigi
@@ -80,19 +90,20 @@ def duzelt(yol):
     im = bpy.data.images.load(yol); a = np.array(im.pixels[:], dtype=np.float32).reshape(N, N, 4)
     v = a[:, :, :3].mean(axis=2); ic = v > 0.001
     lo, hi = float(np.percentile(v[ic], 2)), float(np.percentile(v[ic], 99.5))
-    v = np.clip((v - lo) / max(hi - lo, 1e-6), 0, 1); v = 0.62 + 0.38 * v
+    v = np.clip((v - lo) / max(hi - lo, 1e-6), 0, 1); lo = E('LO', 0.62); v = v ** E('GA', 1.0); v = lo + (1 - lo) * v
     a[:, :, 0] = a[:, :, 1] = a[:, :, 2] = v; a[:, :, 3] = 1
     im.pixels.foreach_set(a.ravel()); im.filepath_raw = yol; im.file_format = 'PNG'; im.save()
 
 def main():
     sec = [a for a in (sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []) if a in MALZ] or list(MALZ)
+    ek = os.environ.get('AD', '')
     for ad in sec:
         puruz, g, gen = MALZ[ad]
         kure = sahne(); isiklar(gen)
         bg = bpy.context.scene.world.node_tree.nodes['Background']
-        guc_carp(0.28); malzeme(kure, 'd', puruz, 0); ciz(os.path.join(CIK, ad + '_d.png'))
+        bg.inputs['Strength'].default_value = E('WD', 1.0); guc_carp(0.28); malzeme(kure, 'd', puruz, 0); ciz(os.path.join(CIK, ad + ek + '_d.png'))
         bg.inputs['Strength'].default_value = 0; bpy.context.scene.world.node_tree.links.clear()   # parlama gecisi: siyah gok
-        guc_carp(g); bpy.data.objects['dolgu'].hide_render = True; malzeme(kure, 's', puruz, 0); ciz(os.path.join(CIK, ad + '_s.png'))
-        duzelt(os.path.join(CIK, ad + '_d.png'))
+        guc_carp(g); bpy.data.objects['dolgu'].hide_render = True; malzeme(kure, 's', puruz, 0); ciz(os.path.join(CIK, ad + ek + '_s.png'))
+        duzelt(os.path.join(CIK, ad + ek + '_d.png'))
 
 main()
