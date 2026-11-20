@@ -246,3 +246,7 @@
 - yapi/uretici/blender/logo3d.py: FOXI / SMASH harfleri ayri ayri 3B yazi nesnesi (Baloo 800, kalin pah = sisirilmis kenar, parlak vernik), egik ve zipli; iki satiri saran tek parca kabarik rozet (koyu mor dis, altin cerceve, mor ic; boolean birlesim), patili top; Cycles ile isik, saydam zemin -> yapi/ikon/logo3d.webp (640 genis, 28 KB).
 - Font: yazi/baloo_lat.woff2 -> fontTools instancer wght=800 -> TTF (betik bunu arguman olarak alir).
 - Eski logo: `?logo=eski`. (logo2.js SVG denemesi yedek olarak duruyor.)
+
+## v10.14 (20 Kas 2026) — Adem'in Gemini logosu
+- yapi/ikon/logo_foxi.webp: Adem'in yesil zeminli Gemini logosu (Foxi harflere tutunuyor, ahsap FOXI, tas SMASH, gulle ve kirintilar); yesil zemin oran anahtariyla ayiklandi (delik doldurma YOK: O'nun ici ve harf aralari saydam), 720 genis, 106 KB. Ana sayfada 250 px (kisa ekranda 210).
+- Blender logosu (ikon/logo3d.webp, logo3d.py) yedek olarak duruyor. Eski logo: `?logo=eski`.

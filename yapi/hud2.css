@@ -33,3 +33,6 @@ html.hud2 .m-prof{box-shadow:0 0 0 2px var(--h-k),0 4px 0 var(--h-g)!important}
 @media (max-height:700px){.m-logo2 .logo2{width:min(60vw,230px)}}
 .m-logo2 .logo3{display:block;width:min(80vw,320px);height:auto;margin:0 auto;filter:drop-shadow(0 8px 10px #0006)}
 @media (max-height:700px){.m-logo2 .logo3{width:min(64vw,250px)}}
+/* v10.14 Adem'in Gemini logosu (Foxi + ahsap FOXI + tas SMASH + gulle) */
+.m-logo2 .logo4{width:min(64vw,250px);margin-top:-8px}
+@media (max-height:760px){.m-logo2 .logo4{width:min(54vw,210px)}}
