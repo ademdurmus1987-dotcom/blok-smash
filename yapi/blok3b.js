@@ -81,8 +81,13 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
     x.putImageData(im, 0, 0); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
   const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   let MC = null, MH = null;
+  // v10.32: matcap Blender stüdyosundan (uretici/blender/matcap.py -> doku/matcap/<ad>_d.png golgelendirme, _s.png parlama). Kodla cizilen eski hal: ?mc=kod
+  const MCB = !/[?&]mc=kod/.test(location.search), MCT = {}, mcS = +(Qs.get('mcS') || (MCB ? 0.45 : 1));
+  function mcYukle(ad) { if (MCT[ad]) return MCT[ad]; const L = new THREE.TextureLoader(), d = L.load('doku/matcap/' + ad + '_d.png?v=1'), s2 = L.load('doku/matcap/' + ad + '_s.png?v=1');
+    d.colorSpace = THREE.SRGBColorSpace; s2.colorSpace = THREE.NoColorSpace; return (MCT[ad] = [d, s2]); }
   function mcHazirla() {
     if (MC) return;
+    if (MCB) { [MC, MH] = mcYukle('parlak'); return; }
 
     MC = mcTex((nx, ny) => { const v = 1.02 - 0.2 * sm(0.1, 1, nx) - 0.28 * sm(0.0, -1, ny) - 0.1 * sm(-0.8, -1, nx) + 0.04 * sm(0.5, 1, ny); return [v, v, v * 1.02]; });
     MH = mcTex((nx, ny) => { const yb = 1 - sm(0.55, 0.95, Math.abs(ny)) * 0.6;
@@ -96,8 +101,8 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
     const m = new THREE.MeshMatcapMaterial({ matcap: MC, map: /[?&]mcMap=1/.test(location.search) ? ozel.map : null, vertexColors: ozel.vertexColors });   // pisirilmis golge dokusu silindirde seritler yapiyordu: kapali
     m.onBeforeCompile = (sh) => { sh.uniforms.mcHl = { value: MH };
       sh.fragmentShader = 'uniform sampler2D mcHl;\n' + sh.fragmentShader.replace('vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb;',
-        'vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb * ' + mcK.toFixed(3) + '; outgoingLight = mix(outgoingLight, vec3(1.0), clamp(texture2D(mcHl, uv).r, 0.0, 1.0));'); };
-    m.customProgramCacheKey = () => 'mcHl' + mcK; m.userData.yeni = 1; return m;
+        'vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb * ' + mcK.toFixed(3) + '; outgoingLight = mix(outgoingLight, vec3(1.0), clamp(texture2D(mcHl, uv).r * ' + mcS.toFixed(3) + ', 0.0, 1.0));'); };
+    m.customProgramCacheKey = () => 'mcHl' + mcK + '_' + mcS; m.userData.yeni = 1; return m;
   }
   // butun dosyalar acilista paralel iner (her biri 20-80 KB); bolum kurulmadan once beklenir
   function yukle() {

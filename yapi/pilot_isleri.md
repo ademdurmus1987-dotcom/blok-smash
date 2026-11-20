@@ -342,3 +342,8 @@
 - Adem: 'referansa yaklasamamis, yan yana koy'. Yan yana: gercekci isik koyu kenar ve dar parlama veriyordu; referans mobil oyunlarin yontemi BOYALI ISIK (matcap).
 - blok3b.js mcMat: MeshMatcapMaterial + ikinci doku (MH) ustune beyaz karisim. MC: govde rengi korunur, sol acik, sag ve alt hafif koyu. MH: sol-ortada tek parlama (genis gauss + ayni merkezde keskin cekirdek), sag kenarda ince isik, ust yuzde hafif. Pisirilmis golge dokusu kavanozda kullanilmaz (silindirde serit yapiyordu). Ayar: `?mcH=` `?mcB=` `?mcW=` `?mcK=`; eski: `?matcap=0`.
 - kavanoz2.py: 40 dilim (dar bant dilimler arasinda zikzak yapiyordu), govdenin iki ucunda ara halka (normal dik, bant duz), kapakta 20 beyaz + 20 renkli ince dilim, 0.15 kalinlik (referans). 1036 ucgen (uret 830 sinirinin disinda, kendi yapiyor).
+
+## v10.32 (20 Kas 2026) — Blender matcap stüdyosu
+- uretici/blender/matcap.py: ortografik kamera + kure, isik yayan paneller (sol onde genis dikey ana panel, ustte genis panel, sag arkada ince kenar, sag onde zayif dolgu). Her malzeme icin iki gecis: _d (yayinik, normalize 0.62..1; oyunda govde rengiyle carpilir) ve _s (yalniz parlama, siyah gok, dolgu yok; oyunda beyaz olarak karisir). doku/matcap/{parlak,yari,mat,metal}_{d,s}.png (256 px).
+- Kavanozlar parlak matcap ile (blok3b.js mcYukle). Parlama gucu 0.45 (`?mcS=`). Kodla cizilen onceki matcap: `?mc=kod`; matcap tamamen kapali: `?matcap=0`.
+- yari / mat / metal uretildi, henuz kullanilmiyor (kup, tahta, tas, altin icin sirada).
