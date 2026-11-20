@@ -265,3 +265,7 @@
 
 ## v10.17 (20 Kas 2026) — Seker Diyari cikti
 - YSIRA 8 dunya (seker yok); eski 9'lu sira: `?seker=1`. Yeni genis manzarali fonlar Adem'in Gemini cizimleriyle gelecek (istemler sohbette).
+
+## v10.18 (20 Kas 2026) — ilk iki yeni genis fon
+- fon/yeni/tropik.webp (1. dunya 'Tropik Ada', kum, platform kumda cy 0.80, su sinir sy 0.75) ve fon/yeni/liman.webp (2. dunya 'Korsan Limani', her yer su). Adem'in cizimleri (CapCut AI); ust %6 kirpildi (filigran), 768:1376 oranina, 1080 genis.
+- Sira: tropik, liman, col, buz, gunbatimi, volkan, gece, magara. Eski: `?fon2=0`.
