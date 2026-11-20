@@ -361,3 +361,11 @@
 - Eski hal: ?mc2=0 (v10.33 gorunumu: kavanozda parlakC, digerleri cilali isik), ?kvYesil=0 (eski yesil), ?matcap=0 (matcap tamamen kapali).
 - Karsilastirma: uretici/rapor/resim/mc34_kavanoz.jpg, mc34_kup.jpg (once / simdi / referans, 390x844).
 - blok3b.js?v=20, oyun.js?v=184, CACHE v132.
+
+## v10.35 (21 Kas 2026) — rakip tarzi kup ve kavanoz denemesi (canli Blender)
+- Adem: 'altin kup ve kavanozu oyuna koyup deneyelim'. Ornekler canli Blender'da (BlenderMCP, uretici/blender/bl.py istemcisi) uretildi: uretici/blender/ornek_bloklar.py (onizleme/ornek_bloklar.png, rapor/resim/ornek_bloklar_rakip.jpg).
+- Oyun modeli: uretici/blender/kup3.py -> model/blok2/kup3.glb (patili kup: kalin cerceve 0.17, girintili ic, iri krem pati on/arka; 3460 ucgen), kav3_1/2/3/B.glb (kalin dik cizgili kapak 0.26; 1752 ucgen).
+- Altin cerceve oyunda butun duvari sariya ceviriyordu (turuncu kup cerceveden ayrilmiyordu): cerceve turun renginin ACIK tonu (rakip ornek_1 gibi). Yeni kose rengi isareti: (1,0,1) mor = turun acik tonu (blok3b.js, ?cerA= acik pay, 0.2). Ayni renk pati 30 px'te kayboluyordu: pati krem.
+- Patili kupler (oyK..oyT) artik sekil kutuphanesi plakasi yerine kup3 (oyun.js ESLE).
+- Dürüst: kupte cerceve/girinti rakibe yakin ama renk eskisinden biraz soluk; kavanozda kapak daha iyi, govde omzu eskisinden daha az yuvarlak. Karsilastirma: rapor/resim/v1035_oyunda.jpg.
+- Eski hal: ?b35=0. blok3b.js?v=24, oyun.js?v=188, CACHE v136.

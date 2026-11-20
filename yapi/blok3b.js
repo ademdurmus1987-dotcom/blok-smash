@@ -7,7 +7,10 @@ export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]
 const BUZ = { govde: '#2a8ef4', emis: '#0b48c0', emisG: 0.3, env: 0.4 };   // pilotta denendi: saydamlik ve guclu yansima buzu soluk gosteriyordu
-const KUP = (r) => ['pilot/pl_kup', 0.3, r, /[?&]kupcila=0/.test(location.search) ? { govde: r } : { govde: r, cila: 1, env: 0.55 }];   // v9.8: patili kup de cilali (?kupcila=0 eski)
+// v10.35 (Adem: 'altin kup ve kavanozu oyuna koyup deneyelim'): rakip tarzi kalin altin cerceveli, girintili renkli icli patili kup ve
+// dik cizgili kapakli kavanoz (uretici/blender/kup3.py, ornek_bloklar.py). Eski modeller: ?b35=0
+const B35 = !/[?&]b35=0/.test(location.search);
+const KUP = (r) => [B35 ? 'blok2/kup3' : 'pilot/pl_kup', 0.3, r, /[?&]kupcila=0/.test(location.search) ? { govde: r } : { govde: r, cila: 1, env: 0.55 }];   // v9.8: patili kup de cilali (?kupcila=0 eski)
 const SISE = (r) => ['blok/sise', 0.15, r, { govde: r, emis: r, emisG: 0.22, env: 0.8 }];   // cam: parlak, kendi isigi
 const TAS = (r) => ({ govde: r, emis: r, emisG: 0.32, env: 0.6, metal: 0.15 });
 const LISTE = {
@@ -43,10 +46,10 @@ if (!/[?&]b2=0/.test(location.search)) {
     const KYS = (/[?&]kvYesil=([0-9a-f]{6}|0)/.exec(location.search) || [])[1];
     const rk = KVR ? '#' + KVR : c === 'Y' && KYS !== '0' ? '#' + (KYS || '3ad23e') : r;
     const kvo = YENI ? { govde: rk, cila: 1, env: 0.7, emis: rk, emisG: KV2 ? KE : 0.26, bant: 1, kav: KV2 ? 1 : 0, kenv: KG, krough: KR } : { govde: r, cila: 1, env: 0.95 };
-    LISTE['kj' + c] = [KV2 ? 'blok2/kav2_1' : 'blok2/kavanoz1', 0.1, r, kvo];
-    LISTE['kvU' + c] = [KV2 ? 'blok2/kav2_2' : 'blok2/kavanoz2', 0.1, r, kvo];
-    LISTE['kvL' + c] = [KV2 ? 'blok2/kav2_3' : 'blok2/kavanoz3', 0.1, r, kvo];   // v10.3
-    LISTE['kvB' + c] = [KV2 ? 'blok2/kav2_B' : 'blok2/kavanozB', 0.1, r, kvo];
+    LISTE['kj' + c] = [KV2 ? (B35 ? 'blok2/kav3_1' : 'blok2/kav2_1') : 'blok2/kavanoz1', 0.1, r, kvo];
+    LISTE['kvU' + c] = [KV2 ? (B35 ? 'blok2/kav3_2' : 'blok2/kav2_2') : 'blok2/kavanoz2', 0.1, r, kvo];
+    LISTE['kvL' + c] = [KV2 ? (B35 ? 'blok2/kav3_3' : 'blok2/kav2_3') : 'blok2/kavanoz3', 0.1, r, kvo];   // v10.3
+    LISTE['kvB' + c] = [KV2 ? (B35 ? 'blok2/kav3_B' : 'blok2/kav2_B') : 'blok2/kavanozB', 0.1, r, kvo];
     LISTE['kr3' + c] = ['blok2/kiris3', 0.24, r, { govde: r, cila: 1, env: 0.5 }];
   }
   if (YENI) {   // v9.9: tas, buz, sandik da ayni yastik kenarli tarzda (yeni_bloklar.py tas_y / buz_y / sandik_y)
@@ -70,7 +73,7 @@ if (!/[?&]b2=0/.test(location.search)) {
   const GR = [[/^(oy[KYMSPTNB]|uz\d|kr3|ksSandik|ksKalas|ksDirek|ksFici|ksTNT)/, 'yari'], [/^(dalga|ksSutun|ksMorSutun)/, 'parlak'], [/^(ksTas|ksKemer)/, 'mat'], [/^(oyA|ksYildiz)$/, 'metal']];
   for (const [k, L] of Object.entries(LISTE)) { if (L[3] && L[3].kav) continue; const g = GR.find(([r]) => r.test(k)); if (g) L[3] = Object.assign({}, L[3] || {}, { mc: g[1] }, /^ksFici/.test(k) ? { mcMap: 1 } : {}); }   // fici rengi dokuda
 }
-const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 12 : 1);
+const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 16 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)
@@ -148,7 +151,10 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
     let geo = G.geo;
     if (o.govde) {
       geo = G.geo.clone(); const c = geo.attributes.color, kr = new THREE.Color(o.govde);
-      if (c) for (let i = 0; i < c.count; i++) if (c.getX(i) > 0.97 && c.getY(i) > 0.97 && c.getZ(i) > 0.97) c.setXYZ(i, kr.r, kr.g, kr.b);
+      const ka = kr.clone().lerp(new THREE.Color(1, 1, 1), +(new URLSearchParams(location.search).get('cerA') || 0.2));   // v10.35: acik ton (cerceve, pati)
+      if (c) for (let i = 0; i < c.count; i++) { const x = c.getX(i), y = c.getY(i), z = c.getZ(i);
+        if (x > 0.97 && y > 0.97 && z > 0.97) c.setXYZ(i, kr.r, kr.g, kr.b);
+        else if (x > 0.97 && y < 0.03 && z > 0.97) c.setXYZ(i, ka.r, ka.g, ka.b); }   // mor isaret (1,0,1) = turun acik tonu
     }
     const ozel = Object.assign({ map: G.map, vertexColors: !!geo.attributes.color, roughness: L[1], metalness: o.metal || 0, envMap: ENV, envMapIntensity: o.env || 0.4 },
       o.emis ? { emissive: o.emis, emissiveIntensity: o.emisG || 0.2 } : {});

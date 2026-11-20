@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=20';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=24';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -558,6 +558,7 @@ if (Q.get('parlak') !== '0') {
     const RESIMQ = PILOTQ && +Q.get('pilot') >= 31 && +Q.get('pilot') <= 999;
     if (RESIMQ) for (const k of ['ksTas', 'ksFici', 'ksFiciK', 'ksSiseM', 'ksSiseY', 'ksSiseB']) delete ESLE[k];
     if (Q.get('b2') !== '0' && Q.get('parla') !== '0') for (const k of ['ksTas', 'ksBuz', 'ksBuz3', 'ksFici', 'ksFiciK']) delete ESLE[k];   // v9.9: tas ve buz yeni yastik tarzli Blender modeli (blok3b.js)
+    if (Q.get('b35') !== '0') for (const k of ['oyK', 'oyY', 'oyM', 'oyS', 'oyP', 'oyT']) delete ESLE[k];   // v10.35: patili kupler rakip tarzi altin cerceveli Blender modeli (blok3b.js kup3), eski: ?b35=0
     for (const k in ESLE) {
       const t = SEK.TUR[k]; if (!t) continue; const [ad, renk] = ESLE[k], eski = t.yap;
       if (GRIK.includes(k)) { SEK.TUR[k + 'G'] = Object.assign({}, t, { yap: eski }); GRI[k] = k + 'G'; }   // v9.0: ana oyundaki sekil bolumleri icin eski (gri tas, fici, sise) gorunumlu es tur
