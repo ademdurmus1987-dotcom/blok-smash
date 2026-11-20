@@ -1294,6 +1294,13 @@ function yeniEngel() {
 function engTemizle() { for (const e of ENG) { if (!e.bgit) world.removeBody(e.body); if (e.body2) world.removeBody(e.body2); if (e.par) { scene.remove(e.par); e.par.material.dispose(); } if (e.key) scene.remove(e.key); scene.remove(e.grp); } ENG.length = 0; }
 function engMesh(grp, geo, mat, x, y, z, rz) { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); if (rz) m.rotation.z = rz; m.castShadow = true; grp.add(m); return m; }
 function engKutu(body, hx, hy, hz, x, y, rz) { const q = new CANNON.Quaternion(); q.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), rz || 0); body.addShape(new CANNON.Box(new CANNON.Vec3(hx, hy, hz)), new CANNON.Vec3(x, y, 0), q); }
+// v10.26 (Adem: 'blender-skills ile deneme, iyi olmayan bir seyi yapalim'): donen pervane (kurek) Blender modeli: tahta kol (boyu olceklenir),
+// kirmizi kurek ucu, altin gobek (uretici/blender/engel_pervane.py -> model/engel/). Fizik kutulari ayni. Eski kutu gorunum: ?pervane=eski
+const PERV = {};
+if (Q.get('pervane') !== 'eski') for (const k of ['kol', 'uc', 'gobek']) new GLTFLoader().load('model/engel/pervane_' + k + '.glb?v=1', (gl) => {
+  gl.scene.traverse((o) => { if (o.isMesh && !PERV[k]) { o.material.envMap = ENV; o.material.envMapIntensity = k === 'kol' ? 0.35 : 0.8; if (k !== 'kol') o.material.metalness = k === 'gobek' ? 0.25 : 0; PERV[k] = o; } });
+}, undefined, () => {});
+function pervParca(k) { const m = new THREE.Mesh(PERV[k].geometry, PERV[k].material); m.castShadow = true; return m; }
 function engKur(L, Y) {
   engTemizle(); if (K || Q.has('engsiz')) return;
   const list = engelOf(L, Y), d = zorluk(L); if (!list.length) return;
@@ -1303,11 +1310,14 @@ function engKur(L, Y) {
     body.collisionFilterGroup = 8; const E = { t: e.t, body, grp, x0, y0: yc, z0: zE, w: 0, a: 0, ters: e.ters ? -1 : 1 };
     if (e.t === 'kurek') {
       const Lk = e.x ? Math.max(2.2, R * 0.46) : Math.max(2.6, Math.min(5.2, Math.max(R * 0.8, TOPY * 0.48))), kol = !e.x && d > 0.55 ? 3 : 2;
+      const yeni = PERV.kol && PERV.uc && PERV.gobek;
       for (let n = 0; n < kol; n++) { const a = n * Math.PI * 2 / kol, cx = Math.cos(a) * Lk / 2, cy = Math.sin(a) * Lk / 2;
-        engMesh(grp, new THREE.BoxGeometry(Lk, 0.72, 0.34), ENGM.tahta, cx, cy, 0, a); engMesh(grp, new THREE.BoxGeometry(0.5, 0.8, 0.42), ENGM.kirmizi, Math.cos(a) * (Lk - 0.25), Math.sin(a) * (Lk - 0.25), 0, a);
+        if (yeni) { const ag = new THREE.Group(); ag.rotation.z = a; const k1 = pervParca('kol'), u1 = pervParca('uc'); k1.scale.x = Lk - 0.55; u1.position.x = Lk - 0.62; ag.add(k1, u1); grp.add(ag); }
+        else { engMesh(grp, new THREE.BoxGeometry(Lk, 0.72, 0.34), ENGM.tahta, cx, cy, 0, a); engMesh(grp, new THREE.BoxGeometry(0.5, 0.8, 0.42), ENGM.kirmizi, Math.cos(a) * (Lk - 0.25), Math.sin(a) * (Lk - 0.25), 0, a); }
         engKutu(body, Lk / 2, 0.36, 0.2, cx, cy, a); }
-      const hub = engMesh(grp, new THREE.CylinderGeometry(0.5, 0.5, 0.62, 28), ENGM.altin, 0, 0, 0); hub.rotation.x = Math.PI / 2;
-      engMesh(grp, new THREE.SphereGeometry(0.26, 16, 12), ENGM.kirmizi, 0, 0, 0.32);
+      if (yeni) grp.add(pervParca('gobek'));
+      else { const hub = engMesh(grp, new THREE.CylinderGeometry(0.5, 0.5, 0.62, 28), ENGM.altin, 0, 0, 0); hub.rotation.x = Math.PI / 2;
+        engMesh(grp, new THREE.SphereGeometry(0.26, 16, 12), ENGM.kirmizi, 0, 0, 0.32); }
       E.w = (1.15 + 0.55 * d) * hz;
     } else if (e.t === 'kalkan') {
       const yTop = TOPY + 1.4, lr = Math.max(2.5, yTop - yc); E.y0 = yTop;

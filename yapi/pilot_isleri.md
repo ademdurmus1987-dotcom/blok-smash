@@ -302,3 +302,9 @@
 
 ## v10.25 (20 Kas 2026) — bolum baslamiyordu (hata duzeltme)
 - Adem: 'oyun baslamiyor, ana sayfaya atiyor'. Bir bolum bitip yenisi kurulurken eski platform temizlenir (temaSil -> ptAt). Yeni ayagin userData'sindaki 'kopuk' listesi, ptAt'in su kopugu isaretiyle (userData.kopuk) karisti; malzemesi olmayan gruba dispose cagrildi, start() hata verdi, kart kapandi ama oyun acilmadi. Liste adi kpk oldu; ptAt yalniz gercek isarette (=== 1, malzemeli) calisir. Test: ana sayfa -> 1212 oyna -> kazan -> 1213 oyna (Playwright) hatasiz.
+
+## v10.26 (20 Kas 2026) — blender-skills denemesi: donen pervane engeli
+- Adem: arjun988/blender-skills ile bir deneme. Paket canli Blender penceresi + BlenderMCP eklentisi istiyor (bulut oturumunda yok); ilkeleri (prop-artist, asset-optimization, export-pipeline) bizim ekransiz bpy hattimizda uygulandi.
+- Secilen zayif parca: donen pervane (kurek) engeli, duz kutulardan (kahverengi kol, kirmizi uc, sari silindir).
+- uretici/blender/engel_pervane.py -> model/engel/pervane_kol.glb (iki tahta serit + oluk, iki altin kelepce + percin; x=0..1, oyunda boyu olceklenir), pervane_uc.glb (kirmizi yuvarlak kurek ucu, krem serit; olceklenmez), pervane_gobek.glb (basamakli altin gobek, 6 civata, kirmizi kubbe). Kose rengi x Cycles ile pisirilmis isik (pilot_bloklar.py hatti). Toplam ~170 KB.
+- oyun.js engKur kurek: modeller yuklendiyse yeni gorunus, degilse eski kutular. Fizik kutulari ayni. Eski: `?pervane=eski`.
