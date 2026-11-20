@@ -1,4 +1,4 @@
-# Foxi Smash — kaldigimiz yer (20 Kas 2026, v10.33)
+# Foxi Smash — kaldigimiz yer (21 Kas 2026, v10.34)
 
 Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pilot_isleri.md` (en altta v9.x - v10.x).
 
@@ -26,7 +26,7 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - v10.31-33: YENI KAVANOZLAR + MATCAP. Model: uretici/blender/kavanoz2.py -> model/blok2/kav2_*.glb. Isik: Blender matcap studyosu uretici/blender/matcap.py -> doku/matcap/ (parlakC kavanozda; yari, mat, metal hazir ama kullanilmiyor). Oyun: yapi/blok3b.js mcMat (?mcAd ?mcS ?mcK ?kvRenk ?matcap=0).
 
 ## Siradaki isler (Adem'in onayladigi sira)
-1. Kavanoz yesili referanstaki gibi acik/canli (yalniz kavanoz). Matcap yontemini kuplere, tahtalara (yari), silindire (parlak), tasa (mat), altin/engellere (metal) uygulamak.
+1. (v10.34 YAPILDI: matcap butun bloklarda, canli yesil kavanoz; eski: ?mc2=0.) Adem'in telefondaki geri bildirimi bekleniyor.
 0. Adem'in telefonda v10.23'e geri bildirimi: platform renk/sekil, ayak oturusu, kamera uzakligi, zemin haritasi (yanlis bolge varsa ZHARITA cokgenleri).
 2. Fonlara canlilik: suzulen martilar, suda parilti, karli dunyada kar.
 3. Dil destegi (yazilari ayri dosyaya, Ingilizce) ve magaza ekran goruntuleri.

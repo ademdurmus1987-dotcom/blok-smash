@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=19';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=20';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -1110,6 +1110,7 @@ const ENGTAH = canvasTex(256, 64, (x, w, h) => {
 });
 const ENGM = { tahta: new THREE.MeshStandardMaterial({ map: ENGTAH, roughness: 0.72 }), kirmizi: new THREE.MeshStandardMaterial({ color: '#e8333f', roughness: 0.35, emissive: '#5a0010', emissiveIntensity: 0.25 }),
   beyaz: new THREE.MeshStandardMaterial({ color: '#fff6e8', roughness: 0.4 }), altin: new THREE.MeshStandardMaterial({ color: '#ffc531', roughness: 0.28, metalness: 0.65, emissive: '#6a4200', emissiveIntensity: 0.35 }) };
+if (B3K.mcRenk) { const ma = B3K.mcRenk('metal', '#ffc531'); if (ma) ENGM.altin = ma; }   // v10.34: engel altini matcap metal (blok3b.js), eski: ?mc2=0
 const KAPIEN = 508 / 512, KAPITEX = PTL.load('engel/kapi.webp?v=1'); KAPITEX.colorSpace = THREE.SRGBColorSpace; KAPITEX.anisotropy = 8;
 ENGM.kapi = new THREE.MeshStandardMaterial({ map: KAPITEX, roughness: 0.6, metalness: 0.15 }); ENGM.demir = new THREE.MeshStandardMaterial({ color: '#4a4f58', roughness: 0.45, metalness: 0.7 });
 function kapiSekil(w, h) {   // kemerli ust, resmin dis cizgisi; doku merkezden olculur
@@ -1382,7 +1383,7 @@ function zincir(grp, L) {
 function duvarMesh(sx) { const m = new THREE.Mesh(PERV.duvar.geometry, PERV.duvar.material); m.scale.x = sx || 1; m.castShadow = true; return m; }
 // gemi capasi (asagi bakar): sap, ust halka, kavisli kollar, uclarda ucgen tirnaklar, enine cubuk
 function capaMesh() {
-  const g = new THREE.Group(), dem = ptMat('#3e4450', 0.38, 0.8, { envMap: ENV, envMapIntensity: 1 }), alt = ENGM.altin;
+  const g = new THREE.Group(), dem = (B3K.mcRenk && B3K.mcRenk('metal', '#5a6272')) || ptMat('#3e4450', 0.38, 0.8, { envMap: ENV, envMapIntensity: 1 }), alt = ENGM.altin;   // v10.34 demir matcap
   const m = (geo, mat, x, y, z, rz) => { const o = new THREE.Mesh(geo, mat); o.position.set(x, y, z); if (rz) o.rotation.z = rz; o.castShadow = true; g.add(o); return o; };
   m(new THREE.CylinderGeometry(0.14, 0.16, 2.0, 14), dem, 0, -1.0, 0);
   const hl = m(new THREE.TorusGeometry(0.26, 0.08, 10, 20), alt, 0, 0.18, 0);

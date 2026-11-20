@@ -39,7 +39,9 @@ if (!/[?&]b2=0/.test(location.search)) {
     const KV2 = !/[?&]sise=eski/.test(location.search), KE = +((/[?&]kemis=([0-9.]+)/.exec(location.search) || [])[1] || 0.14);
     const KG = +((/[?&]kenv=([0-9.]+)/.exec(location.search) || [])[1] || 4.5), KR = +((/[?&]krough=([0-9.]+)/.exec(location.search) || [])[1] || 0.14);
     const KVR = (/[?&]kvRenk=([0-9a-f]{6})/.exec(location.search) || [])[1];   // deneme: butun kavanozlar bu renkte
-    const rk = KVR ? '#' + KVR : r;
+    // v10.34: yesil yalniz kavanozda referanstaki gibi acik ve canli (ornek_1 yesili ~#32cc34). Deneme: ?kvYesil=rrggbb, eski: ?kvYesil=0
+    const KYS = (/[?&]kvYesil=([0-9a-f]{6}|0)/.exec(location.search) || [])[1];
+    const rk = KVR ? '#' + KVR : c === 'Y' && KYS !== '0' ? '#' + (KYS || '3ad23e') : r;
     const kvo = YENI ? { govde: rk, cila: 1, env: 0.7, emis: rk, emisG: KV2 ? KE : 0.26, bant: 1, kav: KV2 ? 1 : 0, kenv: KG, krough: KR } : { govde: r, cila: 1, env: 0.95 };
     LISTE['kj' + c] = [KV2 ? 'blok2/kav2_1' : 'blok2/kavanoz1', 0.1, r, kvo];
     LISTE['kvU' + c] = [KV2 ? 'blok2/kav2_2' : 'blok2/kavanoz2', 0.1, r, kvo];
@@ -62,6 +64,11 @@ if (!/[?&]b2=0/.test(location.search)) {
     LISTE.ksSandikM = ['blok2/sandik', 0.3, '#a453e6', { govde: '#9842f0', cila: 1, env: 0.5 }];
   }
   LISTE.dalga = ['blok2/silindir', 0.2, '#5b8cf0', { govde: '#4f86f2', cila: 1, env: 0.55, bant: 1 }];
+}
+// v10.34: matcap malzeme grubu (blok3b mcMat MCG). kup/tahta yari, silindir parlak, tas mat, altin metal. Kavanoz kendi grubunda (kav). Eski: ?mc2=0
+{
+  const GR = [[/^(oy[KYMSPTNB]|uz\d|kr3|ksSandik|ksKalas|ksDirek|ksFici|ksTNT)/, 'yari'], [/^(dalga|ksSutun|ksMorSutun)/, 'parlak'], [/^(ksTas|ksKemer)/, 'mat'], [/^(oyA|ksYildiz)$/, 'metal']];
+  for (const [k, L] of Object.entries(LISTE)) { if (L[3] && L[3].kav) continue; const g = GR.find(([r]) => r.test(k)); if (g) L[3] = Object.assign({}, L[3] || {}, { mc: g[1] }, /^ksFici/.test(k) ? { mcMap: 1 } : {}); }   // fici rengi dokuda
 }
 const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 12 : 1);
 
@@ -98,14 +105,32 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
       const v = bant + cek + kenar + ust; return [v, v, v]; });
     MH.colorSpace = THREE.NoColorSpace;
   }
-  function mcMat(ozel) {
-    mcHazirla();
-    const m = new THREE.MeshMatcapMaterial({ matcap: MC, map: /[?&]mcMap=1/.test(location.search) ? ozel.map : null, vertexColors: ozel.vertexColors });   // pisirilmis golge dokusu silindirde seritler yapiyordu: kapali
-    m.onBeforeCompile = (sh) => { sh.uniforms.mcHl = { value: MH };
+  // v10.34 (Adem: 'referans kalitesi: parlak, temiz renk, yumusak genis parlama bandi, kenar isigi'): matcap butun bloklarda.
+  // c = { ad: doku/matcap/<ad>, K: govde parlakligi, S: parlama gucu, T: parlamanin beyaza gitme payi (0: govde renginin acik tonu, 1: saf beyaz) }.
+  // Referansta genis bant BEYAZ degil, rengin acik tonu: T kucuk tutulur (renk solmaz). T verilmezse eski karisim (saf beyaz). Eski: ?mc2=0
+  const MC2 = !/[?&]mc2=0/.test(location.search);
+  const qn = (k, v) => (Qs.get(k) != null ? +Qs.get(k) : v);
+  function mcMat(ozel, c) {
+    let mc = MC, mh = MH, K = mcK, S = mcS, T = -1;
+    if (c) { [mc, mh] = mcYukle(c.ad); K = c.K; S = c.S; T = c.T == null ? -1 : c.T; if (ozel.mcMap) c = Object.assign({}, c, { map: 1 }); } else mcHazirla(), mc = MC, mh = MH;
+    const m = new THREE.MeshMatcapMaterial({ matcap: mc, map: /[?&]mcMap=1/.test(location.search) || (c && c.map) ? ozel.map : null, vertexColors: ozel.vertexColors });   // pisirilmis golge dokusu silindirde seritler yapiyordu: kapali
+    const karis = T < 0 ? 'outgoingLight = mix(outgoingLight, vec3(1.0), clamp(texture2D(mcHl, uv).r * ' + S.toFixed(3) + ', 0.0, 1.0));'
+      : 'float mcA = clamp(texture2D(mcHl, uv).r * ' + S.toFixed(3) + ', 0.0, 1.0); outgoingLight = mix(outgoingLight, mix(min(outgoingLight * 1.6 + 0.08, vec3(1.0)), vec3(1.0), ' + T.toFixed(3) + '), mcA);';
+    m.onBeforeCompile = (sh) => { sh.uniforms.mcHl = { value: mh };
       sh.fragmentShader = 'uniform sampler2D mcHl;\n' + sh.fragmentShader.replace('vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb;',
-        'vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb * ' + mcK.toFixed(3) + '; outgoingLight = mix(outgoingLight, vec3(1.0), clamp(texture2D(mcHl, uv).r * ' + mcS.toFixed(3) + ', 0.0, 1.0));'); };
-    m.customProgramCacheKey = () => 'mcHl' + mcK + '_' + mcS; m.userData.yeni = 1; return m;
+        'vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb * ' + K.toFixed(3) + '; ' + karis); };
+    const ck = 'mcHl' + (c ? c.ad + (c.map ? 'm' : '') : '') + K + '_' + S + '_' + T; m.customProgramCacheKey = () => ck; m.userData.yeni = 1; return m;
   }
+  // malzeme gruplari (Adem'in istedigi): kavanoz parlak, kup ve tahta yari, silindir parlak, tas mat, altin ve engel metal. Her biri adresten ayarlanir:
+  // ?kvAd= ?kvK= ?kvS= ?kvT=  (kavanoz), ?yaAd= ?yaK= ... (yari), ?paAd= (silindir), ?maAd= (tas), ?meAd= (metal)
+  const grup = (on, ad, K, S, T) => ({ ad: Qs.get(on + 'Ad') || ad, K: qn(on + 'K', K), S: qn(on + 'S', S), T: qn(on + 'T', T) });
+  const MCG = {
+    kav: grup('kv', 'parlakE', 1.25, 0.9, 0.3),
+    yari: grup('ya', 'yariK', 1.2, 0.85, 0.45),
+    parlak: grup('pa', 'parlakE', 1.2, 0.75, 0.35),
+    mat: grup('ma', 'matK', 1.0, 0.3, 0.25),
+    metal: grup('me', 'metalK', 1.5, 0.9, 0.5)
+  };
   // butun dosyalar acilista paralel iner (her biri 20-80 KB); bolum kurulmadan once beklenir
   function yukle() {
     if (!B3) return Promise.resolve();
@@ -130,9 +155,12 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
     if (o.kav && KENV) { ozel.envMap = KENV; ozel.envMapIntensity = o.kenv || 2.2; ozel.roughness = o.krough || 0.2; }   // v10.31: kavanoz studyosu
     else if (o.bant && JENV) { ozel.envMap = JENV; ozel.envMapIntensity = BG; ozel.roughness = BR; }   // v9.8: genis parlama bandi (karanlik studyo)
     else if (o.cila && SENV && SENV !== ENV) { ozel.envMap = SENV; ozel.envMapIntensity = (o.env || 0.4) * PG; }   // v9.7: studyo yansimasi
-    const mat = o.kav && MCAP ? mcMat(ozel) : o.cila ? new THREE.MeshPhysicalMaterial(Object.assign(ozel, { clearcoat: 1, clearcoatRoughness: SENV && SENV !== ENV ? 0.035 : 0.08 }, SENV && SENV !== ENV ? { ior: IOR } : {})) : new THREE.MeshStandardMaterial(ozel);   // v9.6: cilali (clearcoat) yeni set
+    const mg = MCAP && MC2 && !/[?&]mc=kod/.test(location.search) && !Qs.get('mcAd') ? MCG[o.mc || (o.kav ? 'kav' : '')] : null;   // v10.34
+    const mat = mg ? mcMat(Object.assign({ mcMap: o.mcMap }, ozel), mg) : o.kav && MCAP ? mcMat(ozel) : o.cila ? new THREE.MeshPhysicalMaterial(Object.assign(ozel, { clearcoat: 1, clearcoatRoughness: SENV && SENV !== ENV ? 0.035 : 0.08 }, SENV && SENV !== ENV ? { ior: IOR } : {})) : new THREE.MeshStandardMaterial(ozel);   // v9.6: cilali (clearcoat) yeni set
     if (o.cila) mat.userData.yeni = 1;   // v10.2: oyun.js cilaMat ikinci kez cilalamasin
     return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: L[2], roughness: 0.6 }) });
   }
-  return { yukle, yap, TUR: LISTE };
+  // v10.34: engeller icin renkli matcap (oyun.js ENGM altin, demir). Kapali (?mc2=0 ya da ?matcap=0) ise null.
+  const mcRenk = (g, renk) => { if (!MCAP || !MC2 || !MCG[g]) return null; const m = mcMat({ vertexColors: false }, MCG[g]); m.color.set(renk); return m; };
+  return { yukle, yap, TUR: LISTE, mcRenk };
 }

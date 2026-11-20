@@ -5,6 +5,8 @@
 #   <ad>_s.png : yalniz parlama (glossy), siyah zemin -> oyunda ustune BEYAZ olarak karisir
 # Isiklar: sol onde buyuk yumusak ana panel (parlama bandi), ustte genis panel (ust yuzler), sag arkada ince kenar isigi, hafif gok dolgu.
 # v10.33 secilen kavanoz matcap'i (parlakC): MC2=1 AD=C KW=1.2 KG=5 CW=0.25 CG=35 RG=35 WD=0.2 LO=0.5 GA=1.3 python -I matcap.py -- parlak
+# v10.34: parlakE (kavanoz, silindir: yumusak genis bant): MC2=1 AD=E KW=3.0 KG=3.5 CG=0 CW=0.01 RG=20 PZ=0.40 LO=0.6 GA=1.2 -- parlak
+#   kutu duzeni (on yuz parlamaz, isik pahlarda): KUTU=1 AD=K PZ=0.28 LO=0.62 GA=1.2 -- yari | PZ=0.22 LO=0.5 GA=1.3 -- metal | PZ=0.5 LO=0.6 GA=1.1 KG=5 UG=5 -- mat
 #   oyunda mcS 1.3 (parlama), mcK 1.45 (govde parlakligi).
 # Cikti: yapi/doku/matcap/. Oyun: blok3b.js (kavanoz ve digerleri).
 import bpy, math, os, sys
@@ -56,6 +58,12 @@ def panel(ad, konum, boyut, guc):
 
 E = lambda k, v: float(os.environ.get(k, v))
 def isiklar(gen):
+    if os.environ.get('KUTU'):   # v10.34 kup/tahta: on yuz (kameraya bakan) parlamaz, isik yalniz sol-ust pahlarda ve sag kenarda (referans bloklar)
+        panel('ana', (-4.6, E('AY', -1.2), 1.4), (E('KW', 1.2), 7.0), E('KG', 8))
+        panel('ust', (-0.6, E('AY', -1.2), 4.6), (6.0, E('UW', 1.2)), E('UG', 8))
+        panel('kenar', (E('RX', 3.4), E('RY', 3.4), 0.0), (E('RW', 0.5), 7.0), E('RG', 14))
+        panel('dolgu', (3.0, -4.5, -1.5), (4.0, 4.0), E('DG', 0.25))
+        return
     if os.environ.get('MC2'):   # v10.33 duzen: dar ana panel + keskin cekirdek serit, guclu kenar isigi
         panel('ana', (-3.0, -3.6, 0.3), (E('KW', 1.0), 7.0), E('KG', 6))
         panel('cek', (-2.9, -3.7, 0.3), (E('CW', 0.22), 7.0), E('CG', 30))
@@ -98,7 +106,7 @@ def main():
     sec = [a for a in (sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []) if a in MALZ] or list(MALZ)
     ek = os.environ.get('AD', '')
     for ad in sec:
-        puruz, g, gen = MALZ[ad]
+        puruz, g, gen = MALZ[ad]; puruz = E('PZ', puruz)   # v10.34: puruz ortamdan (yumusak genis bant)
         kure = sahne(); isiklar(gen)
         bg = bpy.context.scene.world.node_tree.nodes['Background']
         bg.inputs['Strength'].default_value = E('WD', 1.0); guc_carp(0.28); malzeme(kure, 'd', puruz, 0); ciz(os.path.join(CIK, ad + ek + '_d.png'))

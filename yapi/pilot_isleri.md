@@ -351,3 +351,13 @@
 ## v10.33 (20 Kas 2026) — matcap referansa yaklastirildi
 - matcap.py MC2 duzeni (ortam degiskenleriyle ayar): sol onde dar ana panel + ortasinda keskin cekirdek serit, ustte panel, kenar isigi kurenin tam kenarinda (arkaya alindi), dolgu cok zayif, gok dolgusu az. Uc varyant denendi; referansla ayni renkte (kvRenk) karsilastirinca C secildi: doku/matcap/parlakC_{d,s}.png.
 - blok3b.js: kavanoz matcapi parlakC, parlama 1.3, govde parlakligi 1.45. Deneme: `?mcAd=<ad>`, `?mcS=`, `?mcK=`, `?kvRenk=rrggbb` (butun kavanozlar o renkte). Onceki hal: `?mcAd=parlak&mcS=0.45&mcK=1.05`.
+
+## v10.34 (21 Kas 2026) — matcap butun bloklarda, canli yesil kavanoz
+- Adem: 'bloklar referans kalitesinde olsun (parlak, temiz renk, yumusak genis parlama bandi, kenar isigi); yesil kavanoz referanstaki kadar acik ve canli'. Referans: yapi/referans/oyun/ornek_1 (yesil ~#32cc34), ornek_2 ve ornek_6 (kirmizi kavanozlar).
+- Kavanoz: yeni Blender matcap parlakE (genis panel, keskin cekirdek yok, puruz 0.40): bant yumusak dagilir. Parlama artik saf beyaz degil, govde renginin acik tonu (T=0.3): renk solmaz. Yesil yalniz kavanozda #3ad23e.
+- Kup, tahta, kiris, sandik, kalas, direk, fici, TNT: yariK; silindir/sutun: parlakE; tas/kemer: matK; altin kup ve yildiz: metalK. 'K' (kutu) dokulari matcap.py KUTU=1 duzeniyle: kameraya bakan duz on yuz parlamaz (referanstaki gibi duz temiz renk), isik yalniz sol-ust pahlarda ve sag kenarda. Fici rengi dokuda oldugu icin fici dokusu korunur.
+- Engeller: altin parcalar (ENGM.altin: anahtar, kilit, sarkac, kalkan) ve capa/demir matcap metal (blok3b.js mcRenk).
+- Ayar (adresten): kavanoz ?kvAd= ?kvK= (govde parlakligi) ?kvS= (parlama gucu) ?kvT= (parlamanin beyaza gitme payi); ayni anahtarlar ya* (kup/tahta), pa* (silindir), ma* (tas), me* (metal). Yesil deneme: ?kvYesil=rrggbb.
+- Eski hal: ?mc2=0 (v10.33 gorunumu: kavanozda parlakC, digerleri cilali isik), ?kvYesil=0 (eski yesil), ?matcap=0 (matcap tamamen kapali).
+- Karsilastirma: uretici/rapor/resim/mc34_kavanoz.jpg, mc34_kup.jpg (once / simdi / referans, 390x844).
+- blok3b.js?v=20, oyun.js?v=184, CACHE v132.
