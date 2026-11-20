@@ -332,3 +332,8 @@
 
 ## v10.30 (20 Kas 2026) — ana sayfada Foxi arkasindaki isinlar kalkti
 - Adem: 'karakterin arkasindaki isiklar neden var'. .m-isin (donen gunes isini suslemesi) videolu fonda yapay duruyordu; ana sayfada gizli (.m-sahne>.m-isin). Sandik, yeni karakter ve kazanma kartlarinda kalir.
+
+## v10.31 (20 Kas 2026) — yeni kavanozlar (referans kalitesi)
+- Adem: 'siseleri gelistir, kalite olarak referanstaki gibi'. blender-skills (prop-artist, stylized-style) ilkeleriyle uretici/blender/kavanoz2.py -> model/blok2/kav2_1/2/3/B.glb (716 ucgen): kalin tirtikli kapak (6 beyaz + 6 govde renkli dilim, govdeden hafif tasar), beyaz dudak, boyun, yuvarlak omuz ve dip; pati ve boyali parlama cizgisi yok.
+- Malzeme: ic isik (emissive) 0.26 -> 0.14 (golge ve hacim gorunsun); kavanozlara ozel studyo KENV (oyun.js): siyah ortam, kameranin sol onunde genis dikey isik kutusu (govdede soldan ~%30 parlama), ust onde yatay kutu, karsi kenarda ince kenar isigi; guc 4.5, puruz 0.14.
+- Ayar/deneme: `?kemis=`, `?kenv=`, `?krough=`, `?ku=`, `?kg=`, `?kG=`. Eski kavanoz: `?sise=eski`.

@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=15';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=16';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -528,7 +528,21 @@ const JENV = !PARLA || Q.get('bant') === '0' ? null : (() => {
   t.mapping = THREE.EquirectangularReflectionMapping;
   const pm = new THREE.PMREMGenerator(ren), e = pm.fromEquirectangular(t).texture; pm.dispose(); return e;
 })();
-const B3K = blok3bKur({ THREE, ENV, SENV, JENV, GLTFLoader }), b3Ready = B3K.yukle();   // v6.1
+// v10.31 (Adem: 'siseler referans kalitesinde'): kavanozlara ozel studyo: siyah ortam + kameranin sol onunde genis, yumusak kenarli dikey isik
+// kutusu (govdede soldan ~%30'da genis beyaz parlama) + ust onde yatay kutu (kapak ve omuz parlar) + sagda ince kenar isigi. Ayar: ?ku=, ?kg=, ?kG=
+const KENV = !PARLA || Q.get('sise') === 'eski' ? null : (() => {
+  const u0 = +(Q.get('ku') || 0.91), gw = +(Q.get('kg') || 0.15), G = +(Q.get('kG') || 1);
+  const t = canvasTex(1024, 512, (x, w, h) => {
+    x.fillStyle = '#000'; x.fillRect(0, 0, w, h);
+    const yk = (uc, wd, v0, v1, a) => { const X = (uc - wd / 2) * w, W = wd * w, g = x.createLinearGradient(X, 0, X + W, 0); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.25, 'rgba(255,255,255,' + a + ')'); g.addColorStop(0.75, 'rgba(255,255,255,' + a + ')'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(X, v0 * h, W, (v1 - v0) * h); };
+    yk(u0, gw, 0.2, 0.8, Math.min(1, G));        // ana dikey isik kutusu
+    yk(0.75, 0.5, 0.0, 0.16, 0.6);               // ust onde genis yatay kutu
+    yk(u0 - 0.17, 0.02, 0.3, 0.7, 0.45);         // karsi kenarda ince kenar isigi
+  });
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  const pm = new THREE.PMREMGenerator(ren), e = pm.fromEquirectangular(t).texture; pm.dispose(); return e;
+})();
+const B3K = blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }), b3Ready = B3K.yukle();   // v6.1
 const SEK = sekilKur({ THREE, S, canvasTex, ENV, b3: B3K });
 // v6.11 (Adem 17 Kas: 'Bagla'): parlak sekil kutuphanesi (gorsel/sekiller.js) bolumlerdeki bloklara baglandi. Yalniz GORUNUM degisir:
 // turun adi, olcusu, fizik govdesi, kirilmasi ve sesi ayni kalir (kavanoz eski sisenin, kutuk eski ficinin yerinde). Eski gorunum: ?parlak=0

@@ -34,10 +34,15 @@ if (!/[?&]b2=0/.test(location.search)) {
   const R2 = { K: '#e3242f', M: '#2b6ef0', S: '#ffcc00', Y: '#1fae48', P: YENI ? '#9842f0' : '#8a34e6', T: '#f2620f', N: '#ff4aa6', A: '#8fc8ff' };
   for (const [c, r] of Object.entries(R2)) {
     for (const n of [1, 2, 3, 4]) LISTE['uz' + n + c] = ['blok2/cubuk' + n, 0.18, r, { govde: r, cila: 1, env: 0.75 }];
-    LISTE['kj' + c] = ['blok2/kavanoz1', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];
-    LISTE['kvU' + c] = ['blok2/kavanoz2', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];
-    LISTE['kvL' + c] = ['blok2/kavanoz3', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];   // v10.3
-    LISTE['kvB' + c] = ['blok2/kavanozB', 0.1, r, YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: 0.26, bant: 1 } : { govde: r, cila: 1, env: 0.95 }];
+    // v10.31 (Adem: 'siseleri gelistir, referans kalitesi'): yeni kavanoz modeli (uretici/blender/kavanoz2.py: kalin tirtikli kapak, boyun, yuvarlak omuz,
+    // pati ve boyali parlama yok) ve daha az ic isik (golge ve hacim gorunsun). Eski: ?sise=eski
+    const KV2 = !/[?&]sise=eski/.test(location.search), KE = +((/[?&]kemis=([0-9.]+)/.exec(location.search) || [])[1] || 0.14);
+    const KG = +((/[?&]kenv=([0-9.]+)/.exec(location.search) || [])[1] || 4.5), KR = +((/[?&]krough=([0-9.]+)/.exec(location.search) || [])[1] || 0.14);
+    const kvo = YENI ? { govde: r, cila: 1, env: 0.7, emis: r, emisG: KV2 ? KE : 0.26, bant: 1, kav: KV2 ? 1 : 0, kenv: KG, krough: KR } : { govde: r, cila: 1, env: 0.95 };
+    LISTE['kj' + c] = [KV2 ? 'blok2/kav2_1' : 'blok2/kavanoz1', 0.1, r, kvo];
+    LISTE['kvU' + c] = [KV2 ? 'blok2/kav2_2' : 'blok2/kavanoz2', 0.1, r, kvo];
+    LISTE['kvL' + c] = [KV2 ? 'blok2/kav2_3' : 'blok2/kavanoz3', 0.1, r, kvo];   // v10.3
+    LISTE['kvB' + c] = [KV2 ? 'blok2/kav2_B' : 'blok2/kavanozB', 0.1, r, kvo];
     LISTE['kr3' + c] = ['blok2/kiris3', 0.24, r, { govde: r, cila: 1, env: 0.5 }];
   }
   if (YENI) {   // v9.9: tas, buz, sandik da ayni yastik kenarli tarzda (yeni_bloklar.py tas_y / buz_y / sandik_y)
@@ -58,7 +63,7 @@ if (!/[?&]b2=0/.test(location.search)) {
 }
 const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 9 : 1);
 
-export function blok3bKur({ THREE, ENV, SENV, JENV, GLTFLoader }) {
+export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)
   const BG = +(new URLSearchParams(location.search).get('bantG') || (/[?&]yayvan=0/.test(location.search) ? 3 : 4)), BR = +(new URLSearchParams(location.search).get('bantR') || (/[?&]yayvan=0/.test(location.search) ? 0.16 : 0.26));
   const PG = +(new URLSearchParams(location.search).get('parlaG') || 1.2);   // v9.7: studyo yansima gucu
@@ -84,7 +89,8 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, GLTFLoader }) {
     }
     const ozel = Object.assign({ map: G.map, vertexColors: !!geo.attributes.color, roughness: L[1], metalness: o.metal || 0, envMap: ENV, envMapIntensity: o.env || 0.4 },
       o.emis ? { emissive: o.emis, emissiveIntensity: o.emisG || 0.2 } : {});
-    if (o.bant && JENV) { ozel.envMap = JENV; ozel.envMapIntensity = BG; ozel.roughness = BR; }   // v9.8: genis parlama bandi (karanlik studyo)
+    if (o.kav && KENV) { ozel.envMap = KENV; ozel.envMapIntensity = o.kenv || 2.2; ozel.roughness = o.krough || 0.2; }   // v10.31: kavanoz studyosu
+    else if (o.bant && JENV) { ozel.envMap = JENV; ozel.envMapIntensity = BG; ozel.roughness = BR; }   // v9.8: genis parlama bandi (karanlik studyo)
     else if (o.cila && SENV && SENV !== ENV) { ozel.envMap = SENV; ozel.envMapIntensity = (o.env || 0.4) * PG; }   // v9.7: studyo yansimasi
     const mat = o.cila ? new THREE.MeshPhysicalMaterial(Object.assign(ozel, { clearcoat: 1, clearcoatRoughness: SENV && SENV !== ENV ? 0.035 : 0.08 }, SENV && SENV !== ENV ? { ior: IOR } : {})) : new THREE.MeshStandardMaterial(ozel);   // v9.6: cilali (clearcoat) yeni set
     if (o.cila) mat.userData.yeni = 1;   // v10.2: oyun.js cilaMat ikinci kez cilalamasin
