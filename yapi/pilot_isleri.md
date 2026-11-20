@@ -299,3 +299,6 @@
 
 ## v10.24 (20 Kas 2026) — ayak dibindeki hilal
 - Adem: 'ayak dibinde ay seklinde isik'. Kumda/karda tabanin cevresindeki zemin seti halkasinin on yarisi isik alip acik renkli hilal gibi parliyordu. Halka kapatildi; taban gomulu + temas golgesi kaldi. Eski: `?set=1`.
+
+## v10.25 (20 Kas 2026) — bolum baslamiyordu (hata duzeltme)
+- Adem: 'oyun baslamiyor, ana sayfaya atiyor'. Bir bolum bitip yenisi kurulurken eski platform temizlenir (temaSil -> ptAt). Yeni ayagin userData'sindaki 'kopuk' listesi, ptAt'in su kopugu isaretiyle (userData.kopuk) karisti; malzemesi olmayan gruba dispose cagrildi, start() hata verdi, kart kapandi ama oyun acilmadi. Liste adi kpk oldu; ptAt yalniz gercek isarette (=== 1, malzemeli) calisir. Test: ana sayfa -> 1212 oyna -> kazan -> 1213 oyna (Playwright) hatasiz.

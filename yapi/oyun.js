@@ -1992,7 +1992,7 @@ function pAyak(q, sk, h) {
   // sutun yerleri: genis platformda iki sutun
   const xs = q.r > 5.2 && sk.ad !== 'disk' ? [-q.r * 0.48, q.r * 0.48] : [0];
   const sil = (r0, r1, y0, y1, mat, n) => ptMesh(new THREE.CylinderGeometry(r1, r0, Math.max(0.04, y1 - y0), n || 28), mat, 0, (y0 + y1) / 2, 0);
-  u.sut = []; u.taban = []; u.set = []; u.kopuk = [];
+  u.sut = []; u.taban = []; u.set = []; u.kpk = [];   // (kopuk adi ptAt'in 'kopuk' isaretiyle karisiyordu: bolum degisince cokme)
   for (const x of xs) {
     const s = new THREE.Group(); s.position.x = x; G.add(s);
     // taban: yere gomulu genis basamaklar (alt basamak GY'nin 0.12 altindan baslar)
@@ -2005,12 +2005,12 @@ function pAyak(q, sk, h) {
     // temas golgesi ve zemin seti (kum/kar), kopuk (su)
     const go = new THREE.Mesh(SPLGEO, pGolgeMat()); go.rotation.x = -Math.PI / 2; go.scale.setScalar(2.1); go.position.y = 0.02; go.renderOrder = 2; s.add(go); u.golge = (u.golge || []).concat(go);
     const st = pSet(); s.add(st); u.set.push(st);
-    const kp = suKopuk(0); kp.scale.setScalar(0.95); s.add(kp); u.kopuk.push(kp);
+    const kp = suKopuk(0); kp.scale.setScalar(0.95); s.add(kp); u.kpk.push(kp);
   }
   u.upd = (hh) => { for (const o of u.sut) { const y0 = 0.5, y1 = hh - 0.34; o.gv.scale.y = Math.max(0.05, y1 - y0); o.gv.position.y = (y0 + y1) / 2; o.b1.position.y = y0 + 0.25; o.b2.position.y = y1 - 0.2; o.bas.position.y = hh - 0.34; } };
   u.zon = (zn, dip) => {   // ayagin bastigi zemin: su ise taban/golge/set gizli, sutun suya girer
     const su = zn === 'su', yum = zn === 'kum' || zn === 'kar';
-    for (const t of u.taban) t.visible = !su; for (const go of u.golge) go.visible = !su; for (const k of u.kopuk) { k.visible = su; k.position.y = dip + 0.05; k.scale.setScalar(1.45); k.material.opacity = 0.9; }
+    for (const t of u.taban) t.visible = !su; for (const go of u.golge) go.visible = !su; for (const k of u.kpk) { k.visible = su; k.position.y = dip + 0.05; k.scale.setScalar(1.45); k.material.opacity = 0.9; }
     for (const s of u.set) { s.visible = false; if (yum && Q.get('set') === '1') { s.visible = true; pSetRenk(s, zn); } }   // v10.24 (Adem: 'ayak dibinde ay seklinde isik'): set halkasinin on yarisi isik alip acik renkli hilal gibi parliyordu; kapali. Eski: ?set=1
   };
   u.upd(h); return G;
@@ -2028,7 +2028,7 @@ function pSetRenk(m, zn) {
   m.material.color.set(fo.tb || '#d8c090'); if (fo && fo.r) fonRenk(fo, (c) => m.material.color.copy(c).multiplyScalar(1.02));
 }
 function dengeMu(L, Y) { if (Y.veri) return !!Y.denge; return FONYENIQ && !Y.pl && !Y.don && !asansorMu(L) && (Q.get('denge') === '1' || (Q.get('denge') !== '0' && L >= 7 && (L % 10 === 7 || L % 10 === 8))); }
-function ptAt(o) { o.traverse((m) => { if (m.userData.kopuk) { m.material.dispose(); return; } if (m.geometry && m !== o) m.geometry.dispose(); }); }
+function ptAt(o) { o.traverse((m) => { if (m.userData.kopuk === 1 && m.material) { m.material.dispose(); return; } if (m.geometry && m !== o) m.geometry.dispose(); }); }
 function temaKur() {
   const tm = PTEM[fonOf(LV).f.slice(2)] || PTEM.koy;
   PLS.forEach((q, qi) => {
