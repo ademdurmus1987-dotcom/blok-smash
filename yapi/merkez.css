@@ -78,6 +78,7 @@
 /* ana sayfa */
 #s-ana .m-logo{margin-top:10px;font-size:clamp(38px,12.5vw,56px);animation:mzip .7s cubic-bezier(.2,1.5,.4,1) both}
 .m-sahne{position:relative;flex:1;min-height:150px;width:100%}
+.m-sahne>.m-isin{display:none}   /* v10.30 (Adem: 'karakterin arkasindaki isiklar neden var'): ana sayfada Foxi arkasindaki donen isinlar kalkti (videolu fonda yapay duruyordu); kartlarda kalir */
 .m-isin{position:absolute;left:50%;top:46%;width:130vmin;height:130vmin;max-width:760px;max-height:760px;transform:translate(-50%,-50%);pointer-events:none}
 .m-isin:before{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(rgba(255,244,180,.2) 0 10deg,transparent 10deg 20deg);-webkit-mask:radial-gradient(closest-side,#000 12%,transparent 70%);mask:radial-gradient(closest-side,#000 12%,transparent 70%);animation:mdon 36s linear infinite}
 #m-kc{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:pointer;filter:drop-shadow(0 12px 14px rgba(8,14,60,.35))}

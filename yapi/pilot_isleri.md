@@ -329,3 +329,6 @@
 ## v10.29 (20 Kas 2026) — ana sayfa videosu
 - Adem'in Gemini videosu (ana sayfa resminden, 10 sn, 720x1280, filigran yok): dongu yeri son 1 sn basa karistirilarak (xfade) 9 sn dikissiz donguye cevrildi; ses atildi. fon/ana_ada2.webm (VP9, 875 KB) + .mp4 (H.264, 1.37 MB, faststart).
 - merkez.js: .m-bg icinde sessiz, donen video (resim altta, video yuklenene kadar o). Ana sayfa acilinca oynar, kapaninca (oyunda) durur. Eski: `?anavid=0`.
+
+## v10.30 (20 Kas 2026) — ana sayfada Foxi arkasindaki isinlar kalkti
+- Adem: 'karakterin arkasindaki isiklar neden var'. .m-isin (donen gunes isini suslemesi) videolu fonda yapay duruyordu; ana sayfada gizli (.m-sahne>.m-isin). Sandik, yeni karakter ve kazanma kartlarinda kalir.
