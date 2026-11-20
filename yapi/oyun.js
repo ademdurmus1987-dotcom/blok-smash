@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.20', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.21', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -864,17 +864,17 @@ const YFON = {
 };
 // v10.18 (Adem 20 Kas: 'arka fonlar daha genis, manzarali'): yeni genis manzarali fonlar (Adem'in cizimleri, 1080 genis). Eski sira: ?fon2=0
 Object.assign(YFON, {
-  tropik: { f: 'y_tropik', r: 'tropik', cy: 0.80, pn: 'platform_4', toz: '#f4e4c0', ad: 'Tropik Ada', zem: 'kum', sy: 0.75 },
-  liman: { f: 'y_liman', r: 'liman', cy: 0.74, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Limanı', zem: 'su', hep: 1 },
-  col2: { f: 'y_col2', r: 'col2', cy: 0.76, pn: 'platform_4', toz: '#f0d8a0', ad: 'Altın Çöl', zem: 'kum' },
-  kar2: { f: 'y_kar2', r: 'kar2', cy: 0.75, pn: 'platform_3', toz: '#ffffff', ad: 'Karlı Dağ Gölü', zem: 'kar' },
-  gunbatimi2: { f: 'y_gunbatimi2', r: 'gunbatimi2', cy: 0.81, pn: 'platform_4', toz: '#f8d0a8', ad: 'Gün Batımı Adası', zem: 'kum', sy: 0.73 },
-  volkan2: { f: 'y_volkan2', r: 'volkan2', cy: 0.80, pn: 'platform_3', toz: '#a89080', ad: 'Volkan Adası', zem: 'kum', sy: 0.66, zr: ['#4e4440', '#5e524c', '#3e3632'] },
-  kanyon: { f: 'y_kanyon', r: 'kanyon', cy: 0.80, pn: 'platform_4', toz: '#e8a070', ad: 'Kızıl Kanyon', zem: 'kum', zr: ['#d87a4a', '#c86a3e', '#e89a6a'] },
-  orman: { f: 'y_orman', r: 'orman', cy: 0.85, pn: 'platform_4', toz: '#c8e8a0', ad: 'Şelaleli Orman', zem: 'cim', sy: 0.81 },
-  gece2: { f: 'y_gece2', r: 'gece2', cy: 0.76, pn: 'platform_3', toz: '#c8d8f8', ad: 'Ay Işığı Koyu', zem: 'su', hep: 1 },
-  cayir: { f: 'y_cayir', r: 'cayir', cy: 0.85, pn: 'platform_4', toz: '#c8e8a0', ad: 'Kale Çayırı', zem: 'cim' },
-  liman2: { f: 'y_liman2', r: 'liman2', cy: 0.76, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Körfezi', zem: 'su', hep: 1 }
+  tropik: { f: 'y_tropik', r: 'tropik', cy: 0.76, pn: 'platform_4', toz: '#f4e4c0', ad: 'Tropik Ada', zem: 'kum', sy: 0.735 },
+  liman: { f: 'y_liman', r: 'liman', cy: 0.70, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Limanı', zem: 'su', hep: 1 },
+  col2: { f: 'y_col2', r: 'col2', cy: 0.70, pn: 'platform_4', toz: '#f0d8a0', ad: 'Altın Çöl', zem: 'kum' },
+  kar2: { f: 'y_kar2', r: 'kar2', cy: 0.70, pn: 'platform_3', toz: '#ffffff', ad: 'Karlı Dağ Gölü', zem: 'kar' },
+  gunbatimi2: { f: 'y_gunbatimi2', r: 'gunbatimi2', cy: 0.71, pn: 'platform_4', toz: '#f8d0a8', ad: 'Gün Batımı Adası', zem: 'su', hep: 1 },
+  volkan2: { f: 'y_volkan2', r: 'volkan2', cy: 0.715, pn: 'platform_3', toz: '#a89080', ad: 'Volkan Adası', zem: 'kum', sy: 0.665, zr: ['#4e4440', '#5e524c', '#3e3632'] },
+  kanyon: { f: 'y_kanyon', r: 'kanyon', cy: 0.72, pn: 'platform_4', toz: '#e8a070', ad: 'Kızıl Kanyon', zem: 'kum', zr: ['#d87a4a', '#c86a3e', '#e89a6a'] },
+  orman: { f: 'y_orman', r: 'orman', cy: 0.72, pn: 'platform_4', toz: '#c8e8a0', ad: 'Şelaleli Orman', zem: 'su', hep: 1 },
+  gece2: { f: 'y_gece2', r: 'gece2', cy: 0.70, pn: 'platform_3', toz: '#c8d8f8', ad: 'Ay Işığı Koyu', zem: 'su', hep: 1 },
+  cayir: { f: 'y_cayir', r: 'cayir', cy: 0.76, pn: 'platform_4', toz: '#c8e8a0', ad: 'Kale Çayırı', zem: 'cim' },
+  liman2: { f: 'y_liman2', r: 'liman2', cy: 0.70, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Körfezi', zem: 'su', hep: 1 }
 });
 for (const k in YFON) Object.assign(YFON[k], { yeni: 1, dirt: ['200,170,120', '180,150,100', '150,120,80'] });
 const FON2 = Q.get('fon2') !== '0';
@@ -885,7 +885,17 @@ function dunyaNo(L) { const b = Math.floor((L - 1) / 10), tur = Math.floor((L - 
 function fonOf(L) { return FONYENI && !K ? YFON[YSIRA[dunyaNo(L)]] : fonEski(L); }
 function platAd(fo) { return fo.pn || (fo.f.startsWith('kar') ? 'platform_3' : fo.f.startsWith('sahil') ? 'platform_2' : 'platform_4'); }
 // resim fonun (cover, ortali) ekrandaki yeri: resimdeki (fx, fy) oranlari -> ekran pikseli
-function fonPx(fx, fy) { const W = innerWidth, H = innerHeight, s = Math.max(W / 768, H / 1376); return [(W - 768 * s) / 2 + fx * 768 * s, (H - 1376 * s) / 2 + fy * 1376 * s, s]; }
+function fonPx(fx, fy) { if (BGT) return [BGT.ox + fx * BGT.iw, BGT.oy + fy * BGT.ih, BGT.iw / 768]; const W = innerWidth, H = innerHeight, s = Math.max(W / 768, H / 1376); return [(W - 768 * s) / 2 + fx * 768 * s, (H - 1376 * s) / 2 + fy * 1376 * s, s]; }
+// v10.21 (Adem: 'platformu rastgele yerlestiriyorsun'): FON HIZALAMA. Kamera yerlesince platform ayaginin ekrandaki yeri bulunur; fon resmi
+// gerektigi kadar buyutulup kaydirilir ki resimde olculen zemin noktasi (cy, ortada) tam ayagin altina gelsin. Ekranda bosluk kalmaz. Kapatma: ?fonhiza=0
+let BGT = null;
+function fonHizala(fo, ax, ay) {
+  const bg = $('bg'); BGT = null; if (!bg) return; if (Q.get('fonhiza') === '0' || !fo || !fo.yeni || fo.vid) { bg.style.backgroundSize = fo && fo.bs || ''; bg.style.backgroundPosition = fo && fo.bp || ''; return; }
+  const W = innerWidth, H = innerHeight, cy = fo.cy, ih0 = Math.max(W / 768, H / 1376) * 1376;
+  const ih = Math.max(ih0, ay / cy, (H - ay) / (1 - cy), (W / 768) * 1376), iw = ih * 768 / 1376;
+  const ox = Math.min(0, Math.max(W - iw, ax - 0.5 * iw)), oy = ay - cy * ih;
+  bg.style.backgroundSize = iw.toFixed(1) + 'px ' + ih.toFixed(1) + 'px'; bg.style.backgroundPosition = ox.toFixed(1) + 'px ' + oy.toFixed(1) + 'px'; BGT = { ox, oy, iw, ih };
+}
 function fonIsi(fo) {
   let d = $('bgisi'); if (!d) { d = document.createElement('div'); d.id = 'bgisi'; $('bg').after(d); }
   if (!fo || !fo.isi) { d.style.display = 'none'; return; }
@@ -3679,6 +3689,7 @@ function fit() {
     if (PC) TC.ustF = ustY() - tipY;   // v8.7: arabanin ekrandaki ust ucu, namlu ucunun ne kadar ustunde (kamera hizalamasi icin)
     const ph = Math.max(0.2, (TC.by - GY) / TC.k); TC.pad.scale.y = ph; TC.pad.position.y = -ph / 2; TC.rim2.position.y = -ph + 0.12;
   }
+  { const foH = fonOf(LV); if (FONYENI && foH && foH.yeni && !K) { const p0 = PLS[0]; V.set(p0 ? p0.x : 0, GY, p0 ? p0.z : 0).project(cam); fonHizala(foH, (V.x + 1) / 2 * innerWidth, (1 - V.y) / 2 * innerHeight); } }
   ZW = -1e9;   // v3.21: resimdeki su cizgisinin zemindeki yeri (kameradan resimdeki o noktaya isin, zemin duzlemiyle kesisim)
   if (foY && foY.yeni && foY.sy) { V.set(0, 1 - 2 * fonPx(0.5, foY.sy)[1] / H, 0.5).unproject(cam).sub(cam.position).normalize(); if (V.y < -1e-4) ZW = cam.position.z + V.z * (GY - cam.position.y) / V.y; }
   cam.userData.base = cam.position.clone(); tilkiYer(); if (FONYENI) fonIsi(fonOf(LV));

@@ -276,3 +276,8 @@
 
 ## v10.20 (20 Kas 2026) — 11. dunya Kale Cayiri
 - fon/yeni/cayir.webp: cicekli cayir, uzakta kale, deniz ve korsan gemisi (zemin cim, cy 0.85). Adem'in ikinci cizimi (harita tabelasi) kullanilmadi: tabelada anlamsiz yazi, duz boyama tarzi.
+
+## v10.21 (20 Kas 2026) — fon hizalama (Adem: 'platformu rastgele yerlestiriyorsun')
+- Sorun: YER kamerasi (v9.4) platformun on kenarini ekranda sabit yere koyuyor; fon resmi bagimsizdi, cy hic kullanilmiyordu -> ayak resimde rastgele yere denk geliyordu (yamac, havuz).
+- oyun.js fonHizala: fit() sonunda ayagin (PLS[0], GY) ekrandaki yeri bulunur; fon resmi en az gereken kadar buyutulur ve kaydirilir ki resimdeki (0.5, cy) noktasi ayagin altina gelsin (bosluk kalmaz). fonPx (isilti, su cizgisi ZW) ayni donusumu kullanir. Kapatma: `?fonhiza=0`.
+- cy degerleri izgarayla olculdu: ayak, ortada, duz zeminin ekrandaki ayak yuksekligine (~%70) en yakin noktasinda (az buyutme, manzara korunur). Gun Batimi ve Orman: kum/cimen cok onde oldugundan platform kiyidaki sig suda (zem su).
