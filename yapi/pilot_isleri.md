@@ -250,3 +250,8 @@
 ## v10.14 (20 Kas 2026) — Adem'in Gemini logosu
 - yapi/ikon/logo_foxi.webp: Adem'in yesil zeminli Gemini logosu (Foxi harflere tutunuyor, ahsap FOXI, tas SMASH, gulle ve kirintilar); yesil zemin oran anahtariyla ayiklandi (delik doldurma YOK: O'nun ici ve harf aralari saydam), 720 genis, 106 KB. Ana sayfada 250 px (kisa ekranda 210).
 - Blender logosu (ikon/logo3d.webp, logo3d.py) yedek olarak duruyor. Eski logo: `?logo=eski`.
+
+## v10.15 (20 Kas 2026) — acilis hizi, 1. adim
+- Olcum (yerel, masaustu): ana menuye kadar 12.5 MB / cubuk 5.2 sn -> 10.8 MB / 3.3 sn.
+- top_mermisi.glb 661->383 KB, kup_metal.glb 734->504 KB, parcali/kup_metal_parcali.glb 683->454 KB: yalniz dokular 1024 -> 384/512 (geometri ve meshopt aynen). Arac: yapi/uretici/glb_doku_kucult.py.
+- Insa sekmesinin gemi resimleri yalniz sekme acilinca iner; sevinen/uzgun Foxi animasyonlari acilistan 7 sn sonra iner.

@@ -19,7 +19,7 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=4';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=38';
+import { merkezKur } from './merkez.js?v=39';
 import * as EG from './egri.js?v=3';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.14', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.15', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -182,6 +182,7 @@ const MFILE = { kup: 'kup_metal', metal: 'kup_metal', ahsap: 'kup_ahsap', kirmiz
   celik: 'kup_metal', bomba: 'fici', hediye: 'sandik', yildiz: 'kup_altin', jole: 'kup_kirmizi', cam: 'kup',
   // v6.16: (Adem 5 Kas 2026) yeni Tripo modelleri: buz kup 2, ahsap kup 2 ve uc dikey (iki kat boyunda) sutun
   buz2: 'buz_kup_2', ahsap2: 'ahsap_kup_2', buzDikey: 'buz_dikey_kup', alevUzun: 'alev_tas_uzun_kup', morDikey: 'mor_dikey_kup', kola: 'teneke_kola' };
+const KUCUK = new Set(['kup_metal', 'top_mermisi']);   // v10.15: dokulari 1024->512/384 kucultuldu (uretici/glb_doku_kucult.py)
 const V1FILE = new Set(['kup', 'sandik', 'fici', 'platform_ahsap', 'platform_tas']);   // ilk Tripo modelleri (?v=1)
 const NEWM = new Set(['kola', 'kup', 'metal', 'ahsap', 'kirmizi', 'sandik', 'platform_sirk', 'top', 'topcu', 'fici', 'tugla', 'tas', 'buz', 'altin', 'ahsapmetal', 'piramitTas', 'kabak', 'celik', 'bomba', 'hediye', 'yildiz', 'jole', 'cam', 'buz2', 'ahsap2', 'buzDikey', 'alevUzun', 'morDikey']);
 const GLBP = {};   // ayni dosya iki anahtarda (kup, celik) bir kez yuklenir
@@ -189,7 +190,7 @@ const GLBP = {};   // ayni dosya iki anahtarda (kup, celik) bir kez yuklenir
 const MYUK = {}, MHAZIR = new Set();
 function modelYukle(keys) {
   return Promise.all(keys.filter((n) => MFILE[n]).map((n) => MYUK[n] || (MYUK[n] = new Promise((res) => {
-    const url = 'model/' + MFILE[n] + '.glb?v=' + (V1FILE.has(MFILE[n]) ? 1 : 2);
+    const url = 'model/' + MFILE[n] + '.glb?v=' + (V1FILE.has(MFILE[n]) ? 1 : KUCUK.has(MFILE[n]) ? 3 : 2);
     (GLBP[url] || (GLBP[url] = new Promise((ok) => new GLTFLoader().load(url, ok, undefined, () => ok(null))))).then((gl) => {
       if (gl) {
         let m = null; gl.scene.updateMatrixWorld(true); gl.scene.traverse((o) => { if (o.isMesh && !m) m = o; });
@@ -2291,7 +2292,7 @@ function loadPieces(keys) {   // v4.7: yalniz verilen model anahtarlarinin parca
   const fs = keys ? new Set(keys.map((k) => MFILE[k]).filter((f) => PARFILE.has(f))) : PARFILE;
   for (const f of fs) {
     if (PAR[f] !== undefined) continue; PAR[f] = null;
-    new GLTFLoader().load('model/parcali/' + f + '_parcali.glb?v=1', (gl) => {
+    new GLTFLoader().load('model/parcali/' + f + '_parcali.glb?v=' + (f === 'kup_metal' ? 2 : 1), (gl) => {
       const L = [];
       for (const ch of gl.scene.children) {
         const nd = ch.clone(); const c = ch.position.clone(); nd.position.set(0, 0, 0);

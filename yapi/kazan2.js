@@ -82,7 +82,7 @@ function fxBasla(cv, ortam, ses) {
 }
 
 // v10.9 (Adem'in Gemini cizimi): kazanma kartinda sevinen Foxi (hareketli, yesil zemin ayiklandi). Yuklenemezse eski yuvarlak avatar.
-let SEVINC = null; { const im = new Image(); im.onload = () => { SEVINC = im.src; }; im.src = '../karakter/tilki_sevinc_anim.webp?v=1'; }
+let SEVINC = null; setTimeout(() => { const im = new Image(); im.onload = () => { SEVINC = im.src; }; im.src = '../karakter/tilki_sevinc_anim.webp?v=1'; }, 7000);   // v10.15: acilistan sonra iner
 export function kazanSahne(KZ, d, o) {
   const zaman = [], sonra = (ms, f) => zaman.push(setTimeout(f, ms)), $ = (q) => KZ.querySelector(q);
   // ---- sesler (oyunun ana ses zinciri uzerinden; ses kapaliysa o.sesAg() null doner) ----

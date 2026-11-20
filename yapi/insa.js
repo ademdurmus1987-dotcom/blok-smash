@@ -38,14 +38,14 @@ export function insaKur(o) {
   let mesgul = false, gor = false, onYuk = {};
   const asama = () => Math.min(P.n, Math.max(1, (SV.insa && SV.insa[P.id]) || 1));
   const yukle = (i) => onYuk[i] || (onYuk[i] = new Promise((ok) => { const im = new Image(); im.onload = im.onerror = () => ok(im); im.src = P.res(i); }));
-  RA.src = P.res(asama());
+  // v10.15 (acilis hizi): gemi resimleri yalniz Insa sayfasi acilinca iner
   const hapEl = () => M.querySelector('#m-ahap .coin');
   const $ = (id) => sayfa.querySelector('#' + id);
 
   function hazirMi() { const a = asama(); return a < P.n && (SV.altin || 0) >= P.adim[a + 1].f; }
   function ciz() {
     const a = asama();
-    if (!mesgul) { RA.src = P.res(a); }
+    if (!mesgul && gor) { RA.src = P.res(a); }
     $('in-as').textContent = 'Aşama ' + a + '/' + P.n;
     [...$('in-pip').children].forEach((p, k) => { p.classList.toggle('on', k < a); p.classList.toggle('sr', k === a); });
     const K = $('in-kart'), al = SV.altin || 0;
@@ -59,7 +59,7 @@ export function insaKur(o) {
       $('in-btn').onclick = () => { tik(); if (ok) insa(); else oyna(); };
     }
     const nb = M.querySelector('.m-alt button[data-s="insa"]'); if (nb) nb.classList.toggle('in-nok', hazirMi());
-    if (!onYuk[a + 1] && a < P.n) yukle(a + 1);
+    if (gor && !onYuk[a + 1] && a < P.n) yukle(a + 1);
   }
 
   function parca(x, y, n, tur) {   // tur: 't' talas, 'd' toz, 'y' isilti
