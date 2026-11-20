@@ -26,7 +26,7 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - v10.31-33: YENI KAVANOZLAR + MATCAP. Model: uretici/blender/kavanoz2.py -> model/blok2/kav2_*.glb. Isik: Blender matcap studyosu uretici/blender/matcap.py -> doku/matcap/ (parlakC kavanozda; yari, mat, metal hazir ama kullanilmiyor). Oyun: yapi/blok3b.js mcMat (?mcAd ?mcS ?mcK ?kvRenk ?matcap=0).
 
 ## Siradaki isler (Adem'in onayladigi sira)
-1. (v10.34 YAPILDI: matcap butun bloklarda, canli yesil kavanoz; eski: ?mc2=0.) Adem'in telefondaki geri bildirimi bekleniyor.
+1. (v10.34 YAPILDI: matcap butun bloklarda. v10.35 rakip tarzi kup/kavanoz denendi, Adem eskisini begendi: yalniz ?b35=1.) Adem'in telefondaki geri bildirimi bekleniyor.
 0. Adem'in telefonda v10.23'e geri bildirimi: platform renk/sekil, ayak oturusu, kamera uzakligi, zemin haritasi (yanlis bolge varsa ZHARITA cokgenleri).
 2. Fonlara canlilik: suzulen martilar, suda parilti, karli dunyada kar.
 3. Dil destegi (yazilari ayri dosyaya, Ingilizce) ve magaza ekran goruntuleri.

@@ -9,7 +9,7 @@ export const B3 = !/[?&]b3=0/.test(location.search);
 const BUZ = { govde: '#2a8ef4', emis: '#0b48c0', emisG: 0.3, env: 0.4 };   // pilotta denendi: saydamlik ve guclu yansima buzu soluk gosteriyordu
 // v10.35 (Adem: 'altin kup ve kavanozu oyuna koyup deneyelim'): rakip tarzi kalin altin cerceveli, girintili renkli icli patili kup ve
 // dik cizgili kapakli kavanoz (uretici/blender/kup3.py, ornek_bloklar.py). Eski modeller: ?b35=0
-const B35 = !/[?&]b35=0/.test(location.search);
+const B35 = /[?&]b35=1/.test(location.search);   // v10.35d (Adem: 'bozdun, eskisi daha iyiydi'): yeni kup/kavanoz yalniz ?b35=1 ile
 const KUP = (r) => [B35 ? 'blok2/kup3' : 'pilot/pl_kup', 0.3, r, /[?&]kupcila=0/.test(location.search) ? { govde: r } : { govde: r, cila: 1, env: 0.55 }];   // v9.8: patili kup de cilali (?kupcila=0 eski)
 const SISE = (r) => ['blok/sise', 0.15, r, { govde: r, emis: r, emisG: 0.22, env: 0.8 }];   // cam: parlak, kendi isigi
 const TAS = (r) => ({ govde: r, emis: r, emisG: 0.32, env: 0.6, metal: 0.15 });
@@ -129,9 +129,9 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   // ?kvAd= ?kvK= ?kvS= ?kvT=  (kavanoz), ?yaAd= ?yaK= ... (yari), ?paAd= (silindir), ?maAd= (tas), ?meAd= (metal)
   const grup = (on, ad, K, S, T) => ({ ad: Qs.get(on + 'Ad') || ad, K: qn(on + 'K', K), S: qn(on + 'S', S), T: qn(on + 'T', T) });
   const MCG = {
-    kav: grup('kv', 'parlakE', 1.28, 0.6, 0),
-    yari: grup('ya', 'yariK', 1.32, 0.7, 0.15),
-    parlak: grup('pa', 'parlakE', 1.25, 0.6, 0.1),
+    kav: grup('kv', 'parlakE', 1.25, 0.9, 0.3),
+    yari: grup('ya', 'yariK', 1.2, 0.85, 0.45),
+    parlak: grup('pa', 'parlakE', 1.2, 0.75, 0.35),
     mat: grup('ma', 'matK', 1.0, 0.3, 0.25),
     metal: grup('me', 'metalK', 1.5, 0.9, 0.5)
   };
