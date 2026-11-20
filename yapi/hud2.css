@@ -36,3 +36,16 @@ html.hud2 .m-prof{box-shadow:0 0 0 2px var(--h-k),0 4px 0 var(--h-g)!important}
 /* v10.14 Adem'in Gemini logosu (Foxi + ahsap FOXI + tas SMASH + gulle) */
 .m-logo2 .logo4{width:min(64vw,250px);margin-top:-8px}
 @media (max-height:760px){.m-logo2 .logo4{width:min(54vw,210px)}}
+/* v10.16 rehber (ogretici bolumler): hedef blogun ustunde halka, dokunan el, Foxi'nin yazisi */
+#rehber{position:fixed;left:0;top:0;z-index:7;pointer-events:none;will-change:transform}
+#rehber .rh-hal{position:absolute;left:-34px;top:-34px;width:68px;height:68px;border-radius:50%;border:5px solid #ffe14a;box-shadow:0 0 0 3px #5a2a00,0 0 18px #ffd34a;animation:rhhal 1.1s ease-out infinite}
+@keyframes rhhal{0%{transform:scale(.55);opacity:1}100%{transform:scale(1.45);opacity:0}}
+#rehber .rh-el{position:absolute;left:-4px;top:4px;width:62px;height:62px;filter:drop-shadow(0 4px 4px #0008);animation:rhel 1.1s ease-in-out infinite;transform-origin:30% 10%}
+@keyframes rhel{0%,100%{transform:translate(10px,14px) rotate(-12deg)}45%{transform:translate(0,0) rotate(-12deg) scale(.92)}}
+#rehber .rh-yaz{position:absolute;left:50%;bottom:58px;transform:translateX(-50%);white-space:nowrap;padding:8px 14px 9px;border-radius:16px;background:linear-gradient(180deg,#7a46f0,#4a1cb8);border:3px solid #ffd34a;box-shadow:0 0 0 3px #5a2a00,0 6px 12px #0007;font:900 15px/1.1 'BS Baslik','Baloo 2',sans-serif;color:#fff;text-shadow:0 2px 0 #1a0650;animation:rhyaz .45s cubic-bezier(.34,1.56,.64,1) both}
+#rehber .rh-yaz:after{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-9px;border:9px solid transparent;border-top-color:#ffd34a;border-bottom:0}
+#rehber.alt .rh-yaz{bottom:auto;top:-130px}
+#rehber.alt .rh-yaz:after{display:none}
+#rehber.tekrar .rh-yaz b:before{content:"Bir daha! "}
+#rehber.git{opacity:0;transition:opacity .35s}
+@keyframes rhyaz{from{transform:translateX(-50%) scale(.4);opacity:0}}

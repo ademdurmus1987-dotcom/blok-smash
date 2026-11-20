@@ -40,8 +40,8 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 // v9.0 (19 Kas 2026, Adem: 'zorluk egrisine gore araya serpistir'): sekil bolumleri (pilot 31+) ana oyunun bolumleri arasinda (pilot/sira.js).
 // Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
-const SKS = SEKQ ? (await import('./pilot/sira.js?v=2')).SEKIL : {};
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=30') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const SKS = SEKQ ? (await import('./pilot/sira.js?v=3')).SEKIL : {};
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=35') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.15', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.16', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -1542,7 +1542,28 @@ function bolumBasla(Y) {
   const eu = egriYazi(); if (eu) ipu = eu + ipu;
   nm.innerHTML = '<div class="rb1' + (PLAN && PLAN.tip !== 'normal' ? ' eg-' + PLAN.tip : '') + '"><small>' + (PILOTQ ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; nm.classList.add('on'); $('hint').style.opacity = 1;
   hud(true);
+  rehberKur();
 }
+// v10.16 (Adem: 'ogretici bolumler'): REHBER. Ogretici bolumlerde (pilot verisinde 'ipucu') ilk oynayista vurulacak blogun
+// ustunde parlayan halka + dokunan el + Foxi'nin kisa yazisi. Atisla kaybolur ('iki kez' denilen bolumde ikinci atisa kadar kalir). Kapatma: ?rehber=0
+let REH = null;
+function rehberKur() {
+  const el = $('rehber'); if (el) el.remove(); REH = null;
+  if (Q.get('rehber') === '0' || K || !PLT || !PLT.B || !PLT.B.ipucu) return;
+  SV.reh = SV.reh || []; if (SV.reh.includes(LV) && !PILOTQ) return;
+  const ip = PLT.B.ipucu, d = document.createElement('div'); d.id = 'rehber';
+  d.innerHTML = '<div class="rh-hal"></div><div class="rh-el"><svg viewBox="0 0 64 64"><path d="M26 6c3 0 5 2 5 5v17l2-1c3-1 6 0 7 3l1 2 2-1c3-1 6 1 6 4v2c3-1 6 1 6 4v12c0 9-7 16-16 16h-4c-6 0-11-3-14-8L12 43c-2-3-1-6 2-7 2-1 5 0 6 2l2 3V11c0-3 2-5 4-5z" fill="#fff" stroke="#3a1050" stroke-width="3.5" stroke-linejoin="round"/></svg></div><div class="rh-yaz"><b>' + ip.yazi.replace(/[<>&]/g, '') + '</b></div>';
+  document.body.appendChild(d); REH = { id: ip.id, el: d, n: /iki kez/.test(ip.yazi) ? 2 : 1, L: LV };
+}
+function rehberCiz() {
+  if (!REH) return; REH.el.style.display = M && M.durdur() ? 'none' : ''; const c = cubes.find((x) => x.pid === REH.id && !x.out);
+  if (!c || (c.gone && REH.n < 2)) { rehberBitir(); return; }
+  const [x, y] = screenAt(c.body.position, 0); REH.el.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)';
+  REH.el.classList.toggle('alt', y > innerHeight * 0.62);
+  const yz = REH.el.querySelector('.rh-yaz'); if (yz) { const w = yz.offsetWidth / 2 + 10; yz.style.left = 'calc(50% + ' + Math.round(Math.min(innerWidth - w, Math.max(w, x)) - x) + 'px)'; }   // yazi ekrandan tasmasin
+}
+function rehberAtis() { if (!REH) return; REH.n--; if (REH.n <= 0) rehberBitir(true); else REH.el.classList.add('tekrar'); }
+function rehberBitir(kaydet) { if (!REH) return; const r = REH; REH = null; r.el.classList.add('git'); setTimeout(() => r.el.remove(), 400); if (kaydet && !PILOTQ) { SV.reh = SV.reh || []; if (!SV.reh.includes(r.L)) SV.reh.push(r.L); save(); } }
 // v6.26: (Adem 8 Kas) sahil fonu canli: Adem'in sahil resminden yaptigi 10 sn'lik video (bas/son 1 sn karistirilip kesintisiz 9 sn donguye cevrildi).
 // Resim altta kalir (video yuklenene kadar o gorunur); videoda dalga, bulut, kus kendisi hareket ettigi icin cizili martilar kapali.
 function videoFon(fo) {
@@ -2134,7 +2155,7 @@ function shoot(target) {
   body.addEventListener('collide', (e) => { if (b.hit) return; const c = CUBE_OF.get(e.body); if (!c) return; b.hit = true; b.hc = c; b.blast = new THREE.Vector3().copy(body.position); b.slow = true; YUM.push([b.blast.clone(), b]); impact(b, e); });
   balls.push(b);
   g.combo = { n: 0, t: 0, shown: 0 }; if (VR) VR.komboBitti();
-  muzzleFx(st0, b.dir); sfx('shoot'); buzz(18); hud();   // v3.21: (Adem) atista sahne/platform sallanmaz
+  muzzleFx(st0, b.dir); sfx('shoot'); buzz(18); hud(); rehberAtis();   // v3.21: (Adem) atista sahne/platform sallanmaz
   $('hint').style.opacity = 0;
   return true;
 }
@@ -3732,6 +3753,7 @@ function frame(ts) {
   if (g) { g.t += dt; spin(dt); slide(dt); if (FONYENI) temaKare(); if (FONYENI || DENGEVAR) denge(dt); world.step(1 / 120, dt * TS, 8); if (SIRK.mesh) SIRK.mesh.quaternion.set(platBody.quaternion.x, platBody.quaternion.y, platBody.quaternion.z, platBody.quaternion.w); updateFuse(dt); updateDebris(dt); syncMeshes(); updateBalls(dt); ggKare(dt); updateCubes(dt); if (PLT) PLT.kare(dt); /* PILOT */ if (KM.bomba) KM.bomba.emissiveIntensity = 0.45 + 0.4 * Math.sin(g.t * 8); }
   if (!HIZLI) { updatePofi(dt); updateCannon(dt); updateTilki(dt); } updateParts(dt); updateFX(dt); if (!HIZLI) { updSea(dt); CDT += dt; if (++CN % 2 === 0 || !sahneBos()) { canliKare(CDT); CDT = 0; } }   /* v5.0: dogrulayicida yalniz fizik */   /* v6.29: fondaki kus/koyun katmani boştayken saniyede 30 kez */ if (flashLight.intensity > 0) flashLight.intensity = Math.max(0, flashLight.intensity - dt * 400);
   if (shake > 0) shake = Math.max(0, shake - dt * 1.4); if (cam.userData.base && !CAMI) cam.position.copy(cam.userData.base); ekranSars();
+  rehberCiz();
   if (CAMI > 0 && cam.userData.base) { CAMI = Math.max(0, CAMI - dt); const k = CAMI / 1.6, a = 0.75 * k * k * (3 - 2 * k), b = cam.userData.base, dx = b.x - CTG.x, dz = b.z - CTG.z, c = Math.cos(a), sn = Math.sin(a); cam.position.set(CTG.x + dx * c + dz * sn, b.y + 2.2 * k * k, CTG.z - dx * sn + dz * c); cam.lookAt(CTG); if (CAMI === 0) { cam.position.copy(b); cam.lookAt(CTG); } }
   fovK(dt);
   // v6.29: (Adem: telefon cok isiniyor) hicbir sey kipirdamiyorsa golge haritasi yeniden cizilmez ve sahne saniyede 20 kez cizilir

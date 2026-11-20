@@ -255,3 +255,10 @@
 - Olcum (yerel, masaustu): ana menuye kadar 12.5 MB / cubuk 5.2 sn -> 10.8 MB / 3.3 sn.
 - top_mermisi.glb 661->383 KB, kup_metal.glb 734->504 KB, parcali/kup_metal_parcali.glb 683->454 KB: yalniz dokular 1024 -> 384/512 (geometri ve meshopt aynen). Arac: yapi/uretici/glb_doku_kucult.py.
 - Insa sekmesinin gemi resimleri yalniz sekme acilinca iner; sevinen/uzgun Foxi animasyonlari acilistan 7 sn sonra iner.
+
+## v10.16 (20 Kas 2026) — ogretici ilk 5 bolum + rehber el
+- yapi/pilot/ogretici_kaynak.py -> ogretici.json (pilot 2900-2904), sira.py ile ana oyunun 1-5. bolumu:
+  1 Ilk Atis (dar yuksek kavanoz kulesi; ilk atista 19/22), 2 Ikiz Kavanoz Kuleleri (24/42), 3 TNT Koprusu (27/39),
+  4 Buz Kalesi (buz once catlar, sonra kirilir; 13/18), 5 Buyuk Yikim (50/60, ilk 'zor'). Bot atisi: 2, 5, 9, 5, 15.
+- Denenip birakilanlar: genis cift sira kavanoz duvari (2/40) ve kavanoz piramidi (1/28): tatmin etmiyordu.
+- Rehber (oyun.js rehberKur/rehberCiz): pilot verisindeki 'ipucu' parcasinin ustunde parlayan halka, dokunan el, mor-altin yazi balonu; ilk atista kaybolur (buzda ikinci atisa kadar, 'Bir daha!'). Bolum basina bir kez (SV.reh). Kapatma: `?rehber=0`.

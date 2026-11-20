@@ -41,6 +41,11 @@ yer = [7, 13, 19] + [L0 + d for L0 in range(30, 2001, 10) for d in (-7, -2)]
 for (bot, n, ad, ht), Lv in zip(KL, yer):
     if Lv in S or Lv > 2000: continue
     S[Lv] = [n, ad, bot, ht]
+# v10.16 (Adem: 'ogretici bolumler, ilk bolumler can alici'): bolum 1-5 ogretici yapilar (pilot/ogretici.json 2900-2904), sirasiyla
+OP = os.path.join(D, 'ogretici.json')
+if os.path.exists(OP):
+    for i, (n, b) in enumerate(sorted(json.load(open(OP))['bolumler'].items())):
+        S[1 + i] = [int(n), b['ad'], round(BOTV.get(str(n), 3), 1), b.get('hareketTip', 'sabit')]
 S = dict(sorted(S.items()))
 print(len(KL), 'karisik yapi yerlesti, son bolum', max(Lv for Lv, v in S.items() if v[0] >= 960) if KL else '-')
 with open(OUT, 'w') as f:

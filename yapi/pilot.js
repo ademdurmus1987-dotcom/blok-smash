@@ -22,7 +22,7 @@ export function pilotKur(A, ana) {
   let DUVAR = false, RESIM = false;
   const ayarla = (n) => { N = n; DUVAR = N >= 55 && N <= 999; RESIM = (N >= 31 && N <= 54) || DUVAR; };
   ayarla(N);
-  const dosyaOf = (n) => n >= 3000 ? 'pilot/karma.json?v=2' : n >= 960 ? 'pilot/yapi.json?v=6' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
+  const dosyaOf = (n) => n >= 3000 ? 'pilot/karma.json?v=2' : n >= 2900 ? 'pilot/ogretici.json?v=4' : n >= 960 ? 'pilot/yapi.json?v=6' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
   const DOS = {}, DOSV = {}, HAZ = new Set();
   const veriAl = (n) => { const u = dosyaOf(n); return DOS[u] || (DOS[u] = fetch(u).then((r) => r.json()).then((v) => (DOSV[u] = v)).catch(() => { delete DOS[u]; return null; })); };
   // v9.0: ana oyunda tas, fici ve sise Adem'in cizimindeki gibi gri tas / fici / sise (oyun.js GRI: ayni turun eski gorunumlu esi)
@@ -510,7 +510,7 @@ export function pilotKur(A, ana) {
     if (B && PS.yukle) await PS.yukle(B.parca.map((p) => p.t));   // v5.6: Blender bloklarinin model dosyalari
     window.PLT_DBG = { world: A.world, B, ad: (b) => { const c = A.cubes.find((q) => q.body === b); return c ? c.pid : null; } };
   }
-  return { birak, onyukle, hazir: (n) => HAZ.has(n), get aktif() { return !!B; }, get ustY() { return B && B.ada ? B.ada[0].katlar[0].ust : 0; }, get L() { return N || 1; }, get Y() { return Y; }, yukle, kur, kare, zemin, cerceve: () => CERCEVE, hedef: HEDEF, get genis() { return B && B.kam && B.kam.genis || 0.74; }, kazan, kaybet,
+  return { birak, onyukle, hazir: (n) => HAZ.has(n), get aktif() { return !!B; }, get ustY() { return B && B.ada ? B.ada[0].katlar[0].ust : 0; }, get L() { return N || 1; }, get Y() { return Y; }, get B() { return B; }, yukle, kur, kare, zemin, cerceve: () => CERCEVE, hedef: HEDEF, get genis() { return B && B.kam && B.kam.genis || 0.74; }, kazan, kaybet,
     // top cikis noktasi: kameradan namluya giden isin uzerinde (ekranda yine namlunun agzinda gorunur), 'atis' orani kadar kameraya yakin.
     // Alcak namludan cikan top derin yapida on siradaki parcalara takiliyordu; boylece atis hatti oyuncunun bakis hattina yaklasir.
     cikis(st, kp) { const k = B && B.kam && B.kam.atis != null ? B.kam.atis : 0.5; D0 = st.distanceTo(kp); st.lerp(kp, k); } };
