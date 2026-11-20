@@ -322,3 +322,6 @@
   - Anahtarli kapi: gercek asma kilit (govde + U kanca). Anahtar ucarken vuus, girince ve ceyrek tur donerken mandal tikirtisi, acilinca klonk; kanca firlar, kilit anahtarla yere duser (kuculmez); kanatlar gicirdayarak kayar, dipten toz, sonda gum.
   - Yeni engeller: capa (zincirle ekran ustunden sallanan gemi capasi), surgu (iki kanat ortada birlesip ayrilir), yukari (inip kalkan duvar). Deneme: `?engel=<tur>`.
   - Siklik: kayitli bolumde engel yoksa 12. bolumden sonra bolume gore ~%45 olasilikla bir engel (anahtar, denge, cok platform haric); eklenen engel basina +1 top. Uretilen bolumlerde olasilik 0.6+0.3d, havuzda yeni engeller.
+
+## v10.28 (20 Kas 2026) — yeni ana sayfa resmi
+- Adem'in koy resmi (gemi, kuru kafa kayasi, gozetleme kulesi, hazine) ana sayfa fonu: fon/ana_ada2.webp (1080x1920, 395 KB). Foxi ortadaki cimende. Eski resim fon/ana_ada.webp duruyor (merkez.css .m-bg).

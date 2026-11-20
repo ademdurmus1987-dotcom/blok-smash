@@ -48,7 +48,7 @@
 #merkez.cik{animation:mcik .45s ease-in forwards;pointer-events:none}
 @keyframes mgir{from{opacity:0;transform:scale(1.05)}}
 @keyframes mcik{to{opacity:0;transform:scale(1.12)}}
-.m-bg{position:absolute;inset:-3%;background:url(fon/ana_ada.webp?v=1) center 62%/cover no-repeat;animation:akay 18s ease-in-out infinite alternate}   /* v6.14 (Adem 18 Kas): gunduz korsan adasi, Foxi cimende */
+.m-bg{position:absolute;inset:-3%;background:url(fon/ana_ada2.webp?v=1) center 62%/cover no-repeat;animation:akay 18s ease-in-out infinite alternate}   /* v6.14 (Adem 18 Kas): gunduz korsan adasi, Foxi cimende. v10.28 (Adem 20 Kas): yeni ana sayfa resmi (koy, gemi, kuru kafa kayasi; Foxi ortadaki cimende). Eski: fon/ana_ada.webp */
 .m-bg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,60,150,.35) 0%,rgba(20,60,150,0) 18%,rgba(10,30,20,0) 70%,rgba(10,30,40,.55) 100%)}
 .m-pus{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .m-pus i{position:absolute;bottom:-20px;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,236,160,.2) 60%,transparent);opacity:0;animation:mpus linear infinite}
