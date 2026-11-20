@@ -1,4 +1,4 @@
-# Foxi Smash — kaldigimiz yer (20 Kas 2026, v10.23)
+# Foxi Smash — kaldigimiz yer (20 Kas 2026, v10.33)
 
 Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pilot_isleri.md` (en altta v9.x - v10.x).
 
@@ -19,8 +19,15 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - Yeni mor-altin platformlar (yuvarlatilmis dikdortgen, sekizgen, daire, ada bolumlerinde verideki sekil) ve zemine gomulu, golgeli sutun ayaklar. Fizik sekli gorunusle ayni.
 - Eski hallere donus: `?kam=0`, `?yazi=1`, `?harita=0`, `?plat=eski`. Ayrinti: `yapi/pilot_isleri.md` v10.23.
 
+## v10.24 - v10.33 (ayni gun, devam; ayrinti yapi/pilot_isleri.md)
+- v10.25 hata: bolum bitince yenisi baslamiyordu (temaSil/ptAt 'kopuk' adi) duzeltildi.
+- v10.26-27: engeller Blender modeli (pervane, duvar; uretici/blender/engel_pervane.py), zincirli sarkac, gercekci sesli kilitli kapi, yeni engeller (capa, surgu, yukari), daha cok engelli bolum. Hazine avi kapali, kamera egimi en cok 13 derece, Kale Cayiri fonu sirada yok, kup-platform tasima duzeltmesi.
+- v10.28-30: ana sayfa yeni resim + Gemini videosu (fon/ana_ada2.*, 9 sn dongu), Foxi arkasindaki isinlar kalkti.
+- v10.31-33: YENI KAVANOZLAR + MATCAP. Model: uretici/blender/kavanoz2.py -> model/blok2/kav2_*.glb. Isik: Blender matcap studyosu uretici/blender/matcap.py -> doku/matcap/ (parlakC kavanozda; yari, mat, metal hazir ama kullanilmiyor). Oyun: yapi/blok3b.js mcMat (?mcAd ?mcS ?mcK ?kvRenk ?matcap=0).
+
 ## Siradaki isler (Adem'in onayladigi sira)
-1. Adem'in telefonda v10.23'e geri bildirimi: platform renk/sekil, ayak oturusu, kamera uzakligi, zemin haritasi (yanlis bolge varsa ZHARITA cokgenleri).
+1. Kavanoz yesili referanstaki gibi acik/canli (yalniz kavanoz). Matcap yontemini kuplere, tahtalara (yari), silindire (parlak), tasa (mat), altin/engellere (metal) uygulamak.
+0. Adem'in telefonda v10.23'e geri bildirimi: platform renk/sekil, ayak oturusu, kamera uzakligi, zemin haritasi (yanlis bolge varsa ZHARITA cokgenleri).
 2. Fonlara canlilik: suzulen martilar, suda parilti, karli dunyada kar.
 3. Dil destegi (yazilari ayri dosyaya, Ingilizce) ve magaza ekran goruntuleri.
 4. Acilis ekranindaki kucuk logo ve magaza ikonu icin yeni logo.
