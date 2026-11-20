@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.16', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.17', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -863,7 +863,7 @@ const YFON = {
   magara: { f: 'y_magara', r: 'magara', cy: 0.650, pn: 'platform_3', toz: '#e0c890', ad: 'Hazine Mağarası', isi: [0.55, 0.12, 0.7], zem: 'kum', zr: ['#d8b064', '#c89a50', '#e8c47a'] }
 };
 for (const k in YFON) Object.assign(YFON[k], { yeni: 1, dirt: ['200,170,120', '180,150,100', '150,120,80'] });
-const YSIRA = ['dalga', 'koy', 'col', 'seker', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'];   // 1-10 dalgali koy (video), 11-20 kumsal koy, ... 81-90 magara, sonra basa doner
+const YSIRA = Q.get('seker') === '1' ? ['dalga', 'koy', 'col', 'seker', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'] : ['dalga', 'koy', 'col', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'];   // v10.17 (Adem: 'Seker Diyari olmasin'): 8 dunya; eski: ?seker=1   // 1-10 dalgali koy (video), 11-20 kumsal koy, ... 81-90 magara, sonra basa doner
 let ZW = -1e9;   // v3.21: resim fonda suyun basladigi z (fit hesaplar); bunun arkasi su
 // v6.6: her dunya 10 bolum; 9 dunya (90 bolum) bitince sira kayar (her turda baska dunyadan baslar), boylece 1000. bolum 1.'nin dunyasinda olmaz
 function dunyaNo(L) { const b = Math.floor((L - 1) / 10), tur = Math.floor((L - 1) / 90); return (b + 4 * tur) % YSIRA.length; }

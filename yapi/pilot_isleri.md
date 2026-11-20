@@ -262,3 +262,6 @@
   4 Buz Kalesi (buz once catlar, sonra kirilir; 13/18), 5 Buyuk Yikim (50/60, ilk 'zor'). Bot atisi: 2, 5, 9, 5, 15.
 - Denenip birakilanlar: genis cift sira kavanoz duvari (2/40) ve kavanoz piramidi (1/28): tatmin etmiyordu.
 - Rehber (oyun.js rehberKur/rehberCiz): pilot verisindeki 'ipucu' parcasinin ustunde parlayan halka, dokunan el, mor-altin yazi balonu; ilk atista kaybolur (buzda ikinci atisa kadar, 'Bir daha!'). Bolum basina bir kez (SV.reh). Kapatma: `?rehber=0`.
+
+## v10.17 (20 Kas 2026) — Seker Diyari cikti
+- YSIRA 8 dunya (seker yok); eski 9'lu sira: `?seker=1`. Yeni genis manzarali fonlar Adem'in Gemini cizimleriyle gelecek (istemler sohbette).
