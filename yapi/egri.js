@@ -41,6 +41,7 @@ export const dunyaIci = (L) => ((L - 1) % AYAR.dunya) + 1;   // 1..10
 export const genel = (L) => sabit(1 - AYAR.egim * (1 - Math.exp(-Math.max(0, L - 25) / AYAR.olcek)));
 
 // bolumun plani: yalniz bolum numarasindan (harita, kart ve oyun ayni sonucu gorur)
+const HAZINE = typeof location !== 'undefined' && new URLSearchParams(location.search).get('hazine') === '1';
 export function plan(L, el = 25) {
   if (L <= el) return { L, tip: 'normal', etiket: L >= 5 && L % 5 === 0 ? 'zor' : null, el: 1 };
   const p = L % AYAR.dunya, s = seferNo(L), dn = Math.floor((L - 1) / AYAR.dunya);
@@ -53,6 +54,7 @@ export function plan(L, el = 25) {
   else if (p === 7 && L >= AYAR.tanit.zincir) tip = dn % 2 ? 'hazine' : 'zincir';
   const tanidik = (t) => L >= AYAR.tanit[t];
   if ((tip === 'hazine' || tip === 'zincir') && !tanidik(tip)) { const o = tip === 'hazine' ? 'zincir' : 'hazine'; tip = tanidik(o) ? o : 'normal'; }   // henuz tanitilmayan tur yerine digeri
+  if (tip === 'hazine' && !HAZINE) tip = 'normal';   // v10.27 (Adem: 'sari kareler var, kaldiralim'): isaretli hazine avi bolumu kapali, normal bolum. Eski: ?hazine=1
   return { L, tip, etiket, sefer: s, yer: p || 10 };
 }
 

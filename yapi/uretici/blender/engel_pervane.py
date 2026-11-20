@@ -1,3 +1,4 @@
+# Foxi Smash v10.26-27 (+ duvar: kayan duvar engeli, '-- duvar' ile yalniz o)
 # Foxi Smash v10.26 (20 Kas 2026, Adem: 'blender-skills ile bir deneme yap, iyi olmayan bir seyi yapalim'): DONEN PERVANE ENGELI (kurek).
 # Eski hal: duz kutular (kahverengi kol, kirmizi uc, sari silindir gobek). Yeni: oyuncak tarzi Blender modeli, uc parca:
 #   pervane_kol.glb : tahta kol, x = 0..1 (oyunda boyu bolume gore x yonunde olceklenir), iki tahta serit + aradaki oluk, iki altin kelepce + percin
@@ -57,6 +58,24 @@ def gobek():
         P.append(bm_al(bm, lambda f: CIVI)); bm.free()
     return P
 
+def duvar():
+    # v10.27 kayan duvar (eski: duz tahta levha + kirmizi direk): 2.7 x 1.9 x 0.32 tahta kapak; 3 yatay tahta (iki ton, aralari oluk), koyu demir
+    # cerceve, iki demir kusak + percin, iki yanda kirmizi yuvarlak direk ve altin baslik. Merkez pivot (fizik kutusu 2.9 x 2.0 x 0.4 ile ayni yer).
+    W, Hh, Dd = 2.7, 1.9, 0.32; P = []
+    for i, y in enumerate((-Hh / 3, 0, Hh / 3)):
+        P.append(kutu(0, y, 0, W - 0.08, Hh / 3 - 0.06, Dd * (0.92 if i % 2 else 1.0), 0.04, 2, TAHTA1 if i % 2 == 0 else TAHTA2))
+    P.append(kutu(0, 0, 0, W - 0.1, Hh - 0.1, Dd * 0.7, 0.02, 1, OLUK))
+    DEM = renk('#4a4f5c'); DEMA = renk('#8a93a4')
+    for y in (Hh / 2 - 0.06, -Hh / 2 + 0.06): P.append(kutu(0, y, 0, W, 0.14, Dd + 0.06, 0.04, 2, DEM))
+    for y in (Hh * 0.2, -Hh * 0.2):
+        P.append(kutu(0, y, 0, W - 0.1, 0.12, Dd + 0.05, 0.03, 2, DEM))
+        for x in (-0.95, -0.32, 0.32, 0.95):
+            for z in (1, -1): P.append(kutu(x, y, z * (Dd / 2 + 0.03), 0.07, 0.07, 0.04, 0.015, 1, DEMA))
+    for x in (-W / 2, W / 2):
+        P.append(kutu(x, 0, 0, 0.26, Hh + 0.12, Dd + 0.12, 0.1, 3, KIRM))
+        for y in (Hh / 2 + 0.1, -Hh / 2 - 0.1): P.append(kutu(x, y, 0, 0.34, 0.12, Dd + 0.18, 0.05, 2, ALT))
+    return P
+
 def yap(ad, P, puruz):
     print('==', ad)
     ob = nesne(ad, P, 50.0); print('  ucgen', len(ob.data.polygons))
@@ -65,6 +84,10 @@ def yap(ad, P, puruz):
 
 def main():
     bpy.ops.wm.read_factory_settings(use_empty=True); dunya()
-    yap('pervane_kol', kol(), 0.55); yap('pervane_uc', uc(), 0.3); yap('pervane_gobek', gobek(), 0.28)
+    sec = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else ['kol', 'uc', 'gobek', 'duvar']
+    if 'kol' in sec: yap('pervane_kol', kol(), 0.55)
+    if 'uc' in sec: yap('pervane_uc', uc(), 0.3)
+    if 'gobek' in sec: yap('pervane_gobek', gobek(), 0.28)
+    if 'duvar' in sec: yap('duvar', duvar(), 0.5)
 
 main()

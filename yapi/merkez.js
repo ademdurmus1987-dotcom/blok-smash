@@ -321,6 +321,7 @@ export function merkezKur(A) {
         const b = $('m-balon'); b.textContent = SOZ[Math.floor(Math.random() * SOZ.length)]; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
       });
       addEventListener('resize', boyut);
+      if (window.ResizeObserver) new ResizeObserver(() => boyut()).observe(kc);   // v10.27 (Adem: 'ilk acilista Foxi genis duruyor'): acilista sahne boyu pencere degismeden oturuyordu; tuval eski boyda kalip video yana gerilirdi
       T3 = { t: { oyna: (ad, sn) => zipla(ad === 'sevin' ? 2 : 1) }, boyut }; boyut(); vid.load(); requestAnimationFrame(kare);
       return T3;
     })().catch(() => null));

@@ -227,7 +227,7 @@ export function pilotKur(A, ana) {
     const pb = A.platBody; while (pb.shapes.length) pb.removeShape(pb.shapes[0]); pb.position.set(0, 0, 0); pb.quaternion.set(0, 0, 0, 1); pb.angularVelocity.set(0, 0, 0);
     if (A.SIRK.mesh) { A.scene.remove(A.SIRK.mesh); A.SIRK.mesh.geometry.dispose(); A.SIRK.mesh = null; }
     if (!B) { A.R = 4; A.RZ = 4; A.TOPY = 2; A.kamera(9 * D2R, 0); A.fit(); return bilinmeyen(); }
-    A.kamera((B.kam && B.kam.pitch != null ? B.kam.pitch : 22) * D2R, (B.kam && B.kam.yaw || 0) * D2R);
+    { const pt = B.kam && B.kam.pitch != null ? B.kam.pitch : 22; A.kamera((ana && A.Q.get('egim') !== 'eski' ? Math.min(pt, 13) : pt) * D2R, (B.kam && B.kam.yaw || 0) * D2R); }   // v10.27 (Adem: 'platform cok one yatik, cok yuzey gorunuyor'): ana oyunda kamera en cok 13 derece yukaridan. Eski: ?egim=eski
     const pts = [], adaKat = {};
     let ilk = true;
     for (const ada of B.ada) {

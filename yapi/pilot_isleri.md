@@ -308,3 +308,17 @@
 - Secilen zayif parca: donen pervane (kurek) engeli, duz kutulardan (kahverengi kol, kirmizi uc, sari silindir).
 - uretici/blender/engel_pervane.py -> model/engel/pervane_kol.glb (iki tahta serit + oluk, iki altin kelepce + percin; x=0..1, oyunda boyu olceklenir), pervane_uc.glb (kirmizi yuvarlak kurek ucu, krem serit; olceklenmez), pervane_gobek.glb (basamakli altin gobek, 6 civata, kirmizi kubbe). Kose rengi x Cycles ile pisirilmis isik (pilot_bloklar.py hatti). Toplam ~170 KB.
 - oyun.js engKur kurek: modeller yuklendiyse yeni gorunus, degilse eski kutular. Fizik kutulari ayni. Eski: `?pervane=eski`.
+
+## v10.27 (20 Kas 2026) — Adem'in 6 ekran goruntulu geri bildirimi
+- Kup/platform: kayan/asansor platform kupu baslangic platformuna (c.pi) gore tasiyordu; baska platforma dusen kup eski platformla kayiyordu. piDuzelt: hareketli platformlu bolumde her karede kupun gercekten ustunde durdugu platform bulunur. Eski: `?pi=eski`.
+- 1216: denge tahtali bolumde eski iskele kaziklari (zeminTaban) calisiyordu; kirisleri ince tablanin ustune cikiyordu. Yeni platformda zeminTaban hic yok; denge ayagi mor-altin.
+- Hazine avi bolumu (sari hedef kareleri) kapali: o bolumler normal (egri.js). Eski: `?hazine=1`.
+- Ada bolumlerinde kamera 22 derece yukaridan bakiyordu (cok ust yuzey): ana oyunda en cok 13 derece (pilot.js). Eski: `?egim=eski`.
+- Kale Cayiri fonu (yokuslu) dunya sirasindan cikti (10 dunya; dunyalar kaydi). Eski: `?cayir=1`.
+- Ana sayfa Foxi'si ilk acilista genis: tuval yalniz pencere boyu degisince boyutlaniyordu; ResizeObserver eklendi (merkez.js).
+- Engeller (`?engel2=eski` hepsini eski hale getirir):
+  - Kayan duvar Blender modeli (engel_pervane.py -- duvar -> model/engel/duvar.glb): uc tahta, demir cerceve ve kusak, percin, kirmizi direk, altin baslik.
+  - Sallanan kalkan: asilma noktasi ekranin ust kenarinin disinda (ekranUst), cubuk yerine zincir; kalkanda altin percin halkasi.
+  - Anahtarli kapi: gercek asma kilit (govde + U kanca). Anahtar ucarken vuus, girince ve ceyrek tur donerken mandal tikirtisi, acilinca klonk; kanca firlar, kilit anahtarla yere duser (kuculmez); kanatlar gicirdayarak kayar, dipten toz, sonda gum.
+  - Yeni engeller: capa (zincirle ekran ustunden sallanan gemi capasi), surgu (iki kanat ortada birlesip ayrilir), yukari (inip kalkan duvar). Deneme: `?engel=<tur>`.
+  - Siklik: kayitli bolumde engel yoksa 12. bolumden sonra bolume gore ~%45 olasilikla bir engel (anahtar, denge, cok platform haric); eklenen engel basina +1 top. Uretilen bolumlerde olasilik 0.6+0.3d, havuzda yeni engeller.
