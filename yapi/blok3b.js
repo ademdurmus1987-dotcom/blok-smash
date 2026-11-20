@@ -43,8 +43,8 @@ if (!/[?&]b2=0/.test(location.search)) {
     const KG = +((/[?&]kenv=([0-9.]+)/.exec(location.search) || [])[1] || 4.5), KR = +((/[?&]krough=([0-9.]+)/.exec(location.search) || [])[1] || 0.14);
     const KVR = (/[?&]kvRenk=([0-9a-f]{6})/.exec(location.search) || [])[1];   // deneme: butun kavanozlar bu renkte
     // v10.34: yesil yalniz kavanozda referanstaki gibi acik ve canli (ornek_1 yesili ~#32cc34). Deneme: ?kvYesil=rrggbb, eski: ?kvYesil=0
-    const KYS = (/[?&]kvYesil=([0-9a-f]{6}|0)/.exec(location.search) || [])[1];
-    const rk = KVR ? '#' + KVR : c === 'Y' && KYS !== '0' ? '#' + (KYS || '3ad23e') : r;
+    const KYS = (/[?&]kvYesil=([0-9a-f]{6}|0|1)/.exec(location.search) || [])[1];
+    const rk = KVR ? '#' + KVR : c === 'Y' && KYS && KYS !== '0' ? '#' + (KYS === '1' ? '3ad23e' : KYS) : r;   // v10.35e (Adem: 'senden oncesine getir'): yesil yalniz ?kvYesil=1
     const kvo = YENI ? { govde: rk, cila: 1, env: 0.7, emis: rk, emisG: KV2 ? KE : 0.26, bant: 1, kav: KV2 ? 1 : 0, kenv: KG, krough: KR } : { govde: r, cila: 1, env: 0.95 };
     LISTE['kj' + c] = [KV2 ? (B35 ? 'blok2/kav3_1' : 'blok2/kav2_1') : 'blok2/kavanoz1', 0.1, r, kvo];
     LISTE['kvU' + c] = [KV2 ? (B35 ? 'blok2/kav3_2' : 'blok2/kav2_2') : 'blok2/kavanoz2', 0.1, r, kvo];
@@ -111,7 +111,7 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   // v10.34 (Adem: 'referans kalitesi: parlak, temiz renk, yumusak genis parlama bandi, kenar isigi'): matcap butun bloklarda.
   // c = { ad: doku/matcap/<ad>, K: govde parlakligi, S: parlama gucu, T: parlamanin beyaza gitme payi (0: govde renginin acik tonu, 1: saf beyaz) }.
   // Referansta genis bant BEYAZ degil, rengin acik tonu: T kucuk tutulur (renk solmaz). T verilmezse eski karisim (saf beyaz). Eski: ?mc2=0
-  const MC2 = !/[?&]mc2=0/.test(location.search);
+  const MC2 = /[?&]mc2=1/.test(location.search);   // v10.35e: v10.33 gorunumu varsayilan; butun bloklarda matcap yalniz ?mc2=1
   const qn = (k, v) => (Qs.get(k) != null ? +Qs.get(k) : v);
   function mcMat(ozel, c) {
     let mc = MC, mh = MH, K = mcK, S = mcS, T = -1;
