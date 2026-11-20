@@ -281,3 +281,10 @@
 - Sorun: YER kamerasi (v9.4) platformun on kenarini ekranda sabit yere koyuyor; fon resmi bagimsizdi, cy hic kullanilmiyordu -> ayak resimde rastgele yere denk geliyordu (yamac, havuz).
 - oyun.js fonHizala: fit() sonunda ayagin (PLS[0], GY) ekrandaki yeri bulunur; fon resmi en az gereken kadar buyutulur ve kaydirilir ki resimdeki (0.5, cy) noktasi ayagin altina gelsin (bosluk kalmaz). fonPx (isilti, su cizgisi ZW) ayni donusumu kullanir. Kapatma: `?fonhiza=0`.
 - cy degerleri izgarayla olculdu: ayak, ortada, duz zeminin ekrandaki ayak yuksekligine (~%70) en yakin noktasinda (az buyutme, manzara korunur). Gun Batimi ve Orman: kum/cimen cok onde oldugundan platform kiyidaki sig suda (zem su).
+
+## v10.22 (20 Kas 2026) — zemin tabani (Adem: 'platform fizige aykiri, suyun ustunde/yamacta duruyor')
+- oyun.js zeminTaban (temaKur): yeni fonlarda platformun altina zemine uygun 3B taban.
+  - Suda (liman, liman2, gunbatimi2, orman, gece2): iskele kaziklari: 6 kalin ahsap kazik deniz dibine iner, halat sargilari, ust uclari kirislerle bagli, suya girdigi yerde kopuk.
+  - Karada: alcak, kenari alfa ile resme karisan tumsek; rengi fon resminden (ayagin bastigi nokta) okunur; cevrede birkac tas; golge almaz.
+- Denenip birakilan: sudan cikan yosunlu kaya adacigi (yapay ve kaba duruyordu).
+- Kapatma: `?taban=0`.

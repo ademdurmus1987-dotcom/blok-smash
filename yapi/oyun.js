@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.21', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.22', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -864,16 +864,16 @@ const YFON = {
 };
 // v10.18 (Adem 20 Kas: 'arka fonlar daha genis, manzarali'): yeni genis manzarali fonlar (Adem'in cizimleri, 1080 genis). Eski sira: ?fon2=0
 Object.assign(YFON, {
-  tropik: { f: 'y_tropik', r: 'tropik', cy: 0.76, pn: 'platform_4', toz: '#f4e4c0', ad: 'Tropik Ada', zem: 'kum', sy: 0.735 },
+  tropik: { f: 'y_tropik', tb: '#f2dca8', r: 'tropik', cy: 0.76, pn: 'platform_4', toz: '#f4e4c0', ad: 'Tropik Ada', zem: 'kum', sy: 0.735 },
   liman: { f: 'y_liman', r: 'liman', cy: 0.70, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Limanı', zem: 'su', hep: 1 },
-  col2: { f: 'y_col2', r: 'col2', cy: 0.70, pn: 'platform_4', toz: '#f0d8a0', ad: 'Altın Çöl', zem: 'kum' },
-  kar2: { f: 'y_kar2', r: 'kar2', cy: 0.70, pn: 'platform_3', toz: '#ffffff', ad: 'Karlı Dağ Gölü', zem: 'kar' },
+  col2: { f: 'y_col2', tb: '#efc97a', r: 'col2', cy: 0.70, pn: 'platform_4', toz: '#f0d8a0', ad: 'Altın Çöl', zem: 'kum' },
+  kar2: { f: 'y_kar2', tb: '#f2f7ff', r: 'kar2', cy: 0.70, pn: 'platform_3', toz: '#ffffff', ad: 'Karlı Dağ Gölü', zem: 'kar' },
   gunbatimi2: { f: 'y_gunbatimi2', r: 'gunbatimi2', cy: 0.71, pn: 'platform_4', toz: '#f8d0a8', ad: 'Gün Batımı Adası', zem: 'su', hep: 1 },
-  volkan2: { f: 'y_volkan2', r: 'volkan2', cy: 0.715, pn: 'platform_3', toz: '#a89080', ad: 'Volkan Adası', zem: 'kum', sy: 0.665, zr: ['#4e4440', '#5e524c', '#3e3632'] },
-  kanyon: { f: 'y_kanyon', r: 'kanyon', cy: 0.72, pn: 'platform_4', toz: '#e8a070', ad: 'Kızıl Kanyon', zem: 'kum', zr: ['#d87a4a', '#c86a3e', '#e89a6a'] },
+  volkan2: { f: 'y_volkan2', tb: '#3e3836', r: 'volkan2', cy: 0.715, pn: 'platform_3', toz: '#a89080', ad: 'Volkan Adası', zem: 'kum', sy: 0.665, zr: ['#4e4440', '#5e524c', '#3e3632'] },
+  kanyon: { f: 'y_kanyon', tb: '#c8663a', r: 'kanyon', cy: 0.72, pn: 'platform_4', toz: '#e8a070', ad: 'Kızıl Kanyon', zem: 'kum', zr: ['#d87a4a', '#c86a3e', '#e89a6a'] },
   orman: { f: 'y_orman', r: 'orman', cy: 0.72, pn: 'platform_4', toz: '#c8e8a0', ad: 'Şelaleli Orman', zem: 'su', hep: 1 },
   gece2: { f: 'y_gece2', r: 'gece2', cy: 0.70, pn: 'platform_3', toz: '#c8d8f8', ad: 'Ay Işığı Koyu', zem: 'su', hep: 1 },
-  cayir: { f: 'y_cayir', r: 'cayir', cy: 0.76, pn: 'platform_4', toz: '#c8e8a0', ad: 'Kale Çayırı', zem: 'cim' },
+  cayir: { f: 'y_cayir', tb: '#5cb043', r: 'cayir', cy: 0.76, pn: 'platform_4', toz: '#c8e8a0', ad: 'Kale Çayırı', zem: 'cim' },
   liman2: { f: 'y_liman2', r: 'liman2', cy: 0.70, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Körfezi', zem: 'su', hep: 1 }
 });
 for (const k in YFON) Object.assign(YFON[k], { yeni: 1, dirt: ['200,170,120', '180,150,100', '150,120,80'] });
@@ -1855,6 +1855,7 @@ function temaKur() {
     q.dip = fonOf(LV).hep ? (tip === 'piston' ? 2.0 : 1.1) : 0;   // pistonun govdesi (alt tabla, halkalar) tamamen suyun altinda, yalniz krom mil cikar
     q.tu = ptUst(tm, q.r, q.rz, q.th); q.ta = ptAyak(tip, tm, q.cy - q.th - GY + q.dip); q.ta.position.set(q.x || 0, GY - q.dip, q.z || 0); q.ah0 = q.cy; scene.add(q.tu, q.ta);
     q.kp = null; if (q.dip) { q.ta.children[0].visible = false; q.kp = suKopuk(q.dip); q.ta.add(q.kp); }
+    { const fo = fonOf(LV), tb = zeminTaban(fo, q, q.cy - q.th - GY + q.dip); if (tb) { tb.position.y = q.dip; q.ta.add(tb); } }
     if (q.kay) q.ta.add(kayRay(tm, q.kay.a, q.cy - q.th - GY + q.dip, q.r)), q.tu.add(kayAraba(q.th));
   }
   temaKare();
@@ -1872,6 +1873,61 @@ function kayAraba(th) {
   const g = new THREE.Group(), cel = ptMat('#3c444e', 0.4, 0.5);
   for (const zz of [-0.36, 0.36]) g.add(ptMesh(new THREE.BoxGeometry(1.5, 0.22, 0.12), cel, 0, -th - 0.08, zz, 0));
   return g;
+}
+// v10.22 (Adem: 'platform fizige aykiri: suyun ustunde, yamacta duruyor; gercek fizik ve mantik olmali'): ZEMIN TABANI.
+// Yeni fonlarda ayak resmin ustune 'konmaz': suda sudan cikan yosunlu bir kaya adacigina, karada o dunyanin zemininden (kum, kar, cimen,
+// kizil tas, kara kum) duz bir tumsege basar; cevrede birkac tas, ustunde temas golgesi. Yerin alti (GY) gizli oldugu icin tumsek/kaya
+// zeminden cikiyor gibi gorunur. Kapatma: ?taban=0
+const TABAN = Q.get('taban') !== '0', TABANG = {};
+function tasGeo(r, tohum, d = 1) {
+  const g = new THREE.IcosahedronGeometry(r, d), p = g.attributes.position; let a = tohum * 9301 + 49297;
+  const rn = () => { a = (a * 9301 + 49297) % 233280; return a / 233280; };
+  const v = new THREE.Vector3(), m = new Map();
+  for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); const k = v.x.toFixed(3) + v.y.toFixed(3) + v.z.toFixed(3); if (!m.has(k)) m.set(k, 0.82 + rn() * 0.3); v.multiplyScalar(m.get(k)); p.setXYZ(i, v.x, v.y, v.z); }
+  g.computeVertexNormals(); return g;
+}
+function renkli(geo, alt, ust, esik) {   // ust yuzler (yosun / kar) ayri renk
+  const p = geo.attributes.position, n = geo.attributes.normal, c = new Float32Array(p.count * 3), A = new THREE.Color(alt), U = new THREE.Color(ust);
+  for (let i = 0; i < p.count; i++) { const t = n.getY(i) > esik ? U : A, k = 0.9 + ((i * 37) % 11) / 55; c[i * 3] = t.r * k; c[i * 3 + 1] = t.g * k; c[i * 3 + 2] = t.b * k; }
+  geo.setAttribute('color', new THREE.BufferAttribute(c, 3)); return geo;
+}
+// fon resminden ayagin bastigi noktanin rengi (tumsek resimle ayni renkte olsun); ilk kullanimda yuklenir, gelince malzeme guncellenir
+const FONRENK = {};
+function fonRenk(fo, cb) {
+  if (FONRENK[fo.r]) return cb(FONRENK[fo.r]);
+  const im = new Image(); im.onload = () => { try { const c = document.createElement('canvas'); c.width = 48; c.height = 86; const x = c.getContext('2d'); x.drawImage(im, 0, 0, 48, 86);
+    const d = x.getImageData(20, Math.round(fo.cy * 86) - 1, 8, 3).data; let r = 0, g = 0, b = 0, n = d.length / 4; for (let k = 0; k < d.length; k += 4) { r += d[k]; g += d[k + 1]; b += d[k + 2]; }
+    FONRENK[fo.r] = new THREE.Color().setRGB(r / n / 255, g / n / 255, b / n / 255, THREE.SRGBColorSpace); cb(FONRENK[fo.r]); } catch (e) {} };
+  im.src = 'fon/yeni/' + fo.r + '.webp?v=2';
+}
+let TABANYUM = null;   // tumsek kenarini resme karistiran yumusak alfa
+function tabanYum() { return TABANYUM || (TABANYUM = canvasTex(128, 128, (x, w, h) => { const g = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); g.addColorStop(0, '#fff'); g.addColorStop(0.55, '#fff'); g.addColorStop(1, '#000'); x.fillStyle = g; x.fillRect(0, 0, w, h); })); }
+function zeminTaban(fo, q, hUst) {
+  if (!TABAN || !fo || !fo.yeni || !FON2) return null;
+  const G = new THREE.Group(), kaya = fo.zem === 'su';
+  if (kaya) {
+    // suda: iskele kazıklari. Platformu deniz dibine cakili kalin ahsap kaziklar tasir; her kazik suya girdigi yerde kopuk halkasi.
+    const h = Math.max(0.5, hUst - (q ? q.dip : 0)), rx = Math.max(0.9, (q && q.r || 3) * 0.62), rz = Math.max(0.7, (q && q.rz || 2) * 0.55);
+    const ah = TABANG.ahsap || (TABANG.ahsap = new THREE.MeshStandardMaterial({ color: '#7a4a24', roughness: 0.85 })), ip = TABANG.ip || (TABANG.ip = new THREE.MeshStandardMaterial({ color: '#c8a46a', roughness: 0.9 }));
+    const kz = new THREE.CylinderGeometry(0.2, 0.24, h + 1.2, 12), bant = new THREE.TorusGeometry(0.235, 0.05, 6, 14);
+    for (const [x, z] of [[-rx, -rz], [rx, -rz], [-rx, rz], [rx, rz], [0, rz], [0, -rz]]) {
+      const k = new THREE.Mesh(kz, ah); k.position.set(x, (h - 1.2) / 2, z); k.castShadow = true; G.add(k);
+      for (const by of [h * 0.35, h * 0.72]) { const b = new THREE.Mesh(bant, ip); b.rotation.x = Math.PI / 2; b.position.set(x, by, z); G.add(b); }
+      const f = suKopuk(0); f.scale.setScalar(0.42); f.position.set(x, 0.05, z); G.add(f);
+    }
+    // ust uclari birbirine baglayan capraz kirisler (platformun altinda)
+    for (const z of [-rz, rz]) { const b = new THREE.Mesh(new THREE.BoxGeometry(2 * rx + 0.4, 0.22, 0.24), ah); b.position.set(0, h - 0.15, z); G.add(b); }
+    for (const x of [-rx, rx]) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.22, 2 * rz + 0.4), ah); b.position.set(x, h - 0.15, 0); G.add(b); }
+  } else {
+    // alcak, yumusak kenarli tumsek: rengi resimden; ustu biraz acik, kenari alfa ile resme karisir; golge almaz (cukur gibi gorunmesin)
+    const m = new THREE.MeshStandardMaterial({ color: fo.tb || '#d8c090', roughness: 1, transparent: true, alphaMap: tabanYum(), depthWrite: false });
+    fonRenk(fo, (c) => { m.color.copy(c).multiplyScalar(1.04); m.needsUpdate = true; });
+    const tm = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2), m); tm.scale.set(2.1, 0.22, 1.7); tm.renderOrder = 1; G.add(tm);
+    const tasM = TABANG.tas || (TABANG.tas = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 }));
+    const tr = fo.zem === 'kar' ? '#c8d2e0' : fo.r === 'cayir' ? '#9a948a' : new THREE.Color(fo.tb || '#c0a070').multiplyScalar(0.72).getStyle();
+    for (const [x, z, r0, t] of [[1.5, 0.5, 0.2, 3], [-1.6, 0.25, 0.16, 4], [1.0, -1.1, 0.14, 6]]) { const k = new THREE.Mesh(renkli(tasGeo(r0, t, 1), tr, tr, 2), tasM); k.position.set(x, 0.04, z); k.scale.y = 0.7; G.add(k); }
+  }
+  return G;
 }
 // suyun icindeki ayagin etrafinda yavas donen kopuk halkasi (ayagin suya girdigi yer)
 function suKopuk(dip) {
