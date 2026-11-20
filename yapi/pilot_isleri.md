@@ -269,3 +269,7 @@
 ## v10.18 (20 Kas 2026) — ilk iki yeni genis fon
 - fon/yeni/tropik.webp (1. dunya 'Tropik Ada', kum, platform kumda cy 0.80, su sinir sy 0.75) ve fon/yeni/liman.webp (2. dunya 'Korsan Limani', her yer su). Adem'in cizimleri (CapCut AI); ust %6 kirpildi (filigran), 768:1376 oranina, 1080 genis.
 - Sira: tropik, liman, col, buz, gunbatimi, volkan, gece, magara. Eski: `?fon2=0`.
+
+## v10.19 (20 Kas 2026) — 10 dunya, hepsi yeni genis fon
+- Sira: tropik, liman, col2 (Altin Col), kar2 (Karli Dag Golu), gunbatimi2, liman2 (Korsan Korfezi), volkan2, kanyon (Kizil Kanyon), orman (Selaleli Orman, zemin cim), gece2 (Ay Isigi Koyu).
+- Hepsi Adem'in cizimleri (CapCut AI, ust %6 kirpildi), 1080 genis webp. cy/sy oyun ekraninda kontrol edildi. Eski: `?fon2=0`.

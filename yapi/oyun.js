@@ -49,7 +49,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.18', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v10.19', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -865,11 +865,19 @@ const YFON = {
 // v10.18 (Adem 20 Kas: 'arka fonlar daha genis, manzarali'): yeni genis manzarali fonlar (Adem'in cizimleri, 1080 genis). Eski sira: ?fon2=0
 Object.assign(YFON, {
   tropik: { f: 'y_tropik', r: 'tropik', cy: 0.80, pn: 'platform_4', toz: '#f4e4c0', ad: 'Tropik Ada', zem: 'kum', sy: 0.75 },
-  liman: { f: 'y_liman', r: 'liman', cy: 0.74, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Limanı', zem: 'su', hep: 1 }
+  liman: { f: 'y_liman', r: 'liman', cy: 0.74, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Limanı', zem: 'su', hep: 1 },
+  col2: { f: 'y_col2', r: 'col2', cy: 0.76, pn: 'platform_4', toz: '#f0d8a0', ad: 'Altın Çöl', zem: 'kum' },
+  kar2: { f: 'y_kar2', r: 'kar2', cy: 0.75, pn: 'platform_3', toz: '#ffffff', ad: 'Karlı Dağ Gölü', zem: 'kar' },
+  gunbatimi2: { f: 'y_gunbatimi2', r: 'gunbatimi2', cy: 0.81, pn: 'platform_4', toz: '#f8d0a8', ad: 'Gün Batımı Adası', zem: 'kum', sy: 0.73 },
+  volkan2: { f: 'y_volkan2', r: 'volkan2', cy: 0.80, pn: 'platform_3', toz: '#a89080', ad: 'Volkan Adası', zem: 'kum', sy: 0.66, zr: ['#4e4440', '#5e524c', '#3e3632'] },
+  kanyon: { f: 'y_kanyon', r: 'kanyon', cy: 0.80, pn: 'platform_4', toz: '#e8a070', ad: 'Kızıl Kanyon', zem: 'kum', zr: ['#d87a4a', '#c86a3e', '#e89a6a'] },
+  orman: { f: 'y_orman', r: 'orman', cy: 0.85, pn: 'platform_4', toz: '#c8e8a0', ad: 'Şelaleli Orman', zem: 'cim', sy: 0.81 },
+  gece2: { f: 'y_gece2', r: 'gece2', cy: 0.76, pn: 'platform_3', toz: '#c8d8f8', ad: 'Ay Işığı Koyu', zem: 'su', hep: 1 },
+  liman2: { f: 'y_liman2', r: 'liman2', cy: 0.76, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Körfezi', zem: 'su', hep: 1 }
 });
 for (const k in YFON) Object.assign(YFON[k], { yeni: 1, dirt: ['200,170,120', '180,150,100', '150,120,80'] });
 const FON2 = Q.get('fon2') !== '0';
-const YSIRA = FON2 ? ['tropik', 'liman', 'col', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'] : Q.get('seker') === '1' ? ['dalga', 'koy', 'col', 'seker', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'] : ['dalga', 'koy', 'col', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'];   // v10.17 (Adem: 'Seker Diyari olmasin'): 8 dunya; eski: ?seker=1   // 1-10 dalgali koy (video), 11-20 kumsal koy, ... 81-90 magara, sonra basa doner
+const YSIRA = FON2 ? ['tropik', 'liman', 'col2', 'kar2', 'gunbatimi2', 'liman2', 'volkan2', 'kanyon', 'orman', 'gece2'] : Q.get('seker') === '1' ? ['dalga', 'koy', 'col', 'seker', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'] : ['dalga', 'koy', 'col', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'];   // v10.17 (Adem: 'Seker Diyari olmasin'): 8 dunya; eski: ?seker=1   // 1-10 dalgali koy (video), 11-20 kumsal koy, ... 81-90 magara, sonra basa doner
 let ZW = -1e9;   // v3.21: resim fonda suyun basladigi z (fit hesaplar); bunun arkasi su
 // v6.6: her dunya 10 bolum; 9 dunya (90 bolum) bitince sira kayar (her turda baska dunyadan baslar), boylece 1000. bolum 1.'nin dunyasinda olmaz
 function dunyaNo(L) { const b = Math.floor((L - 1) / 10), tur = Math.floor((L - 1) / 90); return (b + 4 * tur) % YSIRA.length; }
