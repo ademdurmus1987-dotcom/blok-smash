@@ -273,3 +273,6 @@
 ## v10.19 (20 Kas 2026) — 10 dunya, hepsi yeni genis fon
 - Sira: tropik, liman, col2 (Altin Col), kar2 (Karli Dag Golu), gunbatimi2, liman2 (Korsan Korfezi), volkan2, kanyon (Kizil Kanyon), orman (Selaleli Orman, zemin cim), gece2 (Ay Isigi Koyu).
 - Hepsi Adem'in cizimleri (CapCut AI, ust %6 kirpildi), 1080 genis webp. cy/sy oyun ekraninda kontrol edildi. Eski: `?fon2=0`.
+
+## v10.20 (20 Kas 2026) — 11. dunya Kale Cayiri
+- fon/yeni/cayir.webp: cicekli cayir, uzakta kale, deniz ve korsan gemisi (zemin cim, cy 0.85). Adem'in ikinci cizimi (harita tabelasi) kullanilmadi: tabelada anlamsiz yazi, duz boyama tarzi.
