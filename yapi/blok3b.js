@@ -169,13 +169,13 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
     else if (o.bant && JENV) { ozel.envMap = JENV; ozel.envMapIntensity = BG; ozel.roughness = BR; }   // v9.8: genis parlama bandi (karanlik studyo)
     else if (o.cila && SENV && SENV !== ENV) { ozel.envMap = SENV; ozel.envMapIntensity = (o.env || 0.4) * PG; }   // v9.7: studyo yansimasi
     // v10.41 (Adem 21 Kas: 'parlak oyuncak plastigi, Royal Smash kalitesi'): renkli bloklar ve kavanoz/silindirler MeshPhysicalMaterial,
-    // puruz 0.14, metal 0.04, tam cila (1.0 / 0.08), studyo yansimasi 1.8. Kavanoz/silindir ayrica %45 saydam (ior 1.5, kalinlik 0.6).
+    // puruz 0.14, metal 0.04, tam cila (1.0 / 0.08), studyo yansimasi 1.05 (v10.42). Kavanoz/silindir ayrica %18 saydam, puruz 0.10 (ior 1.5, kalinlik 0.6).
     // Tas ve altin eski ayarinda kalir. Eski hal: ?parlak2=0
     if (PARLAK2) {
       const t = oyTur(L[0]), sil = /silindir/.test(L[0]);
       if (t === 'renkli' || t === 'kavanoz') {
-        const oz = Object.assign({}, ozel, { envMap: SENV || ENV, roughness: 0.14, metalness: 0.04, clearcoat: 1.0, clearcoatRoughness: 0.08, envMapIntensity: 1.8 });
-        if (t === 'kavanoz' || sil) Object.assign(oz, { transmission: 0.45, ior: 1.5, thickness: 0.6, emissiveIntensity: Math.min(ozel.emissiveIntensity || 0, 0.1) });
+        const oz = Object.assign({}, ozel, { envMap: SENV || ENV, roughness: 0.14, metalness: 0.04, clearcoat: 1.0, clearcoatRoughness: 0.08, envMapIntensity: 1.05 });   // v10.42: 1.8 renkleri solduruyordu
+        if (t === 'kavanoz' || sil) Object.assign(oz, { roughness: 0.10, transmission: 0.18, ior: 1.5, thickness: 0.6, emissiveIntensity: Math.min(ozel.emissiveIntensity || 0, 0.1) });
         const mat = new THREE.MeshPhysicalMaterial(oz); mat.userData.yeni = 1;
         return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: L[2], roughness: 0.4 }) });
       }
