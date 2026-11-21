@@ -67,3 +67,10 @@ html.sade .m-sahne.kilitli:before{opacity:.3}
 html.elipucu #hint,html.elipucu.hud2 #hint{font-size:0!important;padding:0!important;width:58px;height:58px;background:none!important;border:0!important;box-shadow:none!important;-webkit-text-stroke:0!important;overflow:visible!important}
 html.elipucu #hint:before{left:50%!important;top:50%!important;font-size:44px!important;transform:translate(-50%,-50%);animation:elTik 1s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.4))!important}
 @keyframes elTik{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-80%) scale(.88)}}
+
+/* v10.43 (Adem 21 Kas): alt menu ikonlari yan ikonlarla ayni 3B dilde. Soluk filtre yok (yan ikonlarla ayni golge), aktif sekmede
+   ikon hafif yukari tasar (-6px, 1.12), altinda yumusak altin parlama, yazi beyaz + koyu kontur + altin isik. Eski: ?altnav=eski */
+html.altnav .m-alt .ik3{filter:drop-shadow(0 4px 3px rgba(0,0,0,.45))!important}
+html.altnav .m-alt button.on .ik3{transform:translateY(-6px) scale(1.12);filter:drop-shadow(0 4px 3px rgba(0,0,0,.4)) drop-shadow(0 0 9px rgba(255,214,90,.9))!important}
+html.altnav .m-alt button.on{background:radial-gradient(closest-side at 50% 52%,rgba(255,246,190,.95),rgba(255,214,90,.55) 55%,rgba(255,200,80,0)),radial-gradient(120% 90% at 50% 0%,#ffe9a8 0%,#e8a33a 55%,#b8641c 100%)!important}
+html.altnav .m-alt button.on span{opacity:1;color:#fff;-webkit-text-stroke:3px #5a2600;paint-order:stroke fill;text-shadow:0 2px 0 #3a1800,0 0 8px rgba(255,214,90,.9)!important;letter-spacing:.6px}

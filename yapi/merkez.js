@@ -14,6 +14,7 @@ import { ADA, adaKur } from './ada.js?v=1';
 import { insaKur } from './insa.js?v=2';   // v7.2: (Adem 18 Kas) ayri Insa sayfasi (gemi 10 asama)   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
 const $ = (id) => document.getElementById(id);
 const ESKI_MENU = !/[?&]ada=1/.test(location.search);   // v7.1: (Adem 18 Kas) ada ana sayfadan kaldirildi (ayri sayfa olacak); deneme: ?ada=1
+const ALT3B = /[?&]altnav=eski/.test(location.search) ? '' : '_3b';   // v10.43 (Adem 21 Kas): alt menu ikonlari konturu temizlenmis 3B surum (ikon/*_3b.webp); eski: ?altnav=eski
 const ANAPLAJ = !/[?&]anafon=eski/.test(location.search);   // v10.39 (Adem 21 Kas): ana sayfa fonu Adem'in Seedream plaj resmi (fon/yeni/plaj.webp); eski video: ?anafon=eski
 const ANAVID = !ANAPLAJ && !/[?&]anavid=0/.test(location.search);   // v10.29: ana sayfa videosu
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -27,11 +28,11 @@ const IK = {
   disli: svg('<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>', 24),
   kilit: svg('<path d="M15 21v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><rect x="9" y="20" width="30" height="23" rx="5" fill="#ffc81e" stroke="#7a3a00" stroke-width="2.5"/><circle cx="24" cy="30" r="3.4" fill="#7a3a00"/><path d="M24 31v6" stroke="#7a3a00" stroke-width="3.4" stroke-linecap="round"/>'),
   // dumen: ana sayfa
-  ev: '<img class="ik3" src="ikon/ev.webp?v=1" alt="" draggable="false">',
+  ev: '<img class="ik3" src="ikon/ev' + ALT3B + '.webp?v=1" alt="" draggable="false">',
   // altin kesesi: magaza
-  magaza: '<img class="ik3" src="ikon/magaza.webp?v=1" alt="" draggable="false">',
-  harita: '<img class="ik3" src="ikon/harita.webp?v=1" alt="" draggable="false">',
-  insa: '<img class="ik3" src="ikon/insa.webp?v=1" alt="" draggable="false">',
+  magaza: '<img class="ik3" src="ikon/magaza' + ALT3B + '.webp?v=1" alt="" draggable="false">',
+  harita: '<img class="ik3" src="ikon/harita' + ALT3B + '.webp?v=1" alt="" draggable="false">',
+  insa: '<img class="ik3" src="ikon/insa' + ALT3B + '.webp?v=1" alt="" draggable="false">',
   gorev: svg('<circle cx="22" cy="26" r="19" fill="#e8413c" stroke="#6a0a1c" stroke-width="2.5"/><circle cx="22" cy="26" r="13.5" fill="#fff"/><circle cx="22" cy="26" r="8.5" fill="#e8413c"/><circle cx="22" cy="26" r="3.5" fill="#fff"/><path d="M22 26L41 7" stroke="#4a2406" stroke-width="3.2" stroke-linecap="round"/><path d="M36 4l1 7 7 1-5 5-6-1-2-7z" fill="#ffc81e" stroke="#7a3a00" stroke-width="2" stroke-linejoin="round"/>'),
   hediye: svg('<rect x="7" y="21" width="34" height="22" rx="3" fill="#e8413c" stroke="#6a0a1c" stroke-width="2.5"/><rect x="4" y="13" width="40" height="10" rx="3" fill="#ff6a5a" stroke="#6a0a1c" stroke-width="2.5"/><rect x="20" y="13" width="8" height="30" fill="#ffd23f" stroke="#8a5a00" stroke-width="2"/><path d="M24 13c-9-11-17-3-9 0zM24 13c9-11 17-3 9 0z" fill="#ffd23f" stroke="#8a5a00" stroke-width="2.2" stroke-linejoin="round"/>'),
   sandik: svg('<path d="M6 23c0-10 6-14 18-14s18 4 18 14z" fill="#c07a30" stroke="#4a2406" stroke-width="2.5" stroke-linejoin="round"/><rect x="6" y="22" width="36" height="20" rx="3" fill="#9a5a20" stroke="#4a2406" stroke-width="2.5"/><path d="M14.5 10v32M33.5 10v32" stroke="#ffc81e" stroke-width="4.5"/><rect x="6" y="20.5" width="36" height="5" fill="#ffc81e" stroke="#7a4a00" stroke-width="1.6"/><rect x="19.5" y="19" width="9" height="11" rx="2.5" fill="#ffe36b" stroke="#7a4a00" stroke-width="2"/><circle cx="24" cy="24.5" r="1.8" fill="#7a4a00"/>'),
