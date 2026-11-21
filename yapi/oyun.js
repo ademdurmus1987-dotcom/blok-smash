@@ -19,7 +19,7 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=4';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=41';
+import { merkezKur } from './merkez.js?v=42';
 import * as EG from './egri.js?v=4';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
@@ -889,7 +889,9 @@ Object.assign(YFON, {
   orman: { f: 'y_orman', r: 'orman', cy: 0.72, pn: 'platform_4', toz: '#c8e8a0', ad: 'Şelaleli Orman', zem: 'su', hep: 1 },
   gece2: { f: 'y_gece2', r: 'gece2', cy: 0.70, pn: 'platform_3', toz: '#c8d8f8', ad: 'Ay Işığı Koyu', zem: 'su', hep: 1 },
   cayir: { f: 'y_cayir', tb: '#5cb043', r: 'cayir', cy: 0.76, pn: 'platform_4', toz: '#c8e8a0', ad: 'Kale Çayırı', zem: 'cim' },
-  liman2: { f: 'y_liman2', r: 'liman2', cy: 0.70, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Körfezi', zem: 'su', hep: 1 }
+  liman2: { f: 'y_liman2', r: 'liman2', cy: 0.70, pn: 'platform_4', toz: '#e8f8ff', ad: 'Korsan Körfezi', zem: 'su', hep: 1 },
+  // v10.39 (Adem 21 Kas: 'cok dunya olmasina gerek yok, boyle net guzel olsun'): Adem'in Seedream plaj resmi (1440x2560), tek dunya. Eski 10 dunya: ?dunya=cok
+  plaj: { f: 'y_plaj', tb: '#fce1aa', r: 'plaj', cy: 0.72, pn: 'platform_4', toz: '#fbe6bc', ad: 'Korsan Plajı', zem: 'kum', sy: 0.53 }
 });
 for (const k in YFON) Object.assign(YFON[k], { yeni: 1, dirt: ['200,170,120', '180,150,100', '150,120,80'] });
 // v10.23 (Adem 20 Kas: 'fonun her yeri su efekti var, cisim karaya dusuyor ama suya batiyor'; 'ucurumdan dusen kup havada kalip yok oluyor'):
@@ -907,6 +909,7 @@ const ZHARITA = {
   kanyon: [['bos', [[0.2, 0.3], [0.78, 0.3], [0.78, 0.5], [0.73, 0.56], [0.7, 0.62], [0.6, 0.66], [0.45, 0.668], [0.3, 0.664], [0.22, 0.62], [0.17, 0.6], [0.2, 0.5]]]],
   orman: { zb: 'cim', zp: [['su', [[0.14, 0.5], [0.86, 0.5], [0.8, 0.7], [0.72, 0.755], [0.64, 0.8], [0.2, 0.81], [0.1, 0.76], [0.12, 0.66]]]] },
   gece2: [['su', [[0, 0.6], [1, 0.6], [1, 0.84], [0.7, 0.845], [0.4, 0.85], [0, 0.835]]], ['cim', [[0, 0.48], [0.3, 0.5], [0.34, 0.66], [0.2, 0.7], [0, 0.72]]]],
+  plaj: [['su', [[0, 0.40], [1, 0.40], [1, 0.495], [0.8, 0.495], [0.65, 0.505], [0.5, 0.532], [0.35, 0.528], [0.2, 0.556], [0, 0.565]]]],
   cayir: [['su', [[0, 0.34], [0.6, 0.35], [0.52, 0.46], [0.36, 0.53], [0.3, 0.6], [0, 0.61]]], ['su', [[0.6, 0.6], [0.9, 0.59], [0.9, 0.75], [0.72, 0.735], [0.6, 0.665]]]]
 };
 const HARITA = Q.get('harita') !== '0';
@@ -922,7 +925,8 @@ function zemPx(x, z) { const c0 = cam.userData.base; let cp = null; if (c0) { cp
   ZK.set(x, GY, z).project(cam); if (cp) { cam.position.copy(cp); cam.updateMatrixWorld(true); } return [(ZK.x + 1) / 2 * innerWidth, (1 - ZK.y) / 2 * innerHeight]; }
 
 const FON2 = Q.get('fon2') !== '0';
-const YSIRA = FON2 ? ['tropik', 'liman', 'col2', 'kar2', 'gunbatimi2', 'liman2', 'volkan2', 'kanyon', 'orman', 'gece2'].concat(Q.get('cayir') === '1' ? ['cayir'] : []) :   // v10.27 (Adem: 'manzara olan fon cok yokus, kaldiralim'): Kale Cayiri sirada yok. Eski: ?cayir=1
+const TEKDUNYA = Q.get('dunya') !== 'cok';   // v10.39: tek fon (plaj); eski dunyalar ?dunya=cok
+const YSIRA = TEKDUNYA ? ['plaj'] : FON2 ? ['tropik', 'liman', 'col2', 'kar2', 'gunbatimi2', 'liman2', 'volkan2', 'kanyon', 'orman', 'gece2'].concat(Q.get('cayir') === '1' ? ['cayir'] : []) :   // v10.27 (Adem: 'manzara olan fon cok yokus, kaldiralim'): Kale Cayiri sirada yok. Eski: ?cayir=1
   Q.get('seker') === '1' ? ['dalga', 'koy', 'col', 'seker', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'] : ['dalga', 'koy', 'col', 'buz', 'gunbatimi', 'volkan', 'gece', 'magara'];   // v10.17 (Adem: 'Seker Diyari olmasin'): 8 dunya; eski: ?seker=1   // 1-10 dalgali koy (video), 11-20 kumsal koy, ... 81-90 magara, sonra basa doner
 let ZW = -1e9;   // v3.21: resim fonda suyun basladigi z (fit hesaplar); bunun arkasi su
 // v6.6: her dunya 10 bolum; 9 dunya (90 bolum) bitince sira kayar (her turda baska dunyadan baslar), boylece 1000. bolum 1.'nin dunyasinda olmaz
