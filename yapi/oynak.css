@@ -46,3 +46,14 @@ html.oynak .m-yan.sag .m-yb:nth-child(2) .m-yk:after{animation-delay:-1.95s}
 @media (prefers-reduced-motion:reduce){
   html.oynak #s-ana .m-logo2 .logo4,html.oynak .m-yb .m-yk img.i3,html.oynak .m-yb .m-yk:after{animation:none!important}
 }
+
+/* v10.38 (Adem 21 Kas: 'rakip gibi sade olsun, yazi olmasin, golge olsun'):
+   ana sayfada Foxi Smash yazisi (logo) yok; Foxi'nin ayaginin altinda belirgin gölge.
+   Eski hal: ?sade=0 (logo geri gelir, eski soluk gölge). */
+html.sade #s-ana .m-logo{visibility:hidden!important}   /* yeri bos kalir: Foxi ve ikonlar ayni boyutta, manzara acik */
+html.sade .m-sahne:after{bottom:calc(var(--ay,2%) - 15px);width:calc(var(--gen,62%) * 1.05);height:36px;
+  background:radial-gradient(closest-side,rgba(0,0,0,.72) 0,rgba(0,0,0,.55) 40%,rgba(0,0,0,.2) 75%,transparent 100%);
+  mix-blend-mode:multiply;z-index:0}
+html.sade .m-sahne:before{content:"";position:absolute;left:50%;bottom:calc(var(--ay,2%) - 4px);width:calc(var(--gen,62%) * .7);height:14px;transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(0,0,0,.85),rgba(0,0,0,.5) 55%,transparent);pointer-events:none;z-index:0}
+html.sade .m-sahne.kilitli:before{opacity:.3}
