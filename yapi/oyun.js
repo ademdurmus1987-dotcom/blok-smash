@@ -12,14 +12,14 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=32';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=33';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=4';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=42';
+import { merkezKur } from './merkez.js?v=43';
 import * as EG from './egri.js?v=4';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
@@ -542,6 +542,9 @@ const KENV = !PARLA || Q.get('sise') === 'eski' ? null : (() => {
   t.mapping = THREE.EquirectangularReflectionMapping;
   const pm = new THREE.PMREMGenerator(ren), e = pm.fromEquirectangular(t).texture; pm.dispose(); return e;
 })();
+// v10.41 (Adem 21 Kas): sahne geneline studyo yansimasi (PMREMGenerator ile uretilen SENV: ustte softbox, dikey isik seritleri, zenit).
+// Kendi envMap'i olan bloklar zaten bunu kullaniyordu; simdi envMap'i olmayan platform, top arabasi, zemin gibi nesneler de yansitir. Eski: ?parlak2=0
+if (Q.get('parlak2') !== '0' && !scene.environment) scene.environment = SENV;
 const B3K = blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }), b3Ready = B3K.yukle();   // v6.1
 const SEK = sekilKur({ THREE, S, canvasTex, ENV, b3: B3K });
 // v6.11 (Adem 17 Kas: 'Bagla'): parlak sekil kutuphanesi (gorsel/sekiller.js) bolumlerdeki bloklara baglandi. Yalniz GORUNUM degisir:
@@ -4185,6 +4188,8 @@ let last = 0, shake = 0, STARTT = 0;
 // v4.7: gelistirici FPS sayaci (Ayarlar > Gelistirici > FPS sayaci); kapaliyken hicbir is yapmaz
 const FPS = { el: null, n: 0, t: 0 };
 function fpsGoster() {
+  if (SV.fps && !Q.has('fps')) SV.fps = false;   // v10.41 (Adem: 'FPS 60 kaldir'): sayac oyuncuya hic gorunmez; gelistirici icin adres ?fps=1
+  if (Q.has('fps')) SV.fps = true;
   if (SV.fps && !FPS.el) { FPS.el = document.createElement('div'); FPS.el.style.cssText = 'position:fixed;left:6px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:99999;padding:2px 7px;border-radius:6px;background:rgba(0,0,0,.6);color:#7cff7c;font:700 12px/1.3 monospace;pointer-events:none'; FPS.el.textContent = 'FPS ..'; FPS.n = 0; FPS.t = 0; document.body.appendChild(FPS.el); }
   else if (!SV.fps && FPS.el) { FPS.el.remove(); FPS.el = null; }
 }

@@ -61,3 +61,9 @@ html.sade .m-sahne.kilitli:before{opacity:.3}
 /* v10.39: ana sayfa fonu plaj resmi (merkez.js ANAPLAJ). Eski: ?anafon=eski */
 .m-bg.m-plaj{background-image:url(fon/yeni/plaj.webp?v=1);background-position:center 66%;animation:none;inset:0}
 .m-bg.m-plaj:after{background:linear-gradient(180deg,rgba(20,60,150,.22) 0%,rgba(20,60,150,0) 14%,rgba(0,0,0,0) 80%,rgba(40,20,0,.25) 100%)}
+
+/* v10.41 (Adem 21 Kas: '"Dokun ve ates et!" kaldir'): yazili bant yok; ilk atisa kadar yalniz kucuk, zipplayan el (oyun.js atista gizler).
+   Eski bant: ?ipucu=eski */
+html.elipucu #hint,html.elipucu.hud2 #hint{font-size:0!important;padding:0!important;width:58px;height:58px;background:none!important;border:0!important;box-shadow:none!important;-webkit-text-stroke:0!important;overflow:visible!important}
+html.elipucu #hint:before{left:50%!important;top:50%!important;font-size:44px!important;transform:translate(-50%,-50%);animation:elTik 1s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.4))!important}
+@keyframes elTik{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-80%) scale(.88)}}

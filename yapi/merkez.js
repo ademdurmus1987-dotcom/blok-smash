@@ -491,7 +491,7 @@ export function merkezKur(A) {
   // ---------------- ayarlar / duraklatma ----------------
   function ayarKarti(oyunda) {
     const sat = (id, ad, on) => '<div class="ay"><b>' + ad + '</b><button class="tg' + (on ? ' on' : '') + '" data-a="' + id + '" aria-label="' + ad + '"><i></i></button></div>';
-    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not" style="margin:12px 0 6px!important">Geliştirici</p>' + sat('fps', 'FPS sayacı', !!SV.fps) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p></div>' +
+    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p></div>' +
       (oyunda ? '<button class="m-btn" id="p-dv">Devam Et</button><button class="m-btn tur kck" id="p-yb">Yeniden Başla</button><button class="m-btn mavi kck" id="p-as">Ana Sayfa</button>' : '<button class="m-btn kck" id="p-dv">Tamam</button>'));
     durak = !!oyunda;
     for (const b of P.querySelectorAll('.tg')) b.onclick = () => { A.ayar(b.dataset.a); tik(); ayarKarti(oyunda); };
