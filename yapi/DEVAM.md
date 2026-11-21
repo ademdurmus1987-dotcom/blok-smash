@@ -28,6 +28,9 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v10.37-v10.39 (21 Kas)
 - Logo gizli (?sade=0), Foxi altinda golge. Tek fon: Adem'in Seedream plaj resmi `yapi/fon/yeni/plaj.webp` (ana sayfa + butun bolumler). Eski: `?dunya=cok` (10 dunya), `?anafon=eski` (ana sayfa videosu).
 
+## v10.40 (21 Kas): oyuncak plastigi denemesi
+- `yapi/uretici/blender/oyuncak_plastik.py` (bpy 5.3): 59 blok modeli -> `yapi/model/oyuncak/` (bevel 0.045x4 aci 30, weighted normal, AO %35 dokuya gomulu, PBR degerleri, WebP). Oyunda yalniz `?oyuncak=1` (blok3b.js OYUNCAK). Fark ince: bloklar zaten yuvarlak ve cilaliydi.
+
 ## Siradaki isler (Adem'in onayladigi sira)
 1. v10.34-v10.35 (butun bloklarda matcap, rakip tarzi kup/kavanoz) denendi; Adem begenmedi, varsayilan v10.33 gorunumu. Denemeler: ?mc2=1, ?kvYesil=1, ?b35=1.
 0. Adem'in telefonda v10.23'e geri bildirimi: platform renk/sekil, ayak oturusu, kamera uzakligi, zemin haritasi (yanlis bolge varsa ZHARITA cokgenleri).

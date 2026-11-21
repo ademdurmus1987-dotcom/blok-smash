@@ -73,7 +73,12 @@ if (!/[?&]b2=0/.test(location.search)) {
   const GR = [[/^(oy[KYMSPTNB]|uz\d|kr3|ksSandik|ksKalas|ksDirek|ksFici|ksTNT)/, 'yari'], [/^(dalga|ksSutun|ksMorSutun)/, 'parlak'], [/^(ksTas|ksKemer)/, 'mat'], [/^(oyA|ksYildiz)$/, 'metal']];
   for (const [k, L] of Object.entries(LISTE)) { if (L[3] && L[3].kav) continue; const g = GR.find(([r]) => r.test(k)); if (g) L[3] = Object.assign({}, L[3] || {}, { mc: g[1] }, /^ksFici/.test(k) ? { mcMap: 1 } : {}); }   // fici rengi dokuda
 }
-const yol = (f) => 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 17 : 1);
+// v10.40 (Adem 21 Kas): OYUNCAK PLASTIGI. Bloklar Blender'da yeniden islendi (uretici/blender/oyuncak_plastik.py -> model/oyuncak/): bevel 0.045 x 4,
+// weighted normal, ortam golgesi dokuya gomulu (%35). Malzeme Adem'in degerleriyle: renkli 0.18 puruz + 0.85 cila, tas 0.35 + 0.25 cila,
+// kavanoz %70 saydam 0.08 puruz, altin 0.85 metal. Yalniz ?oyuncak=1 ile (onaydan sonra varsayilan yapilir).
+const OYUNCAK = /[?&]oyuncak=1/.test(location.search);
+const oyTur = (f) => /(^|\/)(kav|kavanoz|sise|pl_kavanoz)/.test(f) ? 'kavanoz' : /(^|\/)(tas|kemer)/.test(f) ? 'tas' : /(^|\/)(yildiz|pl_elmas)/.test(f) ? 'metal' : 'renkli';
+const yol = (f) => OYUNCAK ? 'model/oyuncak/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=1' : 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 17 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)
@@ -162,6 +167,16 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
     if (o.kav && KENV) { ozel.envMap = KENV; ozel.envMapIntensity = o.kenv || 2.2; ozel.roughness = o.krough || 0.2; }   // v10.31: kavanoz studyosu
     else if (o.bant && JENV) { ozel.envMap = JENV; ozel.envMapIntensity = BG; ozel.roughness = BR; }   // v9.8: genis parlama bandi (karanlik studyo)
     else if (o.cila && SENV && SENV !== ENV) { ozel.envMap = SENV; ozel.envMapIntensity = (o.env || 0.4) * PG; }   // v9.7: studyo yansimasi
+    if (OYUNCAK) {   // v10.40: oyuncak plastigi malzemesi (matcap ve bant yerine)
+      const t = oyTur(L[0]), oz = Object.assign({}, ozel, { envMap: SENV || ENV, envMapIntensity: (o.env || 0.5) * PG });
+      if (t === 'renkli') Object.assign(oz, { roughness: 0.18, ior: 1.48, clearcoat: 0.85, clearcoatRoughness: 0.12, metalness: o.metal || 0 });
+      else if (t === 'tas') Object.assign(oz, { roughness: 0.35, clearcoat: 0.25, clearcoatRoughness: 0.2, metalness: 0 });
+      else if (t === 'kavanoz') Object.assign(oz, { roughness: 0.08, ior: 1.5, transmission: 0.7, thickness: 0.6, metalness: 0, emissiveIntensity: Math.min(ozel.emissiveIntensity || 0, 0.1) });
+      else Object.assign(oz, { roughness: 0.2, metalness: 0.85 });
+      if (o.govde && /^(oyA)$/.test(k)) Object.assign(oz, { roughness: 0.2, metalness: 0.85, clearcoat: 0 });   // altin kup
+      const mat = new THREE.MeshPhysicalMaterial(oz); mat.userData.yeni = 1;
+      return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: L[2], roughness: 0.4 }) });
+    }
     const mg = MCAP && MC2 && !/[?&]mc=kod/.test(location.search) && !Qs.get('mcAd') ? MCG[o.mc || (o.kav ? 'kav' : '')] : null;   // v10.34
     const mat = mg ? mcMat(Object.assign({ mcMap: o.mcMap }, ozel), mg) : o.kav && MCAP ? mcMat(ozel) : o.cila ? new THREE.MeshPhysicalMaterial(Object.assign(ozel, { clearcoat: 1, clearcoatRoughness: SENV && SENV !== ENV ? 0.035 : 0.08 }, SENV && SENV !== ENV ? { ior: IOR } : {})) : new THREE.MeshStandardMaterial(ozel);   // v9.6: cilali (clearcoat) yeni set
     if (o.cila) mat.userData.yeni = 1;   // v10.2: oyun.js cilaMat ikinci kez cilalamasin
