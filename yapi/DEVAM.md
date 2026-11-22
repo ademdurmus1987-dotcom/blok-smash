@@ -46,6 +46,9 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v11.1 (22 Kas 2026): boyali engeller ve top VARSAYILAN (Adem onayladi); eski ?eng3=0
 - uretici/blender/engel_set.py -> model/engel3/; engel3.js (yukleme, kodla kurulan anahtarli kapi ve giyotinin boyanmasi). Fizik ayni. ?engel=kapi (dev kapi, hicbir bolumde yok) eski.
 
+## v11.2 (22 Kas 2026): boyali platform ve ayak, yalniz ?plat3=1 (Adem onayi bekliyor)
+- plat3.js: tabla dis cizgi boyunca profil supurme (gorunus artik fizik sinirinda; eski tablo pKaydir yonu ters oldugu icin tasiyor ve altin serit gorunmuyordu), ayak parcalari torna. Piston/makas/disli/ray renkleri P3RENK. seker.js sekerDuz: tek renkli boyama.
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.

@@ -45,7 +45,12 @@ export function sekerBoya(THREE, geo, o) {
 const ORTAK = `
   vec3 skN = inverseTransformDirection(normalize(normal), viewMatrix), skV = inverseTransformDirection(normalize(vViewPosition), viewMatrix);
   vec3 sc = pow(diffuseColor.rgb, vec3(0.4545));
-  float skDm = vColor.a < 0.75 && vColor.a > 0.35 ? 1.0 : 0.0, skIs = vColor.a < 0.3 ? 0.0 : 1.0;   // oluk: parlama yok
+  #ifdef USE_COLOR_ALPHA
+  float skDm = vColor.a < 0.75 && vColor.a > 0.35 ? 1.0 : 0.0, skIs = vColor.a < 0.3 ? 0.0 : 1.0;
+  #else
+  float skDm = 0.0, skIs = 1.0;
+  #endif
+     // oluk: parlama yok
 `;
 const PARCA = {
   // tahta damari: boyuna ince koyu cizgiler
@@ -85,9 +90,11 @@ const PARLA = {
       sc = mix(sc, min(sc * 1.18 + 0.07, 1.0), b1 * gv * 0.62); sc = mix(sc, mix(min(sc * 1.3 + 0.16, 1.0), vec3(1.0), 0.35), b2 * gv * 0.55); sc = mix(sc, min(sc * 1.35 + 0.14, 1.0), kn * gv * 0.50); }
     float a = max(dot(skR, normalize(vec3(-0.35, 0.86, 0.36))), 0.0); sc = mix(sc, vec3(1.0), smoothstep(0.86, 0.98, a) * 0.38 * smoothstep(0.30, 0.6, abs(nn))); }`
 };
+// tek renk: kose rengi olmayan geometriler icin (kodla kurulan parcalar)
+export function sekerDuz(THREE, hex, sk, ek) { const m = sekerMat(THREE, new THREE.BoxGeometry(1, 1, 1), Object.assign({ sk, duz: 1 }, ek || {})); m.color.set(hex); return m; }
 export function sekerMat(THREE, geo, o) {
   const tur = o.sk; geo.computeBoundingBox(); const b = geo.boundingBox.getSize(new THREE.Vector3()).multiplyScalar(0.5);
-  const m = new THREE.MeshLambertMaterial({ vertexColors: true }); m.toneMapped = false;
+  const m = new THREE.MeshLambertMaterial({ vertexColors: !o.duz }); m.toneMapped = false;
   const yama = (x) => {
     x.userData.yeni = 1; x.userData.rim = 1; x.defines = Object.assign({}, x.defines, { SKDIK: o.dik ? 1 : 0, SKYUV: o.yuv ? 1 : 0 });
     x.onBeforeCompile = (sh) => {

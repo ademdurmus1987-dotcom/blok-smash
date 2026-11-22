@@ -12,8 +12,9 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=37';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
-import { ENG3, engel3Kur } from './engel3.js?v=2';   // v11.1: boyali engeller ve top (eski ?eng3=0)
+import { blok3bKur } from './blok3b.js?v=38';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { ENG3, engel3Kur } from './engel3.js?v=3';   // v11.1: boyali engeller ve top (eski ?eng3=0)
+import { PLAT3, plat3Kur } from './plat3.js?v=1';   // v11.2: boyali platform (?plat3=1)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -1862,9 +1863,13 @@ const PTEM = {
   magara: { ust: 'altin', kenar: '#fff0a0', ayak: 'altin', mk: '#ffc93a' }
 };
 const DENGE_MAX = 0.06;
+// v11.2: pistonlu / makasli / dislili ayaklarda ve rayda gri celikler canli celik mavisi, kahverengimsi altinlar parlak altin
+const P3 = PLAT3 ? plat3Kur({ THREE, pKaydir: (P, d) => pKaydir(P, d) }) : null;
+const P3RENK = { '#55606c': '#5868c4', '#3c444e': '#4453a8', '#5a6470': '#5868c4', '#4a5866': '#5868c4', '#c8d2dc': '#b4c4f2', '#e4ebf2': '#ccd8fa', '#9aa2ac': '#8f9fe0', '#e0a63a': '#ffc21c', '#ffc93a': '#ffc21c', '#3c434c': '#4453a8' };
 const PTD = {}, PTMAT = {};
 function ptMat(renk, ro, me, o) {
   const k = renk + ro + me + Object.entries(o || {}).map(([a, v]) => a + (v && v.isTexture ? v.uuid : v)).join();
+  if (PLAT3 && !PTMAT[k] && !(o && (o.map || o.transparent)) && renk !== '#ffffff') PTMAT[k] = P3.mat(P3RENK[renk] || renk, 'kutu');   // v11.2
   return PTMAT[k] || (PTMAT[k] = new THREE.MeshStandardMaterial(Object.assign({ color: renk, roughness: ro, metalness: me }, o || {})));
 }
 function ptDoku(ad) {
@@ -2067,6 +2072,7 @@ function platKaro() {   // krem tas karolar (yuvarlak koseli, hafif kabartma, ar
 }
 function pMat(ad) {
   if (PTMAT['p_' + ad]) return PTMAT['p_' + ad];
+  if (PLAT3 && ad !== 'ust') return (PTMAT['p_' + ad] = P3.mat({ yan: '#8232f0', koyu: '#3b128c', altin: '#ffc21c', altinKoyu: '#b97608' }[ad], 'kutu'));   // v11.2
   const o = {
     ust: () => new THREE.MeshStandardMaterial({ map: platKaro(), roughness: 0.55, metalness: 0, envMap: ENV, envMapIntensity: 0.35 }),
     yan: () => new THREE.MeshStandardMaterial({ color: PRENK.mor, roughness: 0.32, metalness: 0.05, envMap: ENV, envMapIntensity: 0.7, emissive: '#2a1060', emissiveIntensity: 0.18 }),
@@ -2131,6 +2137,7 @@ function pTabla(P, th) {
 }
 function ptUst2(q, sk) {
   const g = new THREE.Group(), th = q.th, P = sk.P;
+  if (PLAT3) { const m = P3.tabla(P, th); m.castShadow = m.receiveShadow = true; g.add(m); return g; }   // v11.2
   g.add(ptMesh(pTabla(P, th), [pMat('ust'), pMat('yan')]));
   // ust kenarda altin serit (tablanin biraz disinda ince halka)
   const dis = pKaydir(P, 0.07), ic = pKaydir(P, -0.06), sh = new THREE.Shape(); dis.forEach(([x, z], i) => (i ? sh.lineTo(x, -z) : sh.moveTo(x, -z)));
@@ -2160,11 +2167,11 @@ function pAyak(q, sk, h) {
   for (const x of xs) {
     const s = new THREE.Group(); s.position.x = x; G.add(s);
     // taban: yere gomulu genis basamaklar (alt basamak GY'nin 0.12 altindan baslar)
-    const tb = new THREE.Group(); tb.add(sil(1.35, 1.25, -0.12, 0.16, koyu, 36), sil(1.12, 1.02, 0.16, 0.36, altin, 36), sil(0.86, 0.78, 0.36, 0.5, yan, 32)); s.add(tb); u.taban.push(tb);
+    const tb = new THREE.Group(); if (PLAT3) { const m = P3.taban(); m.castShadow = m.receiveShadow = true; tb.add(m); } else tb.add(sil(1.35, 1.25, -0.12, 0.16, koyu, 36), sil(1.12, 1.02, 0.16, 0.36, altin, 36), sil(0.86, 0.78, 0.36, 0.5, yan, 32)); s.add(tb); u.taban.push(tb);
     // govde: sutun (yukseklige gore uzar), iki altin bilezik, platformun altinda altin baslik
-    const gv = ptMesh(new THREE.CylinderGeometry(0.5, 0.56, 1, 28), yan); s.add(gv);
-    const b1 = ptMesh(new THREE.TorusGeometry(0.56, 0.08, 10, 28), altin, 0, 0, 0, 0), b2 = b1.clone(); b1.rotation.x = b2.rotation.x = Math.PI / 2; s.add(b1, b2);
-    const bas = new THREE.Group(); bas.add(sil(0.58, 0.82, 0, 0.22, altin, 32), sil(0.82, 0.95, 0.22, 0.34, pMat('altinKoyu'), 32)); s.add(bas);
+    const gv = PLAT3 ? P3.govde() : ptMesh(new THREE.CylinderGeometry(0.5, 0.56, 1, 28), yan); gv.castShadow = gv.receiveShadow = true; s.add(gv);
+    const b1 = PLAT3 ? P3.bilezik() : ptMesh(new THREE.TorusGeometry(0.56, 0.08, 10, 28), altin, 0, 0, 0, 0), b2 = b1.clone(); if (PLAT3) b1.scale.setScalar(0.98), b2.scale.set(0.9, 1, 0.9), b1.visible = false; else b1.rotation.x = b2.rotation.x = Math.PI / 2; s.add(b1, b2);
+    const bas = new THREE.Group(); if (PLAT3) { const m = P3.baslik(); m.castShadow = true; bas.add(m); } else bas.add(sil(0.58, 0.82, 0, 0.22, altin, 32), sil(0.82, 0.95, 0.22, 0.34, pMat('altinKoyu'), 32)); s.add(bas);
     u.sut.push({ gv, b1, b2, bas });
     // temas golgesi ve zemin seti (kum/kar), kopuk (su)
     const go = new THREE.Mesh(SPLGEO, pGolgeMat()); go.rotation.x = -Math.PI / 2; go.scale.setScalar(2.1); go.position.y = 0.02; go.renderOrder = 2; s.add(go); u.golge = (u.golge || []).concat(go);
