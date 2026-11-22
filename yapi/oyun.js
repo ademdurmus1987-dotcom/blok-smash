@@ -14,7 +14,7 @@ import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak 
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
 import { blok3bKur } from './blok3b.js?v=38';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { ENG3, engel3Kur } from './engel3.js?v=3';   // v11.1: boyali engeller ve top (eski ?eng3=0)
-import { PLAT3, plat3Kur } from './plat3.js?v=1';   // v11.2: boyali platform (?plat3=1)
+import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=2';   // v11.2: boyali platform (?plat3=1)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -51,7 +51,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v10.22', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v11.3', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -607,6 +607,14 @@ for (const k in SEK.TUR) { const t = SEK.TUR[k]; KIND[k] = { mass: t.mass, f: t.
 const SEKSH = {};
 // v6.13 (Adem 18 Kas, 168 blokta agirlik): kavanoz carpismasi kutu, diger silindirler 8 kenarli (eskiden 16 kenar = 32 kose, fizigi yariya yakin yavaslatiyordu)
 function sekShape(k) { if (SEKSH[k]) return SEKSH[k]; const s = SEK.al(k); return (SEKSH[k] = s.sil && /^ksSise/.test(k) ? new CANNON.Box(new CANNON.Vec3(s.r * 0.94, s.h / 2, s.r * 0.94)) : s.sil ? new CANNON.Cylinder(s.r, s.r, s.h, 8) : new CANNON.Box(new CANNON.Vec3(s.w / 2, s.h / 2, s.d / 2))); }
+// v11.3 (Adem: 'koprunun altindan top gecmiyor'): kemer tek dolu kutuydu (gorunuste delik var, fizikte yok). Simdi iki ayak + ust kiris + iki kose.
+// Olcu: seker_set.py kemer (aciklik yaricapi 0.66 kup, yay merkezi tabandan 0.62 kup). Eski: ?kemer=0
+const KEMERDELIK = Q.get('kemer') !== '0';
+function kemerSekil(b) {
+  const s = SEK.al('ksKemer'), R0 = 0.66 * S, ym = -s.h / 2 + 0.62 * S, hz = s.d / 2, ky = (s.h / 2 - (ym + R0)) / 2, ax = (s.w / 2 - R0) / 2, K = (hx, hy, x, y, a) => { const q = new CANNON.Quaternion(); q.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), a || 0); b.addShape(new CANNON.Box(new CANNON.Vec3(hx, hy, hz)), new CANNON.Vec3(x, y, 0), q); };
+  for (const sg of [-1, 1]) { K(ax, s.h / 2, sg * (R0 + ax), 0); const t = 0.16 * S, c = Math.SQRT1_2 * (R0 + t); K(0.26 * S, t, sg * c, ym + c, -sg * Math.PI / 4); }
+  K(R0, ky, 0, s.h / 2 - ky);
+}
 // parcanin yarim genisligi, yuksekligi, yarim derinligi (kup kenari cinsinden): platform ve kamera yapiya gore ayarlanir
 function olcu(col) { const t = SEK.TUR[col]; return t ? [t.w / 2, t.h, t.d / 2] : [0.5, KEEP[col] === 'tall' ? 2 : 1, 0.5]; }
 
@@ -1651,7 +1659,8 @@ function parcaKur(col, pn, yer, donus) {
     const body = new CANNON.Body({ mass: (kd ? kd.mass : 1) * KAGIR, material: pm, sleepSpeedLimit: 0.25, sleepTimeLimit: 0.4, linearDamping: 0.03, angularDamping: 0.16 });   // v6.8: 3 kat agir, kolay donmez
     const sk = kd && kd.sek ? SEK.al(col) : null;   // v3.1: kodla cizilen sekil
     const isE = kd && kd.esya, gl = kd && kd.cam, kp = KEEP[col] && MOD[col] ? fitKeep(col) : null, ghh = sk ? sk.h : gl ? glassInfo(gl).hh : kp ? MOD[col].dim.h : S;
-    body.addShape(sk ? sekShape(col) : gl ? glassShape(gl) : kp ? keepShape(col) : isF || isE ? FICISHAPE : CUBESHAPE); { const [x, y, z] = yer(ghh); body.position.set(x, y, z); }
+    if (KEMERDELIK && /^ksKemer/.test(col) && sk) kemerSekil(body);   // v11.3
+    else body.addShape(sk ? sekShape(col) : gl ? glassShape(gl) : kp ? keepShape(col) : isF || isE ? FICISHAPE : CUBESHAPE); { const [x, y, z] = yer(ghh); body.position.set(x, y, z); }
     if (isE) body.quaternion.setFromEuler(0, (Math.random() - 0.5) * 0.5, 0);
     if (donus) body.quaternion.copy(donus);
     world.addBody(body); body.sleep();
@@ -1865,7 +1874,7 @@ const PTEM = {
 const DENGE_MAX = 0.06;
 // v11.2: pistonlu / makasli / dislili ayaklarda ve rayda gri celikler canli celik mavisi, kahverengimsi altinlar parlak altin
 const P3 = PLAT3 ? plat3Kur({ THREE, pKaydir: (P, d) => pKaydir(P, d) }) : null;
-const P3RENK = { '#55606c': '#5868c4', '#3c444e': '#4453a8', '#5a6470': '#5868c4', '#4a5866': '#5868c4', '#c8d2dc': '#b4c4f2', '#e4ebf2': '#ccd8fa', '#9aa2ac': '#8f9fe0', '#e0a63a': '#ffc21c', '#ffc93a': '#ffc21c', '#3c434c': '#4453a8' };
+const P3RENK = { '#55606c': '#5868c4', '#3c444e': '#4453a8', '#5a6470': '#5868c4', '#4a5866': '#5868c4', '#c8d2dc': '#b4c4f2', '#e4ebf2': '#ccd8fa', '#9aa2ac': '#8f9fe0', '#e0a63a': P3ALTIN, '#ffc93a': P3ALTIN, '#3c434c': '#4453a8' };
 const PTD = {}, PTMAT = {};
 function ptMat(renk, ro, me, o) {
   const k = renk + ro + me + Object.entries(o || {}).map(([a, v]) => a + (v && v.isTexture ? v.uuid : v)).join();
@@ -2072,7 +2081,7 @@ function platKaro() {   // krem tas karolar (yuvarlak koseli, hafif kabartma, ar
 }
 function pMat(ad) {
   if (PTMAT['p_' + ad]) return PTMAT['p_' + ad];
-  if (PLAT3 && ad !== 'ust') return (PTMAT['p_' + ad] = P3.mat({ yan: '#8232f0', koyu: '#3b128c', altin: '#ffc21c', altinKoyu: '#b97608' }[ad], 'kutu'));   // v11.2
+  if (PLAT3 && ad !== 'ust') return (PTMAT['p_' + ad] = P3.mat({ yan: P3YAN, koyu: P3KOYU, altin: P3ALTIN, altinKoyu: P3AK }[ad], 'kutu'));   // v11.2
   const o = {
     ust: () => new THREE.MeshStandardMaterial({ map: platKaro(), roughness: 0.55, metalness: 0, envMap: ENV, envMapIntensity: 0.35 }),
     yan: () => new THREE.MeshStandardMaterial({ color: PRENK.mor, roughness: 0.32, metalness: 0.05, envMap: ENV, envMapIntensity: 0.7, emissive: '#2a1060', emissiveIntensity: 0.18 }),
