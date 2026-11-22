@@ -1,5 +1,5 @@
 /* Foxi Smash v11.6 (23 Kas 2026, Adem: 'evet, menuler'): gostergeler ve kartlar oyunun yeni kimliginde: gemi tahtasi + halat krem + deniz turkuazi
-   (mor-altin yok; rakibe benzemesin). html.menu3 ile acilir: varsayilan degil, ?menu3=1. Kurallar yalniz renk / yer degistirir, HTML ayni. */
+   (mor-altin yok; rakibe benzemesin). html.menu3 ile acilir: varsayilan (Adem 23 Kas), eski ?menu3=0. Kurallar yalniz renk / yer degistirir, HTML ayni. */
 html.menu3{--t1:#2cc4d2;--t2:#0f9fb4;--t3:#067389;--t4:#04485a;--kr:#fff0cf;--kr2:#ffe0a6;--kh:#5a2a0c;--kh2:#3a1a06;
   --h-m1:var(--t1);--h-m2:var(--t2);--h-m3:var(--t3);--h-a:var(--kr);--h-a2:#fff;--h-k:var(--kh);--h-g:var(--t4);--lac1:var(--t1);--lac2:var(--t2);--lac3:var(--t4)}
 /* ---- oyun ici gostergeler ---- */

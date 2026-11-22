@@ -61,7 +61,7 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v11.5 (23 Kas 2026)
 - 5'in katlarindaki fon karartmasi (#bg.koyu, 13 Kas kurali) kapali; eski ?koyufon=1. Kemer modelinin ayak tabanlari kapatildi (yan yatinca ici bos gorunuyordu).
 
-## v11.6 (23 Kas 2026): menuler, yalniz ?menu3=1 (Adem onayi bekliyor)
+## v11.6 (23 Kas 2026): menuler VARSAYILAN (Adem onayladi), eski ?menu3=0
 - menu3.css (html.menu3): turkuaz-krem-ahsap gostergeler, ahsap kaybetme karti, ana sayfa etiketleri, alt menu adlari, Insa basligi, kazanma Foxi yeri, harita (numara + susler; merkez.js M3). Kalan mor: top arabasi ayrintilari, acilis videosu ustundeki yazilar.
 
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
