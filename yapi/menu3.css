@@ -77,13 +77,37 @@ html.kal3 .ysn-sah canvas{left:50%;top:50%;right:auto;bottom:auto;width:230px;he
 html.kal3 .ysn-ad{order:2;width:100%;margin:0;padding:12px 10px 2px;background:#fff4da;border:3px solid var(--tah4);border-width:0 3px;font-size:27px;line-height:1.05;color:#5a2a0c;text-shadow:0 2px 0 #fff;text-align:center}
 html.kal3 .ysn-ne{order:3;width:100%;max-width:none;padding:4px 16px 14px;background:#fff4da;border:3px solid var(--tah4);border-top:0;border-radius:0 0 22px 22px;font:700 17px/1.3 var(--font);color:#7a4a1a;text-shadow:none}
 html.kal3 .ysn-dv{order:4;margin-top:16px;width:78%;height:64px;border-radius:22px!important;border:3px solid #fff!important;background:linear-gradient(180deg,#7fe84a,#3fb82a 55%,#2a9a1e)!important;box-shadow:0 0 0 3px #14600a,0 6px 0 3px #14600a,0 12px 14px rgba(0,0,0,.35),inset 0 3px 0 rgba(255,255,255,.5)!important;font-size:28px;color:#fff;text-shadow:0 3px 0 #14600a}
-/* Kazanma: gunduz plaji, altin isinlar; mor gece yok */
-html.kal3 #mkazan.k2on{background:#7fd4f2}
-html.kal3 #mkazan .k2-gok{background:radial-gradient(60% 38% at 50% 27%,rgba(255,248,205,.95) 0%,rgba(255,232,150,.5) 45%,rgba(255,232,150,0) 100%),linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,240,200,.25) 55%,rgba(120,66,14,.45) 100%),url(fon/yeni/plaj.webp?v=2) 50% 60%/cover no-repeat;filter:saturate(1.1)}
-html.kal3 #mkazan .k2-gok:before{content:"";position:absolute;left:50%;top:27%;right:auto;bottom:auto;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;background:repeating-conic-gradient(rgba(255,246,190,.34) 0 7deg,rgba(255,246,190,0) 7deg 20deg);-webkit-mask:radial-gradient(closest-side,#000 0,transparent 78%);mask:radial-gradient(closest-side,#000 0,transparent 78%);border-radius:0;box-shadow:none;opacity:1;animation:k2don 40s linear infinite}
-html.kal3 #mkazan .k2-gok:after{display:none}
-html.kal3 #mkazan .k2-vin{background:radial-gradient(ellipse at 50% 45%,#0000 55%,rgba(110,56,8,.35) 100%)}
-html.kal3 #mkazan .k2-yil.off img{filter:grayscale(1) brightness(.75) sepia(.5) drop-shadow(0 5px 4px rgba(110,60,10,.5))}
+/* Kazanma (v11.10, Adem: 'daha havali, arka fon sade koyu ya da uygun renk'): sade koyu fon, buyuk yildizlar, ortada sevinen Foxi, altin isilti.
+   Fon rengi: varsayilan deniz laciverti; html.kz-kirmizi / html.kz-orman secenekleri (?kzrenk=) */
+html.kal3{--kz1:#1f86a0;--kz2:#0c4862;--kz3:#041d30}
+html.kal3.kz-kirmizi{--kz1:#b8323c;--kz2:#6a1222;--kz3:#2a040c}
+html.kal3.kz-orman{--kz1:#2f8f6a;--kz2:#0e5040;--kz3:#04231e}
+html.kal3 #mkazan.k2on{background:var(--kz3)}
+html.kal3 #mkazan .k2-gok{background:radial-gradient(85% 52% at 50% 30%,var(--kz1) 0%,var(--kz2) 48%,var(--kz3) 100%);filter:none}
+html.kal3 #mkazan .k2-gok:before{content:"";position:absolute;left:50%;top:27%;right:auto;bottom:auto;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;background:repeating-conic-gradient(rgba(255,240,190,.13) 0 6deg,rgba(255,240,190,0) 6deg 20deg);-webkit-mask:radial-gradient(closest-side,#000 0,transparent 72%);mask:radial-gradient(closest-side,#000 0,transparent 72%);border-radius:0;box-shadow:none;opacity:1;animation:k2don 46s linear infinite}
+html.kal3 #mkazan .k2-gok:after{content:"";display:block;position:absolute;left:50%;top:27%;right:auto;bottom:auto;width:130vw;height:130vw;margin:-65vw 0 0 -65vw;border-radius:50%;background:radial-gradient(closest-side,rgba(255,214,110,.5),rgba(255,190,70,.16) 45%,transparent 72%);box-shadow:none;animation:k2isik 2.6s ease-in-out infinite}
+@keyframes k2isik{50%{transform:scale(1.1);opacity:.75}}
+html.kal3 #mkazan .k2-vin{background:radial-gradient(ellipse at 50% 42%,#0000 50%,rgba(0,0,0,.45) 100%)}
+html.kal3 #mkazan .k2-ic>*{order:3}
+/* yildizlar: daha iri, altin hale */
+html.kal3 #mkazan .k2-yildizlar{order:0;height:min(43vw,172px)!important;margin-bottom:0}
+html.kal3 #mkazan .k2-yil{width:min(27vw,108px)!important;height:min(27vw,108px)!important}
+html.kal3 #mkazan .k2-yil:nth-child(2){width:min(37vw,148px)!important;height:min(37vw,148px)!important;margin:0 -4px min(7vw,28px)!important}
+html.kal3 #mkazan .k2-yil:nth-child(1) img{rotate:-12deg}
+html.kal3 #mkazan .k2-yil:nth-child(3) img{rotate:12deg}
+html.kal3 #mkazan .k2-yil img{filter:drop-shadow(0 0 14px rgba(255,206,80,.75)) drop-shadow(0 7px 5px rgba(0,0,0,.5))}
+html.kal3 #mkazan .k2-yil.off img{filter:brightness(.28) saturate(.2) drop-shadow(0 5px 4px rgba(0,0,0,.4))}
 html.kal3 #mkazan .k2-yil .ns{opacity:0!important}
+/* baslik */
+html.kal3 #mkazan .k2-bas{order:1;width:min(97vw,420px);filter:drop-shadow(0 0 16px rgba(255,200,80,.45))}
+/* Foxi ortada, levhanin arkasinda ayakta */
+html.kal3 #mkazan .k2-levha{order:2;position:relative;z-index:6;margin-top:min(32vw,126px);margin-bottom:-34px;padding:6px 30px 8px;border-radius:14px;background:linear-gradient(180deg,#e2463c,#b01c2c);border:3px solid #ffe6a8;box-shadow:0 0 0 3px #6a0c18,0 6px 0 3px #6a0c18,0 12px 14px rgba(0,0,0,.45),inset 0 3px 0 rgba(255,255,255,.35)}
+html.kal3 #mkazan .k2-panel{padding-top:30px;border:4px solid #ffcf4a;background:var(--percin),var(--tahta);box-shadow:0 0 0 3px #3a1a06,0 8px 0 3px #2a1004,0 0 34px rgba(255,200,80,.35),0 20px 30px rgba(0,0,0,.5),inset 0 3px 0 rgba(255,230,180,.35)}
+html.kal3 #mkazan .k2-panel .k2-tilki{left:50%;width:min(39vw,152px);margin-left:calc(min(39vw,152px) / -2);bottom:calc(100% - 26px);z-index:-1}
+html.kal3 #mkazan .k2-panel .k2-tilki img{filter:drop-shadow(0 0 18px rgba(255,214,120,.55)) drop-shadow(0 8px 6px rgba(0,0,0,.5))}
+html.kal3 #mkazan .k2-ust{padding:2px 0;border-radius:18px;background:radial-gradient(60% 120% at 50% 50%,rgba(255,214,110,.4),transparent 75%)}
 html.kal3 #mkazan .k2-satir div{background:linear-gradient(180deg,#fff8e6,#ffe6b8);border:2.5px solid #c8904a;color:#6a3a14;text-shadow:none}
 html.kal3 #mkazan .k2-satir b{color:#c8500a;-webkit-text-stroke:0;text-shadow:0 1px 0 #fff}
+html.kal3 #mkazan .k2-devam{order:4;margin-top:12px}
+@media (max-height:700px){html.kal3 #mkazan .k2-yildizlar{height:min(36vw,132px)!important}html.kal3 #mkazan .k2-yil{width:min(22vw,82px)!important;height:min(22vw,82px)!important}html.kal3 #mkazan .k2-yil:nth-child(2){width:min(30vw,112px)!important;height:min(30vw,112px)!important}html.kal3 #mkazan .k2-levha{margin-top:min(24vw,92px)}html.kal3 #mkazan .k2-panel .k2-tilki{width:118px;margin-left:-59px}html.kal3 #mkazan .k2-devam{height:64px}}
+@media (prefers-reduced-motion:reduce){html.kal3 #mkazan .k2-gok:before,html.kal3 #mkazan .k2-gok:after{animation:none}}
