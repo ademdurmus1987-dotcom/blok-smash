@@ -65,7 +65,7 @@ html.menu3 .ky2-bas{margin-top:8px}
 /* bolum karti: bos yildizlar lacivert yerine parsomen tonunda */
 html.menu3 .bk-yil svg path[fill="#39407e"]{fill:#dcbf8c!important;stroke:#b48a4c!important}
 
-/* ================= v11.9 kalite turu 2 (html.kal3, ?kal3=1) ================= */
+/* ================= v11.9 kalite turu 2 (html.kal3, varsayilan; eski ?kal3=0) ================= */
 /* Yeni Blok karti: ahsap levha, kirmizi baslik kurdelesi, parsomen icte donen blok, yesil dugme */
 html.kal3 #ysn{background:rgba(40,22,6,.5)}
 html.kal3 .ysn-kart{position:relative;width:min(88vw,350px);padding:0 14px 20px;border-radius:30px;background:var(--percin),var(--tahta);border:4px solid var(--altin2);box-shadow:0 0 0 3px var(--tah4),0 10px 0 rgba(20,8,0,.6),0 22px 44px rgba(0,0,0,.55),inset 0 3px 0 rgba(255,230,180,.35);display:flex;flex-direction:column;align-items:center;transform:scale(.6);opacity:0;animation:ysnBas .45s cubic-bezier(.2,1.5,.4,1) .05s forwards}

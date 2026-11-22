@@ -52,7 +52,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const KAL3 = Q.get('kal3') === '1';   // v11.9 (golge, yeni blok karti, kazanma ekrani)
+const KAL3 = Q.get('kal3') !== '0' && !window.KORSAN;   // v11.9 (golge, yeni blok karti, kazanma ekrani)
 if (KAL3 && !window.KORSAN) document.documentElement.classList.add('kal3', 'kz-' + (Q.get('kzrenk') || 'deniz'));   // v11.9: yeni blok karti ve kazanma ekrani (menu3.css sonu)
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
 const SURUM = 'v11.10', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
@@ -328,7 +328,7 @@ const DIRT = (() => {
 })();
 // v9.4 (Adem 19 Kas: referanstaki golge oyuna hos duruyor): zeminde yalniz golgeyi gosteren saydam duzlem (platform, ayak ve yapi golgesi fona duser). ?golge=0 kapali
 // v11.9 (Adem: kalite, kumdaki golge): gri, sert kenarli golge yerine sicak renkli, yumusak kenarli golge. Golge haritasi 5-13 noktadan (piksele gore dondurulen
-// Vogel diski) okunur; tek dokuda PCFSoft kadar is yapar. Yalniz ?kal3=1. Ayar: ?gyum= yumusaklik (harita birimi), ?gkoyu=
+// Vogel diski) okunur; tek dokuda PCFSoft kadar is yapar. Varsayilan, eski ?kal3=0. Ayar: ?gyum= yumusaklik (harita birimi), ?gkoyu=
 function golgeYumusak(m) {
   const R = +(Q.get('gyum') || 0.021);
   m.onBeforeCompile = (sh) => {
