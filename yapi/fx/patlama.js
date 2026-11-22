@@ -18,6 +18,7 @@ export function patlamaKur({ THREE, scene, S, floorAt, canvasTex }) {
     const q = x.createRadialGradient(w * 0.44, h * 0.4, w * 0.2, w * 0.5, h * 0.5, w * 0.5); q.addColorStop(0, 'rgba(0,0,0,0)'); q.addColorStop(1, 'rgba(0,0,0,.2)'); x.fillStyle = q; x.fillRect(0, 0, w, h);
   });
   const PP = parcacikKur(scene, PUF, { normal: 300, parlak: 60, ton: false, derin: false }), PL = [];
+  const PA = parcacikKur(scene, PUF, { normal: 40, parlak: 1, ton: false }), AL = [];   // namlu alevi: derinlik sinamali, namlunun arkasinda kalan kismi gizlenir
   function puf(o) { const s = PP.al(o.c[0], !!o.add, o.op == null ? 1 : o.op); if (!s) return; s.position.copy(o.p); s.scale.setScalar(0.001); s.material.rotation = Math.random() * 6.28; PL.push(Object.assign({ s, t: 0, dr: 4, gy: 0, w: (Math.random() - 0.5) * 4, C: o.c.map((k) => new THREE.Color(k)) }, o)); }
   // ---- boya damlalari ----
   const MAX = 700, geo = new THREE.IcosahedronGeometry(1, 1); geo.computeVertexNormals();
@@ -45,11 +46,21 @@ export function patlamaKur({ THREE, scene, S, floorAt, canvasTex }) {
     const KC = ['#ffd23a', '#ff8a1c', '#ff5a1c'].map((k) => new THREE.Color(k));
     for (let i = 0; i < 46; i++) { const u = yon(); u.y = Math.abs(u.y) * 0.9 + 0.2; damla(p.clone(), u.multiplyScalar(8 + Math.random() * 16), S * (0.03 + Math.random() * 0.06), 0.5 + Math.random() * 0.5, KC[i % 3], { dr: 2.2, gy: 20 }); }
   }
-  function alev(p, dir) {
-    const yn = new THREE.Vector3(-dir.z, 0, dir.x).normalize();
-    // v11.12 (Adem: 'namlu ucunda cok fazla efekt var'): kisa, ince tek alev; beyaz cakma ve duman yok
-    for (const [rn, g, u] of [[['#ffb02e', '#ff8a1c'], 0.72, 1], [['#fff3a0', '#ffd02e'], 0.42, 0.75]])
-      for (let i = 0; i < 6; i++) { const k = i / 5; puf({ p: p.clone().addScaledVector(dir, -0.3 + k * 1.2 * u).addScaledVector(yn, (Math.random() - 0.5) * 0.12 * g), v: dir.clone().multiplyScalar(2.5 + Math.random() * 1.5), life: 0.13 + (1 - k) * 0.06, s0: g * (1.5 - k), s1: g * (0.9 - k * 0.7), c: rn, op: 0.9, dr: 3 }); }
+  // v11.13 (Adem: 'efekt namlu ucunda degil namlu ustunde cikiyor'): alev namlu agzina bagli, geri tepmede onunla gider. ucu(konum, yon): o anki agiz ve namlu ekseni
+  const AP = new THREE.Vector3(), AY = new THREE.Vector3();
+  function alev(ucu) {
+    for (const [rn, g, u] of [[['#ffb02e', '#ff8a1c', '#ff6a10'], 0.8, 1], [['#fff3a0', '#ffd02e', '#ffb02e'], 0.48, 0.78]])
+      for (let i = 0; i < 8; i++) { const k = i / 7, s = PA.al(rn[0], false, 1); if (!s) return; s.scale.setScalar(0.001); s.material.rotation = Math.random() * 6.28;
+        AL.push({ s, t: 0, k, d: k * 1.35 * u, v: 0.8 + 0.6 * k, x: (Math.random() - 0.5) * 0.16 * g, life: 0.12 + (1 - k) * 0.05, s0: g * (1.35 - k * 0.85), C: rn.map((c) => new THREE.Color(c)), ucu }); }
+  }
+  function alevKare(dt) {
+    if (AL.length) AL[0].ucu(AP, AY);
+    for (let i = AL.length - 1; i >= 0; i--) {
+      const q = AL[i]; q.t += dt; const k = q.t / q.life; if (k >= 1) { PA.birak(q.s); AL.splice(i, 1); continue; }
+      q.s.position.copy(AP).addScaledVector(AY, q.d * Math.min(1, 0.45 + k * 1.6) + q.v * q.t); q.s.position.x += q.x;
+      q.s.scale.setScalar(q.s0 * (1 - 0.55 * k)); const f = Math.min(1.999, k * 2), a = Math.floor(f); q.s.material.color.copy(q.C[a]).lerp(q.C[a + 1], f - a); q.s.material.opacity = k < 0.5 ? 0.95 : 0.95 * (1 - (k - 0.5) * 2);
+    }
+    PA.kare();
   }
   const C = new THREE.Color();
   function kare(dt) {
@@ -60,7 +71,7 @@ export function patlamaKur({ THREE, scene, S, floorAt, canvasTex }) {
       q.s.scale.setScalar(q.s0 + (q.s1 - q.s0) * (1 - (1 - k) * (1 - k))); const n = q.C.length - 1, f = Math.min(n - 0.001, k * n), a = Math.floor(f);
       C.copy(q.C[a]).lerp(q.C[a + 1], f - a); q.s.material.color.copy(C); q.s.material.opacity = (q.op == null ? 1 : q.op) * (k < 0.55 ? 1 : 1 - (k - 0.55) / 0.45);
     }
-    PP.kare();
+    PP.kare(); alevKare(dt);
     let n = 0;
     for (let i = D.length - 1; i >= 0; i--) {
       const q = D[i]; q.t += dt; if (q.t >= q.life) { D.splice(i, 1); continue; }
@@ -72,6 +83,6 @@ export function patlamaKur({ THREE, scene, S, floorAt, canvasTex }) {
     }
     IM.count = n; IM.visible = n > 0; if (n) { IM.instanceMatrix.needsUpdate = true; IM.instanceColor.needsUpdate = true; }
   }
-  function temizle() { for (const q of PL) PP.birak(q.s); PL.length = 0; D.length = 0; IM.count = 0; IM.visible = false; PP.kare(); }
-  return { boya, ates, alev, kare, temizle, get n() { return PL.length + D.length; } };
+  function temizle() { for (const q of PL) PP.birak(q.s); for (const q of AL) PA.birak(q.s); AL.length = PL.length = 0; PA.kare(); D.length = 0; IM.count = 0; IM.visible = false; PP.kare(); }
+  return { boya, ates, alev, kare, temizle, get n() { return PL.length + AL.length + D.length; } };
 }
