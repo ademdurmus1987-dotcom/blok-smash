@@ -27,7 +27,7 @@ import * as EG from './egri.js?v=4';   // v8.0 (Adem 18 Kas): zorluk egrisi, bol
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
 import { parcacikKur } from './fx/parcacik.js?v=2';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
-import { patlamaKur } from './fx/patlama.js?v=1';   // v11.11: guclu vurus efektleri (?efk=1)
+import { patlamaKur } from './fx/patlama.js?v=2';   // v11.11: guclu vurus efektleri (?efk=1)
 import { sesSinirKur } from './fx/ses.js?v=1';
 import { hisKur } from './fx/his.js?v=1';
 import { vurusKur } from './fx/vurus.js?v=3';   // v7.0 (Adem 18 Kas): vurus hissi B+A (sok halkasi, bum, yildizlar, kombo sayaci, son blok agir cekim). Kapatma: ?vurus=0   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
@@ -56,7 +56,7 @@ let M = null;
 const KAL3 = Q.get('kal3') !== '0' && !window.KORSAN;   // v11.9 (golge, yeni blok karti, kazanma ekrani)
 if (KAL3 && !window.KORSAN) document.documentElement.classList.add('kal3', 'kz-' + (Q.get('kzrenk') || 'deniz'));   // v11.9: yeni blok karti ve kazanma ekrani (menu3.css sonu)
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
-const SURUM = 'v11.11', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v11.12', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -2968,7 +2968,7 @@ function updateFX(dt) {
 }
 const flashLight = new THREE.PointLight('#ffd6f0', 0, 16, 1.5); scene.add(flashLight);
 function muzzleFx(p, dir) {
-  if (PAT) { PAT.alev(p, dir); flashLight.color.set('#ffc060'); flashLight.position.copy(p); flashLight.intensity = 60; return; }   // v11.11
+  if (PAT) { PAT.alev(p, dir); flashLight.color.set('#ffc060'); flashLight.position.copy(p); flashLight.intensity = 24; return; }   // v11.11
   // pembe-beyaz parlama: hizla buyur ve soner; namlu onune isik; arkasindan yukari suzulen beyaz duman
   const a = spr('#ffd0ec', true, 1); a.position.copy(p).addScaledVector(dir, 0.4);
   fx(a, 0.22, (o, k) => { o.scale.setScalar(0.6 + k * 1.4); o.material.opacity = 0.8 * (1 - k) ** 1.5; });   // v6.12: kucuk parlama, topu saklamaz

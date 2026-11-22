@@ -20,7 +20,7 @@ export function patlamaKur({ THREE, scene, S, floorAt, canvasTex }) {
   const PP = parcacikKur(scene, PUF, { normal: 300, parlak: 60, ton: false, derin: false }), PL = [];
   function puf(o) { const s = PP.al(o.c[0], !!o.add, o.op == null ? 1 : o.op); if (!s) return; s.position.copy(o.p); s.scale.setScalar(0.001); s.material.rotation = Math.random() * 6.28; PL.push(Object.assign({ s, t: 0, dr: 4, gy: 0, w: (Math.random() - 0.5) * 4, C: o.c.map((k) => new THREE.Color(k)) }, o)); }
   // ---- boya damlalari ----
-  const MAX = 420, geo = new THREE.IcosahedronGeometry(1, 1); geo.computeVertexNormals();
+  const MAX = 700, geo = new THREE.IcosahedronGeometry(1, 1); geo.computeVertexNormals();
   const IM = new THREE.InstancedMesh(geo, sekerDuz(THREE, '#ffffff', 'top'), MAX); IM.frustumCulled = false; IM.count = 0; IM.castShadow = false; IM.receiveShadow = false;
   IM.instanceMatrix.setUsage(THREE.DynamicDrawUsage); IM.setColorAt(0, new THREE.Color('#fff')); IM.instanceColor.setUsage(THREE.DynamicDrawUsage); IM.visible = false; scene.add(IM);
   const D = [], M = new THREE.Matrix4(), Q = new THREE.Quaternion(), UP = new THREE.Vector3(0, 1, 0), V = new THREE.Vector3(), SC = new THREE.Vector3();
@@ -28,16 +28,13 @@ export function patlamaKur({ THREE, scene, S, floorAt, canvasTex }) {
   const yon = () => { const a = Math.random() * 6.283, z = Math.random() * 2 - 1, q = Math.sqrt(1 - z * z); return new THREE.Vector3(Math.cos(a) * q, z, Math.sin(a) * q); };
   function boya(p, dir, renk, guc = 1, h = 1) {
     const c0 = new THREE.Color(renk), acik = c0.clone().lerp(new THREE.Color('#ffffff'), 0.28), koyu = c0.clone().multiplyScalar(0.72);
-    const n = Math.round((D.length > 240 ? 44 : 92) * guc);
+    // v11.12 (Adem: 'duman gibi, sivi sekilde yayilsin'): puf yok; yalniz dolu, parlak sivi damlalari. Govdeden tasar, yay cizip duser, yere degince yassilir.
+    const n = Math.round((D.length > 380 ? 60 : 130) * Math.min(2, guc));
     for (let i = 0; i < n; i++) {
-      const u = yon(), v = u.clone().multiplyScalar(5 + Math.random() * 15); v.y = v.y * 0.85 + 2.2; v.z *= 0.7; v.addScaledVector(dir, 1.2 + Math.random() * 2);
-      const q = p.clone().addScaledVector(u, S * 0.22 * Math.random()); q.y += (Math.random() - 0.5) * S * (h - 0.35);
-      const iri = Math.random() < 0.22;
-      damla(q, v, S * (iri ? 0.12 + Math.random() * 0.1 : 0.045 + Math.random() * 0.07), 0.42 + Math.random() * 0.32, i % 5 === 0 ? acik : i % 4 === 0 ? koyu : c0);
+      const u = yon(), iri = i % 4 === 0, v = u.clone().multiplyScalar(iri ? 2 + Math.random() * 6 : 3 + Math.random() * 10); v.y = v.y * 0.8 + 2.6; v.z = Math.abs(v.z) * 0.5; v.addScaledVector(dir, 0.5 + Math.random());
+      const q = p.clone().addScaledVector(u, S * 0.3 * Math.random()); q.y += (Math.random() - 0.5) * S * Math.max(0.3, h - 0.35);
+      damla(q, v, S * (iri ? 0.115 + Math.random() * 0.085 : 0.04 + Math.random() * 0.06), 0.55 + Math.random() * 0.4, i % 7 === 0 ? acik : i % 5 === 0 ? koyu : c0, { dr: 2.4, gy: 17 });
     }
-    // ilk anda govdeyi dolduran renkli bulut (3 kare): patlama dolu gorunsun
-    for (let i = 0; i < 16 * Math.min(1.8, guc); i++) { const u = yon(); puf({ p: p.clone().addScaledVector(u, S * 0.2).add(V.set(0, (Math.random() - 0.5) * S * (h - 0.4), 0)), v: u.multiplyScalar(6 + Math.random() * 13), life: 0.32 + Math.random() * 0.18, s0: S * 0.5, s1: S * (0.7 + Math.random() * 0.6), c: [acik.getStyle(), c0.getStyle(), c0.getStyle()], op: 0.95, dr: 6.5 }); }
-    puf({ p: p.clone(), v: new THREE.Vector3(), life: 0.09, s0: S * 0.5, s1: S * 1.2, c: ['#ffffff', acik.getStyle()], op: 0.4, add: 1 });
   }
   function ates(p, R) {
     puf({ p: p.clone(), v: new THREE.Vector3(), life: 0.14, s0: R * 0.7, s1: R * 1.9, c: ['#ffffff', '#fff2b0'], op: 1, add: 1 });
@@ -50,10 +47,9 @@ export function patlamaKur({ THREE, scene, S, floorAt, canvasTex }) {
   }
   function alev(p, dir) {
     const yn = new THREE.Vector3(-dir.z, 0, dir.x).normalize();
-    for (const [rn, g, u] of [[['#ff9a1e', '#f4600e', '#c83a0a'], 1, 1], [['#fff3a0', '#ffd02e', '#ff9418'], 0.62, 0.72]])   // dis turuncu koni, ic sari koni
-      for (let i = 0; i < 11; i++) { const k = i / 10; puf({ p: p.clone().addScaledVector(dir, -0.75 + k * 1.8 * u).addScaledVector(yn, (Math.random() - 0.5) * 0.5 * g).add(V.set(0, (Math.random() - 0.5) * 0.3 * g, 0)), v: dir.clone().multiplyScalar(5 + Math.random() * 4), life: 0.15 + (1 - k) * 0.1 + Math.random() * 0.05, s0: g * (1.7 - k * 1), s1: g * (1.1 - k * 0.8), c: rn, dr: 3 }); }
-    puf({ p: p.clone().addScaledVector(dir, -0.4), v: new THREE.Vector3(), life: 0.09, s0: 1, s1: 2.3, c: ['#fff6c8', '#ffe08a'], op: 0.9, add: 1 });
-    for (let i = 0; i < 5; i++) puf({ p: p.clone().addScaledVector(dir, -0.5 + Math.random() * 0.6), v: dir.clone().multiplyScalar(1.2).add(V.set((Math.random() - 0.5) * 1.6, 0.9 + Math.random(), 0)), life: 0.4 + Math.random() * 0.2, s0: 0.4, s1: 1.15, c: ['#fff8f0', '#e8e0d8'], op: 0.34, dr: 3, gec: 0.07 });
+    // v11.12 (Adem: 'namlu ucunda cok fazla efekt var'): kisa, ince tek alev; beyaz cakma ve duman yok
+    for (const [rn, g, u] of [[['#ffb02e', '#ff8a1c'], 0.72, 1], [['#fff3a0', '#ffd02e'], 0.42, 0.75]])
+      for (let i = 0; i < 6; i++) { const k = i / 5; puf({ p: p.clone().addScaledVector(dir, -0.3 + k * 1.2 * u).addScaledVector(yn, (Math.random() - 0.5) * 0.12 * g), v: dir.clone().multiplyScalar(2.5 + Math.random() * 1.5), life: 0.13 + (1 - k) * 0.06, s0: g * (1.5 - k), s1: g * (0.9 - k * 0.7), c: rn, op: 0.9, dr: 3 }); }
   }
   const C = new THREE.Color();
   function kare(dt) {

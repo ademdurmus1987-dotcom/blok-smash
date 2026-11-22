@@ -80,6 +80,9 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - Herkeste acik: parcacik havuzu 700 -> 1500, havuz dolunca tek tek Sprite acilmaz (kalabalik yikimda 700+ cizim cagrisi gidiyordu).
 - Adem onaylarsa: `PAT` kosulunu `Q.get('efk') !== '0'` yap.
 
+## v11.12 (23 Kas, deneme, ?efk=1)
+- Adem: 'duman gibi, sivi sekilde yayilsin': kavanozda puf kalkti, yalniz dolu sivi damlalari. 'Namluda cok fazla efekt': kisa tek alev, cakma ve duman yok.
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.
