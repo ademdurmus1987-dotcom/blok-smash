@@ -86,6 +86,8 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v11.13 (23 Kas, deneme, ?efk=1)
 - Adem: 'efekt namlu ucunda degil namlu ustunde': neden: alev derinlik sinamasiz ciziliyordu ve top yonundeydi. Simdi ayri katman (derinlik sinamali), namlu agzina bagli (TC.namlu z ekseni), geri tepmede onunla gider.
 
+## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.
