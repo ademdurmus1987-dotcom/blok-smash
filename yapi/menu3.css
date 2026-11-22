@@ -1,0 +1,66 @@
+/* Foxi Smash v11.6 (23 Kas 2026, Adem: 'evet, menuler'): gostergeler ve kartlar oyunun yeni kimliginde: gemi tahtasi + halat krem + deniz turkuazi
+   (mor-altin yok; rakibe benzemesin). html.menu3 ile acilir: varsayilan degil, ?menu3=1. Kurallar yalniz renk / yer degistirir, HTML ayni. */
+html.menu3{--t1:#2cc4d2;--t2:#0f9fb4;--t3:#067389;--t4:#04485a;--kr:#fff0cf;--kr2:#ffe0a6;--kh:#5a2a0c;--kh2:#3a1a06;
+  --h-m1:var(--t1);--h-m2:var(--t2);--h-m3:var(--t3);--h-a:var(--kr);--h-a2:#fff;--h-k:var(--kh);--h-g:var(--t4);--lac1:var(--t1);--lac2:var(--t2);--lac3:var(--t4)}
+/* ---- oyun ici gostergeler ---- */
+html.menu3 .topc{padding:3px 6px 6px!important}
+html.menu3 .topc b{margin-top:2px;border-radius:13px;background:linear-gradient(180deg,#fffaf0,#ffe6ba)!important;color:var(--kh)!important;box-shadow:inset 0 3px 4px rgba(120,60,10,.28),0 1px 0 #ffffff70!important;
+  text-shadow:0 2px 0 #fff!important;font-size:36px!important;line-height:1.14!important}
+html.menu3 .lvp b{color:var(--kr2)!important}
+html.menu3 #prog{background:linear-gradient(180deg,#04485a,#086b80)!important}
+html.menu3 #pb{background:linear-gradient(180deg,#fff3b0 0%,#ffc93a 45%,#f79a12 55%,#d97a06 100%)!important;box-shadow:inset 0 2px 0 #ffffffa0,0 0 8px #ffc93aa0!important}
+html.menu3 #rehber .rh-yaz{background:linear-gradient(180deg,var(--t1),var(--t3));border-color:var(--kr);text-shadow:0 2px 0 var(--t4)}
+html.menu3 #rehber .rh-yaz:after{border-top-color:var(--kr)}
+/* ---- ana sayfa ust ve yan ---- */
+html.menu3 .m-prof,html.menu3 .m-hap,html.menu3 .m-yuv{background:linear-gradient(180deg,var(--t2),var(--t3))!important;border-color:var(--kr)!important;box-shadow:0 0 0 2px var(--kh),0 5px 0 2px var(--kh2),0 9px 14px rgba(0,0,0,.3),inset 0 2px 0 rgba(255,255,255,.4)!important}
+html.menu3 .m-hap b,html.menu3 .m-prof b{-webkit-text-stroke:0!important;text-shadow:0 2px 0 var(--t4),0 0 2px var(--t4)!important}
+html.menu3 .m-prof small{color:#e6fbff!important;text-shadow:0 1px 0 var(--t4)!important}
+html.menu3 .m-yb .m-yk{box-shadow:0 0 0 2px var(--kh),0 5px 0 2px var(--kh2),0 10px 16px rgba(0,0,0,.35),inset 0 3px 0 rgba(255,255,255,.45)!important}
+html.menu3 .m-yb small{background:linear-gradient(180deg,#b8743a,#7a441a)!important;border-color:var(--kr)!important;box-shadow:0 0 0 2px var(--kh2),0 3px 0 var(--kh2)!important;text-shadow:0 2px 0 var(--kh2)!important}
+/* alt menu: secili olmayan sekmelerin de adi okunur */
+html.menu3 .m-alt button:not(.on) span{opacity:.95;font-size:12px;color:#ffe9c4;-webkit-text-stroke:2.5px var(--kh2);paint-order:stroke fill;text-shadow:none!important}
+html.menu3 .m-alt button:not(.on) .ik3,html.menu3 .m-alt button:not(.on) svg{bottom:21px;transform:scale(.86)}
+/* kilitli Foxi: yazi karakterin ustune degil altina, ahsap levha */
+html.menu3 .m-kil{top:auto;bottom:2%;transform:translateX(-50%);gap:0;max-width:94%}
+html.menu3 .m-kil svg{width:50px;height:50px;margin-bottom:-12px;position:relative;z-index:1}
+html.menu3 .m-kil b{white-space:normal;max-width:78vw;font-size:17px;line-height:1.2;padding:14px 18px 9px;border-radius:14px;background:repeating-linear-gradient(180deg,transparent 0 22px,rgba(40,16,2,.28) 22px 24px),linear-gradient(180deg,#b8743a,#7a441a);border:3px solid var(--kr);box-shadow:0 0 0 2px var(--kh2),0 5px 0 2px var(--kh2),0 10px 14px rgba(0,0,0,.35);color:#fff;text-shadow:0 2px 0 var(--kh2)}
+/* ---- Insa basligi ---- */
+html.menu3 .in-lev b{color:var(--kh)!important;-webkit-text-fill-color:var(--kh);-webkit-text-stroke:0!important;background:none!important;text-shadow:0 2px 0 #fff!important}
+html.menu3 .in-lev,html.menu3 .in-kart{border-color:#c8813a;box-shadow:0 0 0 2px var(--kr),0 6px 0 2px var(--kh),0 12px 20px rgba(0,0,0,.3),inset 0 2px 0 #fff}
+/* ---- kaybetme karti: diger kartlar gibi ahsap, icte parsomen ---- */
+html.menu3 .ky2{background:var(--percin),var(--tahta);border:4px solid var(--altin2);box-shadow:0 0 0 3px var(--tah4),0 10px 0 rgba(20,8,0,.6),0 22px 40px rgba(0,0,0,.55),inset 0 3px 0 rgba(255,230,180,.35)}
+html.menu3 .ky2:before{content:"";position:absolute;inset:14px 14px 78px;border-radius:20px;background:radial-gradient(130% 80% at 50% 0%,#fffef8 0%,#fff4da 55%,#f2d29a 100%);border:3px solid var(--tah4);box-shadow:inset 0 4px 0 #fff,0 2px 0 rgba(255,220,160,.25)}
+html.menu3 .ky2>*{position:relative;z-index:1}
+html.menu3 .ky2>.ky2-boy,html.menu3 .ky2>.ky2-foxi,html.menu3 .ky2>.ky2-altin{position:absolute;z-index:2}
+html.menu3 .ky2-kalan{background:#fff;border:2.5px solid #e8c48a;color:var(--kh)}
+html.menu3 .ky2-kalan b{color:#d8242c}
+html.menu3 .ky2-ipucu{color:#6a3a14}
+html.menu3 .ky2-ipucu b{color:#c8500a}
+html.menu3 .ky2-yok{background:#fff;border:2.5px solid #e8c48a;color:#6a3a14;margin:0 6px}
+html.menu3 .ky2-seri{color:#c8400a}
+html.menu3 .ky2-altin{right:26px;top:24px;background:#fff;border:2px solid #e8c48a;color:var(--kh)}
+html.menu3 .ky2-tekrar{position:relative;margin-top:30px;width:72%;border:3px solid #fff;background:linear-gradient(180deg,var(--t1),var(--t2) 50%,var(--t3));box-shadow:0 0 0 3px var(--t4),0 6px 0 3px var(--t4),0 12px 14px rgba(0,0,0,.4),inset 0 3px 0 #ffffff60}
+html.menu3 .ky2.boy{padding-bottom:20px}
+html.menu3 .ky2-teklif{width:calc(100% - 4px);margin:0 2px}
+/* ---- kazanma: Foxi yaziyi ve dugmeyi kapatmasin ---- */
+html.menu3 #mkazan .k2-panel .k2-tilki{left:-10px;width:92px;bottom:calc(100% - 34px)}
+html.menu3 #mkazan .k2-bas{position:relative;z-index:6}
+/* ---- hazine haritasi ---- */
+html.menu3 #s-harita .m-kay{background:
+    radial-gradient(circle at 12% 8%,rgba(255,255,255,.35) 0 6%,transparent 7%),radial-gradient(circle at 90% 30%,rgba(255,255,255,.25) 0 8%,transparent 9%),
+    repeating-linear-gradient(0deg,transparent 0 62px,rgba(150,96,36,.13) 62px 64px),repeating-linear-gradient(90deg,transparent 0 62px,rgba(150,96,36,.13) 62px 64px),
+    linear-gradient(180deg,#fbe9c0,#f2d29a);background-attachment:local}
+html.menu3 .h-n.kilit{display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 45% 30%,#fff6e0,#e2c690 60%,#c09a5c)!important;border-color:#fff4d8;box-shadow:0 0 0 3px #8a5a2a,0 5px 0 rgba(60,40,10,.4),inset 0 -5px 0 rgba(0,0,0,.1);-webkit-text-stroke:0;text-shadow:none}
+html.menu3 .h-n.kilit .h-no{font:400 23px/1 var(--disp);color:#7a4a1a}
+html.menu3 .h-n.kilit svg{position:absolute;right:-7px;bottom:-5px;width:26px;height:26px;opacity:1;filter:drop-shadow(0 2px 1px rgba(60,30,0,.4))}
+html.menu3 .h-dek{position:absolute;top:6px;width:74px;height:74px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 5px 4px rgba(90,50,10,.4))}
+html.menu3 .h-dek.kck{width:56px;height:56px;top:16px}
+html.menu3 .h-b{background:repeating-linear-gradient(180deg,transparent 0 11px,rgba(40,16,2,.25) 11px 12px),linear-gradient(180deg,#b8743a,#7a441a);border-color:var(--kh2)}
+/* duzeltmeler */
+html.menu3 .ky2>.ky2-altin{right:6px;top:-46px;background:linear-gradient(180deg,var(--t2),var(--t3));border:3px solid var(--kr);box-shadow:0 0 0 2px var(--kh),0 4px 0 2px var(--kh2);color:#fff;font-size:17px;padding:3px 11px 3px 5px;text-shadow:0 2px 0 var(--t4)}
+html.menu3 .ky2-tekrar .yz{height:32px!important;width:auto!important;max-width:100%}
+html.menu3 .ky2-tekrar{padding:9px 10px}
+html.menu3 .m-kil{z-index:6}
+html.menu3 .ky2-bas{margin-top:8px}
+/* bolum karti: bos yildizlar lacivert yerine parsomen tonunda */
+html.menu3 .bk-yil svg path[fill="#39407e"]{fill:#dcbf8c!important;stroke:#b48a4c!important}

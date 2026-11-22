@@ -61,6 +61,9 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v11.5 (23 Kas 2026)
 - 5'in katlarindaki fon karartmasi (#bg.koyu, 13 Kas kurali) kapali; eski ?koyufon=1. Kemer modelinin ayak tabanlari kapatildi (yan yatinca ici bos gorunuyordu).
 
+## v11.6 (23 Kas 2026): menuler, yalniz ?menu3=1 (Adem onayi bekliyor)
+- menu3.css (html.menu3): turkuaz-krem-ahsap gostergeler, ahsap kaybetme karti, ana sayfa etiketleri, alt menu adlari, Insa basligi, kazanma Foxi yeri, harita (numara + susler; merkez.js M3). Kalan mor: top arabasi ayrintilari, acilis videosu ustundeki yazilar.
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.

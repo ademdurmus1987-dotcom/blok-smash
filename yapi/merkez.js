@@ -369,6 +369,7 @@ export function merkezKur(A) {
     '<g transform="translate(104 96)"><rect x="0" y="12" width="44" height="26" rx="4" fill="#b8641c" stroke="#5a2a00" stroke-width="3"/><path d="M0 14c0-14 44-14 44 0z" fill="#d8862c" stroke="#5a2a00" stroke-width="3"/>' +
     '<rect x="18" y="16" width="8" height="10" rx="2" fill="#ffd23f" stroke="#5a2a00" stroke-width="2"/><circle cx="8" cy="6" r="4" fill="#ffd23f"/><circle cx="16" cy="2" r="4" fill="#ffe680"/><circle cx="30" cy="3" r="4" fill="#ffd23f"/><path d="M36 0l3 6 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1z" fill="#ff5a6e"/></g>' +
     '<path d="M186 120l6-30 4 30z" fill="#e8302a"/><path d="M190 90v34" stroke="#6a3a10" stroke-width="3"/></svg>';
+  const M3 = document.documentElement.classList.contains('menu3'), DEK = ['sandik', 'capa', 'altin', 'kafa', 'top5', 'bomba', 'yildiz', 'hediye'];   // v11.6
   function haritaCiz() {
     // v5.0: oyun A.toplam() bolum; en ustte son bolum buyuk bir hazine adasi
     const TOP = A.toplam ? A.toplam() : 1e9, max = maxL(), son = Math.min(TOP, Math.max(max + 7, 16)), yil = SV.yil || {}, SAT = 98, ADA = TOP < 1e9 ? 270 : 0, UST = 26 + ADA, Pf = profilOku(); let h = '', yol = '';
@@ -377,9 +378,10 @@ export function merkezKur(A) {
       if (L === TOP) continue;   // son bolum adada
       const bl = A.bolge(L), kilit = L > max, cur = L === max, st = yil[L] || 0, x = xOf(L), y = UST + (son - L) * SAT + 46, Pl = A.plan ? A.plan(L) : null;
       yol += (yol ? ' L' : 'M') + x.toFixed(1) + ' ' + (y - (son === TOP ? SAT : 0));
-      h += '<div class="h-s t-' + bl[1] + '"><button class="h-n' + (kilit ? ' kilit' : '') + (cur ? ' cur' : '') + (A.zor(L) && !kilit ? ' zor' : '') + (Pl && Pl.etiket === 'cokzor' ? ' cokzor' : '') + (Pl && Pl.tip !== 'normal' ? ' t-' + Pl.tip : '') + '" data-l="' + L + '" style="left:' + x.toFixed(1) + '%">' + (kilit ? IK.kilit : L) + (Pl && Pl.tip !== 'normal' ? '<b class="h-tur">' + A.EG.TUR[Pl.tip].ic + '</b>' : '') +
+      h += '<div class="h-s t-' + bl[1] + '"><button class="h-n' + (kilit ? ' kilit' : '') + (cur ? ' cur' : '') + (A.zor(L) && !kilit ? ' zor' : '') + (Pl && Pl.etiket === 'cokzor' ? ' cokzor' : '') + (Pl && Pl.tip !== 'normal' ? ' t-' + Pl.tip : '') + '" data-l="' + L + '" style="left:' + x.toFixed(1) + '%">' + (kilit ? (M3 ? '<b class="h-no">' + L + '</b>' : '') + IK.kilit : L) + (Pl && Pl.tip !== 'normal' ? '<b class="h-tur">' + A.EG.TUR[Pl.tip].ic + '</b>' : '') +
         (st ? '<i>' + '★'.repeat(st) + '<u>' + '★'.repeat(3 - st) + '</u></i>' : '') + '</button>' +
         (cur ? '<span class="h-tilki" style="left:' + x.toFixed(1) + '%;background:' + tbg + '">' + tic + '</span>' : '') +
+        (M3 && (L - 1) % 3 !== 0 ? '<img class="h-dek' + (L % 2 ? ' kck' : '') + '" loading="lazy" alt="" src="ikon/3b/' + DEK[Math.floor(L * 1.7) % DEK.length] + '.webp?v=1" style="' + (x > 50 ? 'left:' + (4 + (L * 5) % 12) + '%' : 'right:' + (4 + (L * 5) % 12) + '%') + '">' : '') +   // v11.6 harita susleri
         ((L - 1) % 3 === 0 ? '<span class="h-b" style="' + (x > 50 ? 'left:5%' : 'right:5%') + '">' + bl[0] + '</span>' : '') +
         (Pl && L % 50 === 1 ? '<div class="h-sefer"><b>' + (Math.floor((L - 1) / 50) + 1) + '. SEFER</b><small>Bölüm ' + L + '-' + (L + 49) + '</small></div>' : '') + '</div>';   // v8.0: her 50 bolum bir sefer
     }
