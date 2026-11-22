@@ -6,7 +6,7 @@
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { kazanSahne, yazi } from './kazan2.js?v=10';
+import { kazanSahne, yazi } from './kazan2.js?v=11';
 import { logoSVG } from './logo2.js?v=4';   // v10.13: Blender ile gercek 3B logo resmi (ikon/logo3d.webp, uretici/blender/logo3d.py); eski: ?logo=eski
 const LOGO2 = !/[?&]logo=eski/.test(location.search);   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 

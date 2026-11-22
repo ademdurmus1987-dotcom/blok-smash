@@ -108,7 +108,7 @@ export function kazanSahne(KZ, d, o) {
   KZ.className = 'on k2on';
   KZ.innerHTML = '<div class="k2-gok"></div><canvas class="k2-arka"></canvas><div class="k2-vin"></div>' +
     '<div class="k2-ic"><div class="k2-yildizlar">' + [0, 1, 2].map((i) => `<div class="k2-yil ${i < st ? '' : 'off'}"><div class="ns"></div><img src="${IK}yildiz.webp?v=1" alt=""></div>`).join('') + '</div>' +
-    `<div class="k2-bas">${yazi(BAS, 'pembe', { derin: 14 })}</div>` +
+    `<div class="k2-bas">${yazi(BAS, document.documentElement.classList.contains('kal3') ? 'altin' : 'pembe', { derin: 14 })}</div>` +
     `<div class="k2-levha">${yazi('BÖLÜM ' + d.L, 'mor', { h: '30px', derin: 5, sade: 1 })}</div>` +
     `<div class="k2-panel">${SEVINC ? '<div class="k2-tilki"><img src="' + SEVINC + '" alt=""></div>' : ''}<div class="k2-ust"><img src="${IK}altin.webp?v=1" alt="">${yazi('+0', 'altin', { h: '56px', derin: 8, sade: 1 })}</div><div class="k2-satir">` + satir.map(([a, b]) => `<div>${esc(a)}<b>${esc(b)}</b></div>`).join('') + '</div></div>' +
     (d.yeniK ? `<div class="k2-yeni"><img src="../${d.yeniK.av}?v=1" alt=""><div><small>Yeni karakter kazandın!</small><b>${esc(d.yeniK.ad)}</b></div></div>` : '') +

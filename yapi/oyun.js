@@ -22,7 +22,7 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=5';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=46';
+import { merkezKur } from './merkez.js?v=47';
 import * as EG from './egri.js?v=4';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
@@ -52,8 +52,10 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
+const KAL3 = Q.get('kal3') === '1';   // v11.9 (golge, yeni blok karti, kazanma ekrani)
+if (KAL3 && !window.KORSAN) document.documentElement.classList.add('kal3');   // v11.9: yeni blok karti ve kazanma ekrani (menu3.css sonu)
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
-const SURUM = 'v11.8', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v11.9', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -325,7 +327,31 @@ const DIRT = (() => {
   m.rotation.x = -Math.PI / 2; m.position.y = GY + 0.015; scene.add(m); return m;   // v6.29: golge almaz (platform golgesi fonda koyu leke yapiyordu)
 })();
 // v9.4 (Adem 19 Kas: referanstaki golge oyuna hos duruyor): zeminde yalniz golgeyi gosteren saydam duzlem (platform, ayak ve yapi golgesi fona duser). ?golge=0 kapali
-const GOLGEZ = Q.get('golge') === '0' ? null : (() => { const m = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.ShadowMaterial({ color: '#2a1840', opacity: 0.3, depthWrite: false }));
+// v11.9 (Adem: kalite, kumdaki golge): gri, sert kenarli golge yerine sicak renkli, yumusak kenarli golge. Golge haritasi 5-13 noktadan (piksele gore dondurulen
+// Vogel diski) okunur; tek dokuda PCFSoft kadar is yapar. Yalniz ?kal3=1. Ayar: ?gyum= yumusaklik (harita birimi), ?gkoyu=
+function golgeYumusak(m) {
+  const R = +(Q.get('gyum') || 0.021);
+  m.onBeforeCompile = (sh) => {
+    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `
+      float yumGolge() {
+        #if NUM_DIR_LIGHT_SHADOWS > 0
+        vec4 sc = vDirectionalShadowCoord[ 0 ]; sc.xyz /= sc.w; sc.z += directionalLightShadows[ 0 ].shadowBias;
+        if (sc.x < 0.0 || sc.x > 1.0 || sc.y < 0.0 || sc.y > 1.0 || sc.z > 1.0) return 1.0;
+        float d = 6.2831853 * fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715)))), t = 0.0;
+        t = texture2DCompare(directionalShadowMap[ 0 ], sc.xy, sc.z);
+        for (int i = 0; i < 4; i++) { float a = float(i) * 1.5707963 + d; t += texture2DCompare(directionalShadowMap[ 0 ], sc.xy + vec2(cos(a), sin(a)) * ${(R * 0.95).toFixed(4)}, sc.z); }
+        if (t > 4.99) return 1.0; if (t < 0.01) return 0.0;   // acik ya da tam golgeli kum: 5 okuma yeter
+        for (int i = 0; i < 8; i++) { float r = 0.25 + 0.65 * fract(float(i) * 0.618), a = float(i) * 0.7853982 + d * 1.7; t += texture2DCompare(directionalShadowMap[ 0 ], sc.xy + vec2(cos(a), sin(a)) * r * ${R.toFixed(4)}, sc.z); }
+        float k = smoothstep(0.0, 0.06, min(min(sc.x, 1.0 - sc.x), min(sc.y, 1.0 - sc.y))); return mix(1.0, t / 13.0, k);
+        #else
+        return 1.0;
+        #endif
+      }
+      void main() {`).replace('getShadowMask()', 'yumGolge()');
+  };
+  return m;
+}
+const GOLGEZ = Q.get('golge') === '0' ? null : (() => { const m = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), KAL3 ? golgeYumusak(new THREE.ShadowMaterial({ color: '#7a3d0c', opacity: +(Q.get('gkoyu') || 0.42), depthWrite: false })) : new THREE.ShadowMaterial({ color: '#2a1840', opacity: 0.3, depthWrite: false }));
   m.rotation.x = -Math.PI / 2; m.position.y = GY + 0.02; m.receiveShadow = true; m.renderOrder = 1; scene.add(m); return m; })();
 const DIRTT = {};
 // v4.0: her ayagin dibine kendi toprak lekesi (DIRT ile ayni malzeme, fona gore rengi degisir); LEG.clone() ile kopyalara da gecer
@@ -4058,9 +4084,9 @@ function yeniSekil() {
     const pr = Math.min(2, ren.getPixelRatio()), px = Math.round(200 * ren.getPixelRatio());
     // v4.5: (Adem 13 Kas) "Yeni Blok!" karti: sahne kararir, baslik iner, blok isinlarin ortasinda doner, aciklama ve Devam Et
     const E = document.createElement('div'); E.id = 'ysn';
-    E.innerHTML = '<div class="ysn-bas">' + (a.startsWith('m_') ? 'Yeni Mekanik!' : 'Yeni Blok!') + '</div><div class="ysn-ad">' + ad + '</div><div class="ysn-sah"><div class="ysn-isin"></div><div class="ysn-par"></div>' +
+    E.innerHTML = (KAL3 ? '<div class="ysn-kart">' : '') + '<div class="ysn-bas">' + (a.startsWith('m_') ? 'Yeni Mekanik!' : 'Yeni Blok!') + '</div><div class="ysn-ad">' + ad + '</div><div class="ysn-sah"><div class="ysn-isin"></div><div class="ysn-par"></div>' +
       [[12, 18, 0], [80, 10, 0.5], [88, 64, 1], [8, 72, 0.3], [62, 86, 0.8]].map(([l, t, d]) => '<i class="ysn-ys" style="left:' + l + '%;top:' + t + '%;animation-delay:' + d + 's"></i>').join('') +
-      '<canvas id="yscv" width="' + px + '" height="' + px + '"></canvas></div><div class="ysn-ne">' + ne + '</div><button class="ysn-dv" id="ysok">Devam Et</button>';
+      '<canvas id="yscv" width="' + px + '" height="' + px + '"></canvas></div><div class="ysn-ne">' + ne + '</div><button class="ysn-dv" id="ysok">Devam Et</button>' + (KAL3 ? '</div>' : '');
     document.body.appendChild(E); requestAnimationFrame(() => E.classList.add('on'));
     prvGoster(col, $('yscv')); sfx('bonus'); buzz(25); setTimeout(() => { if (E.isConnected) sfx('bonus'); }, 320);
     const kapa = () => { if (E.classList.contains('cik')) return; sfx('tik'); E.classList.add('cik'); setTimeout(() => { PRV.on = false; E.remove(); if (n + 1 < yeni.length) setTimeout(() => goster(n + 1), 180); else yeniEngel(); }, 300); };

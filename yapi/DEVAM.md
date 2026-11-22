@@ -71,6 +71,9 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - oyun.js silindirdenCikar: adim sonunda top kirilmamis silindirin icindeyse girdigi yuze konur, kalan hiz momentumla aktarilir. Eski ?sikis=0. Olcum: fici 4/35 -> 0/35, mor sutun 1/21 -> 0, kavanoz 1/18 -> 0; kirilma sayilari ayni.
 - Test tarayicisi oturumda 3 kez coktu (33, 1, 582); tekrar uretilemedi, bosta bellek buyumuyor.
 
+## v11.9 (23 Kas 2026): kumdaki yumusak golge, ahsap Yeni Blok karti, gunduz kazanma ekrani; yalniz ?kal3=1 (Adem onayi bekliyor)
+- oyun.js golgeYumusak (GOLGEZ), menu3.css sonu html.kal3. Kalan kalite isleri: acilis ekrani (mor gece, eski yazi), giyotin ve anahtarli kapi sekli, kart arkasi koyu mor, bomba dugmesi mor, asansor / denge ayaklari.
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.
