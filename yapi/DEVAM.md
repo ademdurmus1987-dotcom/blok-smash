@@ -38,6 +38,11 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - v10.44: oyun hissi 2 (oyun.js mikroSars / sokDalgasi / kiymik; ?his2=0), el ipucu ilk atista kaybolur, 4 sn dokunulmazsa doner; Korsan Pilot 'Yakinda' (?korsan=1 ile acik).
 - Arayuz notu (Adem onayi bekliyor): koyu mor kutular plaj fonunda agir; parlak mavi + altin + krem sayi kutulari onerildi.
 
+## v11 denemesi (22 Kas 2026): BOYALI SET, yalniz ?yeni=1 (Adem onaylamadan varsayilan yapma)
+- SIRADAKI 2. maddenin (sade kavanoz ve tugla) karsiligi. Model: uretici/blender/seker_set.py -> model/blok3/ (dokusuz; kose renginde ton). Boyama: seker.js (sekerMat: isiksiz, ton eslemesiz, saydamliksiz, ucuz). Baglanti: blok3b.js LISTE, oyun.js ESLE.
+- Piksel orani: ?yeni=1 iken en cok 2.2 (eski 1.75); yavaslarsa prOlc kendiliginden dusurur. Telefonda isinma denenmedi.
+- Kapsam disi: oyA (Foxi yuzlu kup), engeller, pl* pilot bloklari, top. kupa1/2/4 (altin cerceve) modelleri kullanilmiyor.
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.

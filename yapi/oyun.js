@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=34';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=35';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -96,7 +96,7 @@ const GONE_Y = -0.45;    // bunun altina inen kup platformdan dusmus sayilir
 // ---------------- cizim ----------------
 const glc = $('gl');
 const ren = new THREE.WebGLRenderer({ canvas: glc, antialias: true, alpha: true, preserveDrawingBuffer: TEST }); ren.setClearColor(0, 0);
-ren.setPixelRatio(Math.min(Math.min(innerWidth, innerHeight) < 600 ? (CILA ? 1.75 : 1.25) : 2, devicePixelRatio || 1));   // v5.3: (Adem: sekiller kalitesiz) 1.25 bloklari bulanik ve tirtikli gosteriyordu; kontur cizimleri kalkti, yerine cozunurluk   // v3.18: (Adem: telefon cok isiniyor) 1.5 -> 1.25   // v6.29: (Adem: telefon cok isiniyor) telefonda en cok 1.5 (2 yerine %44 daha az piksel)
+ren.setPixelRatio(Math.min(Math.min(innerWidth, innerHeight) < 600 ? (Q.get('yeni') === '1' ? 2.2 : CILA ? 1.75 : 1.25) : 2, devicePixelRatio || 1));   // v5.3: (Adem: sekiller kalitesiz) 1.25 bloklari bulanik ve tirtikli gosteriyordu; kontur cizimleri kalkti, yerine cozunurluk   // v3.18: (Adem: telefon cok isiniyor) 1.5 -> 1.25   // v6.29: (Adem: telefon cok isiniyor) telefonda en cok 1.5 (2 yerine %44 daha az piksel)
 ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.12;
 // v9.5 (Adem 19 Kas: 'acik renkler, mesela sari, referansa yaklasmadi'): ACES parlak renkleri kremlestiriyordu (sari -> soluk krem).
 // Khronos PBR Neutral ton eslemesi rengi korur; three r160'ta yok, CustomToneMapping olarak yazildi. ?ton=aces eski
@@ -562,6 +562,7 @@ if (Q.get('parlak') !== '0') {
     if (RESIMQ) for (const k of ['ksTas', 'ksFici', 'ksFiciK', 'ksSiseM', 'ksSiseY', 'ksSiseB']) delete ESLE[k];
     if (Q.get('b2') !== '0' && Q.get('parla') !== '0') for (const k of ['ksTas', 'ksBuz', 'ksBuz3', 'ksFici', 'ksFiciK']) delete ESLE[k];   // v9.9: tas ve buz yeni yastik tarzli Blender modeli (blok3b.js)
     if (Q.get('b35') === '1') for (const k of ['oyK', 'oyY', 'oyM', 'oyS', 'oyP', 'oyT']) delete ESLE[k];   // v10.35: patili kupler rakip tarzi altin cerceveli Blender modeli (blok3b.js kup3), eski: ?b35=0
+    if (Q.get('yeni') === '1') for (const k of Object.keys(ESLE)) if (k !== 'oyA') delete ESLE[k];   // v11 denemesi (seker.js): boyali set
     for (const k in ESLE) {
       const t = SEK.TUR[k]; if (!t) continue; const [ad, renk] = ESLE[k], eski = t.yap;
       if (GRIK.includes(k)) { SEK.TUR[k + 'G'] = Object.assign({}, t, { yap: eski }); GRI[k] = k + 'G'; }   // v9.0: ana oyundaki sekil bolumleri icin eski (gri tas, fici, sise) gorunumlu es tur

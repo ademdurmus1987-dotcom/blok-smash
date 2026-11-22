@@ -3,6 +3,7 @@
 // (kale.js / sekil.js); yalniz gorunum (sekil.js TUR[k].yap) bu modelle degisir. Model inmezse eski cizim kullanilir. Eski gorunum: ?b3=0.
 // Modelde renk kose renginde, ortam golgesi + yumusak isik 512'lik dokuya gomulu (malzeme: doku x kose rengi).
 // Tam beyaz kose rengi "govde rengi" isaretidir: o.govde verilirse o renge boyanir (tek dosyadan farkli renkli turler: yakut / elmas).
+import { SEKER, SEKERL, sekerBoya, sekerMat } from './seker.js?v=1';   // v11 denemesi: ?yeni=1
 export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]
@@ -79,6 +80,7 @@ if (!/[?&]b2=0/.test(location.search)) {
 const OYUNCAK = /[?&]oyuncak=1/.test(location.search);
 const PARLAK2 = !/[?&]parlak2=0/.test(location.search);   // v10.41: parlak oyuncak plastigi malzemesi (varsayilan); eski: ?parlak2=0
 const oyTur = (f) => /(^|\/)(kav|kavanoz|sise|pl_kavanoz)/.test(f) ? 'kavanoz' : /(^|\/)(tas|kemer)/.test(f) ? 'tas' : /(^|\/)(yildiz|pl_elmas)/.test(f) ? 'metal' : 'renkli';
+if (SEKER) Object.assign(LISTE, SEKERL);   // v11 denemesi: boyali set (seker.js)
 const yol = (f) => OYUNCAK ? 'model/oyuncak/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=1' : 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 17 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
@@ -155,6 +157,7 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   function yap(k) {
     const L = LISTE[k]; if (!B3 || !L) return null; if (HAZ[k]) return HAZ[k]; const G = GLB[L[0]]; if (!G) return null;
     const o = L[3] || {};
+    if (o.sk) { const g = sekerBoya(THREE, G.geo, o); return (HAZ[k] = { geo: g, mat: sekerMat(THREE, g, o), golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: L[2], roughness: 0.5 }) }); }   // v11 ?yeni=1
     let geo = G.geo;
     if (o.govde) {
       geo = G.geo.clone(); const c = geo.attributes.color, kr = new THREE.Color(o.govde);
