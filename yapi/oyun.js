@@ -26,7 +26,8 @@ import { merkezKur } from './merkez.js?v=47';
 import * as EG from './egri.js?v=4';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
-import { parcacikKur } from './fx/parcacik.js?v=1';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
+import { parcacikKur } from './fx/parcacik.js?v=2';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
+import { patlamaKur } from './fx/patlama.js?v=1';   // v11.11: guclu vurus efektleri (?efk=1)
 import { sesSinirKur } from './fx/ses.js?v=1';
 import { hisKur } from './fx/his.js?v=1';
 import { vurusKur } from './fx/vurus.js?v=3';   // v7.0 (Adem 18 Kas): vurus hissi B+A (sok halkasi, bum, yildizlar, kombo sayaci, son blok agir cekim). Kapatma: ?vurus=0   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
@@ -55,7 +56,7 @@ let M = null;
 const KAL3 = Q.get('kal3') !== '0' && !window.KORSAN;   // v11.9 (golge, yeni blok karti, kazanma ekrani)
 if (KAL3 && !window.KORSAN) document.documentElement.classList.add('kal3', 'kz-' + (Q.get('kzrenk') || 'deniz'));   // v11.9: yeni blok karti ve kazanma ekrani (menu3.css sonu)
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
-const SURUM = 'v11.10', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v11.11', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -1139,7 +1140,7 @@ const CUBESHAPE = new CANNON.Box(new CANNON.Vec3(S / 2, S / 2, S / 2)), FICISHAP
 let LV = 1, g = null;
 const cubes = [], balls = [], CUBE_OF = new Map();
 function clearLevel() {
-  clearPX();
+  clearPX(); if (PAT) PAT.temizle();
   for (const c of cubes) { world.removeBody(c.body); scene.remove(c.mesh); if (c.cr) { scene.remove(c.cr); c.cr.material.dispose(); } if (c.rim) { scene.remove(c.rim); c.rim = null; } }   // v6.29: onceki bolumden kalan kar/kum yiginlari sahnede kaliyordu
   for (const b of balls) { world.removeBody(b.body); scene.remove(b.mesh); }
   for (const d of DEB) scene.remove(d.m); for (const s of SPL) scene.remove(s.m);
@@ -2775,7 +2776,7 @@ function fragPieces(c, p, q, dir) {
     const off = it.c.clone().multiply(sc).applyQuaternion(q), grp = m; grp.position.copy(p).add(off); grp.quaternion.copy(q); scene.add(grp); PARN++;
     const ol = off.length() || 1, v = off.clone().multiplyScalar((1.2 + Math.random() * 2.2) / ol).addScaledVector(dd, 1.8 + Math.random() * 2.6);
     v.y += 1.2 + Math.random() * 2.4;
-    const w = rndV(9), hs = Math.min(it.hs * Math.max(sc.x, sc.y, sc.z), S * 0.45) * 0.6, life = (c.landed ? HIS.kalis(malzOf(c.kind)) : 2.2) + Math.random() * 0.7, st = {};   // v4.2: yere dusenin parcalari yerde birkac saniye kalir
+    const w = rndV(9), hs = Math.min(it.hs * Math.max(sc.x, sc.y, sc.z), S * 0.45) * 0.6, life = (c.landed ? HIS.kalis(malzOf(c.kind)) : PAT ? 3.2 : 2.2) + Math.random() * 0.7, st = {};   // v4.2: yere dusenin parcalari yerde birkac saniye kalir
     fx(grp, life, (o, kk, dt) => {
       if (st.in) softPiece(o, v, w, st, hs, dt);
       else { v.y -= 24 * dt; o.position.addScaledVector(v, dt); o.rotation.x += w.x * dt; o.rotation.y += w.y * dt; o.rotation.z += w.z * dt; }
@@ -2909,8 +2910,11 @@ function updateBalls(dt) {
 const SOFT = canvasTex(64, 64, (x, w, h) => { const gg = x.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); gg.addColorStop(0, 'rgba(255,255,255,1)'); gg.addColorStop(0.35, 'rgba(255,255,255,.75)'); gg.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gg; x.fillRect(0, 0, w, h); });
 const FX = [];
 // v4.0 Faz 1A: parcaciklar havuzdan (tek cizim cagrisi); havuz doluysa ya da ?fx=0 ise eski Sprite yolu
-const PRC = Q.get('fx') === '0' ? null : parcacikKur(scene, SOFT);
-function spr(col, add, op) { const v = PRC && PRC.al(col, add, op); if (v) return v; const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: col, transparent: true, opacity: op, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); return m; }
+const PRC = Q.get('fx') === '0' ? null : parcacikKur(scene, SOFT, { normal: 1500 });   // v11.11: havuz 700'de doluyor, kalan tozlar tek tek Sprite oluyordu (700+ cizim cagrisi); artik dolunca fazlasi cizilmez
+// v11.11: kavanoz boyasi, TNT ates topu, namlu alevi (fx/patlama.js). Yalniz ?efk=1
+const PAT = Q.get('efk') === '1' && !K ? patlamaKur({ THREE, scene, S, floorAt: (x, z) => floorAt(x, z), canvasTex }) : null, PATV = new THREE.Vector3();
+const patOn = (p, d) => PATV.copy(p).addScaledVector(TVV.copy(cam.position).sub(p).normalize(), d == null ? S * 0.6 : d).clone();   // kameraya dogru biraz one: komsu bloklarin icinde kalmasin
+function spr(col, add, op) { const v = PRC && PRC.al(col, add, op); if (v) return v; if (PRC) return PRC.bos(add); const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: col, transparent: true, opacity: op, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); return m; }
 if (Q.has('olc')) window.__olc = () => ({ cagri: ren.info.render.calls, parca: PRC ? PRC.say() : -1, fx: FX.length, program: ren.info.programs.length, geo: ren.info.memory.geometries });   // v4.0: olcum (yalniz ?olc)
 if (Q.has('olc')) window.__fxDene = () => { const p = new THREE.Vector3(0, 3, 2); burst(p, '#ff3030', 30, 2); const a = spr('#ffd040', true, 1); a.position.set(0, 6, 2); a.scale.setScalar(3); fx(a, 5, () => {}); splash(-3, 3, 1.4, true); };
 const HIS = hisKur({ THREE, spr: (c, a, o) => spr(c, a, o), fx: (o, l, u) => fx(o, l, u) });
@@ -2956,6 +2960,7 @@ function kiymik(p, col, d) {
   }
 }
 function updateFX(dt) {
+  if (PAT) PAT.kare(dt);
   for (let i = FX.length - 1; i >= 0; i--) {
     const f = FX[i]; f.life -= dt; const k = 1 - Math.max(0, f.life) / f.max; f.upd(f.o, k, dt);
     if (f.life <= 0) { if (!f.keep) { if (f.o.isPar) PRC.birak(f.o); else { scene.remove(f.o); if (f.o.material && !f.o.userData.shared) f.o.material.dispose(); } } FX.splice(i, 1); }
@@ -2963,6 +2968,7 @@ function updateFX(dt) {
 }
 const flashLight = new THREE.PointLight('#ffd6f0', 0, 16, 1.5); scene.add(flashLight);
 function muzzleFx(p, dir) {
+  if (PAT) { PAT.alev(p, dir); flashLight.color.set('#ffc060'); flashLight.position.copy(p); flashLight.intensity = 60; return; }   // v11.11
   // pembe-beyaz parlama: hizla buyur ve soner; namlu onune isik; arkasindan yukari suzulen beyaz duman
   const a = spr('#ffd0ec', true, 1); a.position.copy(p).addScaledVector(dir, 0.4);
   fx(a, 0.22, (o, k) => { o.scale.setScalar(0.6 + k * 1.4); o.material.opacity = 0.8 * (1 - k) ** 1.5; });   // v6.12: kucuk parlama, topu saklamaz
@@ -3055,6 +3061,12 @@ function malzemeFx(c, p, dir) {
   // v6.8 (Adem 17 Kas, referans video: 'sise kirilinca icindeki sivi etrafa dagiliyor'): sise kirilinca sivisi parlak damlalar halinde
   // her yone sacilir (hizina gore uzar), platforma/yere degince leke birakir; cam kiriklari renksiz, saydam. Eski: ?sivi=0.
   if (ses === 'cam' && /Sise|^kj|^kv[ULB]/.test(c.kind) && Q.get('sivi') !== '0') {   // v10.0: yeni kavanozlar da sivisini sacar
+    if (PAT) {   // v11.11: yogun boya patlamasi + az cam kirigi
+      const bk = /^kvB/.test(c.kind) ? 2.4 : /^kvL/.test(c.kind) ? 1.7 : /^kvU/.test(c.kind) ? 1.35 : 1; PAT.boya(patOn(p, S), dir, (SEK.TUR[c.kind] && SEK.TUR[c.kind].renk2) || renk, bk, (c.h || S) / S);
+      const camM = MFX.mat('cs2', { color: '#e8f8ff', transparent: true, opacity: 0.82, roughness: 0.02, metalness: 0.3, envMap: SENV, envMapIntensity: 2.6, emissive: '#bfe8ff', emissiveIntensity: 0.55, side: THREE.DoubleSide, depthWrite: false });
+      for (let i = 0; i < (PARN > 90 ? 6 : 12); i++) piece(new THREE.Mesh(MFX.kirik, camM), patOn(p, S * 0.3), dir, S * (0.2 + Math.random() * 0.2), 8, 0.6 + Math.random() * 0.35);
+      return;
+    }
     const col = renk, mat = SIVIM[col] || (SIVIM[col] = new THREE.MeshStandardMaterial({ color: col, roughness: 0.08, metalness: 0, envMap: ENV, envMapIntensity: 1.1, emissive: col, emissiveIntensity: 0.4 })), geo = jarKit().blobGeo;
     if (INCE) {   // v10.1 (Adem: 'referanstaki gibi az dagilsin, ince damlacik, havada yok olsun'): dar bulut, kucuk damlalar, 0.5-0.8 sn omur
       const bk = /^kvB/.test(c.kind) ? 2.2 : /^kvL/.test(c.kind) ? 1.4 : 1, n = Math.round((PARN > 90 ? 34 : 62) * bk);   // buyuk kavanoz daha cok sivi
@@ -3483,7 +3495,7 @@ function explode(p, kd) {
   const RR = kd.boom * S;
   mikroSars(0.35, 250); sokDalgasi(p, RR * 1.3);   // v10.44
   shake = Math.min(0.9, shake + (kd.boom > 4 ? 0.8 : 0.55)); boomLight.position.copy(p); boomLight.intensity = kd.boom > 4 ? 90 : 60;
-  burst(p, '#ffb020', 30, 12); burst(p, '#ff4020', 20, 9); burst(p, '#5a4a40', 10, 6); sfx('boom');
+  if (PAT) PAT.ates(patOn(p), Math.min(RR, S * 2.8)); else { burst(p, '#ffb020', 30, 12); burst(p, '#ff4020', 20, 9); burst(p, '#5a4a40', 10, 6); } sfx('boom');
   if (KAL()) { hitstop(0.1); FP = Math.min(6, FP + 4); buzz([60, 36, 72, 36, 52], 0); }
   praise(kd.boom > 4 ? 'KABOOM!' : 'BOOM!', '', true);
   wakeAll(); g.busy = Math.max(g.busy, 2.5);
@@ -4343,7 +4355,7 @@ function prOlc(dt) {
 }
 function sahneBos() {
   if (ENG.length || GGA.length || PRV.on) return false;
-  if (CAMI > 0 || K || TEST || !g || g.don || balls.length || FX.length || parts.length || DEB.length || shake > 0 || HS > 0 || SLOW > 0 || ZOOM > 0 || FP > 0.01 || flashLight.intensity > 0 || TC.rec > 0 || Math.abs(TC.aimYaw - TC.yaw) > 1e-3 || PF.holder.visible || (TK.t && TK.gor)) return false;
+  if (CAMI > 0 || K || TEST || !g || g.don || balls.length || FX.length || parts.length || DEB.length || shake > 0 || HS > 0 || (PAT && PAT.n) || SLOW > 0 || ZOOM > 0 || FP > 0.01 || flashLight.intensity > 0 || TC.rec > 0 || Math.abs(TC.aimYaw - TC.yaw) > 1e-3 || PF.holder.visible || (TK.t && TK.gor)) return false;
   for (const q of PLS) if (q.kay || q.asn) return false;
   for (const c of cubes) if (!c.out && (c.landed || c.fuse != null || (c.body.world && c.body.mass > 0 && c.body.sleepState === 0))) return false;
   return true;

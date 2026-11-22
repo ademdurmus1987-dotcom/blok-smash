@@ -32,7 +32,7 @@ class Vekil {
   }
 }
 
-function katman(scene, map, add, max) {
+function katman(scene, map, add, max, o = {}) {
   const base = new THREE.PlaneGeometry(1, 1), g = new THREE.InstancedBufferGeometry();
   g.index = base.index; g.setAttribute('position', base.attributes.position); g.setAttribute('uv', base.attributes.uv);
   const off = new THREE.InstancedBufferAttribute(new Float32Array(max * 3), 3), sc = new THREE.InstancedBufferAttribute(new Float32Array(max * 2), 2),
@@ -40,7 +40,7 @@ function katman(scene, map, add, max) {
   for (const a of [off, sc, col, rot]) a.setUsage(THREE.DynamicDrawUsage);
   g.setAttribute('iOff', off); g.setAttribute('iSc', sc); g.setAttribute('iCol', col); g.setAttribute('iRot', rot); g.instanceCount = 0;
   const mat = new THREE.ShaderMaterial({ vertexShader: VS, fragmentShader: FS, uniforms: { map: { value: map } }, transparent: true, depthWrite: false,
-    blending: add ? THREE.AdditiveBlending : THREE.NormalBlending });
+    blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, toneMapped: o.ton !== false, depthTest: o.derin !== false });   // v11.11: ton:false renkler canli kalir, derin:false bloklarin onunde cizilir
   const mesh = new THREE.Mesh(g, mat); mesh.frustumCulled = false; mesh.renderOrder = 5; mesh.visible = false; mesh.matrixAutoUpdate = false; scene.add(mesh);
   const bos = [], akt = [];
   for (let i = 0; i < max; i++) bos.push(new Vekil(add ? 1 : 0));
@@ -48,7 +48,7 @@ function katman(scene, map, add, max) {
 }
 
 export function parcacikKur(scene, map, o = {}) {
-  const K = [katman(scene, map, false, o.normal || 700), katman(scene, map, true, o.parlak || 200)];
+  const K = [katman(scene, map, false, o.normal || 700, o), katman(scene, map, true, o.parlak || 200, o)];
   return {
     // bos vekil yoksa null: cagiran eski Sprite yoluna duser
     al(renk, add, op) {
@@ -57,6 +57,7 @@ export function parcacikKur(scene, map, o = {}) {
       p.material.opacity = op == null ? 1 : op; p.material.rotation = 0; p.material.color.set(renk);
       L.akt.push(p); return p;
     },
+    bos(add) { return new Vekil(add ? 1 : 0); },   // v11.11: havuz doluyken: cizilmeyen vekil (birak zarar vermez)
     birak(p) { if (p && p.isPar && p.aktif) { p.aktif = false; K[p.k].bos.push(p); } },
     // her cizimden once: etkin vekillerin bilgisini GPU dizilerine yaz
     kare() {

@@ -74,6 +74,12 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v11.9 (23 Kas 2026): kumdaki yumusak golge, ahsap Yeni Blok karti, kazanma ekrani (v11.10: sade koyu fon, buyuk yildiz, ortada Foxi; ?kzrenk=deniz|kirmizi|orman); VARSAYILAN, kazanma fonu lacivert (Adem secti), eski ?kal3=0
 - oyun.js golgeYumusak (GOLGEZ), menu3.css sonu html.kal3. Kalan kalite isleri: acilis ekrani (mor gece, eski yazi), giyotin ve anahtarli kapi sekli, kart arkasi koyu mor, bomba dugmesi mor, asansor / denge ayaklari.
 
+## v11.11 (23 Kas, deneme, yalniz ?efk=1): guclu vurus efektleri
+- `yapi/fx/patlama.js`: TNT ates topu, kavanoz boya patlamasi, namlu alevi (2 puf katmani + 1 InstancedMesh). Pufler `derin:false` (bloklarin onunde), `ton:false` (canli renk).
+- Kirilan parcalar 1 sn daha uzun kalir (fragPieces 3.2 sn).
+- Herkeste acik: parcacik havuzu 700 -> 1500, havuz dolunca tek tek Sprite acilmaz (kalabalik yikimda 700+ cizim cagrisi gidiyordu).
+- Adem onaylarsa: `PAT` kosulunu `Q.get('efk') !== '0'` yap.
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.
