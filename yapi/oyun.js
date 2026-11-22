@@ -53,7 +53,7 @@ const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok *
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
-const SURUM = 'v11.7', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v11.8', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -4375,7 +4375,31 @@ const CCD = { a: new CANNON.Vec3(), b: new CANNON.Vec3(), r: new CANNON.RaycastR
 // v10.45 (Adem: '1465. bolumde top beyaz sutunun icinden geciyor'): koruma yalniz pilotta aciktaydi; ana oyunda 30 atisin 19'u geciyordu.
 // Merkezi disbukey govdenin (silindir) icine dusen top cannon'da carpisma uretmez. Ana oyunda yalniz silindir govdelere; kutularda his ayni. ?ccd=0 eski
 const CCDANA = Q.get('ccd') !== '0' && !K;
+// v11.8 (fici): arkasi dolu silindire carpan topun hizini cozucu ayni adimda tam kesemiyor, adim sonunda merkezi silindirin icinde kaliyor ve temas
+// kayboluyordu. Adim sonunda top kirilmamis bir silindirin icindeyse girdigi yuze geri konur, kalan hiz momentumu koruyarak parcaya aktarilir. ?sikis=0 eski
+const SIKIS = Q.get('sikis') !== '0' && !K, SKV = new CANNON.Vec3(), SKO = new CANNON.Vec3(), SKQ = new CANNON.Quaternion();
+function silindirdenCikar(b) {
+  const bd = b.body, p = bd.position, on = b.onp;
+  if (on) for (const c of cubes) {
+    const s = c.sek, o = c.body; if (!s || !s.sil || c.out || c.fuse != null || !o.world) continue;
+    const dx = p.x - o.position.x, dy = p.y - o.position.y, dz = p.z - o.position.z, R1 = s.r + s.h; if (dx * dx + dy * dy + dz * dz > R1 * R1) continue;
+    o.quaternion.inverse(SKQ); SKV.set(dx, dy, dz); SKQ.vmult(SKV, SKV); const ry = s.h / 2, rr = Math.hypot(SKV.x, SKV.z);
+    if (rr > s.r * 0.86 || Math.abs(SKV.y) > ry * 0.94) continue;
+    SKO.set(on.x - o.position.x, on.y - o.position.y, on.z - o.position.z); SKQ.vmult(SKO, SKO); const ro = Math.hypot(SKO.x, SKO.z);
+    if (ro < s.r && Math.abs(SKO.y) < ry) { SKO.copy(SKV); }   // zaten iceride: en yakin yandan
+    let nx = 0, ny = 0, nz = 0;
+    if (Math.abs(SKO.y) >= ry && ro < s.r) { ny = Math.sign(SKO.y); SKV.y = ny * (ry + BR * 0.8); }
+    else { const q = Math.hypot(SKO.x, SKO.z) || 1; nx = SKO.x / q; nz = SKO.z / q; SKV.x = nx * (s.r + BR * 0.8); SKV.z = nz * (s.r + BR * 0.8); }
+    o.quaternion.vmult(SKV, SKV); p.set(o.position.x + SKV.x, o.position.y + SKV.y, o.position.z + SKV.z);
+    SKO.set(nx, ny, nz); o.quaternion.vmult(SKO, SKO);
+    const v = bd.velocity, w = o.velocity, vr = (v.x - w.x) * SKO.x + (v.y - w.y) * SKO.y + (v.z - w.z) * SKO.z;
+    if (vr < 0) { const j = -vr / (bd.invMass + o.invMass); o.wakeUp(); v.x += j * bd.invMass * SKO.x; v.y += j * bd.invMass * SKO.y; v.z += j * bd.invMass * SKO.z; w.x -= j * o.invMass * SKO.x; w.y -= j * o.invMass * SKO.y; w.z -= j * o.invMass * SKO.z; }
+    bd.aabbNeedsUpdate = true; break;
+  }
+  if (on) on.copy(p); else b.onp = p.clone();
+}
 world.addEventListener('postStep', () => {
+  if (SIKIS) for (const b of balls) if (b.body.world && !b.sunk) silindirdenCikar(b);
   if (!PLT && !CCDANA) return;
   for (const b of balls) {
     const bd = b.body; if (b.hit || !bd.world) continue; const v = bd.velocity, sp = v.length(); if (sp < 30) continue;

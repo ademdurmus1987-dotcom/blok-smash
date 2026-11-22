@@ -67,6 +67,10 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v11.7 (23 Kas 2026): Foxi yuzlu kup (oyA) ve top arabasi VARSAYILAN (Adem onayladi), eski ?top3=0
 - seker_set.py foxikup -> model/blok3/foxi.glb; seker.js TOP3; kaide.js topModeli2(boya, halat): turkuaz namlu, mercan govde, halat halkalar, ahsap tekerlek.
 
+## v11.8 (23 Kas 2026): top fici / silindir icinde kalmiyor
+- oyun.js silindirdenCikar: adim sonunda top kirilmamis silindirin icindeyse girdigi yuze konur, kalan hiz momentumla aktarilir. Eski ?sikis=0. Olcum: fici 4/35 -> 0/35, mor sutun 1/21 -> 0, kavanoz 1/18 -> 0; kirilma sayilari ayni.
+- Test tarayicisi oturumda 3 kez coktu (33, 1, 582); tekrar uretilemedi, bosta bellek buyumuyor.
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.
