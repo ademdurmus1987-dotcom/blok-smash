@@ -58,7 +58,7 @@ const PARCA = {
     vec3 h = abs(skBox - abs(skP)); float k1 = min(min(max(h.x, h.y), max(h.y, h.z)), max(h.x, h.z)); float kn = 1.0 - smoothstep(0.02, 0.42, k1);
     sc = mix(sc, sc * vec3(0.55, 0.80, 1.0), 0.75 * (1.0 - kn)); sc = mix(sc, vec3(0.55, 0.88, 1.0), kn * 0.62);
     sc += vec3(0.16, 0.13, 0.06) * smoothstep(0.25, 0.95, n1) + vec3(0.14) * smoothstep(0.955, 1.0, n2) * smoothstep(-0.2, 0.5, n1); }`,
-  kutu: '', tas: '', cam: ''
+  kutu: '', tas: '', cam: '', top: ''
 };
 const GOLGE = `
   float skS = 1.0 + 0.12 * max(skN.y, 0.0) - 0.40 * max(-skN.y, 0.0) - SKX * max(skN.x, 0.0) - 0.12 * max(-skN.x, 0.0) - 0.2 * max(-skN.z, 0.0);
@@ -74,6 +74,9 @@ const PARLA = {
   tas: `{ float a = max(dot(skR, normalize(vec3(-0.45, 0.80, 0.42))), 0.0); sc = mix(sc, min(sc * 1.25 + 0.16, 1.0), smoothstep(0.72, 0.98, a) * 0.42 * skIs); }`,
   tahta: `{ float a = max(dot(skR, normalize(vec3(-0.45, 0.80, 0.42))), 0.0); sc = mix(sc, min(sc * 1.2 + 0.14, 1.0), smoothstep(0.75, 0.98, a) * 0.5 * skIs); }`,
   buz: `{ float a = max(dot(skR, normalize(vec3(-0.45, 0.80, 0.42))), 0.0); sc = mix(sc, vec3(0.93, 0.99, 1.0), smoothstep(0.84, 0.97, a) * 0.8); }`,
+  // top: sol ustte iri yumusak parlama + kucuk beyaz nokta, alt kenarda ince isik
+  top: `{ float a = max(dot(skR, normalize(vec3(-0.45, 0.72, 0.55))), 0.0); sc = mix(sc, min(sc * 1.25 + 0.16, 1.0), smoothstep(0.35, 0.95, a) * 0.55); sc = mix(sc, vec3(1.0), smoothstep(0.90, 0.955, a) * 0.85);
+    float r = 1.0 - max(dot(skN, skV), 0.0); sc = mix(sc, min(sc * 1.4 + 0.12, 1.0), smoothstep(0.62, 0.80, r) * (1.0 - smoothstep(0.86, 1.0, r)) * 0.5); }`,
   // cam / parlak silindir: parcanin eksenine dik yonde genis yumusak bant + icinde parlak serit, karsi kenarda ince isik
   cam: `{ vec3 ax = normalize(skAx), yan = cross(ax, vec3(0.0, 0.0, 1.0)); float yl = length(yan), nn = dot(normalize(normal), ax);
     if (yl > 0.15) { yan /= yl; if (dot(yan, vec3(0.75, -0.6, 0.0)) < 0.0) yan = -yan; float t = dot(normalize(normal), yan), gv = 1.0 - smoothstep(0.45, 0.85, abs(nn));
@@ -98,7 +101,7 @@ export function sekerMat(THREE, geo, o) {
       let f = sh.fragmentShader.replace('void main() {', '#include <shadowmask_pars_fragment>\nvarying vec3 skP; varying vec3 skAx; uniform vec3 skBox;\nvoid main() {');
       for (const p of ['lights_lambert_fragment', 'lights_fragment_begin', 'lights_fragment_maps', 'lights_fragment_end', 'aomap_fragment']) f = f.replace('#include <' + p + '>', '');
       f = f.replace('vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;',
-        ORTAK + PARCA[tur] + GOLGE.replace('SKX', tur === 'cam' ? '0.30' : '0.26') + PARLA[tur] + '\nvec3 outgoingLight = pow(clamp(sc, 0.0, 1.0), vec3(2.2)) + totalEmissiveRadiance;');
+        ORTAK + PARCA[tur] + GOLGE.replace('SKX', tur === 'cam' || tur === 'top' ? '0.30' : '0.26') + PARLA[tur] + '\nvec3 outgoingLight = pow(clamp(sc, 0.0, 1.0), vec3(2.2)) + totalEmissiveRadiance;');
       sh.fragmentShader = f;
     };
     x.customProgramCacheKey = () => 'seker' + tur + (o.dik ? 1 : 0) + (o.yuv ? 1 : 0);
