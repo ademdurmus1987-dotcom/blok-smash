@@ -46,12 +46,12 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v11.1 (22 Kas 2026): boyali engeller ve top VARSAYILAN (Adem onayladi); eski ?eng3=0
 - uretici/blender/engel_set.py -> model/engel3/; engel3.js (yukleme, kodla kurulan anahtarli kapi ve giyotinin boyanmasi). Fizik ayni. ?engel=kapi (dev kapi, hicbir bolumde yok) eski.
 
-## v11.2 (22 Kas 2026): boyali platform ve ayak, yalniz ?plat3=1 (Adem onayi bekliyor)
+## v11.2 (22 Kas 2026): boyali platform ve ayak, varsayilan; eski ?plat3=0
 - plat3.js: tabla dis cizgi boyunca profil supurme (gorunus artik fizik sinirinda; eski tablo pKaydir yonu ters oldugu icin tasiyor ve altin serit gorunmuyordu), ayak parcalari torna. Piston/makas/disli/ray renkleri P3RENK. seker.js sekerDuz: tek renkli boyama.
 
 ## v11.3 (22 Kas 2026)
 - Kemer (ksKemer) fizigi artik gercek kemer (iki ayak + kiris + kose, oyun.js kemerSekil); top altindan gecer. Eski ?kemer=0.
-- Platform renkleri bizim: korsan gemisi guvertesi (tahta, halat, turkuaz, direk ayak). Adem: 'rakibin kopyasi olmasin'. ?plat3=1 (onay bekliyor), ?prenk=mercan | gece | mor.
+- Platform renkleri bizim: korsan gemisi guvertesi (tahta, halat, turkuaz, direk ayak). Adem: 'rakibin kopyasi olmasin'. VARSAYILAN turkuaz (Adem secti), eski ?plat3=0, ?prenk=mercan | gece | mor.
 - Menu incelemesi (yapilmadi, Adem'in secimine sunuldu): kaybetme karti mor (digerleri ahsap), koyu mor gostergeler, Insa basligi okunmuyor, harita bos, kilitli Foxi yazisi, kazanma ekraninda Foxi yaziyi ortuyor.
 
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
