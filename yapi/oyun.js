@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=38';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=39';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { ENG3, engel3Kur } from './engel3.js?v=3';   // v11.1: boyali engeller ve top (eski ?eng3=0)
 import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=3';   // v11.2: boyali platform (eski ?plat3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
@@ -51,7 +51,7 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
-const SURUM = 'v11.3', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v11.5', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -1755,7 +1755,7 @@ function bolumBasla(Y) {
   g = { don: Y.don || 0, L: LV, ad: Y.ad, total: cubes.length, left: cubes.length, shots: shotsFor(cubes.length, Y), max: shotsFor(cubes.length, Y), state: 'play', t: 0, busy: 0, quiet: 0, combo: null, armed: false, bonus: 0, gold: 0 };
   FUSE.length = 0;
   egriBasla(Y);   // v8.0: bolum turu, hazine hedefleri, Foxi yardimi
-  if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + (fo.yeni ? 'yeni/' + fo.r + '.webp?v=2' : fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2')) + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; $('bg').classList.toggle('koyu', !!fo.yeni && LV % 5 === 0); setPlat(tm[1]); setDirt(fo); setSea(fo); if (fo.yeni) DIRT.visible = false; canliFon(fo.yeni ? { f: fo.f, vid: 1 } : fo); videoFon(fo); fonIsi(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); if (fo.yeni) temaKur(); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
+  if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + (fo.yeni ? 'yeni/' + fo.r + '.webp?v=2' : fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2')) + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; $('bg').classList.toggle('koyu', Q.get('koyufon') === '1' && !!fo.yeni && LV % 5 === 0)   /* v11.5 (Adem: '1520. bolumde ekran kararmasi'): 5'in katlarinda fon karartmasi kapali, eski ?koyufon=1 */; setPlat(tm[1]); setDirt(fo); setSea(fo); if (fo.yeni) DIRT.visible = false; canliFon(fo.yeni ? { f: fo.f, vid: 1 } : fo); videoFon(fo); fonIsi(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); if (fo.yeni) temaKur(); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
   let ipu = ''; if (Y.ip && Y.a && !K) { if (!SV.ark) SV.ark = []; if (!SV.ark.includes(Y.a)) { SV.ark.push(Y.a); ipu = '<i>' + Y.ip + '</i>'; } }   // v5.0: yeni yapi tipinin cozum ipucu (ilk karsilasmada)
   const nm = $('nm'); const dfo = !PILOTQ && !K && FONYENI ? fonOf(LV) : null, dyeni = dfo && (LV === 1 || fonOf(LV - 1) !== dfo);   // v6.6: dunya adi; dunyanin ilk bolumunde 'YENI DUNYA'
   const eu = egriYazi(); if (eu) ipu = eu + ipu;
@@ -4130,8 +4130,8 @@ for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) glc.addEventLis
 let CPITCH = 9 * Math.PI / 180, CAZ = 0; const CTG = new THREE.Vector3(); let CAMI = 0;   // PILOT: CPITCH/CAZ let (yalniz pilot kurulumunda degisir)   // v2.0: kamera acisi; CAMI: bolum basinda kisa donus
 const YER = Q.get('yer') !== '0';   // v9.4 (Adem 19 Kas): referans oyundaki yerlesim olculdu (390x844 oraninda): tabla ust yuzu ekranin %64'u, yapi tepesi en fazla ~%15, namlu agzi ~%81, araba ekran genisliginin ~%46'si. ?yer=0 eski yerlesim
 // v11.4 (Adem 22 Kas: 'kamera yaklastirma'; rakipte yapi ekranin %80-90'i): yapi ekran genisliginin ~%80'ini doldurur; bir blok ekranin en cok
-// %11.5'i (390 pikselde 45) olur ki kucuk yapi dev gorunmesin (v10.23 sikayeti). Yalniz ?kam2=1. ?kam2b= yarim genislik tabani (kucuk = yakin)
-const KAM2 = Q.get('kam2') === '1', KAM2B = +(Q.get('kam2b') || S / 0.115 / 2), KAM2Y = 0.94;
+// %11.5'i (390 pikselde 45) olur ki kucuk yapi dev gorunmesin (v10.23 sikayeti). Varsayilan (Adem 23 Kas), eski ?kam2=0. ?kam2b= yarim genislik tabani (kucuk = yakin)
+const KAM2 = Q.get('kam2') !== '0' && Q.get('kam') !== '0', KAM2B = +(Q.get('kam2b') || S / 0.115 / 2), KAM2Y = 0.94;
 const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * 0.86;   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
 const CGAP = 8;   // v6.27: (Adem) platform ile top arabasi arasi her bolumde esit (kupler arabanin uzerine devriliyordu)
 const YAW = 0;   // v6.2: (Adem) platform kameraya duz baksin; derinligi yukaridan bakis acisi verir

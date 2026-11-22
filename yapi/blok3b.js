@@ -81,7 +81,7 @@ const OYUNCAK = /[?&]oyuncak=1/.test(location.search);
 const PARLAK2 = !/[?&]parlak2=0/.test(location.search);   // v10.41: parlak oyuncak plastigi malzemesi (varsayilan); eski: ?parlak2=0
 const oyTur = (f) => /(^|\/)(kav|kavanoz|sise|pl_kavanoz)/.test(f) ? 'kavanoz' : /(^|\/)(tas|kemer)/.test(f) ? 'tas' : /(^|\/)(yildiz|pl_elmas)/.test(f) ? 'metal' : 'renkli';
 if (SEKER) Object.assign(LISTE, SEKERL);   // v11: boyali set (seker.js), eski ?yeni=0
-const yol = (f) => OYUNCAK ? 'model/oyuncak/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=1' : 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 17 : 1);
+const yol = (f) => OYUNCAK ? 'model/oyuncak/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=1' : 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 17 : f.startsWith('blok3/') ? 2 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)

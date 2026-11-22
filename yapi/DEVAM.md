@@ -54,9 +54,12 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - Platform renkleri bizim: korsan gemisi guvertesi (tahta, halat, turkuaz, direk ayak). Adem: 'rakibin kopyasi olmasin'. VARSAYILAN turkuaz (Adem secti), eski ?plat3=0, ?prenk=mercan | gece | mor.
 - Menu incelemesi (yapilmadi, Adem'in secimine sunuldu): kaybetme karti mor (digerleri ahsap), koyu mor gostergeler, Insa basligi okunmuyor, harita bos, kilitli Foxi yazisi, kazanma ekraninda Foxi yaziyi ortuyor.
 
-## v11.4 (23 Kas 2026): kamera yaklastirma, yalniz ?kam2=1 (Adem onayi bekliyor)
+## v11.4 (23 Kas 2026): yakin kamera VARSAYILAN (Adem onayladi), eski ?kam2=0
 - oyun.js fit() KAM2: yapi (kayan / donen / asansor payi dahil) ekran genisligini doldurur, bir blok en cok ekranin %11.5'i (?kam2b=). Yuksek yapilarda sinir tepe (%15). Pilot cercevesi genis siniri 0.9.
 - Test: 60 bolum gecisi + 240 atis sorunsuz. Bir kez sekme coktu (33. bolum, test tarayicisi), yeniden uretilemedi.
+
+## v11.5 (23 Kas 2026)
+- 5'in katlarindaki fon karartmasi (#bg.koyu, 13 Kas kurali) kapali; eski ?koyufon=1. Kemer modelinin ayak tabanlari kapatildi (yan yatinca ici bos gorunuyordu).
 
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.

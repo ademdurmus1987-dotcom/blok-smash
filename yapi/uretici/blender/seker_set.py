@@ -323,6 +323,10 @@ def kemer(ad):
     # kemer ici
     for i in range(len(kem) - 1):
         a, e = kem[i], kem[i + 1]; M.yuz([Vector((a.x, a.y, d / 2)), Vector((e.x, e.y, d / 2)), Vector((e.x, e.y, -d / 2)), Vector((a.x, a.y, -d / 2))], ton(0.22))
+    # v11.5 ayak tabanlari (Adem: 'kopru yan yatinca ici bos'): alt yuz kapali
+    for sx in (-1, 1):
+        P = [(R, d / 2), (kw, d / 2), (w / 2, d / 2 - bv), (w / 2, -d / 2 + bv), (kw, -d / 2), (R, -d / 2)]; P = [Vector((sx * x, y0, z)) for x, z in P]
+        n = (P[1] - P[0]).cross(P[2] - P[0]); M.yuz(P if n.y < 0 else P[::-1], ton(0.34))
     # pahli yan ve ust
     def serit(P): # P: 2B dis cizgi (saat yonu tersi), on z'den arka z'ye pahli
         for i in range(len(P) - 1):
