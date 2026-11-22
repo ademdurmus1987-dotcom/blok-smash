@@ -4129,6 +4129,9 @@ for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) glc.addEventLis
 // platformun tamami ve altta Pofi ekrana sigar; dar (telefon) ekranda geriye cekilir
 let CPITCH = 9 * Math.PI / 180, CAZ = 0; const CTG = new THREE.Vector3(); let CAMI = 0;   // PILOT: CPITCH/CAZ let (yalniz pilot kurulumunda degisir)   // v2.0: kamera acisi; CAMI: bolum basinda kisa donus
 const YER = Q.get('yer') !== '0';   // v9.4 (Adem 19 Kas): referans oyundaki yerlesim olculdu (390x844 oraninda): tabla ust yuzu ekranin %64'u, yapi tepesi en fazla ~%15, namlu agzi ~%81, araba ekran genisliginin ~%46'si. ?yer=0 eski yerlesim
+// v11.4 (Adem 22 Kas: 'kamera yaklastirma'; rakipte yapi ekranin %80-90'i): yapi ekran genisliginin ~%80'ini doldurur; bir blok ekranin en cok
+// %11.5'i (390 pikselde 45) olur ki kucuk yapi dev gorunmesin (v10.23 sikayeti). Yalniz ?kam2=1. ?kam2b= yarim genislik tabani (kucuk = yakin)
+const KAM2 = Q.get('kam2') === '1', KAM2B = +(Q.get('kam2b') || S / 0.115 / 2), KAM2Y = 0.94;
 const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * 0.86;   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
 const CGAP = 8;   // v6.27: (Adem) platform ile top arabasi arasi her bolumde esit (kupler arabanin uzerine devriliyordu)
 const YAW = 0;   // v6.2: (Adem) platform kameraya duz baksin; derinligi yukaridan bakis acisi verir
@@ -4149,6 +4152,11 @@ function fit() {
   // v9.4 YER: ana oyunda cerceve platformun yaricapina (R, engeller dahil genis olabilir) degil, kuplerin gercek kutusuna gore; yapi yatayda ortalanir
   let CX = 0, YB = null;
   if (YER && !PC && cubes.length) { const bb = new THREE.Box3(); for (const c of cubes) if (!c.out && !c.gone) bb.expandByPoint(V.set(c.body.position.x, c.body.position.y, c.body.position.z)); bb.expandByScalar(S * 0.6);
+    if (KAM2 && !bb.isEmpty()) {   // hareket payi: kayan platform yana, asansor yukari, donen platform kosegen kadar
+      let kx = 0, ky = 0; for (const q of PLS) { if (q.kay) kx = Math.max(kx, q.kay.a || 0); if (q.asn) ky = Math.max(ky, q.asn.a || q.asn || 0); }
+      if (yD && yD.don) { const mx = (bb.min.x + bb.max.x) / 2, r = Math.hypot(bb.max.x - mx, Math.max(Math.abs(bb.min.z), Math.abs(bb.max.z))); bb.min.x = mx - r; bb.max.x = mx + r; bb.max.z = Math.max(bb.max.z, r); bb.min.z = Math.min(bb.min.z, -r); }
+      bb.min.x -= kx; bb.max.x += kx; if (ky > 0 && ky < 20) bb.max.y += ky;
+    }
     if (!bb.isEmpty()) { YB = bb; CX = (bb.min.x + bb.max.x) / 2; const mz = Math.max(RZ, bb.max.z);
       tops.length = 0; for (const x of [bb.min.x, bb.max.x]) for (const z of [bb.min.z, mz]) tops.push([x, bb.max.y, z]); bots.length = 0; bots.push([bb.min.x, -0.8, mz], [bb.max.x, -0.8, mz]); } }
   const yOf = (p) => V.set(p[0], p[1], p[2]).project(cam).y;
@@ -4156,7 +4164,7 @@ function fit() {
   const foY = fonOf(LV), ayak = foY && foY.yeni ? 1 - 2 * fonPx(0.5, foY.cy)[1] / H : null;
   // v10.23 (Adem 20 Kas: 'bazi bolumlerde platform cok yakin, ideal mesafe 1196'): kamera hicbir bolumde 1196'daki uzakliktan yakina gelmez
   // (yakin kamera kucuk yapiyi dev gosteriyordu). Ekrandaki olcek her bolumde ayni; yalniz yapi sigmazsa geri cekilir. Eski hal: ?kam=0
-  let d = YER ? Math.max(6, reach + 3, Q.get('kam') === '0' || PC ? 0 : 10.6 / thx) : PC ? 8 /* PILOT: yapi sigana kadar geri cekilir; araba yuksekte, platforma degmez */ : Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
+  let d = YER ? Math.max(6, reach + 3, Q.get('kam') === '0' || PC ? 0 : KAM2 ? Math.max(KAM2B / thx, (reach + CGAP + 3.2) / Math.cos(pitch)) : 10.6 / thx) : PC ? 8 /* PILOT: yapi sigana kadar geri cekilir; araba yuksekte, platforma degmez */ : Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
   for (; d < 120; d += 0.25) {
     let lo = -10, hi = TOPY + 10;
     // v3.19: resim fonda platform ayagi (0, GY, 0) resimdeki bos yuvarlak zeminin ortasina oturur (ekranda sabit nokta); kamera yapi sigana kadar geri cekilir
@@ -4168,7 +4176,7 @@ function fit() {
     else for (let it = 0; it < 28; it++) { const ty = (lo + hi) / 2; place(d, ty); const top = Math.max(...tops.map(yOf)), bot = Math.min(...bots.map(yOf)); if ((top + bot) / 2 > 0.13) lo = ty; else hi = ty; }
     place(d, (lo + hi) / 2);
     const top = Math.max(...tops.map(yOf)), bot = Math.min(...bots.map(yOf)), side = Math.max(...tops.concat(bots).map((p) => Math.abs(V.set(p[0], p[1], p[2]).project(cam).x)));
-    if (YER) { if (top < YER_TEPE && side < (PC ? Math.min(0.9, PLT.genis) : 0.9)) break; }
+    if (YER) { if (top < YER_TEPE && side < (PC ? (KAM2 ? 0.9 : Math.min(0.9, PLT.genis)) : KAM2 ? KAM2Y : 0.9)) break; }
     else if (top < 0.74 && (PC || ayak != null || bot > -0.46) && side < (PC ? PLT.genis : 0.92)) break;   /* PILOT: yapi ekran genisliginin ~%70'i */   // v6.5: yapi ekrani daha cok doldurur
   }
   // top arabasi
