@@ -12,10 +12,10 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=40';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
-import { ENG3, engel3Kur } from './engel3.js?v=4';   // v11.1: boyali engeller ve top (eski ?eng3=0)
-import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=4';   // v11.2: boyali platform (eski ?plat3=0)
-import { TOP3, sekerMat, sekerDuz } from './seker.js?v=5';   // v11.7 (?top3=1)
+import { blok3bKur } from './blok3b.js?v=41';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { ENG3, engel3Kur } from './engel3.js?v=5';   // v11.1: boyali engeller ve top (eski ?eng3=0)
+import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=5';   // v11.2: boyali platform (eski ?plat3=0)
+import { TOP3, sekerMat, sekerDuz } from './seker.js?v=6';   // v11.7 (eski ?top3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';

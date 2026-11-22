@@ -64,7 +64,7 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v11.6 (23 Kas 2026): menuler VARSAYILAN (Adem onayladi), eski ?menu3=0
 - menu3.css (html.menu3): turkuaz-krem-ahsap gostergeler, ahsap kaybetme karti, ana sayfa etiketleri, alt menu adlari, Insa basligi, kazanma Foxi yeri, harita (numara + susler; merkez.js M3). Kalan mor: top arabasi ayrintilari, acilis videosu ustundeki yazilar.
 
-## v11.7 (23 Kas 2026): Foxi yuzlu kup (oyA) ve top arabasi, yalniz ?top3=1 (Adem onayi bekliyor)
+## v11.7 (23 Kas 2026): Foxi yuzlu kup (oyA) ve top arabasi VARSAYILAN (Adem onayladi), eski ?top3=0
 - seker_set.py foxikup -> model/blok3/foxi.glb; seker.js TOP3; kaide.js topModeli2(boya, halat): turkuaz namlu, mercan govde, halat halkalar, ahsap tekerlek.
 
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
