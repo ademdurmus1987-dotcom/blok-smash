@@ -19,7 +19,7 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=4';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=44';
+import { merkezKur } from './merkez.js?v=45';
 import * as EG from './egri.js?v=4';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
@@ -2626,6 +2626,7 @@ function breakBlock(c, dir, n) {
   if (INCE && /^kj|^kv[ULB]|Sise/.test(c.kind || '')) { malzemeFx(c, p, d); sfx('kir', c.kind); return; }   // v10.1: sivili kavanoz: govde parcasi yok, cam havada kirilip kaybolur, sivi ince damla
   const real = realPieces(c, p, q, d, c.landed ? 6 : 99) || fragPieces(c, p, q, d);   // v3.21: Blender parcasi yoksa sekil kendi yuzeyinden parcalara ayrilir
   shatter(p, bColor(c), d, bMat(c), real ? Math.round((n || 14) * 0.3) : Math.round((n || 14) * 0.6), real ? null : bChunk(c)); malzemeFx(c, p, d); sfx('kir', c.kind);
+  kiymik(p, bColor(c), d);   // v10.44
 }
 // ---------------- v3.21: (Adem) gercekci kirilma ----------------
 // Kodla cizilen sekiller ve parcali dosyasi olmayan modeller: seklin kendi geometrisi rastgele 6-9 bolgeye (Voronoi) ayrilir, her parca
@@ -2855,6 +2856,41 @@ const VRA = () => VR && !K;   // korsan modunda kapali
 let SLOW = 0, ZOOM = 0;   // v7.0: son blok agir cekimi (gercek saniye) ve yakinlasma
 function sprBirak(o) { if (o.isPar) PRC.birak(o); else { scene.remove(o); if (o.material) o.material.dispose(); } }
 function fx(o, life, upd) { FX.push({ o, life, max: life, upd }); }
+// v10.44 (Adem 21 Kas): el ipucu ilk atista yumusakca kaybolur (oynak.css gecis); yeni bolumde ya da 4 sn hic dokunulmazsa geri gelir
+let SONDOK = performance.now();
+addEventListener('pointerdown', () => { SONDOK = performance.now(); try { const h = $('hint'); if (h && g && g.state === 'play' && h.style.opacity === '1' && g.shots < g.max) h.style.opacity = 0; } catch (e) {} }, true);
+setInterval(() => { try { const h = $('hint'); if (!h || !g || g.state !== 'play' || h.style.opacity === '1') return; if (performance.now() - SONDOK > 4000 && g.shots > 0) h.style.opacity = 1; } catch (e) {} }, 400);
+// ---------------- v10.44 (Adem 21 Kas): OYUN HISSI 2 ----------------
+// Mikro kamera sarsintisi (dunya birimi, blok = 1.55): top carpinca 0.08-0.15 / 120 ms (hiza orantili), bomba ve buyuk cokuste 0.35 / 250 ms.
+// Sok dalgasi: carpma merkezinde hizla buyuyup kaybolan yari saydam beyaz halka. Kiymik: kirilan blokta 3-4 donerek savrulan minik kup.
+// Eski hal: ?his2=0
+const HIS2 = Q.get('his2') !== '0';
+const SONVUR = new THREE.Vector3();
+const MSK = { a: 0, d: 1, t: 1 }, MSV = new THREE.Vector3();
+function mikroSars(a, ms) { if (!HIS2) return; const d = ms / 1000, kalan = MSK.t < MSK.d ? MSK.a * (1 - MSK.t / MSK.d) : 0; if (a >= kalan) { MSK.a = a; MSK.d = d; MSK.t = 0; } }
+function mikroUygula(dt) {
+  if (MSK.t >= MSK.d) return; MSK.t += dt; const k = Math.max(0, 1 - MSK.t / MSK.d), a = MSK.a * k * k, t = MSK.t * 62.8;
+  MSV.set(Math.sin(t * 1.0) * a, Math.sin(t * 1.37 + 1.1) * a * 0.8, 0).applyQuaternion(cam.quaternion); cam.position.add(MSV);
+}
+const SOKG = new THREE.RingGeometry(0.82, 1, 48);
+function sokDalgasi(p, r) {
+  if (!HIS2) return; const R = r || 3.2 * S;
+  const m = new THREE.Mesh(SOKG, new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide }));
+  m.position.copy(p); m.quaternion.copy(cam.quaternion); m.scale.setScalar(0.3 * S); m.renderOrder = 5; scene.add(m);
+  fx(m, 0.34, (o, k) => { const e = 1 - (1 - k) * (1 - k) * (1 - k); o.scale.setScalar(0.3 * S + (R - 0.3 * S) * e); o.material.opacity = 0.6 * (1 - k); });
+}
+const KIYG = new THREE.BoxGeometry(1, 1, 1);
+function kiymik(p, col, d) {
+  if (!HIS2) return; const n = 3 + (Math.random() < 0.5 ? 1 : 0);
+  for (let i = 0; i < n; i++) {
+    const m = new THREE.Mesh(KIYG, new THREE.MeshStandardMaterial({ color: col || '#d8a060', roughness: 0.3, metalness: 0.05, transparent: true, opacity: 1 }));
+    const s0 = S * (0.1 + Math.random() * 0.07); m.scale.setScalar(s0); m.position.copy(p); m.rotation.set(Math.random() * 6, Math.random() * 6, Math.random() * 6); scene.add(m);
+    const v = new THREE.Vector3((d ? -d.x : 0) * 2 + (Math.random() - 0.5) * 9, 5 + Math.random() * 5, (d ? -d.z : 0) * 2 + (Math.random() - 0.5) * 9);
+    const w = new THREE.Vector3((Math.random() - 0.5) * 22, (Math.random() - 0.5) * 22, (Math.random() - 0.5) * 22);
+    fx(m, 0.9, (o, k, dt) => { v.y -= 24 * dt; o.position.addScaledVector(v, dt); if (o.position.y < GY + s0 * 0.5) { o.position.y = GY + s0 * 0.5; v.y = Math.abs(v.y) * 0.35; v.x *= 0.7; v.z *= 0.7; w.multiplyScalar(0.6); }
+      o.rotation.x += w.x * dt; o.rotation.y += w.y * dt; o.rotation.z += w.z * dt; if (k > 0.65) { const f = (k - 0.65) / 0.35; o.material.opacity = 1 - f; o.scale.setScalar(s0 * (1 - 0.5 * f)); } });
+  }
+}
 function updateFX(dt) {
   for (let i = FX.length - 1; i >= 0; i--) {
     const f = FX[i]; f.life -= dt; const k = 1 - Math.max(0, f.life) / f.max; f.upd(f.o, k, dt);
@@ -3381,6 +3417,7 @@ function updateFuse(dt) {
 function explode(p, kd) {
   BOOMT = g ? g.t : 0;
   const RR = kd.boom * S;
+  mikroSars(0.35, 250); sokDalgasi(p, RR * 1.3);   // v10.44
   shake = Math.min(0.9, shake + (kd.boom > 4 ? 0.8 : 0.55)); boomLight.position.copy(p); boomLight.intensity = kd.boom > 4 ? 90 : 60;
   burst(p, '#ffb020', 30, 12); burst(p, '#ff4020', 20, 9); burst(p, '#5a4a40', 10, 6); sfx('boom');
   if (KAL()) { hitstop(0.1); FP = Math.min(6, FP + 4); buzz([60, 36, 72, 36, 52], 0); }
@@ -3416,6 +3453,7 @@ function updateCubes(dt) {
   if (g.combo) { g.combo.t += dt; const n = g.combo.n;
     const lv = n >= 24 ? 3 : n >= 12 ? 2 : n >= 5 ? 1 : 0;
     if (n > (g.combo.fl || 0) && g.combo.t > 0.35) { const at = g.combo.at || [innerWidth / 2, innerHeight * 0.45]; g.combo.fl = n; }
+    if (lv > g.combo.shown && lv >= 2) { mikroSars(0.35, 250); sokDalgasi(SONVUR, 4 * S); }   // v10.44: buyuk kume devrildi
     if (lv > g.combo.shown) { g.combo.shown = lv; shake = Math.max(shake, 0.12 + 0.1 * lv); if (!SADE) praise(['', 'Süper!', 'Harika!', 'Efsane!'][lv], n + ' blok', lv === 3); }
     if (g.combo.t > 3) { g.combo = null; if (VR) VR.komboBitti(); } }
   if (g.state === 'play') {
@@ -3848,6 +3886,7 @@ function ggAyril(e) {
   const yan = new THREE.Vector3(dh.z, 0, -dh.x);
   for (const sg of [1, -1]) { const y = yan.clone().multiplyScalar(sg), grp = rokMesh(0.75); grp.position.copy(p0); grp.lookAt(p0.clone().add(y)); GGA.push({ tur: 'yan', grp, p0, yon: y, dh, yol: 0, iz: 0 }); }
   hitFlash(p0); burst(p0, '#ffb020', 26, 10); burst(p0, '#ff4020', 14, 8);
+  mikroSars(0.35, 250); sokDalgasi(p0, 4.5 * S);   // v10.44
   boomLight.position.copy(p0); boomLight.intensity = 70; sfx('boom'); shake = Math.min(0.7, shake + 0.4); buzz([60, 30, 50], 0); ggFlas('#fff1c8', 0.35);
   wakeAll(); g.busy = Math.max(g.busy, 2.5);
 }
@@ -4162,6 +4201,7 @@ function impactK(b, e) {
   const c = b.hc, vn = e && e.contact ? Math.abs(e.contact.getImpactVelocityAlongNormal()) : 45, mp = MAT_P[matSnd(c ? c.kind : null)] || MAT_P.tahta, s = Math.min(1.4, vn / 70) * mp.w;
   wakeAll(b.body.position); g.busy = 2.5;
   const p = new THREE.Vector3().copy(b.body.position); hitFlash(p); HIS.vurus(p, b.dir, malzOf(c && c.kind), s);
+  mikroSars(0.08 + 0.07 * Math.min(1, vn / 70), 120); SONVUR.copy(p);   // v10.44: hiza orantili tok mikro sarsinti
   withS(Math.min(1.3, 0.75 + 0.3 * s), 1.04 - 0.1 * Math.min(1, s), () => sfx('hit')); if (KLANKKUP && c && MATSND[c.kind] === 'metal') klank(Math.min(1.2, 0.6 + 0.4 * s), 1150);
   if (VRA()) { if (SADE) VR.bum(s); else VR.vurus(p, s); hitstop(Math.min(0.085, 0.05 + 0.03 * s)); }   // v7.0: her vurusta kisa donma + sok halkasi + bum (ekran sarsintisi eklenmez)
   buzz([Math.round(40 + 16 * s), 26, 34], 0); if (s > 0.7) { shake = Math.max(shake, 0.12 * s * s); hitstop(0.05 * Math.min(1, s)); }   /* v4.9: (Adem 14 Kas: atista ekran titriyor) siradan vuruslarda ekran sarsintisi, yakinlasma ve donma yok; yalniz cok sert vurusta hafif */
@@ -4209,7 +4249,7 @@ function frame(ts) {
   if (g && ENG.length) engKare(g.t);
   if (g) { g.t += dt; spin(dt); slide(dt); if (FONYENI) temaKare(); if (FONYENI || DENGEVAR) denge(dt); world.step(1 / 120, dt * TS, 8); if (SIRK.mesh) SIRK.mesh.quaternion.set(platBody.quaternion.x, platBody.quaternion.y, platBody.quaternion.z, platBody.quaternion.w); updateFuse(dt); updateDebris(dt); syncMeshes(); updateBalls(dt); ggKare(dt); updateCubes(dt); if (PLT) PLT.kare(dt); /* PILOT */ if (KM.bomba) KM.bomba.emissiveIntensity = 0.45 + 0.4 * Math.sin(g.t * 8); }
   if (!HIZLI) { updatePofi(dt); updateCannon(dt); updateTilki(dt); } updateParts(dt); updateFX(dt); if (!HIZLI) { updSea(dt); CDT += dt; if (++CN % 2 === 0 || !sahneBos()) { canliKare(CDT); CDT = 0; } }   /* v5.0: dogrulayicida yalniz fizik */   /* v6.29: fondaki kus/koyun katmani boştayken saniyede 30 kez */ if (flashLight.intensity > 0) flashLight.intensity = Math.max(0, flashLight.intensity - dt * 400);
-  if (shake > 0) shake = Math.max(0, shake - dt * 1.4); if (cam.userData.base && !CAMI) cam.position.copy(cam.userData.base); ekranSars();
+  if (shake > 0) shake = Math.max(0, shake - dt * 1.4); if (cam.userData.base && !CAMI) { cam.position.copy(cam.userData.base); mikroUygula(dt); } ekranSars();
   rehberCiz();
   if (CAMI > 0 && cam.userData.base) { CAMI = Math.max(0, CAMI - dt); const k = CAMI / 1.6, a = 0.75 * k * k * (3 - 2 * k), b = cam.userData.base, dx = b.x - CTG.x, dz = b.z - CTG.z, c = Math.cos(a), sn = Math.sin(a); cam.position.set(CTG.x + dx * c + dz * sn, b.y + 2.2 * k * k, CTG.z - dx * sn + dz * c); cam.lookAt(CTG); if (CAMI === 0) { cam.position.copy(b); cam.lookAt(CTG); } }
   fovK(dt);

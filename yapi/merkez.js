@@ -614,7 +614,9 @@ export function merkezKur(A) {
   $('m-gorev').onclick = () => { tik(); gorevKarti(); };
   $('m-gunluk').onclick = () => { tik(); gunlukKarti(); };
   $('m-sandik').onclick = () => { tik(); sandikKarti(); };
-  $('m-korsan').onclick = () => { tik(); pop(bas('Korsan Pilot') + '<div class="p-ic"><h3>Deneme modu</h3><p>Açık denizde düşman gemilerini ve kuleleri batır. Bu mod hâlâ yapım aşamasında.</p></div><button class="m-btn tur" id="p-dv">Denize Açıl</button>'); $('p-dv').onclick = () => { location.href = '../korsan/'; }; };
+  // v10.44 (Adem 21 Kas): Korsan Pilot yapim asamasinda: 'Denize Acil' pasif + 'Yakinda' rozeti, eski mavi ekrana gitmez. Gelistirici: adres ?korsan=1
+  const KORSAN_ACIK = /[?&]korsan=1/.test(location.search);
+  $('m-korsan').onclick = () => { tik(); pop(bas('Korsan Pilot') + '<div class="p-ic"><h3>' + (KORSAN_ACIK ? 'Deneme modu' : 'Çok Yakında Açılıyor!') + '</h3><p>Açık denizde düşman gemilerini ve kuleleri batır.' + (KORSAN_ACIK ? ' Bu mod hâlâ yapım aşamasında.' : ' Foxi gemisini hazırlıyor, az kaldı!') + '</p></div><button class="m-btn tur' + (KORSAN_ACIK ? '' : ' m-yakinda') + '" id="p-dv"' + (KORSAN_ACIK ? '' : ' disabled aria-disabled="true"') + '>Denize Açıl' + (KORSAN_ACIK ? '' : '<i class="m-rozet">Yakında</i>') + '</button>'); if (KORSAN_ACIK) $('p-dv').onclick = () => { location.href = '../korsan/'; }; };
   $('m-oyna').onclick = () => { tik(); bolumKarti(maxL()); };
 
   return { ac, kapat, kazan, kaybet, bolumKarti, duraklat: () => ayarKarti(true), durdur: () => acik || durak || KZA, acik: () => acik };

@@ -74,3 +74,8 @@ html.altnav .m-alt .ik3{filter:drop-shadow(0 4px 3px rgba(0,0,0,.45))!important}
 html.altnav .m-alt button.on .ik3{transform:translateY(-6px) scale(1.12);filter:drop-shadow(0 4px 3px rgba(0,0,0,.4)) drop-shadow(0 0 9px rgba(255,214,90,.9))!important}
 html.altnav .m-alt button.on{background:radial-gradient(closest-side at 50% 52%,rgba(255,246,190,.95),rgba(255,214,90,.55) 55%,rgba(255,200,80,0)),radial-gradient(120% 90% at 50% 0%,#ffe9a8 0%,#e8a33a 55%,#b8641c 100%)!important}
 html.altnav .m-alt button.on span{opacity:1;color:#fff;-webkit-text-stroke:3px #5a2600;paint-order:stroke fill;text-shadow:0 2px 0 #3a1800,0 0 8px rgba(255,214,90,.9)!important;letter-spacing:.6px}
+
+/* v10.44: el ipucu yumusak gecis; Korsan Pilot 'Yakinda' (pasif dugme + rozet) */
+#hint{transition:opacity .45s ease!important}
+.m-btn.m-yakinda,.m-btn.m-yakinda[disabled]{filter:none!important;background:linear-gradient(180deg,#e2d6bc 0%,#cdbd9c 48%,#bfae8c 52%,#b3a280 100%)!important;border-color:#7a6a50!important;color:#fffdf6;-webkit-text-stroke-color:#6a5a40!important;text-shadow:0 3px 0 #6a5a40!important;box-shadow:0 6px 0 #6a5a40!important;cursor:default;pointer-events:none;overflow:visible}
+.m-btn .m-rozet{position:absolute;right:-10px;top:-14px;padding:5px 11px 6px;border-radius:12px;background:linear-gradient(180deg,#ff6a7a,#d81e46);border:3px solid #fff;color:#fff;font:400 15px/1 var(--disp);font-style:normal;letter-spacing:.4px;-webkit-text-stroke:0;text-shadow:0 2px 0 #7a0a22;box-shadow:0 3px 0 rgba(0,0,0,.3);transform:rotate(8deg);filter:none}
