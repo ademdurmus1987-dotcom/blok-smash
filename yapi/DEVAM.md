@@ -43,7 +43,7 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - Piksel orani: en cok 2.2 (eski 1.75); yavaslarsa prOlc kendiliginden dusurur. Telefonda isinma denenmedi.
 - Kapsam disi: oyA (Foxi yuzlu kup), engeller, pl* pilot bloklari, top. kupa1/2/4 (altin cerceve) modelleri kullanilmiyor.
 
-## v11.1 (22 Kas 2026): boyali engeller ve top, yalniz ?eng3=1 (Adem onayi bekliyor)
+## v11.1 (22 Kas 2026): boyali engeller ve top VARSAYILAN (Adem onayladi); eski ?eng3=0
 - uretici/blender/engel_set.py -> model/engel3/; engel3.js (yukleme, kodla kurulan anahtarli kapi ve giyotinin boyanmasi). Fizik ayni. ?engel=kapi (dev kapi, hicbir bolumde yok) eski.
 
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)

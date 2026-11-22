@@ -13,7 +13,7 @@ import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
 import { blok3bKur } from './blok3b.js?v=37';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
-import { ENG3, engel3Kur } from './engel3.js?v=1';   // v11.1: boyali engeller ve top (?eng3=1)
+import { ENG3, engel3Kur } from './engel3.js?v=2';   // v11.1: boyali engeller ve top (eski ?eng3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
