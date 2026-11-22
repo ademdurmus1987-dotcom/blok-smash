@@ -12,15 +12,16 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { sekilKur, YAPI } from './sekil.js?v=12';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=39';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
-import { ENG3, engel3Kur } from './engel3.js?v=3';   // v11.1: boyali engeller ve top (eski ?eng3=0)
-import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=3';   // v11.2: boyali platform (eski ?plat3=0)
+import { blok3bKur } from './blok3b.js?v=40';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { ENG3, engel3Kur } from './engel3.js?v=4';   // v11.1: boyali engeller ve top (eski ?eng3=0)
+import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=4';   // v11.2: boyali platform (eski ?plat3=0)
+import { TOP3, sekerMat, sekerDuz } from './seker.js?v=5';   // v11.7 (?top3=1)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
-import { kaideKur } from './kaide.js?v=4';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
+import { kaideKur } from './kaide.js?v=5';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=46';
 import * as EG from './egri.js?v=4';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
@@ -52,7 +53,7 @@ const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok *
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
-const SURUM = 'v11.6', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v11.7', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -565,7 +566,7 @@ if (Q.get('parlak') !== '0') {
     if (RESIMQ) for (const k of ['ksTas', 'ksFici', 'ksFiciK', 'ksSiseM', 'ksSiseY', 'ksSiseB']) delete ESLE[k];
     if (Q.get('b2') !== '0' && Q.get('parla') !== '0') for (const k of ['ksTas', 'ksBuz', 'ksBuz3', 'ksFici', 'ksFiciK']) delete ESLE[k];   // v9.9: tas ve buz yeni yastik tarzli Blender modeli (blok3b.js)
     if (Q.get('b35') === '1') for (const k of ['oyK', 'oyY', 'oyM', 'oyS', 'oyP', 'oyT']) delete ESLE[k];   // v10.35: patili kupler rakip tarzi altin cerceveli Blender modeli (blok3b.js kup3), eski: ?b35=0
-    if (Q.get('yeni') !== '0' && Q.get('b3') !== '0') for (const k of Object.keys(ESLE)) if (k !== 'oyA') delete ESLE[k];   // v11 (seker.js): boyali set, eski ?yeni=0
+    if (Q.get('yeni') !== '0' && Q.get('b3') !== '0') for (const k of Object.keys(ESLE)) if (k !== 'oyA' || TOP3) delete ESLE[k];   // v11 (seker.js): boyali set, eski ?yeni=0
     for (const k in ESLE) {
       const t = SEK.TUR[k]; if (!t) continue; const [ad, renk] = ESLE[k], eski = t.yap;
       if (GRIK.includes(k)) { SEK.TUR[k + 'G'] = Object.assign({}, t, { yap: eski }); GRI[k] = k + 'G'; }   // v9.0: ana oyundaki sekil bolumleri icin eski (gri tas, fici, sise) gorunumlu es tur
@@ -2437,7 +2438,7 @@ function updateCannon(dt) {
 // araba geri kayar ve tekerlekler doner, namlu agzi kor gibi parlar; beklerken altin halkalarda isik gezinir, namlu nefes alir.
 // Eksenler eski modelle ayni: namlu +z, zemin y=0. Korsan eski modeli kullanir.
 function topArabasiKur() {
-  if (KAIDE && Q.get('top') !== 'eski') { const t = Q.get('top') === 'eski2' ? KAIDE.topModeli() : KAIDE.topModeli2(); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; topSon(t.G, t.muzzleZ); return; }   // v4.4: yeni top
+  if (KAIDE && Q.get('top') !== 'eski') { const t = Q.get('top') === 'eski2' ? KAIDE.topModeli() : TOP3 ? KAIDE.topModeli2(topBoya, topHalat) : KAIDE.topModeli2(); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; topSon(t.G, t.muzzleZ); return; }   // v4.4: yeni top
   const odunT = canvasTex(512, 512, (x, w, h) => {
     x.fillStyle = '#9a5a26'; x.fillRect(0, 0, w, h);
     for (let i = 0; i < 4; i++) { const y0 = i * h / 4; const gr = x.createLinearGradient(0, y0, 0, y0 + h / 4); gr.addColorStop(0, '#b87436'); gr.addColorStop(0.5, '#a3622a'); gr.addColorStop(1, '#8a4e1e'); x.fillStyle = gr; x.fillRect(0, y0 + 3, w, h / 4 - 6); x.fillStyle = '#4a2408'; x.fillRect(0, y0, w, 3); }
@@ -2481,12 +2482,19 @@ function topArabasiKur() {
   add(new THREE.CircleGeometry(0.24, 32), ic, 0, 0, 1.205, N);
   topSon(G, 0.2 + 1.98);
 }
+// v11.7 top arabasi boyasi; halat: halka geometrisine capraz burgulu iki ton
+function topBoya(hex, tur) { const m = sekerDuz(THREE, hex, tur); m.emissive.set('#201004'); return m; }
+function topHalat(g) {
+  const u = g.attributes.uv, n = u.count, d = new Float32Array(n * 4), a = new THREE.Color('#fff0cc'), b = new THREE.Color('#c98f48'), tur = Math.round(g.parameters.radius * 26);
+  for (let i = 0; i < n; i++) { const t = 0.5 + 0.5 * Math.sin((u.getX(i) * tur + u.getY(i) * 1.0) * Math.PI * 2), k = t * t * (3 - 2 * t); d[i * 4] = b.r + (a.r - b.r) * k; d[i * 4 + 1] = b.g + (a.g - b.g) * k; d[i * 4 + 2] = b.b + (a.b - b.b) * k; d[i * 4 + 3] = 1; }
+  g.setAttribute('color', new THREE.BufferAttribute(d, 4)); const m = sekerMat(THREE, g, { sk: 'kutu' }); m.emissive.set('#201004'); return m;
+}
 function topSon(G, mz) {
   TC.gun = new THREE.Group(); TC.gun.add(G); TC.holder.add(TC.gun); TC.pro = true;
   TC.muzzle.set(0, 1.3, mz); TC.h = 1.8; TC.w = 2.3; TC.info = { pro: true };
   TC.w0 = TC.w; const pad = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.9, 1, 64), new THREE.MeshStandardMaterial({ color: '#f4e8d6', roughness: 0.55 }));
   pad.receiveShadow = true; TC.holder.add(pad); TC.pad = pad;
-  const gm = new THREE.MeshStandardMaterial({ color: '#e8b93a', roughness: 0.28, metalness: 0.55 });
+  const gm = TOP3 ? topBoya('#f3d49a', 'kutu') : new THREE.MeshStandardMaterial({ color: '#e8b93a', roughness: 0.28, metalness: 0.55 }); if (TOP3) pad.material = topBoya('#b9692a', 'kutu');
   const r1 = new THREE.Mesh(new THREE.TorusGeometry(1.76, 0.09, 10, 72), gm), r2 = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.09, 10, 72), gm);
   r1.rotation.x = r2.rotation.x = Math.PI / 2; TC.holder.add(r1, r2); TC.rim2 = r2; TC.ti = 0; TC.dz = 0;
 }

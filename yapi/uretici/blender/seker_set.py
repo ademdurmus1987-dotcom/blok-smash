@@ -187,6 +187,44 @@ def kupA(ad, wS, vurgu=1):
         tilki(M, B[y], 0.66 * S, ton(0.5, 1), ton(0.12), ton(0.66, 1))
     yaz(M, ad)
 
+def foxikup(ad):
+    """v11.7 Foxi yuzlu saglam kup (oyA): turuncu yuvarlak govde, kose zirhlari, dort yanda gulen tilki yuzu (kulak, beyaz yanak, burun, kapali goz)"""
+    M = Model(); k = S; d = S * 0.992; KR = duz('#fff4e0'); KRK = duz('#d99a5a'); KY = duz('#3a1c10'); PE = duz('#ff9a8a'); ZIR = ton(0.5, 1)
+    B = kutu(M, S * 0.994, d, d, 0.17 * S, ton(0.5), [], None, seg=4)
+    nG = len(M.bm.verts)
+    for y in ('on', 'arka', 'sag', 'sol'):
+        n, u, v = [Vector(q) for q in YUZ[y]]; o = n * (d / 2)
+        # kulaklar: ust koselerde, koyu kulak + krem ic
+        for sx in (-1, 1):
+            for (pp, hal, cc) in (([(0.40, 0.415), (0.165, 0.365), (0.355, 0.175)], [(0.018 * S, 0.003, ton(0.14)), (0, 0.004, ton(0.2)), (-0.010 * S, 0.03 * S, ton(0.60))], ton(0.58)), ([(0.362, 0.375), (0.235, 0.345), (0.335, 0.255)], [(0, 0.033 * S, ton(0.2)), (-0.006 * S, 0.042 * S, duz('#7a3416'))], duz('#7a3416'))):
+                p = egri([(sx * a, b) for a, b in pp], 4) if False else [(sx * a, b) for a, b in pp]
+                q = []
+                for m in range(3):   # yumusak kose
+                    a, b, c = Vector(p[m - 1]), Vector(p[m]), Vector(p[(m + 1) % 3]); q += [tuple(b + (a - b) * 0.22), tuple(b + (a - b) * 0.05 + (c - b) * 0.05), tuple(b + (c - b) * 0.22)]
+                if sum(q[m - 1][0] * q[m][1] - q[m][0] * q[m - 1][1] for m in range(len(q))) < 0: q = q[::-1]
+                kabart(M, o, u, v, n, olc(q, k), hal, cc)
+        # beyaz yanak: iki lob + cene
+        y1 = egri([(0.0, -0.045), (0.12, 0.0), (0.28, -0.005), (0.375, -0.085), (0.335, -0.235), (0.17, -0.345), (0.0, -0.375), (-0.17, -0.345), (-0.335, -0.235), (-0.375, -0.085), (-0.28, -0.005), (-0.12, 0.0)], 2)
+        kabart(M, o, u, v, n, olc(y1[::-1], k), [(0.018 * S, 0.003, ton(0.18)), (0, 0.004, KRK), (-0.02 * S, 0.035 * S, KR)], KR)
+        o2 = o + n * (0.037 * S)
+        # burun, agiz, pembe yanak
+        kabart(M, o2, u, v, n, elips(0, -0.10 * k, 0.092 * k, 0.066 * k, 12), [(0.006 * S, 0.0, KY), (0, 0.012 * S, KY), (-0.02 * S, 0.035 * S, duz('#5a3020'))], duz('#5a3020'))
+        kabart(M, o2 + n * (0.034 * S), u, v, n, elips(-0.028 * k, -0.082 * k, 0.026 * k, 0.016 * k, 8), [(0, 0.004, BEYAZ)], BEYAZ)
+        for sx in (-1, 1):
+            m = [(sx * (0.10 - 0.10 * math.cos(t)), -0.20 - 0.055 * math.sin(t)) for t in [Pi * i / 6 for i in range(7)]]; ic = [(x, yy + 0.032) for x, yy in m][::-1]; p = m + ic
+            if sum(p[i - 1][0] * p[i][1] - p[i][0] * p[i - 1][1] for i in range(len(p))) < 0: p = p[::-1]
+            kabart(M, o2, u, v, n, olc(p, k), [(0, 0.005, KY)], KY)
+            kabart(M, o2, u, v, n, elips(sx * 0.262 * k, -0.15 * k, 0.062 * k, 0.042 * k, 10), [(0, 0.004, PE)], PE)
+            # gulen goz: yukari bakan yay
+            g0 = [(sx * 0.175 + 0.105 * math.cos(t), 0.075 + 0.112 * math.sin(t)) for t in [Pi * i / 7 for i in range(8)]]; g1 = [(sx * 0.175 + 0.052 * math.cos(t), 0.075 + 0.052 * math.sin(t)) for t in [Pi * i / 7 for i in range(8)]][::-1]; p = g0 + g1
+            kabart(M, o, u, v, n, olc(p, k), [(0.004 * S, 0.004, KY), (0, 0.02 * S, KY)], KY)
+    # kabartmalari yuvarlak kose yuzeyine oturt (kulak ucu havada kalmasin)
+    M.bm.verts.ensure_lookup_table(); r = 0.17 * S; c = d / 2 - r
+    for w in list(M.bm.verts)[nG:]:
+        ax = max(range(3), key=lambda t: abs(w.co[t])); sg = 1 if w.co[ax] > 0 else -1; h = abs(w.co[ax]) - d / 2; p = w.co.copy(); p[ax] = sg * d / 2
+        core = Vector([max(-c, min(c, t)) for t in p]); dr = (p - core).normalized(); w.co = core + dr * (r + h)
+    yaz(M, ad)
+
 def tas(ad, wS):
     M = Model(); w = wS * S * 0.994; T = ton(0.5)
     B = kutu(M, w, S * 0.992, S * 0.992, 0.085 * S, ton(0.565), [(0.030 * S, 0.0, 0.03 * S, ton(0.555)), (0.062 * S, -0.022 * S, 0.03 * S, ton(0.30))], lambda a, b: ton(0.5 + 0.045 * b), seg=3, m=2)
@@ -343,7 +381,7 @@ T = {**{'kup%d' % n: (lambda n=n: kup('kup%d' % n, n)) for n in (1, 2, 3, 4)}, *
      **{'tas%d' % n: (lambda n=n: tas('tas%d' % n, n)) for n in (1, 2, 3, 4)}, 'buz1': lambda: buz('buz1', 1), 'buz3': lambda: buz('buz3', 3),
      **{'kalas%d' % n: (lambda n=n: tahta('kalas%d' % n, n, 0.5)) for n in (1, 2, 3)}, 'direk': lambda: tahta('direk', 1, 2), 'sandik': lambda: tahta('sandik', 1, 1, True),
      'kav1': lambda: kavanoz('kav1', 1), 'kav2': lambda: kavanoz('kav2', 2), 'kav3': lambda: kavanoz('kav3', 3), 'kavB': lambda: kavanoz('kavB', 1, 2),
-     'fici': lambda: fici('fici'), 'silindir': lambda: silindir('silindir'), 'sutun': lambda: sutun('sutun'), 'tnt': lambda: tnt('tnt'), 'yildiz': lambda: yildiz('yildiz'), 'kemer': lambda: kemer('kemer')}
+     'fici': lambda: fici('fici'), 'silindir': lambda: silindir('silindir'), 'sutun': lambda: sutun('sutun'), 'tnt': lambda: tnt('tnt'), 'foxi': lambda: foxikup('foxi'), 'yildiz': lambda: yildiz('yildiz'), 'kemer': lambda: kemer('kemer')}
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sec = [a for a in (sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []) if a in T] or list(T)
 for a in sec: T[a]()

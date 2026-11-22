@@ -6,6 +6,7 @@ export const SEKER = new URLSearchParams(location.search).get('yeni') !== '0';  
 const R = { K: '#ea1f31', M: '#1c7cf6', S: '#ffc310', Y: '#22b935', P: '#9a35f2', T: '#ff8016', N: '#ff479f', A: '#22b4ff', B: '#f3ece2' };
 const ALTIN = '#ffc41c', TAHTA = '#fb9a2e', TASR = '#6470b4';
 // tur -> [dosya, purz (kullanilmaz), kirik parca rengi, { govde, vurgu, sk: boyama turu 'kutu' | 'cam' | 'buz' | 'tas' | 'tahta', dik }]
+export const TOP3 = new URLSearchParams(location.search).get('top3') === '1';   // v11.7: Foxi yuzlu kup ve top arabasi yeni kimlikte
 export const SEKERL = {};
 {
   const ek = (k, d, govde, sk, o) => { SEKERL[k] = ['blok3/' + d, 0.3, govde, Object.assign({ govde, sk }, o || {})]; };
@@ -15,6 +16,7 @@ export const SEKERL = {};
     ek('kj' + c, 'kav1', R[c], 'cam'); ek('kvU' + c, 'kav2', R[c], 'cam'); ek('kvL' + c, 'kav3', R[c], 'cam'); ek('kvB' + c, 'kavB', R[c], 'cam');
     ek('kr3' + c, 'kupa3', R[c], 'kutu', { vurgu: '#fff0d2' }   /* kalin altin cerceve begenilmedi (v10.35) */);
   }
+  if (TOP3) ek('oyA', 'foxi', '#f7761a', 'kutu', { vurgu: '#f0b84a' });   // v11.7 Foxi yuzlu kup
   ek('ksSiseM', 'kav1', R.P, 'cam'); ek('ksSiseY', 'kav1', R.Y, 'cam'); ek('ksSiseB', 'kav1', R.M, 'cam');
   for (const n of [1, 2, 3, 4]) ek('ksTas' + (n > 1 ? n : ''), 'tas' + n, TASR, 'tas');
   ek('ksBuz', 'buz1', '#1c98ff', 'buz'); ek('ksBuz3', 'buz3', '#1c98ff', 'buz');

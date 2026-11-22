@@ -3,7 +3,7 @@
 // (kale.js / sekil.js); yalniz gorunum (sekil.js TUR[k].yap) bu modelle degisir. Model inmezse eski cizim kullanilir. Eski gorunum: ?b3=0.
 // Modelde renk kose renginde, ortam golgesi + yumusak isik 512'lik dokuya gomulu (malzeme: doku x kose rengi).
 // Tam beyaz kose rengi "govde rengi" isaretidir: o.govde verilirse o renge boyanir (tek dosyadan farkli renkli turler: yakut / elmas).
-import { SEKER, SEKERL, sekerBoya, sekerMat } from './seker.js?v=4';   // v11: varsayilan, eski ?yeni=0
+import { SEKER, SEKERL, sekerBoya, sekerMat } from './seker.js?v=5';   // v11: varsayilan, eski ?yeni=0
 export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]

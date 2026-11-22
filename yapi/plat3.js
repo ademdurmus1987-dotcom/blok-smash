@@ -1,7 +1,7 @@
 // Foxi Smash v11.2 (22 Kas 2026, Adem: 'once platform'): boyali platform ve ayak (seker.js golgelendirmesi). Varsayilan; onceki gorunum ?plat3=0.
 // Tabla: dis cizgi (fizikle ayni cokgen) boyunca profil supurulur: altin kalin ust kenar, parlak mor kusak, ince alt altin serit, ustte mor taban
 // ve altin ic cizgi. Ayak: basamakli mor-altin taban, mor parlak sutun, altin bilezikler. Olculer, fizik ve hareketler oyun.js'te ayni.
-import { sekerMat, sekerDuz } from './seker.js?v=4';
+import { sekerMat, sekerDuz } from './seker.js?v=5';
 export const PLAT3 = new URLSearchParams(location.search).get('plat3') !== '0' && new URLSearchParams(location.search).get('plat') !== 'eski' && !window.KORSAN;   // Adem 22 Kas: turkuaz varsayilan
 // v11.3 (Adem: 'rakibin kopyasi olmasin, rengi farkli yapalim'): KORSAN GEMISI renkleri (varsayilan): acik tahta guverte, halat kenar,
 // deniz turkuazi kusak, gemi diregi ayak. Deneme: ?prenk=mercan (kirmizi kusak) | gece (lacivert kusak) | mor (v11.2 mor-altin)
