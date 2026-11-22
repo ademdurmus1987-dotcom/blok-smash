@@ -1,8 +1,8 @@
-// Foxi Smash v11 denemesi (22 Kas 2026, Adem: 'sise, kup kalitesini referans oyun kalitesine yukselt'): BOYALI SET. Yalniz ?yeni=1 ile acilir.
+// Foxi Smash v11 denemesi (22 Kas 2026, Adem: 'sise, kup kalitesini referans oyun kalitesine yukselt'): BOYALI SET. Varsayilan; eski gorunum ?yeni=0.
 // Modeller: uretici/blender/seker_set.py -> model/blok3/*.glb (doku yok; kose renginde ton + tahta damari isareti).
 // Boyama (sekerMat): sahnenin gercekci isigi yerine elle ayarli, ucuz golgelendirme. On yuz turun tam rengi; ust acik, yan ve alt koyu ama DOYGUN
 // (griye kaymaz); parlama yalniz sol ust pahlarda ve kavanozda genis dikey bantta. Ton eslemesine girmez: ekrandaki renk = secilen renk.
-export const SEKER = new URLSearchParams(location.search).get('yeni') === '1';
+export const SEKER = new URLSearchParams(location.search).get('yeni') !== '0';   // v11 (Adem 22 Kas: 'varsayilan yap')
 const R = { K: '#ea1f31', M: '#1c7cf6', S: '#ffc310', Y: '#22b935', P: '#9a35f2', T: '#ff8016', N: '#ff479f', A: '#22b4ff', B: '#f3ece2' };
 const ALTIN = '#ffc41c', TAHTA = '#fb9a2e', TASR = '#6470b4';
 // tur -> [dosya, purz (kullanilmaz), kirik parca rengi, { govde, vurgu, sk: boyama turu 'kutu' | 'cam' | 'buz' | 'tas' | 'tahta', dik }]
