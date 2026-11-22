@@ -4327,13 +4327,16 @@ if (K) K.bagla({ THREE, CANNON, GLTFLoader, scene, world, cam, ren, sun, rim, MO
 // Bir adimda merkezi parcanin icine girebiliyordu; ozellikle silindir govdelerde (sutun, kavanoz, fici) carpisma yanlis yonden cozulup top icinden geciyordu.
 // Her adimin sonunda topun onune isin atilir: sonraki adimda bir parcaya girecekse top o parcanin yuzeyine alinir; carpisma sonraki adimda, dogru yuzden cozulur.
 const CCD = { a: new CANNON.Vec3(), b: new CANNON.Vec3(), r: new CANNON.RaycastResult(), o: { collisionFilterMask: 1, skipBackfaces: true } };
+// v10.45 (Adem: '1465. bolumde top beyaz sutunun icinden geciyor'): koruma yalniz pilotta aciktaydi; ana oyunda 30 atisin 19'u geciyordu.
+// Merkezi disbukey govdenin (silindir) icine dusen top cannon'da carpisma uretmez. Ana oyunda yalniz silindir govdelere; kutularda his ayni. ?ccd=0 eski
+const CCDANA = Q.get('ccd') !== '0' && !K;
 world.addEventListener('postStep', () => {
-  if (!PLT) return;
+  if (!PLT && !CCDANA) return;
   for (const b of balls) {
     const bd = b.body; if (b.hit || !bd.world) continue; const v = bd.velocity, sp = v.length(); if (sp < 30) continue;
     const k = (sp * world.dt + BR) / sp; CCD.a.copy(bd.position); CCD.b.set(bd.position.x + v.x * k, bd.position.y + v.y * k, bd.position.z + v.z * k); CCD.r.reset();
     world.raycastClosest(CCD.a, CCD.b, CCD.o, CCD.r);
-    if (CCD.r.hasHit && CCD.r.distance > BR) { const d = (CCD.r.distance - BR + 0.03) / sp; bd.position.x += v.x * d; bd.position.y += v.y * d; bd.position.z += v.z * d; }
+    if (CCD.r.hasHit && CCD.r.distance > BR && (PLT || !(CCD.r.shape instanceof CANNON.Box))) { const d = (CCD.r.distance - BR + 0.03) / sp; bd.position.x += v.x * d; bd.position.y += v.y * d; bd.position.z += v.z * d; }
   }
 });
 // PILOT: pilot.js'in kullandigi motor parcalari (yalniz ?pilot=N kipinde cagrilir)
