@@ -31,7 +31,21 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 ## v10.40 (21 Kas): oyuncak plastigi denemesi
 - `yapi/uretici/blender/oyuncak_plastik.py` (bpy 5.3): 59 blok modeli -> `yapi/model/oyuncak/` (bevel 0.045x4 aci 30, weighted normal, AO %35 dokuya gomulu, PBR degerleri, WebP). Oyunda yalniz `?oyuncak=1` (blok3b.js OYUNCAK). Fark ince: bloklar zaten yuvarlak ve cilaliydi.
 
-## Siradaki isler (Adem'in onayladigi sira)
+## v10.41 - v10.44 (21-22 Kas)
+- v10.41: renkli blok + kavanoz MeshPhysicalMaterial (blok3b.js PARLAK2: puruz 0.14, metal 0.04, cila 1.0/0.08); sahneye scene.environment = SENV; FPS sayaci ayarlardan kalkti (yalniz ?fps=1); 'Dokun ve ates et!' bandi yerine kucuk el (?ipucu=eski). Eski malzeme: ?parlak2=0
+- v10.42: renk solmasi: envMapIntensity 1.05, kavanoz transmission 0.18 / puruz 0.10.
+- v10.43: alt menu ikonlari konturu temizlenmis 3B (yapi/ikon/*_3b.webp), aktif sekme -6px / 1.12 + altin parlama (?altnav=eski).
+- v10.44: oyun hissi 2 (oyun.js mikroSars / sokDalgasi / kiymik; ?his2=0), el ipucu ilk atista kaybolur, 4 sn dokunulmazsa doner; Korsan Pilot 'Yakinda' (?korsan=1 ile acik).
+- Arayuz notu (Adem onayi bekliyor): koyu mor kutular plaj fonunda agir; parlak mavi + altin + krem sayi kutulari onerildi.
+
+## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
+Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
+1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.
+2. Blender'da rakip dilinde SADE kavanoz ve tugla: genis sol parlama seridi, iki renkli cizgili kapak, gomuk pano + kucuk tac kabartma (v10.35 kalin altin cerceveli deneme begenilmedi).
+3. Seedream/fal yalniz tasarim taslagi icin (gokayfem/reference-to-game incelendi: yontem faydali, blok kalitesini dogrudan yukseltmez).
+- Bulutta Blender: `pip download bpy` (5.3, py3.13) -> venv; yapi/uretici/blender/oyuncak_plastik.py ornek hat.
+
+## Siradaki isler (eski liste) (Adem'in onayladigi sira)
 1. v10.34-v10.35 (butun bloklarda matcap, rakip tarzi kup/kavanoz) denendi; Adem begenmedi, varsayilan v10.33 gorunumu. Denemeler: ?mc2=1, ?kvYesil=1, ?b35=1.
 0. Adem'in telefonda v10.23'e geri bildirimi: platform renk/sekil, ayak oturusu, kamera uzakligi, zemin haritasi (yanlis bolge varsa ZHARITA cokgenleri).
 2. Fonlara canlilik: suzulen martilar, suda parilti, karli dunyada kar.
