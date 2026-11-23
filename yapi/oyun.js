@@ -2573,7 +2573,30 @@ function topArabasiKare(dt) {
   TC.namlu.position.z = (TC.nb ? TC.nb.z : 0.2) - k * 0.32; TC.namlu.rotation.x = (TC.nb ? TC.nb.el : 0) - k * 0.16 - 0.02 + nef; TC.namlu.scale.set(1 + k * 0.05, 1 + k * 0.05, 1 - k * 0.07);
   TC.gun.rotation.x = -k * 0.05;
   TC.kor.material.opacity = Math.min(1, r * 1.4); TC.kor.material.color.setRGB(1, 0.35 + r * 0.5, 0.1 + r * 0.4);
+  if (TOP4 && Q.get('dalga') !== '0') namluDalga(r);
   TC.halka.forEach((h, i) => { const ph = (TC.ti * 0.9 - i * 0.22) % 3; h.material.emissiveIntensity = 0.35 + Math.max(0, 1 - Math.abs(ph - 0.5) * 3) * 0.9 + r * 0.8; });
+}
+// v12.4 (Adem: 'ates ederken top arabasinin popo kismi genisleme efekti, animasyon filmlerdeki gibi'): atista namlunun arkasi siser,
+// siskinlik dalga gibi namlu boyunca agza ilerler ve agizda kisa bir patlama ile biter. Yalniz gorunum (namlu altindaki koseler yerinde
+// genisler, atis yonu ve top ayni). Kapatmak: ?dalga=0
+let DLG = null; const DV = new THREE.Vector3(), DM = new THREE.Matrix4();
+function namluDalga(rec) {
+  const N = TC.namlu; if (!N) return;
+  if (!DLG || DLG.n !== N) {   // namlu altindaki her kosenin namlu eksenindeki yeri bir kez saklanir
+    N.updateMatrixWorld(true); const Ni = new THREE.Matrix4().copy(N.matrixWorld).invert(), L = [];
+    N.traverse((o) => { if (!o.isMesh || !o.geometry.attributes.position) return; const g = o.geometry = o.geometry.clone(), p = g.attributes.position, M = new THREE.Matrix4().multiplyMatrices(Ni, o.matrixWorld), Mi = M.clone().invert(), n = new Float32Array(p.count * 3);
+      for (let i = 0; i < p.count; i++) { DV.fromBufferAttribute(p, i).applyMatrix4(M); n[i * 3] = DV.x; n[i * 3 + 1] = DV.y; n[i * 3 + 2] = DV.z; }
+      L.push({ p, b: p.array.slice(), n, Mi }); });
+    DLG = { n: N, L, acik: false };
+  }
+  const t = (1 - rec) / 2.6, u = t / 0.3;   // atistan beri gecen sure; dalga 0.3 sn
+  if (rec <= 0 || u >= 1) { if (DLG.acik) { for (const q of DLG.L) { q.p.array.set(q.b); q.p.needsUpdate = true; } DLG.acik = false; } return; }
+  DLG.acik = true;
+  const zc = -1.05 + 3.3 * (u < 0.18 ? 0 : (u - 0.18) / 0.82) ** 0.85, A = (u < 0.18 ? Math.sin(u / 0.18 * Math.PI / 2) : 1) * 0.34 * (1 - 0.55 * Math.max(0, u - 0.18)) * (u > 0.85 ? (1 - u) / 0.15 : 1);
+  for (const q of DLG.L) { const a = q.p.array;
+    for (let i = 0; i < q.p.count; i++) { const x = q.n[i * 3], y = q.n[i * 3 + 1], z = q.n[i * 3 + 2], d = (z - zc) / 0.5, k = 1 + A * Math.exp(-d * d);
+      DV.set(x * k, y * k, z).applyMatrix4(q.Mi); a[i * 3] = DV.x; a[i * 3 + 1] = DV.y; a[i * 3 + 2] = DV.z; }
+    q.p.needsUpdate = true; }
 }
 const TIP = new THREE.Vector3();
 function trunkTip(out) {
@@ -4254,7 +4277,7 @@ const YER = Q.get('yer') !== '0';   // v9.4 (Adem 19 Kas): referans oyundaki yer
 // ekranin %8.8'i (~34 px). Kucuk yapi genis platformun ortasinda kucuk durur. Eski (v11.4) hal: ?kam3=0
 const KAM3 = Q.get('kam3') !== '0' && Q.get('kam2') !== '0' && Q.get('kam') !== '0';
 const KAM2 = Q.get('kam2') !== '0' && Q.get('kam') !== '0', KAM2B = +(Q.get('kam2b') || S / (KAM3 ? 0.088 : 0.115) / 2), KAM2Y = KAM3 ? 0.88 : 0.94;
-const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * (TOP4 ? +(Q.get('t4y') || 0.86) : 0.86);   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
+const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * (TOP4 ? +(Q.get('t4y') || 0.83) : 0.86);   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
 const CGAP = 8;   // v6.27: (Adem) platform ile top arabasi arasi her bolumde esit (kupler arabanin uzerine devriliyordu)
 const YAW = 0;   // v6.2: (Adem) platform kameraya duz baksin; derinligi yukaridan bakis acisi verir
 function fit() {
@@ -4305,7 +4328,7 @@ function fit() {
   // top arabasi
   if (TC.gun) {
     const dH = Math.hypot(cam.position.x, cam.position.z), dc = Math.max(2.8, Math.min(dH - (reach + CGAP), (dH - reach) / 3.6));   // v6.29: (Adem) gozle gorulen aralik her bolumde ayni: kameranin platforma uzakligi arabaya uzakliginin 3.6 kati
-    const k = ((YER ? (TOP4 ? +(Q.get('t4w') || 0.36) : 0.36) : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
+    const k = ((YER ? (TOP4 ? +(Q.get('t4w') || 0.3) : 0.36) : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
     let lo = GY - 30, hi = cam.position.y; const tipY = YER ? YER_NAMLU : PC ? -0.7   /* v8.7 PILOT: top arabasi her bolumde ekranda ayni yerde; platform ona gore (kamera) hizalanir */
       : Math.max(-0.8, Math.min(-0.6, V.set(0, GY + 0.3, 2).project(cam).y - 0.16));   // v6.29: (Adem) namlu ucu ekranda platform ayaginin altinda kalir, ayagin ustune binmez
     const UST = new THREE.Box3(), ustY = () => { UST.setFromObject(TC.gun); let m = -9; for (const x of [UST.min.x, UST.max.x]) for (const z of [UST.min.z, UST.max.z]) m = Math.max(m, V.set(x, UST.max.y, z).project(cam).y); return m; };

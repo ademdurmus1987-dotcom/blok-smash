@@ -92,6 +92,8 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - uretici/blender/top_arabasi5.py -> model/top5/araba.glb (~49 bin ucgen, 0.97 MB): pahli namlu, 3 iplikli burgulu halat halkalar, altin halkalar ve muylu, kabartma tilki patisi,
   basamakli tahta yanaklar + percin + demir bant, parmakli tekerlek + demir lastik + altin gobek. Malzeme adi = rol (govde namlu ahsap altin krem demir ic halat).
   Onizleme: `-- onizleme` -> uretici/blender/onizleme/top5_arka.png, top5_yan.png.
+- Yer (Adem: 'biraz ciksin tamami cikmasin'): namlu agzi ekranin %83'u, genislik %30 (eski araba %86 / %36).
+- Atis dalgasi (Adem: 'popo kismi genisleme efekti, animasyon filmlerdeki gibi'): oyun.js namluDalga: atista namlunun arkasi siser, siskinlik 0.3 sn'de agza ilerler (kose deformasyonu, yalniz gorunum). ?dalga=0 kapali. top4/top5/yeni4 denemelerinde.
 - oyun.js top5Yukle: ?top5=1 (TOP4 yerlesimi ve animasyonu); once top4.js kod modeli, GLB gelince yerine gecer; malzeme MeshPhysical (clearcoat, ENV). Gardirop rolleri calisir.
 
 ## v12.3 DENEME (24 Kas 2026): arkadan okunan top arabasi ve tek platform ayagi (Adem: 'kalite farkini gostermek istedim'; Smash Kingdom / Play Store ekranlari referans/oyun2)
