@@ -88,6 +88,12 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 
 ## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
 
+## v12.8 DENEME (24 Kas 2026, ?blok5=1): sade parlak oyuncak kupler (Adem: 'basla'; 'kuplerdeki cok fazla detay belki kotu gosteriyordur')
+- seker_set.py kup5 -> model/blok3/kup5_1..4.glb: oluk ve ic cerceveler yok; tek genis duz pah (2 dilim), hafif cukur duz pano, iri pati. oy* ve uz* (seker.js BLOK5).
+- blok3b.js: o.parla -> boyali tonlar korunur, malzeme MeshPhysical (clearcoat 0.85, puruz 0.34, ENV 0.55), toneMapped false (renk solmasin).
+- Karsilastirma: uretici/blender/onizleme/blok5_karsilastirma.png (ust yeni, alt simdiki). Adem onaylarsa BLOK5 `!== '0'`; sonra kavanoz, sandik, tas ayni yontem.
+- oyun.js?v=236, CACHE v186 (seker.js?v=8: butun ice aktaranlar ayni surum).
+
 ## v12.7 (24 Kas 2026): platform sekil cesitleri VARSAYILAN (Adem onayladi), eski platform ?plat5=0. oyun.js?v=235, CACHE v185
 
 ## v12.6 DENEME (24 Kas 2026, ?plat5=1): platform sekil cesitleri (Adem: 'platform cesit olsun yuvarlak kare vs')

@@ -6,7 +6,7 @@
 //   balon   : balona asili fici; balonu vurursan patlar, engel kalkar
 //   fici3   : uc fici sirayla ziplar
 // Bicim: kur(E, grp, body, o) engeli kurar; kare(E, t, dt) konumlar. Fizik govdeleri kinematik, top carpinca oyun.js engCarp calisir.
-import { sekerDuz } from './seker.js?v=7';
+import { sekerDuz } from './seker.js?v=8';
 export const ENG4 = new URLSearchParams(location.search).get('eng4') !== '0' && !window.KORSAN;
 export const ENG4HAVUZ = ['cark', 'ahtapot', 'papagan', 'gulle', 'balon', 'fici3', 'yengec', 'donerkapi', 'martilar'];
 export const ENG4KART = {

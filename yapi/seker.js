@@ -8,13 +8,16 @@ const R = { K: '#ea1f31', M: '#1c7cf6', S: '#ffc310', Y: '#22b935', P: '#9a35f2'
 const ALTIN = '#ffc41c', TAHTA = '#fb9a2e', TASR = '#6470b4';
 // tur -> [dosya, purz (kullanilmaz), kirik parca rengi, { govde, vurgu, sk: boyama turu 'kutu' | 'cam' | 'buz' | 'tas' | 'tahta', dik }]
 export const TOP3 = new URLSearchParams(location.search).get('top3') !== '0';   // v11.7: Foxi yuzlu kup ve top arabasi yeni kimlikte
+export const BLOK5 = new URLSearchParams(location.search).get('blok5') === '1';   // v12.8 deneme
 export const SEKERL = {};
 {
   const ek = (k, d, govde, sk, o) => { SEKERL[k] = ['blok3/' + d, 0.3, govde, Object.assign({ govde, sk }, o || {})]; };
-  for (const c of 'KMSYPTNBZHGEL') ek('oy' + c, 'kup1', R[c], 'kutu');
-  for (const c of 'BZHGEL') for (const n of [2, 3, 4]) ek('uz' + n + c, 'kup' + n, R[c], 'kutu');
+  // v12.8 deneme ?blok5=1 (Adem 24 Kas: 'basla', top arabasi yontemi): oyuncak kup ve cubuklar model/blok3/kup5_*.glb (genis duz pah, kabarik pati), parlak vernik (blok3b.js)
+  const K5 = BLOK5 ? 'kup5_' : 'kup', P5 = BLOK5 ? { parla: 1 } : null;
+  for (const c of 'KMSYPTNBZHGEL') ek('oy' + c, K5 + 1, R[c], 'kutu', P5);
+  for (const c of 'BZHGEL') for (const n of [2, 3, 4]) ek('uz' + n + c, K5 + n, R[c], 'kutu', P5);
   for (const c of 'KMSYPTNA') {
-    for (const n of [1, 2, 3, 4]) ek('uz' + n + c, 'kup' + n, R[c], 'kutu');
+    for (const n of [1, 2, 3, 4]) ek('uz' + n + c, K5 + n, R[c], 'kutu', P5);
     ek('kj' + c, 'kav1', R[c], 'cam'); ek('kvU' + c, 'kav2', R[c], 'cam'); ek('kvL' + c, 'kav3', R[c], 'cam'); ek('kvB' + c, 'kavB', R[c], 'cam');
     ek('kr3' + c, 'kupa3', R[c], 'kutu', { vurgu: '#fff0d2' }   /* kalin altin cerceve begenilmedi (v10.35) */);
   }

@@ -110,10 +110,10 @@ def egri(pts, adim=3):
     return out
 
 YASTIK = egri([(0.0, -0.27), (0.17, -0.24), (0.20, -0.10), (0.11, 0.02), (0.0, 0.055), (-0.11, 0.02), (-0.20, -0.10), (-0.17, -0.24)], 1)
-def pati(M, B, k, c, koyu, kenar):
+def pati(M, B, k, c, koyu, kenar, hk=0.034):
     o, u, v, n = B[:4]; e = 0.030 * S * k / (0.8 * S)
     sekil = [olc(YASTIK, k)] + [elips(cx * k, cy * k, 0.072 * k, 0.098 * k, 8, d) for cx, cy, d in ((-0.265, 0.08, 0.45), (-0.094, 0.235, 0.14), (0.094, 0.235, -0.14), (0.265, 0.08, -0.45))]
-    for p in sekil: kabart(M, o, u, v, n, p, [(e, 0.003, koyu), (0.0, 0.004, koyu), (-0.75 * e, 0.034 * S, kenar)], c)
+    for p in sekil: kabart(M, o, u, v, n, p, [(e, 0.003, koyu), (0.0, 0.004, koyu), (-0.75 * e, hk * S, kenar)], c)
 
 TILKI = [(0.0, -0.36), (0.14, -0.27), (0.30, -0.10), (0.40, 0.02), (0.345, 0.14), (0.385, 0.40), (0.30, 0.365), (0.16, 0.225), (0.0, 0.245), (-0.16, 0.225), (-0.30, 0.365), (-0.385, 0.40), (-0.345, 0.14), (-0.40, 0.02), (-0.30, -0.10), (-0.14, -0.27)]
 def tilki(M, B, k, c, koyu, kenar, yuzu=True):
@@ -168,16 +168,24 @@ def yaz(M, ad, keskin=48.0, agirlik=True):
     print('yazildi %-10s ucgen %d kose %d' % (ad, len(I) // 3, len(P)))
 
 # ------------------------------------------------------------------ bloklar
-def oluklu(M, w, h, d, cer, oluk, ic_kenar, pano, r=0.125, k=1.0):
+def oluklu(M, w, h, d, cer, oluk, ic_kenar, pano, r=0.125, k=1.0, seg=3):
     """referans yapisi: yastik cerceve, ic yamac, koyu ince oluk, panonun acik kenari, duz pano"""
     q = k * S
     return kutu(M, w, h, d, r * S, cer, [(0.018 * q, 0.004 * S, 0.035 * q, cer), (0.052 * q, -0.020 * S, 0.045 * q, ic_kenar), (0.070 * q, -0.042 * S, 0.045 * q, oluk),
-                                         (0.084 * q, -0.042 * S, 0.042 * q, oluk), (0.098 * q, -0.030 * S, 0.036 * q, ton(0.60) if pano is None else ton(0.55) if callable(pano) else pano)], (lambda a, b: ton(0.53 + 0.04 * b)) if pano is None else pano)
+                                         (0.084 * q, -0.042 * S, 0.042 * q, oluk), (0.098 * q, -0.030 * S, 0.036 * q, ton(0.60) if pano is None else ton(0.55) if callable(pano) else pano)], (lambda a, b: ton(0.53 + 0.04 * b)) if pano is None else pano, seg=seg)
 
 def kup(ad, wS):
     M = Model(); B = oluklu(M, wS * S * 0.994, S * 0.992, S * 0.992, ton(0.5), ton(0.18), ton(0.40), None)
     for y in ('on', 'arka') + (('sag', 'sol') if wS == 1 else ()): pati(M, B[y], 0.76 * S, ton(0.60), ton(0.17), ton(0.68))
     yaz(M, ad)
+
+def kup5(ad, wS):
+    """v12.8 deneme (?blok5=1, top arabasi yontemi): daha genis duz pah (2 dilim), daha iri ve kabarik pati; oyunda parlak vernik (blok5.js)"""
+    # Adem 24 Kas: 'kuplerdeki cok fazla detay belki kotu gosteriyordur': oluk ve ic cerceveler yok; tek genis pah, hafif cukur duz pano, iri pati
+    M = Model(); q = S; w = wS * S * 0.994
+    B = kutu(M, w, S * 0.992, S * 0.992, 0.15 * S, ton(0.5), [(0.06 * q, -0.018 * S, 0.06 * q, ton(0.44))], lambda a, b: ton(0.54 + 0.03 * b), seg=2)
+    for y in ('on', 'arka') + (('sag', 'sol') if wS == 1 else ()): pati(M, B[y], 0.9 * S, ton(0.66), ton(0.36), ton(0.70), hk=0.045)
+    yaz(M, ad, keskin=40.0)
 
 def kupA(ad, wS, vurgu=1):
     """altin cerceveli (vurgu rengi), govde renkli panolu, vurgu renkli tilki amblemli"""
@@ -377,7 +385,7 @@ def kemer(ad):
     bmesh.ops.remove_doubles(M.bm, verts=list(M.bm.verts), dist=1e-5)
     yaz(M, ad)
 
-T = {**{'kup%d' % n: (lambda n=n: kup('kup%d' % n, n)) for n in (1, 2, 3, 4)}, **{'kupa%d' % n: (lambda n=n: kupA('kupa%d' % n, n)) for n in (1, 2, 3, 4)},
+T = {**{'kup%d' % n: (lambda n=n: kup('kup%d' % n, n)) for n in (1, 2, 3, 4)}, **{'kup5_%d' % n: (lambda n=n: kup5('kup5_%d' % n, n)) for n in (1, 2, 3, 4)}, **{'kupa%d' % n: (lambda n=n: kupA('kupa%d' % n, n)) for n in (1, 2, 3, 4)},
      **{'tas%d' % n: (lambda n=n: tas('tas%d' % n, n)) for n in (1, 2, 3, 4)}, 'buz1': lambda: buz('buz1', 1), 'buz3': lambda: buz('buz3', 3),
      **{'kalas%d' % n: (lambda n=n: tahta('kalas%d' % n, n, 0.5)) for n in (1, 2, 3)}, 'direk': lambda: tahta('direk', 1, 2), 'sandik': lambda: tahta('sandik', 1, 1, True),
      'kav1': lambda: kavanoz('kav1', 1), 'kav2': lambda: kavanoz('kav2', 2), 'kav3': lambda: kavanoz('kav3', 3), 'kavB': lambda: kavanoz('kavB', 1, 2),

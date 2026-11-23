@@ -1,6 +1,6 @@
 // Foxi Smash v11.1 (22 Kas 2026, Adem: 'once engel ve top'): engeller ve top boyali tarzda (seker.js). Varsayilan; eski gorunum ?eng3=0.
 // Modeller: uretici/blender/engel_set.py -> model/engel3/*.glb. Yalniz GORUNUM: fizik kutulari, hareket ve sesler oyun.js'te ayni.
-import { sekerBoya, sekerMat } from './seker.js?v=7';
+import { sekerBoya, sekerMat } from './seker.js?v=8';
 export const ENG3 = new URLSearchParams(location.search).get('eng3') !== '0' && !window.KORSAN;   // Adem 22 Kas: 'varsayilan yap'
 const T = { duvar: { govde: '#fb9a2e', sk: 'tahta' }, kol: { govde: '#fb9a2e', sk: 'tahta' }, uc: { govde: '#ee2234', sk: 'kutu' }, gobek: { govde: '#ee2234', sk: 'kutu' }, kalkan: { govde: '#ee2234', sk: 'kutu' },
   capa: { govde: '#4460c8', sk: 'kutu' }, halka: { govde: '#7186da', sk: 'kutu' }, top: { govde: '#8a34f0', sk: 'top' } };

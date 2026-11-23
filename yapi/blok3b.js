@@ -3,7 +3,7 @@
 // (kale.js / sekil.js); yalniz gorunum (sekil.js TUR[k].yap) bu modelle degisir. Model inmezse eski cizim kullanilir. Eski gorunum: ?b3=0.
 // Modelde renk kose renginde, ortam golgesi + yumusak isik 512'lik dokuya gomulu (malzeme: doku x kose rengi).
 // Tam beyaz kose rengi "govde rengi" isaretidir: o.govde verilirse o renge boyanir (tek dosyadan farkli renkli turler: yakut / elmas).
-import { SEKER, SEKERL, sekerBoya, sekerMat } from './seker.js?v=7';   // v11: varsayilan, eski ?yeni=0
+import { SEKER, SEKERL, sekerBoya, sekerMat } from './seker.js?v=8';   // v11: varsayilan, eski ?yeni=0
 export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]
@@ -157,6 +157,10 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   function yap(k) {
     const L = LISTE[k]; if (!B3 || !L) return null; if (HAZ[k]) return HAZ[k]; const G = GLB[L[0]]; if (!G) return null;
     const o = L[3] || {};
+    if (o.sk && o.parla) {   // v12.8 deneme ?blok5=1: boyali tonlar korunur, malzeme top arabasi gibi parlak vernik (MeshPhysical clearcoat + ENV)
+      const g = sekerBoya(THREE, G.geo, o), mat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.34, metalness: 0, clearcoat: 0.85, clearcoatRoughness: 0.14, envMap: ENV, envMapIntensity: 0.55 }); mat.toneMapped = false; mat.userData.yeni = 1;   // ton eslemesi renkleri soldurmasin (boyali set gibi)
+      return (HAZ[k] = { geo: g, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: L[2], roughness: 0.5 }) });
+    }
     if (o.sk) { const g = sekerBoya(THREE, G.geo, o); return (HAZ[k] = { geo: g, mat: sekerMat(THREE, g, o), golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: L[2], roughness: 0.5 }) }); }   // v11
     let geo = G.geo;
     if (o.govde) {
