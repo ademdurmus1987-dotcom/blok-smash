@@ -5,7 +5,7 @@
 //   yanda altin bant ve percinler. Ust yuz y=0 (fizik ayni), alt -th.
 // Ayak: Blender modeli (uretici/blender/platform5.py -> model/plat5/ayak.glb), iki takim: Y yuvarlak, K kose (sekizgen kesit).
 // Fizik: oyun.js pFizik tablayi ayni cokgenden prizma yapar; floorAt q.poly ile cokgenin icine bakar.
-export const PLAT5 = new URLSearchParams(location.search).get('plat5') === '1' && !window.KORSAN;
+export const PLAT5 = new URLSearchParams(location.search).get('plat5') !== '0' && !window.KORSAN;   // v12.7 VARSAYILAN (Adem onayladi), eski platform ?plat5=0
 const R5 = { deniz: ['#0f9fb4', 0.35, 0, 0.8], ahsap: ['#c9742f', 0.5, 0, 0.35], altin: ['#f3c66a', 0.3, 0.85, 0.3], halat: ['#e9cf9b', 0.8, 0, 0], koyu: ['#06566e', 0.45, 0, 0.5],
   mercan: ['#e8503a', 0.35, 0, 0.8], tahta: ['#b9692a', 0.55, 0, 0.4],
   guv0: ['#e2a658', 0.55, 0, 0.3], guv1: ['#d9994a', 0.55, 0, 0.3], guv2: ['#e8b066', 0.55, 0, 0.3], oluk: ['#6e4420', 0.8, 0, 0] };
