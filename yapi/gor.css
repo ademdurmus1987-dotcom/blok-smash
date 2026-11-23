@@ -1,0 +1,17 @@
+/* Foxi Smash v12.2 Gardirop (magaza): top arabasi ve gulle kartlari. Eski hal ?gor=0 (kartlar cizilmez). */
+.gr-bas{margin:18px 4px 8px;font:400 22px/1 var(--disp);color:#fff;text-shadow:0 2px 0 #12173f,0 0 10px rgba(0,0,0,.35);letter-spacing:.5px}
+.gr-iz{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gr-k{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 8px 10px;border-radius:18px;background:linear-gradient(180deg,var(--pars1),var(--pars2));border:3px solid var(--altin2);box-shadow:0 0 0 2px var(--altin3),0 5px 0 rgba(0,0,0,.28);color:var(--murek);min-width:0}
+.gr-k.on{background:linear-gradient(180deg,#e9ffd8,#a9ec86);border-color:#3fb82a}
+.gr-k.kl .gr-r{opacity:.6}
+.gr-r{width:84px;height:62px;display:flex;align-items:center;justify-content:center}
+.gr-r svg{width:100%;height:100%}
+.gr-k>b{font:400 16px/1.1 var(--disp);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.gr-b{height:40px;width:100%;max-width:150px;border-radius:14px;border:3px solid #17520f;background:linear-gradient(180deg,#a4f86a,#3fb82a);box-shadow:0 4px 0 #17520f,inset 0 3px 0 rgba(255,255,255,.5);color:#fff;font:400 18px/1 var(--disp);text-shadow:0 2px 0 #17520f;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+.gr-b:active{transform:translateY(3px);box-shadow:0 1px 0 #17520f}
+.gr-b .coin{flex:none}
+.gr-b .i3{width:22px;height:22px}
+.gr-b.yok{filter:grayscale(.85)}
+.gr-b.kul{background:linear-gradient(180deg,#7fd6ff,#1f8fd8);border-color:#0d4a7a;box-shadow:0 4px 0 #0d4a7a,inset 0 3px 0 rgba(255,255,255,.5);text-shadow:0 2px 0 #0d4a7a}
+.gr-b.sec{background:#fff8;border-color:#3fb82a;box-shadow:none;color:#1f6a12;text-shadow:none;font-size:15px;cursor:default}
+.gr-b.kil{background:linear-gradient(180deg,#8a90b8,#5a6090);border-color:#2a2f58;box-shadow:0 4px 0 #2a2f58,inset 0 3px 0 rgba(255,255,255,.35);text-shadow:0 2px 0 #2a2f58}

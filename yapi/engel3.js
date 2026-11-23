@@ -8,7 +8,7 @@ export function engel3Kur({ THREE, GLTFLoader, roundBox }) {
   const G = {}, MAT = {};
   const hazir = !ENG3 ? Promise.resolve() : Promise.all(Object.keys(T).map((k) => new Promise((ok) => new GLTFLoader().load('model/engel3/' + k + '.glb?v=1', (gl) => {
     let m = null; gl.scene.traverse((o) => { if (o.isMesh && !m) m = o; });
-    if (m) { const geo = sekerBoya(THREE, m.geometry, T[k]); G[k] = { geometry: geo, material: sekerMat(THREE, geo, T[k]) }; }
+    if (m) { const geo = sekerBoya(THREE, m.geometry, T[k]); G[k] = { geometry: geo, material: sekerMat(THREE, geo, T[k]), ham: m.geometry }; }
     ok();
   }, undefined, () => { console.warn('engel3: model yuklenemedi', k); ok(); }))));
   // kodla kurulan engeller (anahtarli kapi, giyotin, anahtar): parcanin rengi ve boyama turu verilir; keskin kutular pahlanir

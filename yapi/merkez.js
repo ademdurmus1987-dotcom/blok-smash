@@ -7,7 +7,8 @@
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { kazanSahne, yazi } from './kazan2.js?v=11';
-import { logoSVG } from './logo2.js?v=4';   // v10.13: Blender ile gercek 3B logo resmi (ikon/logo3d.webp, uretici/blender/logo3d.py); eski: ?logo=eski
+import { logoSVG } from './logo2.js?v=4';
+import { GOR, ARABA, GULLE, gorSec, arabaSvg, gulleSvg } from './gorunum.js?v=1';   // v12.2 Gardirop (eski ?gor=0)   // v10.13: Blender ile gercek 3B logo resmi (ikon/logo3d.webp, uretici/blender/logo3d.py); eski: ?logo=eski
 const LOGO2 = !/[?&]logo=eski/.test(location.search);   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 import { ADA, adaKur } from './ada.js?v=1';
@@ -342,6 +343,19 @@ export function merkezKur(A) {
   for (const b of M.querySelectorAll('.m-alt button')) b.onclick = () => { if (b.dataset.s !== sekmeAd) { tik(); sekme(b.dataset.s); } };
 
   // ---------------- magaza ----------------
+  // v12.2 Gardirop (Adem: 'o kadar altin yildiz kazandik harcayacak bir sey yok'): top arabasi ve gulle gorunumleri; pahalilar yildiz da ister
+  function gardirop() {
+    const g = SV.gor || {}, sahip = g.s || [], sec = gorSec(SV), yl = yilTop(), al = SV.altin || 0;
+    const kart = (k, u, res, secili) => { const var_ = !u.f || sahip.includes(u.id), kilit = !var_ && yl < u.y;
+      const btn = secili ? '<button class="gr-b sec" data-k="' + k + '" data-id="' + u.id + '">Kullanılıyor</button>'
+        : var_ ? '<button class="gr-b kul" data-k="' + k + '" data-id="' + u.id + '">Kullan</button>'
+        : kilit ? '<button class="gr-b kil" data-k="' + k + '" data-id="' + u.id + '">' + I3('yildiz') + u.y + '</button>'
+        : '<button class="gr-b' + (al < u.f ? ' yok' : '') + '" data-k="' + k + '" data-id="' + u.id + '"><i class="coin"></i>' + u.f + '</button>';
+      return '<div class="gr-k' + (secili ? ' on' : '') + (kilit ? ' kl' : '') + '"><div class="gr-r">' + res + '</div><b>' + u.ad + '</b>' + btn + '</div>'; };
+    return '<h3 class="gr-bas">Top Arabası</h3><div class="gr-iz">' + ARABA.map((u) => kart('t', u, arabaSvg(u.r), u.id === sec.araba.id)).join('') + '</div>' +
+      '<h3 class="gr-bas">Gülle</h3><div class="gr-iz">' + GULLE.map((u) => kart('g', u, gulleSvg(u.c), u.id === sec.gulle.id)).join('') + '</div>' +
+      '<p class="p-not" style="color:#dfe8ff!important;text-align:center">' + I3('yildiz') + ' Yıldızlar harcanmaz; yeterince toplayınca yeni görünümün kilidi açılır.</p>';
+  }
   function magazaCiz() {
     const s = A.ggSay(), a = SV.altin || 0;
     $('d-liste').innerHTML = '<div class="d-urun"><div class="d-ad"><b>Elindekiler</b><small>Bölümde ya da bölüm kartında kullan</small></div><div class="d-ik" style="width:auto;flex-wrap:nowrap">' +
@@ -350,7 +364,15 @@ export function merkezKur(A) {
         return '<div class="d-urun' + (u.one ? ' one' : '') + '">' + (u.one ? '<span class="d-et">' + u.one + '</span>' : '') + '<div class="d-ik' + (ks.length === 1 ? ' tek' : '') + '">' +
           ks.map((k) => '<span class="d-g gb-' + k + '">' + ggIc(k) + '<em>x' + u.ic[k] + '</em></span>').join('') + '</div><div class="d-ad"><b>' + u.ad + '</b><small>' + u.ac + '</small></div>' +
           '<button class="d-al' + (a < u.f ? ' yok' : '') + '" data-n="' + n + '"><i class="coin"></i>' + u.f + '</button></div>'; }).join('') +
+      (GOR ? gardirop() : '') +
       '<p class="p-not" style="color:#dfe8ff!important;text-align:center">Altını bölüm kazanarak, görevlerden, günlük ödülden ve hazine sandığından toplarsın.</p>';
+    for (const b of $('d-liste').querySelectorAll('.gr-b')) b.onclick = () => {   // v12.2 Gardirop: al / kullan
+      const L = b.dataset.k === 't' ? ARABA : GULLE, u = L.find((x) => x.id === b.dataset.id), g = SV.gor || (SV.gor = { s: [] }); g.s = g.s || [];
+      if (!u || b.classList.contains('sec')) return;
+      if (g.s.includes(u.id) || !u.f) { g[b.dataset.k] = u.id; A.save(); A.gorUygula && A.gorUygula(); A.sfx('bonus'); A.buzz(25); magazaCiz(); return; }
+      if (yilTop() < u.y || (SV.altin || 0) < u.f) { salla(b); tik(); return; }
+      const eski = SV.altin || 0; SV.altin = eski - u.f; g.s.push(u.id); g[b.dataset.k] = u.id; A.save(); A.gorUygula && A.gorUygula(); A.sfx('bonus'); A.ses('para', 0.5); A.buzz(40); ciz(); magazaCiz();
+    };
     for (const b of $('d-liste').querySelectorAll('.d-al')) b.onclick = () => {
       const u = URUN[+b.dataset.n]; if ((SV.altin || 0) < u.f) { salla(b); tik(); return; }
       SV.altin -= u.f; const sy = A.ggSay(); for (const k in u.ic) sy[k] = (sy[k] || 0) + u.ic[k]; A.save(); A.ggHud(); A.sfx('bonus'); A.ses('para', 0.5); A.buzz(30); ciz(); magazaCiz();

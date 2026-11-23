@@ -23,7 +23,7 @@ export function pilotKur(A, ana) {
   let DUVAR = false, RESIM = false;
   const ayarla = (n) => { N = n; DUVAR = (N >= 55 && N <= 999) || N >= 4000; RESIM = (N >= 31 && N <= 54) || DUVAR; };
   ayarla(N);
-  const dosyaOf = (n) => n >= 4000 ? 'pilot/tasarim/t' + Math.floor((n - 4000) / 100) + '.json?v=2' : n >= 3000 ? 'pilot/karma.json?v=2' : n >= 2900 ? 'pilot/ogretici.json?v=4' : n >= 960 ? 'pilot/yapi.json?v=6' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
+  const dosyaOf = (n) => n >= 4000 ? 'pilot/tasarim/t' + Math.floor((n - 4000) / 100) + '.json?v=' + (n >= 5900 && n < 6000 ? 3 : 2) : n >= 3000 ? 'pilot/karma.json?v=2' : n >= 2900 ? 'pilot/ogretici.json?v=4' : n >= 960 ? 'pilot/yapi.json?v=6' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
   const DOS = {}, DOSV = {}, HAZ = new Set();
   const veriAl = (n) => { const u = dosyaOf(n); return DOS[u] || (DOS[u] = fetch(u).then((r) => r.json()).then((v) => { if (v.tasarim) { v.bolumler = {}; for (const k in v.tasarim) { let b; Object.defineProperty(v.bolumler, k, { enumerable: true, get: () => b || (b = genislet(+k, v.tasarim[k])) }); } } return (DOSV[u] = v); }).catch(() => { delete DOS[u]; return null; })); };
   // v9.0: ana oyunda tas, fici ve sise Adem'in cizimindeki gibi gri tas / fici / sise (oyun.js GRI: ayni turun eski gorunumlu esi)

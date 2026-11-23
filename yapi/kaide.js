@@ -127,6 +127,7 @@ export function kaideKur({ THREE, canvasTex, ENV }) {
     const krem = B3 ? boya('#fff0cf', 'kutu') : parlak('#fff1d6', { emissive: '#40301a', emissiveIntensity: 0.1 });
     const kirmizi = B3 ? boya('#b9692a', 'kutu') : parlak('#e0102a', { emissive: '#a00018', emissiveIntensity: 0.45, envMapIntensity: 0.1, clearcoat: 0.35, roughness: 0.45 });
     const ic = new THREE.MeshBasicMaterial({ color: '#12081e' });
+    if (B3) { turuncu.userData.rol = 'govde'; mor.userData.rol = 'namlu'; ahsap.userData.rol = 'ahsap'; kirmizi.userData.rol = 'ahsap'; altin.userData.rol = 'altin'; krem.userData.rol = 'krem'; }   // v12.2 Gardirop: gorunum.js renkleri
     const G = new THREE.Group(), add = (geo, m, x, y, z, par) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; (par || G).add(o); return o; };
     // pati sekli (taban yastigi + 4 parmak), z+ yonune bakan kabartma
     const pati = (s, m) => { const g = new THREE.Group(), ex = { depth: 0.05 * s, bevelEnabled: true, bevelThickness: 0.035 * s, bevelSize: 0.03 * s, bevelSegments: 3, curveSegments: 18 };

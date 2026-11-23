@@ -88,6 +88,12 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 
 ## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
 
+## v12.2 (23 Kas 2026): uzak kamera, genis ilk bolumler, Gardirop (Adem: 'ilk bolumlerde kamera cok yakindi, cok basit; oyuncu cekmek icin iyi olmali; altin yildiz harcayacak bir sey yok'; Kingdom Smash ve Pirate Smash ekranlari: yapi/referans/oyun2/)
+- Kamera (oyun.js KAM3, eski ?kam3=0): bir blok ekranin en cok %8.8'i (~34 px; v11.4'te %11.5, ilk bolumlerde 60-74 px oluyordu); sekil (pilot) bolumlerinde de gecerli. Ana kipte platformun tamami cerceveye girer.
+- Ilk 25 (uretici/tasarim/ilk25.mjs; t19.json `node ilk_yaz.mjs`): 1-7, 9, 11-14, 17, 18, 21 7-10 sutuna genisledi (desenli, 1-2 renk). Bot olcumu sira.js SEKIL[1..25][2]. Onceki tasarim: git v12.1.
+- Gardirop (gorunum.js + gor.css, magazada; eski ?gor=0): 8 top arabasi rengi (kaide.js malzeme rolu govde/namlu/ahsap/altin/krem), 8 gulle rengi (oyun.js gulleBoya: kose parlakligi korunur, ton degisir).
+  Altinla alinir (800-30000); pahalilar toplam yildiz ister (yildiz harcanmaz). Kayit SV.gor = { t, g, s: [sahip] }.
+
 ## v12.1 (23 Kas 2026): gercekci vurus, ilk 25 bolum, yeni engel ve hareketler (Adem: 'birini vururken cevresindeki kiriliyor, bolumler cok basit, kiymik platforma giriyor, dikey kup donen platformdan geciyor, ilk 25 sade olsun, tanitim karti, engel ve hareket artsin, zorluk egrisi')
 - Fizik (eski: ?fiz=eski): oyuncak kup/cubuk (oy*, uz*, kr3) ilk dogrudan vurusta catlar (catlak izi + kiymik), ikinci vurusta kirilir; top ilk carpismada hizinin %32'sini tutar (eski %45);
   ilk vurustan sonra topun ve kuplerin kirma esigi 2.2-2.4 kat, atis basina carpismayla en cok 1 kirilma (eski 3); vurus yalniz 7 birim cevreyi uyandirir (uzak kose kipirdamaz).

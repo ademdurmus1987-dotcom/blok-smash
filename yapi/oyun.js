@@ -13,16 +13,17 @@ import { sekilKur, YAPI } from './sekil.js?v=13';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
 import { blok3bKur } from './blok3b.js?v=42';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
-import { ENG3, engel3Kur } from './engel3.js?v=6';   // v11.1: boyali engeller ve top (eski ?eng3=0)
+import { ENG3, engel3Kur } from './engel3.js?v=7';   // v11.1: boyali engeller ve top (eski ?eng3=0)
 import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=6';   // v11.2: boyali platform (eski ?plat3=0)
-import { TOP3, sekerMat, sekerDuz } from './seker.js?v=7';   // v11.7 (eski ?top3=0)
+import { TOP3, sekerMat, sekerDuz } from './seker.js?v=7';
+import { GOR, gorSec } from './gorunum.js?v=1';   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
-import { kaideKur } from './kaide.js?v=5';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=47';
+import { kaideKur } from './kaide.js?v=6';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
+import { merkezKur } from './merkez.js?v=48';
 import * as EG from './egri.js?v=6';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=9';
@@ -46,8 +47,8 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 // Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
 const FIZ2Q = Q.get('fiz') !== 'eski';
-const SKM = SEKQ ? await import('./pilot/sira.js?v=5') : {}, SKS = SKM.SEKIL || {}, DZB = (FIZ2Q && SKM.DUZBOT) || {};   // v12.1 DUZBOT: duzenekli bolumlerin yeni fizikle bot atisi
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=38') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const SKM = SEKQ ? await import('./pilot/sira.js?v=6') : {}, SKS = SKM.SEKIL || {}, DZB = (FIZ2Q && SKM.DUZBOT) || {};   // v12.1 DUZBOT: duzenekli bolumlerin yeni fizikle bot atisi
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=39') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -60,7 +61,7 @@ const OYUNCAK = (k) => typeof k === 'string' && /^(oy[A-Z]|uz\d|kr3)/.test(k) &&
 const KAL3 = Q.get('kal3') !== '0' && !window.KORSAN;   // v11.9 (golge, yeni blok karti, kazanma ekrani)
 if (KAL3 && !window.KORSAN) document.documentElement.classList.add('kal3', 'kz-' + (Q.get('kzrenk') || 'deniz'));   // v11.9: yeni blok karti ve kazanma ekrani (menu3.css sonu)
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
-const SURUM = 'v12.1', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v12.2', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -2533,7 +2534,7 @@ function topHalat(g) {
   g.setAttribute('color', new THREE.BufferAttribute(d, 4)); const m = sekerMat(THREE, g, { sk: 'kutu' }); m.emissive.set('#201004'); return m;
 }
 function topSon(G, mz) {
-  TC.gun = new THREE.Group(); TC.gun.add(G); TC.holder.add(TC.gun); TC.pro = true;
+  TC.gun = new THREE.Group(); TC.gun.add(G); TC.holder.add(TC.gun); TC.pro = true; gorUygula();
   TC.muzzle.set(0, 1.3, mz); TC.h = 1.8; TC.w = 2.3; TC.info = { pro: true };
   TC.w0 = TC.w; const pad = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.9, 1, 64), new THREE.MeshStandardMaterial({ color: '#f4e8d6', roughness: 0.55 }));
   pad.receiveShadow = true; TC.holder.add(pad); TC.pad = pad;
@@ -2662,9 +2663,26 @@ function shoot(target) {
 }
 let TOPG = null, TOPM = null;
 // v6.2: yildizli top malzemesi daha canli (kendi isigi + yansima) ve etrafinda yumusak bir hale
+// v12.2 Gardirop (Adem: 'altin yildiz harcayacak bir sey yok'): secili araba renkleri (kaide.js malzeme rolu) ve gulle rengi. Yalniz gorunum.
+let GULID = null;
+function gorUygula() {
+  if (!GOR || typeof SV === 'undefined' || !SV) return; const { araba, gulle } = gorSec(SV);
+  if (TC.gun) TC.gun.traverse((o) => { if (o.isMesh && o.material && o.material.userData && araba.r[o.material.userData.rol]) o.material.color.set(araba.r[o.material.userData.rol]); });
+  if (GULID !== gulle.id) { GULID = gulle.id; TOPG = null; }
+}
+// gulle modelinin renkleri koselerde (mor tonlar): her kosenin parlakligi korunur, ton secilen renge cevrilir
+function gulleBoya(geo, hex) {
+  const g = geo.clone(), a = g.attributes.color; if (!a) return g; const T = new THREE.Color(hex), lum = (r, gg, b) => 0.2126 * r + 0.7152 * gg + 0.0722 * b;
+  let ort = 0; for (let i = 0; i < a.count; i++) ort += lum(a.getX(i), a.getY(i), a.getZ(i)); ort = Math.max(1e-4, ort / a.count);
+  const lt = Math.max(0.05, lum(T.r, T.g, T.b)), c = new Float32Array(a.count * a.itemSize); c.set(a.array);
+  for (let i = 0; i < a.count; i++) { const k = lum(a.getX(i), a.getY(i), a.getZ(i)) / ort, m = Math.min(k, 1 / Math.max(T.r, T.g, T.b, 0.05));
+    const r = T.r * m, gg = T.g * m, b = T.b * m, ek = Math.max(0, k - m) * lt;   // acik renkte fazlasi beyaza kayar (parlama)
+    c[i * a.itemSize] = Math.min(1, r + ek); c[i * a.itemSize + 1] = Math.min(1, gg + ek); c[i * a.itemSize + 2] = Math.min(1, b + ek); }
+  g.setAttribute('color', new THREE.BufferAttribute(c, a.itemSize)); return g;
+}
 function topMat() { if (ENG3 && E3.G.top) return (TOPM = E3.G.top.material); return (TOPM = MOD.top.mat); }   // v6.4: (Adem) topun kendi rengi, ek parlama yok
 function topGeo() {
-  if (ENG3 && E3.G.top) return TOPG || (TOPG = E3.G.top.geometry.clone().scale(BR / 1.03, BR / 1.03, BR / 1.03));   // v11.1
+  if (ENG3 && E3.G.top) return TOPG || (TOPG = (GOR && GULID && GULID !== 'g0' ? gulleBoya(E3.G.top.geometry, gorSec(SV).gulle.c) : E3.G.top.geometry.clone()).scale(BR / 1.03, BR / 1.03, BR / 1.03));   // v11.1   // v12.2 gulle rengi
   if (TOPG || !MOD.top) return TOPG;
   const g = MOD.top.geo.clone(), b = g.boundingBox, c = b.getCenter(new THREE.Vector3()), z = b.getSize(new THREE.Vector3());
   g.translate(-c.x, -c.y, -c.z); g.scale(2 * BR / z.x, 2 * BR / z.y, 2 * BR / z.z); g.computeBoundingSphere(); return (TOPG = g);
@@ -3844,7 +3862,7 @@ function devamEt() {
 // bolumden vazgecme (tekrar dene, ana sayfa): seri biter, bu bolum artik 'ilk denemede' sayilmaz
 function pesEt() { if (g && (g.armed || g.state === 'lose')) { SV.dus = LV; ist().seri = 0; save(); } }
 function merkezBagla() {
-  M = merkezKur({ SV, save, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, hazirla: (L) => { bolumYukle(L).then(() => { const ks = gerekliModel(L); modelYukle(ks).then(() => loadPieces(ks)); }); }, toplam: TOPLAM, SURUM, ZOR_ODUL,
+  M = merkezKur({ SV, save, gorUygula, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, hazirla: (L) => { bolumYukle(L).then(() => { const ks = gerekliModel(L); modelYukle(ks).then(() => loadPieces(ks)); }); }, toplam: TOPLAM, SURUM, ZOR_ODUL,
     ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
     plan: (L) => (EGRI && L > BV.el ? EG.planY(L, bvY(L), BV.el) : null), EG,   // v8.0: harita ve bolum karti icin bolum turu
     sesAg: () => (AC && !SV.sessiz ? (out(), { AC, out: MASTER }) : null),   // v4.8: kazanma sahnesinin kodla uretilen sesleri icin
@@ -4212,7 +4230,10 @@ let CPITCH = 9 * Math.PI / 180, CAZ = 0; const CTG = new THREE.Vector3(); let CA
 const YER = Q.get('yer') !== '0';   // v9.4 (Adem 19 Kas): referans oyundaki yerlesim olculdu (390x844 oraninda): tabla ust yuzu ekranin %64'u, yapi tepesi en fazla ~%15, namlu agzi ~%81, araba ekran genisliginin ~%46'si. ?yer=0 eski yerlesim
 // v11.4 (Adem 22 Kas: 'kamera yaklastirma'; rakipte yapi ekranin %80-90'i): yapi ekran genisliginin ~%80'ini doldurur; bir blok ekranin en cok
 // %11.5'i (390 pikselde 45) olur ki kucuk yapi dev gorunmesin (v10.23 sikayeti). Varsayilan (Adem 23 Kas), eski ?kam2=0. ?kam2b= yarim genislik tabani (kucuk = yakin)
-const KAM2 = Q.get('kam2') !== '0' && Q.get('kam') !== '0', KAM2B = +(Q.get('kam2b') || S / 0.115 / 2), KAM2Y = 0.94;
+// v12.2 (Adem 23 Kas: 'ilk bolumlerde kamera cok yakin'; Kingdom/Pirate Smash ekranlari): kamera yapiyi degil platformu cercevelr, bir blok en cok
+// ekranin %8.8'i (~34 px). Kucuk yapi genis platformun ortasinda kucuk durur. Eski (v11.4) hal: ?kam3=0
+const KAM3 = Q.get('kam3') !== '0' && Q.get('kam2') !== '0' && Q.get('kam') !== '0';
+const KAM2 = Q.get('kam2') !== '0' && Q.get('kam') !== '0', KAM2B = +(Q.get('kam2b') || S / (KAM3 ? 0.088 : 0.115) / 2), KAM2Y = KAM3 ? 0.88 : 0.94;
 const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * 0.86;   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
 const CGAP = 8;   // v6.27: (Adem) platform ile top arabasi arasi her bolumde esit (kupler arabanin uzerine devriliyordu)
 const YAW = 0;   // v6.2: (Adem) platform kameraya duz baksin; derinligi yukaridan bakis acisi verir
@@ -4237,6 +4258,7 @@ function fit() {
       let kx = 0, ky = 0; for (const q of PLS) { if (q.kay) kx = Math.max(kx, q.kay.a || 0); if (q.asn) ky = Math.max(ky, q.asn.a || q.asn || 0); }
       if (yD && yD.don) { const mx = (bb.min.x + bb.max.x) / 2, r = Math.hypot(bb.max.x - mx, Math.max(Math.abs(bb.min.z), Math.abs(bb.max.z))); bb.min.x = mx - r; bb.max.x = mx + r; bb.max.z = Math.max(bb.max.z, r); bb.min.z = Math.min(bb.min.z, -r); }
       bb.min.x -= kx; bb.max.x += kx; if (ky > 0 && ky < 20) bb.max.y += ky;
+      if (KAM3 && PLS[0]) { const p0 = PLS[0]; bb.min.x = Math.min(bb.min.x, (p0.x || 0) - p0.r); bb.max.x = Math.max(bb.max.x, (p0.x || 0) + p0.r); }   // v12.2: platformun tamami gorunur
     }
     if (!bb.isEmpty()) { YB = bb; CX = (bb.min.x + bb.max.x) / 2; const mz = Math.max(RZ, bb.max.z);
       tops.length = 0; for (const x of [bb.min.x, bb.max.x]) for (const z of [bb.min.z, mz]) tops.push([x, bb.max.y, z]); bots.length = 0; bots.push([bb.min.x, -0.8, mz], [bb.max.x, -0.8, mz]); } }
@@ -4245,7 +4267,7 @@ function fit() {
   const foY = fonOf(LV), ayak = foY && foY.yeni ? 1 - 2 * fonPx(0.5, foY.cy)[1] / H : null;
   // v10.23 (Adem 20 Kas: 'bazi bolumlerde platform cok yakin, ideal mesafe 1196'): kamera hicbir bolumde 1196'daki uzakliktan yakina gelmez
   // (yakin kamera kucuk yapiyi dev gosteriyordu). Ekrandaki olcek her bolumde ayni; yalniz yapi sigmazsa geri cekilir. Eski hal: ?kam=0
-  let d = YER ? Math.max(6, reach + 3, Q.get('kam') === '0' || PC ? 0 : KAM2 ? Math.max(KAM2B / thx, (reach + CGAP + 3.2) / Math.cos(pitch)) : 10.6 / thx) : PC ? 8 /* PILOT: yapi sigana kadar geri cekilir; araba yuksekte, platforma degmez */ : Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
+  let d = YER ? Math.max(6, reach + 3, Q.get('kam') === '0' || (PC && !KAM3) ? 0 : KAM2 ? Math.max(KAM2B / thx, (reach + CGAP + 3.2) / Math.cos(pitch)) : 10.6 / thx) : PC ? 8 /* PILOT: yapi sigana kadar geri cekilir; araba yuksekte, platforma degmez */ : Math.max(8, (reach + CGAP + 3.5) / Math.cos(pitch));   // kamera, arabaya yer kalacak kadar geride baslar
   for (; d < 120; d += 0.25) {
     let lo = -10, hi = TOPY + 10;
     // v3.19: resim fonda platform ayagi (0, GY, 0) resimdeki bos yuvarlak zeminin ortasina oturur (ekranda sabit nokta); kamera yapi sigana kadar geri cekilir
