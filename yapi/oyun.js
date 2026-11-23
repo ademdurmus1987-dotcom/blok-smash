@@ -50,9 +50,9 @@ const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST
 const FIZ2Q = Q.get('fiz') !== 'eski';
 const SKM = SEKQ ? await import('./pilot/sira.js?v=6') : {}, SKS = SKM.SEKIL || {}, DZB = (FIZ2Q && SKM.DUZBOT) || {};   // v12.1 DUZBOT: duzenekli bolumlerin yeni fizikle bot atisi
 const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=39') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
-const TOP5 = Q.get('top5') === '1';   // v12.4 deneme: Blender top arabasi (model/top5/araba.glb), parlak vernikli malzeme
+const TOP5 = Q.get('top5') !== '0';   // v12.5 VARSAYILAN (Adem onayladi), eski araba ?top5=0   // v12.4 deneme: Blender top arabasi (model/top5/araba.glb), parlak vernikli malzeme
 const TOP4 = (Q.get('top4') === '1' || Q.get('yeni4') === '1' || TOP5) && TOP3 && !window.KORSAN;   // v12.3 deneme: arkadan okunan top arabasi; namlu agzi ekranin %76'sinda, araba tamamen gorunur
-const AYAK4 = Q.get('ayak4') === '1' || Q.get('yeni4') === '1';   // v12.3 deneme: tek kalin platform ayagi
+const AYAK4 = Q.get('ayak4') !== '0' || Q.get('yeni4') === '1';   // v12.5 VARSAYILAN (Adem onayladi), eski iki ayak ?ayak4=0   // v12.3 deneme: tek kalin platform ayagi
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez

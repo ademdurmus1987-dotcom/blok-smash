@@ -88,6 +88,9 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 
 ## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
 
+## v12.5 (24 Kas 2026): Blender top arabasi ve tek platform sutunu VARSAYILAN (Adem onayladi)
+- oyun.js TOP5 / AYAK4 kosulu `!== '0'`. Eski araba `?top5=0`, eski iki ayak `?ayak4=0`. Atis dalgasi kapali: `?dalga=0`. oyun.js?v=233, CACHE v183.
+
 ## v12.4 DENEME (24 Kas 2026): Blender top arabasi (Adem: 'bana gorsel kalite ver referanslar gibi, blender dan yapabilir misin')
 - uretici/blender/top_arabasi5.py -> model/top5/araba.glb (~49 bin ucgen, 0.97 MB): pahli namlu, 3 iplikli burgulu halat halkalar, altin halkalar ve muylu, kabartma tilki patisi,
   basamakli tahta yanaklar + percin + demir bant, parmakli tekerlek + demir lastik + altin gobek. Malzeme adi = rol (govde namlu ahsap altin krem demir ic halat).
@@ -135,7 +138,7 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - egri.js sekilTop: sekil bolumlerinde de zincir/kaptan/altin turu top carpani.
 
 ## SIRADAKI (24 Kas 2026, v12.4 sonrasi)
-1. Adem telefonda deniyor: ?top5=1 (Blender top arabasi, %83 yer, atis dalgasi) ve ?ayak4=1 (tek kalin platform sutunu). Onaylarsa varsayilan yap (TOP5/AYAK4 kosulu), eski hal anahtari birak.
+1. YAPILDI v12.5: top5 ve ayak4 varsayilan (eski ?top5=0, ?ayak4=0).
 2. Ayni Blender yontemiyle (pahli form + parlak vernik MeshPhysical + ENV) once platform/ayak, sonra bloklar. Referans: yapi/referans/oyun2 (Smash Kingdom, Play Store ekranlari). Rakibin renk/motifini kopyalama.
 3. Kurulan eklentiler (Adem 24 Kas): image-generation (Gemini istemleri icin rehber), CellCog (ses/muzik/gorsel/3B uretimi; Adem'in hesabiyla kurulum gerekir, /cellcog-setup). Onerildi: SoundWeaver (52 hazir ses), parallax-threejs (Three.js hata ayiklama).
    CellCog ile oncelik: oyun sesleri ve muzik (simdi kodla uretiliyor), yeni dunya fonlari.
