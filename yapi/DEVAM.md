@@ -88,6 +88,12 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 
 ## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
 
+## v12.3 DENEME (24 Kas 2026): arkadan okunan top arabasi ve tek platform ayagi (Adem: 'kalite farkini gostermek istedim'; Smash Kingdom / Play Store ekranlari referans/oyun2)
+- Sorun: bizim araba ekranin altinda yarisi kesik iri bir top gibi okunuyordu; rakipte arkadan bakinca uzun, kalkik namlu. Platform iki ince ayakta, rakipte tek kalin orta sutun.
+- top4.js topModeli3: 26 derece kalkik uzun namlu (turuncu govde, turkuaz agiz, halat/altin halkalar, arkasinda tilki patisi), tahta yanaklar, parmakli tekerlekler. Gardirop rolleri ayni.
+  Ekranda namlu agzi %80, genislik %22 (?t4y= ?t4w= ile denenir). oyun.js pAyak AYAK4: genis platformda da tek sutun, kalinlik platforma gore x1.35-1.9.
+- Anahtar: ?yeni4=1 (ikisi), ?top4=1, ?ayak4=1. Adem onaylayinca varsayilan olacak.
+
 ## v12.2 (23 Kas 2026): uzak kamera, genis ilk bolumler, Gardirop (Adem: 'ilk bolumlerde kamera cok yakindi, cok basit; oyuncu cekmek icin iyi olmali; altin yildiz harcayacak bir sey yok'; Kingdom Smash ve Pirate Smash ekranlari: yapi/referans/oyun2/)
 - Kamera (oyun.js KAM3, eski ?kam3=0): bir blok ekranin en cok %8.8'i (~34 px; v11.4'te %11.5, ilk bolumlerde 60-74 px oluyordu); sekil (pilot) bolumlerinde de gecerli. Ana kipte platformun tamami cerceveye girer.
 - Ilk 25 (uretici/tasarim/ilk25.mjs; t19.json `node ilk_yaz.mjs`): 1-7, 9, 11-14, 17, 18, 21 7-10 sutuna genisledi (desenli, 1-2 renk). Bot olcumu sira.js SEKIL[1..25][2]. Onceki tasarim: git v12.1.

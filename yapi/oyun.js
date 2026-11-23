@@ -16,7 +16,8 @@ import { blok3bKur } from './blok3b.js?v=42';   // v6.1: ana oyun bloklari icin 
 import { ENG3, engel3Kur } from './engel3.js?v=7';   // v11.1: boyali engeller ve top (eski ?eng3=0)
 import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=6';   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=7';
-import { GOR, gorSec } from './gorunum.js?v=1';   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
+import { GOR, gorSec } from './gorunum.js?v=1';
+import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
 import { ornekKur } from './ornek.js?v=3';
@@ -49,6 +50,8 @@ const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST
 const FIZ2Q = Q.get('fiz') !== 'eski';
 const SKM = SEKQ ? await import('./pilot/sira.js?v=6') : {}, SKS = SKM.SEKIL || {}, DZB = (FIZ2Q && SKM.DUZBOT) || {};   // v12.1 DUZBOT: duzenekli bolumlerin yeni fizikle bot atisi
 const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=39') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const TOP4 = (Q.get('top4') === '1' || Q.get('yeni4') === '1') && TOP3 && !window.KORSAN;   // v12.3 deneme: arkadan okunan top arabasi; namlu agzi ekranin %76'sinda, araba tamamen gorunur
+const AYAK4 = Q.get('ayak4') === '1' || Q.get('yeni4') === '1';   // v12.3 deneme: tek kalin platform ayagi
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -61,7 +64,7 @@ const OYUNCAK = (k) => typeof k === 'string' && /^(oy[A-Z]|uz\d|kr3)/.test(k) &&
 const KAL3 = Q.get('kal3') !== '0' && !window.KORSAN;   // v11.9 (golge, yeni blok karti, kazanma ekrani)
 if (KAL3 && !window.KORSAN) document.documentElement.classList.add('kal3', 'kz-' + (Q.get('kzrenk') || 'deniz'));   // v11.9: yeni blok karti ve kazanma ekrani (menu3.css sonu)
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
-const SURUM = 'v12.2', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v12.3', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -2216,11 +2219,11 @@ function pGolgeMat() { return PGOLGE || (PGOLGE = new THREE.MeshBasicMaterial({ 
 function pAyak(q, sk, h) {
   const G = new THREE.Group(), u = G.userData, yan = pMat('yan'), altin = pMat('altin'), koyu = pMat('koyu');
   // sutun yerleri: genis platformda iki sutun
-  const xs = q.r > 5.2 && sk.ad !== 'disk' ? [-q.r * 0.48, q.r * 0.48] : [0];
+  const xs = q.r > 5.2 && sk.ad !== 'disk' && !AYAK4 ? [-q.r * 0.48, q.r * 0.48] : [0];   // v12.3 deneme ?ayak4=1: rakipteki gibi tek, kalin orta sutun
   const sil = (r0, r1, y0, y1, mat, n) => ptMesh(new THREE.CylinderGeometry(r1, r0, Math.max(0.04, y1 - y0), n || 28), mat, 0, (y0 + y1) / 2, 0);
   u.sut = []; u.taban = []; u.set = []; u.kpk = [];   // (kopuk adi ptAt'in 'kopuk' isaretiyle karisiyordu: bolum degisince cokme)
   for (const x of xs) {
-    const s = new THREE.Group(); s.position.x = x; G.add(s);
+    const s = new THREE.Group(); s.position.x = x; G.add(s); if (AYAK4) { const k = Math.min(1.9, Math.max(1.35, q.r * 0.26)); s.scale.set(k, 1, k); }
     // taban: yere gomulu genis basamaklar (alt basamak GY'nin 0.12 altindan baslar)
     const tb = new THREE.Group(); if (PLAT3) { const m = P3.taban(); m.castShadow = m.receiveShadow = true; tb.add(m); } else tb.add(sil(1.35, 1.25, -0.12, 0.16, koyu, 36), sil(1.12, 1.02, 0.16, 0.36, altin, 36), sil(0.86, 0.78, 0.36, 0.5, yan, 32)); s.add(tb); u.taban.push(tb);
     // govde: sutun (yukseklige gore uzar), iki altin bilezik, platformun altinda altin baslik
@@ -2465,7 +2468,7 @@ function makeCannon() {
   pad.receiveShadow = true; TC.holder.add(pad); TC.pad = pad;
   const gm = new THREE.MeshStandardMaterial({ color: '#e8b93a', roughness: 0.28, metalness: 0.55 });
   const r1 = new THREE.Mesh(new THREE.TorusGeometry(1.76, 0.09, 10, 72), gm), r2 = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.09, 10, 72), gm);
-  r1.rotation.x = r2.rotation.x = Math.PI / 2; TC.holder.add(r1, r2); TC.rim2 = r2;
+  r1.rotation.x = r2.rotation.x = Math.PI / 2; TC.holder.add(r1, r2); if (TOP4) r1.visible = r2.visible = false; TC.rim2 = r2;
 
 }
 function updateCannon(dt) {
@@ -2482,6 +2485,7 @@ function updateCannon(dt) {
 // araba geri kayar ve tekerlekler doner, namlu agzi kor gibi parlar; beklerken altin halkalarda isik gezinir, namlu nefes alir.
 // Eksenler eski modelle ayni: namlu +z, zemin y=0. Korsan eski modeli kullanir.
 function topArabasiKur() {
+  if (TOP4) { const t = topModeli3(THREE, topBoya, topHalat); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; TC.nb = { z: t.nz, el: t.el, uc: t.uc }; topSon(t.G, t.muzzle.z); TC.muzzle.copy(t.muzzle); TC.w = TC.w0 = t.w; return; }   // v12.3 deneme
   if (KAIDE && Q.get('top') !== 'eski') { const t = Q.get('top') === 'eski2' ? KAIDE.topModeli() : TOP3 ? KAIDE.topModeli2(topBoya, topHalat) : KAIDE.topModeli2(); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; topSon(t.G, t.muzzleZ); return; }   // v4.4: yeni top
   const odunT = canvasTex(512, 512, (x, w, h) => {
     x.fillStyle = '#9a5a26'; x.fillRect(0, 0, w, h);
@@ -2540,7 +2544,7 @@ function topSon(G, mz) {
   pad.receiveShadow = true; TC.holder.add(pad); TC.pad = pad;
   const gm = TOP3 ? topBoya('#f3d49a', 'kutu') : new THREE.MeshStandardMaterial({ color: '#e8b93a', roughness: 0.28, metalness: 0.55 }); if (TOP3) pad.material = topBoya('#b9692a', 'kutu');
   const r1 = new THREE.Mesh(new THREE.TorusGeometry(1.76, 0.09, 10, 72), gm), r2 = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.09, 10, 72), gm);
-  r1.rotation.x = r2.rotation.x = Math.PI / 2; TC.holder.add(r1, r2); TC.rim2 = r2; TC.ti = 0; TC.dz = 0;
+  r1.rotation.x = r2.rotation.x = Math.PI / 2; TC.holder.add(r1, r2); if (TOP4) r1.visible = r2.visible = false; TC.rim2 = r2; TC.ti = 0; TC.dz = 0;
 }
 function topArabasiKare(dt) {
   TC.rec = Math.max(0, TC.rec - dt * 2.6); TC.ti += dt;
@@ -2550,7 +2554,7 @@ function topArabasiKare(dt) {
   for (const w of TC.tek) w.rotation.x += (z - TC.dz) / 0.72;
   TC.dz = z;
   const nef = Math.sin(TC.ti * 2.2) * 0.012;
-  TC.namlu.position.z = 0.2 - k * 0.32; TC.namlu.rotation.x = -k * 0.16 - 0.02 + nef; TC.namlu.scale.set(1 + k * 0.05, 1 + k * 0.05, 1 - k * 0.07);
+  TC.namlu.position.z = (TC.nb ? TC.nb.z : 0.2) - k * 0.32; TC.namlu.rotation.x = (TC.nb ? TC.nb.el : 0) - k * 0.16 - 0.02 + nef; TC.namlu.scale.set(1 + k * 0.05, 1 + k * 0.05, 1 - k * 0.07);
   TC.gun.rotation.x = -k * 0.05;
   TC.kor.material.opacity = Math.min(1, r * 1.4); TC.kor.material.color.setRGB(1, 0.35 + r * 0.5, 0.1 + r * 0.4);
   TC.halka.forEach((h, i) => { const ph = (TC.ti * 0.9 - i * 0.22) % 3; h.material.emissiveIntensity = 0.35 + Math.max(0, 1 - Math.abs(ph - 0.5) * 3) * 0.9 + r * 0.8; });
@@ -3001,7 +3005,7 @@ function updateFX(dt) {
 }
 const flashLight = new THREE.PointLight('#ffd6f0', 0, 16, 1.5); scene.add(flashLight);
 function muzzleFx(p, dir) {
-  if (PAT) { const p1 = p.clone(), d1 = dir.clone(); PAT.alev(TC.namlu && TC.gun ? (o, y) => { TC.namlu.updateWorldMatrix(true, false); y.setFromMatrixColumn(TC.namlu.matrixWorld, 2).normalize(); o.set(0, 0, 1.42).applyMatrix4(TC.namlu.matrixWorld); } : (o, y) => { o.copy(p1); y.copy(d1); }); flashLight.color.set('#ffc060'); flashLight.position.copy(p); flashLight.intensity = 24; return; }   // v11.11
+  if (PAT) { const p1 = p.clone(), d1 = dir.clone(); PAT.alev(TC.namlu && TC.gun ? (o, y) => { TC.namlu.updateWorldMatrix(true, false); y.setFromMatrixColumn(TC.namlu.matrixWorld, 2).normalize(); o.set(0, 0, TC.nb ? TC.nb.uc : 1.42).applyMatrix4(TC.namlu.matrixWorld); } : (o, y) => { o.copy(p1); y.copy(d1); }); flashLight.color.set('#ffc060'); flashLight.position.copy(p); flashLight.intensity = 24; return; }   // v11.11
   // pembe-beyaz parlama: hizla buyur ve soner; namlu onune isik; arkasindan yukari suzulen beyaz duman
   const a = spr('#ffd0ec', true, 1); a.position.copy(p).addScaledVector(dir, 0.4);
   fx(a, 0.22, (o, k) => { o.scale.setScalar(0.6 + k * 1.4); o.material.opacity = 0.8 * (1 - k) ** 1.5; });   // v6.12: kucuk parlama, topu saklamaz
@@ -4234,7 +4238,7 @@ const YER = Q.get('yer') !== '0';   // v9.4 (Adem 19 Kas): referans oyundaki yer
 // ekranin %8.8'i (~34 px). Kucuk yapi genis platformun ortasinda kucuk durur. Eski (v11.4) hal: ?kam3=0
 const KAM3 = Q.get('kam3') !== '0' && Q.get('kam2') !== '0' && Q.get('kam') !== '0';
 const KAM2 = Q.get('kam2') !== '0' && Q.get('kam') !== '0', KAM2B = +(Q.get('kam2b') || S / (KAM3 ? 0.088 : 0.115) / 2), KAM2Y = KAM3 ? 0.88 : 0.94;
-const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * 0.86;   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
+const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * (TOP4 ? +(Q.get('t4y') || 0.8) : 0.86);   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
 const CGAP = 8;   // v6.27: (Adem) platform ile top arabasi arasi her bolumde esit (kupler arabanin uzerine devriliyordu)
 const YAW = 0;   // v6.2: (Adem) platform kameraya duz baksin; derinligi yukaridan bakis acisi verir
 function fit() {
@@ -4285,7 +4289,7 @@ function fit() {
   // top arabasi
   if (TC.gun) {
     const dH = Math.hypot(cam.position.x, cam.position.z), dc = Math.max(2.8, Math.min(dH - (reach + CGAP), (dH - reach) / 3.6));   // v6.29: (Adem) gozle gorulen aralik her bolumde ayni: kameranin platforma uzakligi arabaya uzakliginin 3.6 kati
-    const k = ((YER ? 0.36 : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
+    const k = ((YER ? (TOP4 ? +(Q.get('t4w') || 0.22) : 0.36) : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
     let lo = GY - 30, hi = cam.position.y; const tipY = YER ? YER_NAMLU : PC ? -0.7   /* v8.7 PILOT: top arabasi her bolumde ekranda ayni yerde; platform ona gore (kamera) hizalanir */
       : Math.max(-0.8, Math.min(-0.6, V.set(0, GY + 0.3, 2).project(cam).y - 0.16));   // v6.29: (Adem) namlu ucu ekranda platform ayaginin altinda kalir, ayagin ustune binmez
     const UST = new THREE.Box3(), ustY = () => { UST.setFromObject(TC.gun); let m = -9; for (const x of [UST.min.x, UST.max.x]) for (const z of [UST.min.z, UST.max.z]) m = Math.max(m, V.set(x, UST.max.y, z).project(cam).y); return m; };
