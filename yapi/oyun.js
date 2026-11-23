@@ -4238,7 +4238,7 @@ const YER = Q.get('yer') !== '0';   // v9.4 (Adem 19 Kas): referans oyundaki yer
 // ekranin %8.8'i (~34 px). Kucuk yapi genis platformun ortasinda kucuk durur. Eski (v11.4) hal: ?kam3=0
 const KAM3 = Q.get('kam3') !== '0' && Q.get('kam2') !== '0' && Q.get('kam') !== '0';
 const KAM2 = Q.get('kam2') !== '0' && Q.get('kam') !== '0', KAM2B = +(Q.get('kam2b') || S / (KAM3 ? 0.088 : 0.115) / 2), KAM2Y = KAM3 ? 0.88 : 0.94;
-const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * (TOP4 ? +(Q.get('t4y') || 0.8) : 0.86);   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
+const YER_TABLA = 1 - 2 * 0.64, YER_TEPE = 1 - 2 * 0.15, YER_NAMLU = 1 - 2 * (TOP4 ? +(Q.get('t4y') || 0.86) : 0.86);   // namlu agzi %86: arabanin ust ucu (arkadan bakista kubbe) ~%81'e gelir
 const CGAP = 8;   // v6.27: (Adem) platform ile top arabasi arasi her bolumde esit (kupler arabanin uzerine devriliyordu)
 const YAW = 0;   // v6.2: (Adem) platform kameraya duz baksin; derinligi yukaridan bakis acisi verir
 function fit() {
@@ -4289,7 +4289,7 @@ function fit() {
   // top arabasi
   if (TC.gun) {
     const dH = Math.hypot(cam.position.x, cam.position.z), dc = Math.max(2.8, Math.min(dH - (reach + CGAP), (dH - reach) / 3.6));   // v6.29: (Adem) gozle gorulen aralik her bolumde ayni: kameranin platforma uzakligi arabaya uzakliginin 3.6 kati
-    const k = ((YER ? (TOP4 ? +(Q.get('t4w') || 0.22) : 0.36) : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
+    const k = ((YER ? (TOP4 ? +(Q.get('t4w') || 0.36) : 0.36) : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
     let lo = GY - 30, hi = cam.position.y; const tipY = YER ? YER_NAMLU : PC ? -0.7   /* v8.7 PILOT: top arabasi her bolumde ekranda ayni yerde; platform ona gore (kamera) hizalanir */
       : Math.max(-0.8, Math.min(-0.6, V.set(0, GY + 0.3, 2).project(cam).y - 0.16));   // v6.29: (Adem) namlu ucu ekranda platform ayaginin altinda kalir, ayagin ustune binmez
     const UST = new THREE.Box3(), ustY = () => { UST.setFromObject(TC.gun); let m = -9; for (const x of [UST.min.x, UST.max.x]) for (const z of [UST.min.z, UST.max.z]) m = Math.max(m, V.set(x, UST.max.y, z).project(cam).y); return m; };
