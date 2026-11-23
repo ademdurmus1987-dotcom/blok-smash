@@ -50,7 +50,8 @@ const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST
 const FIZ2Q = Q.get('fiz') !== 'eski';
 const SKM = SEKQ ? await import('./pilot/sira.js?v=6') : {}, SKS = SKM.SEKIL || {}, DZB = (FIZ2Q && SKM.DUZBOT) || {};   // v12.1 DUZBOT: duzenekli bolumlerin yeni fizikle bot atisi
 const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=39') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
-const TOP4 = (Q.get('top4') === '1' || Q.get('yeni4') === '1') && TOP3 && !window.KORSAN;   // v12.3 deneme: arkadan okunan top arabasi; namlu agzi ekranin %76'sinda, araba tamamen gorunur
+const TOP5 = Q.get('top5') === '1';   // v12.4 deneme: Blender top arabasi (model/top5/araba.glb), parlak vernikli malzeme
+const TOP4 = (Q.get('top4') === '1' || Q.get('yeni4') === '1' || TOP5) && TOP3 && !window.KORSAN;   // v12.3 deneme: arkadan okunan top arabasi; namlu agzi ekranin %76'sinda, araba tamamen gorunur
 const AYAK4 = Q.get('ayak4') === '1' || Q.get('yeni4') === '1';   // v12.3 deneme: tek kalin platform ayagi
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
@@ -64,7 +65,7 @@ const OYUNCAK = (k) => typeof k === 'string' && /^(oy[A-Z]|uz\d|kr3)/.test(k) &&
 const KAL3 = Q.get('kal3') !== '0' && !window.KORSAN;   // v11.9 (golge, yeni blok karti, kazanma ekrani)
 if (KAL3 && !window.KORSAN) document.documentElement.classList.add('kal3', 'kz-' + (Q.get('kzrenk') || 'deniz'));   // v11.9: yeni blok karti ve kazanma ekrani (menu3.css sonu)
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
-const SURUM = 'v12.3', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v12.4', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -2484,8 +2485,23 @@ function updateCannon(dt) {
 // malzemeler (dokme demir namlu, altin halkalar, ahsap kizak, parmakli tekerlekler). Hareketler: atista namlu geri teper,
 // araba geri kayar ve tekerlekler doner, namlu agzi kor gibi parlar; beklerken altin halkalarda isik gezinir, namlu nefes alir.
 // Eksenler eski modelle ayni: namlu +z, zemin y=0. Korsan eski modeli kullanir.
+// v12.4 deneme (Adem: 'gorsel kalite ver referanslar gibi, blender dan'): Blender modeli (uretici/blender/top_arabasi5.py) yuklenince kod modelinin yerine gecer.
+// Malzeme adi = rol; parlak vernikli fizik malzemesi (clearcoat + ortam yansimasi). Olculer ve dugumler top4.js ile ayni (Namlu, TekerL, TekerR).
+const T5R = { govde: ['#f2452c', 0.42, 0, 0.8], namlu: ['#0f9fb4', 0.4, 0, 0.8], ahsap: ['#b9692a', 0.6, 0, 0.2], altin: ['#f3c66a', 0.3, 0.85, 0.3], krem: ['#fff0cf', 0.45, 0, 0.6], demir: ['#6a4a34', 0.5, 0.4, 0.2], ic: ['#120a06', 0.9, 0, 0], halat: ['#e9cf9b', 0.8, 0, 0] };
+function top5Yukle(G0) {
+  new GLTFLoader().load('model/top5/araba.glb?v=1', (gl) => {
+    if (!TC.gun || !G0.parent) return; const R5 = gl.scene, MM = {};
+    R5.traverse((o) => { if (!o.isMesh) return; const ad = (o.material && o.material.name || '').replace(/\.\d+$/, ''), r = T5R[ad] || T5R.ahsap;
+      o.material = MM[ad] || (MM[ad] = Object.assign(new THREE.MeshPhysicalMaterial({ color: r[0], roughness: r[1], metalness: r[2], clearcoat: r[3], clearcoatRoughness: 0.18, envMap: ENV, envMapIntensity: 0.5 }), { userData: T5R[ad] && ad !== 'demir' && ad !== 'ic' && ad !== 'halat' ? { rol: ad } : {} }));
+      o.castShadow = o.receiveShadow = true; });
+    const N = R5.getObjectByName('Namlu'), tek = ['TekerL', 'TekerR'].map((k) => R5.getObjectByName(k)).filter(Boolean); if (!N) return;
+    N.rotation.x = TC.nb.el; const kor = new THREE.Mesh(new THREE.CircleGeometry(0.41, 28), new THREE.MeshBasicMaterial({ color: '#ff8a2a', transparent: true, opacity: 0 })); kor.position.z = TC.nb.uc + 0.005; N.add(kor);
+    const halka = []; N.traverse((o) => { if (o.isMesh && o.material.userData.rol === 'altin' && /halka/.test(o.name)) halka.push(o); });
+    G0.parent.add(R5); G0.parent.remove(G0); TC.namlu = N; TC.tek = tek; TC.kor = kor; TC.halka = halka; gorUygula();
+  }, undefined, () => console.warn('top5: model yuklenemedi'));
+}
 function topArabasiKur() {
-  if (TOP4) { const t = topModeli3(THREE, topBoya, topHalat); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; TC.nb = { z: t.nz, el: t.el, uc: t.uc }; topSon(t.G, t.muzzle.z); TC.muzzle.copy(t.muzzle); TC.w = TC.w0 = t.w; return; }   // v12.3 deneme
+  if (TOP4) { const t = topModeli3(THREE, topBoya, topHalat); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; TC.nb = { z: t.nz, el: t.el, uc: t.uc }; topSon(t.G, t.muzzle.z); TC.muzzle.copy(t.muzzle); TC.w = TC.w0 = t.w; if (TOP5) top5Yukle(t.G); return; }   // v12.3 deneme
   if (KAIDE && Q.get('top') !== 'eski') { const t = Q.get('top') === 'eski2' ? KAIDE.topModeli() : TOP3 ? KAIDE.topModeli2(topBoya, topHalat) : KAIDE.topModeli2(); TC.namlu = t.N; TC.tek = t.tek; TC.halka = t.halka; TC.kor = t.kor; topSon(t.G, t.muzzleZ); return; }   // v4.4: yeni top
   const odunT = canvasTex(512, 512, (x, w, h) => {
     x.fillStyle = '#9a5a26'; x.fillRect(0, 0, w, h);

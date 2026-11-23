@@ -88,6 +88,12 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 
 ## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
 
+## v12.4 DENEME (24 Kas 2026): Blender top arabasi (Adem: 'bana gorsel kalite ver referanslar gibi, blender dan yapabilir misin')
+- uretici/blender/top_arabasi5.py -> model/top5/araba.glb (~49 bin ucgen, 0.97 MB): pahli namlu, 3 iplikli burgulu halat halkalar, altin halkalar ve muylu, kabartma tilki patisi,
+  basamakli tahta yanaklar + percin + demir bant, parmakli tekerlek + demir lastik + altin gobek. Malzeme adi = rol (govde namlu ahsap altin krem demir ic halat).
+  Onizleme: `-- onizleme` -> uretici/blender/onizleme/top5_arka.png, top5_yan.png.
+- oyun.js top5Yukle: ?top5=1 (TOP4 yerlesimi ve animasyonu); once top4.js kod modeli, GLB gelince yerine gecer; malzeme MeshPhysical (clearcoat, ENV). Gardirop rolleri calisir.
+
 ## v12.3 DENEME (24 Kas 2026): arkadan okunan top arabasi ve tek platform ayagi (Adem: 'kalite farkini gostermek istedim'; Smash Kingdom / Play Store ekranlari referans/oyun2)
 - Sorun: bizim araba ekranin altinda yarisi kesik iri bir top gibi okunuyordu; rakipte arkadan bakinca uzun, kalkik namlu. Platform iki ince ayakta, rakipte tek kalin orta sutun.
 - top4.js topModeli3: 26 derece kalkik uzun namlu (turuncu govde, turkuaz agiz, halat/altin halkalar, arkasinda tilki patisi), tahta yanaklar, parmakli tekerlekler. Gardirop rolleri ayni.
