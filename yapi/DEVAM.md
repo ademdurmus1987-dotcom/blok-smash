@@ -88,6 +88,19 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 
 ## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
 
+## v12.0 (23 Kas 2026): 2000 bolum yeniden dizildi, 6 yeni engel (Adem: 'ayni gorsel ikinci kez olmasin, yeni engelleyiciler, monoton gitmesin; onay sende, tekte yayinla')
+- Sorun: 1601-1700 arasinda 100 bolumun yalniz 10'u Adem'in cizimlerinden, 1776'dan sonra hic yoktu; geri kalan 19 kaliptan uretilmis kule/kale/piramit.
+- Yeni tasarimlar (pilot 4000+, `yapi/pilot/tasarim/t*.json`, 100'er): izgara harfleri, oyunda `pilot/izgara.js` ile bloklara cevrilir (on sira resim, arka siralar birlesik dolgu).
+  Uretici: `yapi/uretici/tasarim/` -- yuz.mjs (60 hayvan/karakter yuzu x aksesuar x ifade), cizim.mjs (117 elle cizim: hayvan govdeleri, cisimler, yiyecek, tasit),
+  bina.mjs (kale, ev, gemi, tren, robot, agac, pasta, roket, tapinak, pagoda, sehir, maske, canavar ...), duvar.mjs (simge mozaikleri, desenler), duzen.mjs (kavanoz raflari, dev kavanoz, sutunlu katlar ...).
+  `node topla.mjs` kurar + benzerleri eler (on yuz resmi, eski ve yeni tasarimlarla benzerlik > 0.7 alinmaz) -> havuz.json, t*.json.
+  `python olc.py i n liste.json ON 0|45`: oyunun fizigiyle denge (0) ya da bot atisi (45). `python sira2.py OLCUM_KLASORU` -> pilot/sira.js (bolum -> yapi).
+- Yeni blok renkleri: oyZ lacivert, oyH kahverengi, oyG gri, oyE bej, oyL turkuaz (+ uz2-4 cubuklari; beyaz cubuk uz*B). seker.js + sekil.js.
+- Sira: Adem'in 176 cizimi yerinde (26, 36 .. 1776), ogretici 1-5, karisik yapilardan her kaliptan en cok 3; her dunyada 1 kayitli duzenekli bolum (denge, asansor, donen, kopru ...);
+  geri kalan her bolum yeni tasarim, her biri bir kez. Eski sira: `uretici/tasarim/sira_eski.js` (geri donus: pilot/sira.js yerine kopyala).
+- Engeller (`yapi/engel4.js`, eski havuz `?eng4=0`): delikli cark, ahtapot kollari, papagan, ikiz gulle, balonlu fici (balonu vurunca patlar), ziplayan ficilar. Kayitli bolumlerde %55 engel, tur sirayla doner; yeni engel +2 top.
+- egri.js sekilTop: sekil bolumlerinde de zincir/kaptan/altin turu top carpani.
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.

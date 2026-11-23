@@ -3,14 +3,16 @@
 // Boyama (sekerMat): sahnenin gercekci isigi yerine elle ayarli, ucuz golgelendirme. On yuz turun tam rengi; ust acik, yan ve alt koyu ama DOYGUN
 // (griye kaymaz); parlama yalniz sol ust pahlarda ve kavanozda genis dikey bantta. Ton eslemesine girmez: ekrandaki renk = secilen renk.
 export const SEKER = new URLSearchParams(location.search).get('yeni') !== '0';   // v11 (Adem 22 Kas: 'varsayilan yap')
-const R = { K: '#ea1f31', M: '#1c7cf6', S: '#ffc310', Y: '#22b935', P: '#9a35f2', T: '#ff8016', N: '#ff479f', A: '#22b4ff', B: '#f3ece2' };
+const R = { K: '#ea1f31', M: '#1c7cf6', S: '#ffc310', Y: '#22b935', P: '#9a35f2', T: '#ff8016', N: '#ff479f', A: '#22b4ff', B: '#f3ece2',
+  Z: '#2c3560', H: '#a45a24', G: '#97a0b6', E: '#f2c88e', L: '#16bfc4' };   // v12: hayvan ve cisim dizilimleri icin lacivert, kahverengi, gri, bej, turkuaz
 const ALTIN = '#ffc41c', TAHTA = '#fb9a2e', TASR = '#6470b4';
 // tur -> [dosya, purz (kullanilmaz), kirik parca rengi, { govde, vurgu, sk: boyama turu 'kutu' | 'cam' | 'buz' | 'tas' | 'tahta', dik }]
 export const TOP3 = new URLSearchParams(location.search).get('top3') !== '0';   // v11.7: Foxi yuzlu kup ve top arabasi yeni kimlikte
 export const SEKERL = {};
 {
   const ek = (k, d, govde, sk, o) => { SEKERL[k] = ['blok3/' + d, 0.3, govde, Object.assign({ govde, sk }, o || {})]; };
-  for (const c of 'KMSYPTNB') ek('oy' + c, 'kup1', R[c], 'kutu');
+  for (const c of 'KMSYPTNBZHGEL') ek('oy' + c, 'kup1', R[c], 'kutu');
+  for (const c of 'BZHGEL') for (const n of [2, 3, 4]) ek('uz' + n + c, 'kup' + n, R[c], 'kutu');
   for (const c of 'KMSYPTNA') {
     for (const n of [1, 2, 3, 4]) ek('uz' + n + c, 'kup' + n, R[c], 'kutu');
     ek('kj' + c, 'kav1', R[c], 'cam'); ek('kvU' + c, 'kav2', R[c], 'cam'); ek('kvL' + c, 'kav3', R[c], 'cam'); ek('kvB' + c, 'kavB', R[c], 'cam');

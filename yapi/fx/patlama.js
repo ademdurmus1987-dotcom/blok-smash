@@ -4,7 +4,7 @@
 //   alev(p, dir)            : namlu agzinda sari-turuncu alev
 // Hepsi iki cizim cagrisi: damlalar tek InstancedMesh, pufler tek ornekli dortgen katmani (parcacik.js). Havuz sinirli, telefonu yormaz.
 import { parcacikKur } from './parcacik.js?v=2';
-import { sekerDuz } from '../seker.js?v=6';
+import { sekerDuz } from '../seker.js?v=7';
 export function patlamaKur({ THREE, scene, S, floorAt, canvasTex }) {
   // ---- puf dokusu: cizgi film bulutu (parlak ic, net kenar) ----
   const PUF = canvasTex(128, 128, (x, w, h) => {

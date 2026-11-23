@@ -474,6 +474,9 @@ export function sekilKur({ THREE, S, canvasTex, ENV, b3 }) {
     oyT: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#ef5a0c', kir: 1, yuzer: 1, yap: () => patiKup('turuncu', '#ef5a0c', 'pati') },
     oyN: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#ff3d9e', kir: 1, yuzer: 1, yap: () => patiKup('pembe', '#ff3d9e', 'pati') },
     oyB: { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: '#f3f0ea', kir: 1, yuzer: 1, yap: () => patiKup('beyaz', '#e8e4dc', 'pati') },
+    // v12 (Adem: 'hayvan yuzu ya da cisim sekil olsun'): yeni renkler (lacivert, kahverengi, gri, bej, turkuaz) ve bu renklerle beyazin uzun cubuklari
+    ...Object.fromEntries([['Z', '#2c3560', 'mavi'], ['H', '#a45a24', 'turuncu'], ['G', '#97a0b6', 'beyaz'], ['E', '#f2c88e', 'sari'], ['L', '#16bfc4', 'mavi']].map(([c, r, p]) => ['oy' + c, { w: 1, h: 1, d: 1, mass: 0.85, f: 0.6, r: 0.14, ses: 'tahta', renk: r, kir: 1, yuzer: 1, yap: () => patiKup(p, r, 'pati') }])),
+    ...Object.fromEntries([['B', '#f3ece2'], ['Z', '#2c3560'], ['H', '#a45a24'], ['G', '#97a0b6'], ['E', '#f2c88e'], ['L', '#16bfc4']].flatMap(([c, r]) => [2, 3, 4].map((n) => ['uz' + n + c, { w: n, h: 1, d: 1, mass: [0, 0, 1.6, 2.3, 3.0][n], f: 0.62, r: 0.1, ses: 'tahta', renk: r, kir: 1, carp: 7 + n, yuzer: 1, yap: () => cubuk(r, n, 'pati') }]))),
     oyA: { w: 1, h: 1, d: 1, mass: 1.5, f: 0.6, r: 0.1, ses: 'metal', renk: '#f5b81c', sert: 1, yap: () => patiKup('altin', '#f2b51c', 'yildiz') },
     tas2: { w: 2, h: 1, d: 1, mass: 1.7, f: 0.7, r: 0.06, ses: 'tas', renk: '#4a6cdb', sert: 1, yap: () => tas(2, 11) },
     tas4: { w: 4, h: 1, d: 1, mass: 2.8, f: 0.7, r: 0.06, ses: 'tas', renk: '#4a6cdb', sert: 1, yap: () => tas(4, 23) },

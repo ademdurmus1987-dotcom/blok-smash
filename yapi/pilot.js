@@ -9,6 +9,7 @@
 //   parca: [{ t, x, y?, z, ry?, rx?, rz?, p: 'adaId.kat', id?, kir? }]   y: parcanin ALT yuzu (verilmezse katin ustu),
 //          ry/rx/rz derece. kir: bu hizdan sert sabit yuzeye carpinca kirilir (turun kendi 'carp' degeri yerine).
 //   kam:   { pitch, yaw } derece. top: top sayisi.
+import { genislet } from './pilot/izgara.js?v=1';   // v12: izgara tasarimlari (pilot/tasarim/)
 import { pilotSekilKur } from './pilot_sekil.js?v=6';
 
 // v9.0 (19 Kas 2026, Adem: 'zorluk egrisine gore araya serpistir'): ana: true -> ANA OYUN KIPI. Sekil bolumleri ana oyunun 2000 bolumunun arasinda
@@ -20,11 +21,11 @@ export function pilotKur(A, ana) {
   // v8.3 (18 Kas 2026): 31-36 Adem'in cizimindeki 6 yapi (Korsan Gemisi, Kale, Kuru Kafa, Deniz Feneri, Tilki Basi, Tas Kopru): ayri dosya pilot/resim.json
   // v8.6: 55-108 gorsel referans zip'i (pilot/duvar.json); v9.0: 109+ ikinci zip (pilot/yeni.json), ayni duvar kurallari
   let DUVAR = false, RESIM = false;
-  const ayarla = (n) => { N = n; DUVAR = N >= 55 && N <= 999; RESIM = (N >= 31 && N <= 54) || DUVAR; };
+  const ayarla = (n) => { N = n; DUVAR = (N >= 55 && N <= 999) || N >= 4000; RESIM = (N >= 31 && N <= 54) || DUVAR; };
   ayarla(N);
-  const dosyaOf = (n) => n >= 3000 ? 'pilot/karma.json?v=2' : n >= 2900 ? 'pilot/ogretici.json?v=4' : n >= 960 ? 'pilot/yapi.json?v=6' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
+  const dosyaOf = (n) => n >= 4000 ? 'pilot/tasarim/t' + Math.floor((n - 4000) / 100) + '.json?v=1' : n >= 3000 ? 'pilot/karma.json?v=2' : n >= 2900 ? 'pilot/ogretici.json?v=4' : n >= 960 ? 'pilot/yapi.json?v=6' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
   const DOS = {}, DOSV = {}, HAZ = new Set();
-  const veriAl = (n) => { const u = dosyaOf(n); return DOS[u] || (DOS[u] = fetch(u).then((r) => r.json()).then((v) => (DOSV[u] = v)).catch(() => { delete DOS[u]; return null; })); };
+  const veriAl = (n) => { const u = dosyaOf(n); return DOS[u] || (DOS[u] = fetch(u).then((r) => r.json()).then((v) => { if (v.tasarim) { v.bolumler = {}; for (const k in v.tasarim) { let b; Object.defineProperty(v.bolumler, k, { enumerable: true, get: () => b || (b = genislet(+k, v.tasarim[k])) }); } } return (DOSV[u] = v); }).catch(() => { delete DOS[u]; return null; })); };
   // v9.0: ana oyunda tas, fici ve sise Adem'in cizimindeki gibi gri tas / fici / sise (oyun.js GRI: ayni turun eski gorunumlu esi)
   // v9.2: sekil bolumlerinde cilali es tur (oyun.js CILA_T, ?cila=0 kapatir)
   const MUC = /[?&]mucevher=1/.test(location.search) ? {} : { ksYakut: 'oyK', ksElmas: 'oyM', ksKaro: 'oyM' };   // v10.5 (Adem: yakut ve elmas istemiyorum)
