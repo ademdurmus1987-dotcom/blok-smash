@@ -134,6 +134,12 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - Engeller (`yapi/engel4.js`, eski havuz `?eng4=0`): delikli cark, ahtapot kollari, papagan, ikiz gulle, balonlu fici (balonu vurunca patlar), ziplayan ficilar. Kayitli bolumlerde %55 engel, tur sirayla doner; yeni engel +2 top.
 - egri.js sekilTop: sekil bolumlerinde de zincir/kaptan/altin turu top carpani.
 
+## SIRADAKI (24 Kas 2026, v12.4 sonrasi)
+1. Adem telefonda deniyor: ?top5=1 (Blender top arabasi, %83 yer, atis dalgasi) ve ?ayak4=1 (tek kalin platform sutunu). Onaylarsa varsayilan yap (TOP5/AYAK4 kosulu), eski hal anahtari birak.
+2. Ayni Blender yontemiyle (pahli form + parlak vernik MeshPhysical + ENV) once platform/ayak, sonra bloklar. Referans: yapi/referans/oyun2 (Smash Kingdom, Play Store ekranlari). Rakibin renk/motifini kopyalama.
+3. Kurulan eklentiler (Adem 24 Kas): image-generation (Gemini istemleri icin rehber), CellCog (ses/muzik/gorsel/3B uretimi; Adem'in hesabiyla kurulum gerekir, /cellcog-setup). Onerildi: SoundWeaver (52 hazir ses), parallax-threejs (Three.js hata ayiklama).
+   CellCog ile oncelik: oyun sesleri ve muzik (simdi kodla uretiliyor), yeni dunya fonlari.
+
 ## SIRADAKI (Adem 22 Kas, rakip ekranlariyla karsilastirma)
 Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok ~30 px. En buyuk fark bu.
 1. Kamera yakinlastirma denemesi: her bolumde yapi ekran genisliginin ~%80'ini doldursun (v10.23 '1196 kurali' ?kam ile denenebilir yapilacak). Mevcut modellerle telefonda karsilastirma.
