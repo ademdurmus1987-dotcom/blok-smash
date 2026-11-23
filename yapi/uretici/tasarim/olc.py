@@ -21,8 +21,10 @@ def ac():
     d.execute_async_script("const cb=arguments[0];Promise.all([import('./uretici/pilot_test.js?v=9'),import(performance.getEntriesByType('resource').map(r=>r.name).find(u=>/sira.js/.test(u)))]).then(([t,s])=>{window.PT=t;window.SK=s.SEKIL;cb()})")
     return d
 JS = '''const [n,L,sinir,cb]=arguments;(async()=>{const bas=performance.now();SK[L]=[n,'t',50,'sabit'];YP.start(L);for(let i=0;i<400&&!(YP.g&&YP.g.L===L&&YP.cubes.length&&YP.lv(L).sekil===n&&window.__n!==n);i++)await new Promise(r=>setTimeout(r,25));
-window.__n=n;if(!YP.cubes.length)return cb({hata:'kurulamadi'});YP.g.armed=false;const np=YP.cubes.length,d=PT.durgunluk(2.5);const b=sinir?PT.bot(sinir,true):{};cb({np,dus:d.dus,kay:d.kay,en:d.enCok,bot:b.atis,kaz:b.kazandi,kalan:b.kalan,ms:Math.round(performance.now()-bas)})})().catch(e=>cb({hata:''+e}))'''
-d = ac(); L = 1003 + i; say = 0; t0 = time.time()
+window.__n=n;if(!YP.cubes.length)return cb({hata:'kurulamadi'});YP.g.armed=!!window.__HAR;if(window.__HAR){YP.g.kirB=99}const np=YP.cubes.length,d=PT.durgunluk(window.__HAR?4:2.5);const b=sinir?PT.bot(sinir,true):{};cb({np,dus:d.dus,kay:d.kay,en:d.enCok,bot:b.atis,kaz:b.kazandi,kalan:b.kalan,ms:Math.round(performance.now()-bas)})})().catch(e=>cb({hata:''+e}))'''
+d = ac()
+if len(sys.argv) > 6 and sys.argv[6] == 'm': d.execute_script('window.__HAR=1')
+L = 1003 + i; say = 0; t0 = time.time()
 for k in is_:
     L += 10
     if L > 1990: L = 1003 + i
@@ -32,8 +34,11 @@ for k in is_:
         try: d.quit()
         except Exception: pass
         d = ac()
+        if len(sys.argv) > 6 and sys.argv[6] == 'm': d.execute_script('window.__HAR=1')
     R[str(k)] = r; say += 1
     if say % 5 == 0: json.dump(R, open(OUT, 'w'))
     if say % 20 == 0: print(i, say, len(is_), round(time.time() - t0), r, flush=True)
-    if say % 120 == 0: d.quit(); d = ac()
+    if say % 120 == 0:
+        d.quit(); d = ac()
+        if len(sys.argv) > 6 and sys.argv[6] == 'm': d.execute_script('window.__HAR=1')
 json.dump(R, open(OUT, 'w')); d.quit(); print('bitti', i)

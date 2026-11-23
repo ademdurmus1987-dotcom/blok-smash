@@ -110,9 +110,12 @@ export function genislet(n, d) {
   });
   let x0 = 0, x1 = 0; for (const [t, x] of P) { x0 = Math.min(x0, x - genW(t) / 2); x1 = Math.max(x1, x + genW(t) / 2); }
   const r = Math.max(-x0, x1) * S + 0.25, rz = (zT + 0.5 + (P.some((p) => p[0].startsWith('kvB')) ? 0.5 : 0)) * S + 0.2;
-  const B = { ad: d.ad, top: 30, kaide: 'mor', kam: { pitch: 1, yaw: 0, atis: 0.9, genis: 0.95 }, ada: [{ id: 'ana', x: 0, z: 0, katlar: [{ sekil: 'kare', r: +r.toFixed(3), rz: +rz.toFixed(3), ust: 0, kal: 0.75 }] }], kopru: [], parca: out, hareketTip: d.h || 'sabit' };
+  let ipucu = null;
+  if (d.ip) { let en = null; out.forEach((o) => { if (o.t === d.ip.t && o.p === 'ana.0' && (!en || o.y < en.y - 0.01 || (Math.abs(o.y - en.y) < 0.01 && (o.z > en.z + 0.01 || (Math.abs(o.z - en.z) < 0.01 && o.x < en.x))))) en = o; }); if (en) ipucu = { id: en.id, yazi: d.ip.yazi }; }   // v12.1: ilk bolumlerde elin gosterdigi parca
+  const B = { ad: d.ad, top: 30, ipucu, kaide: 'mor', kam: { pitch: 1, yaw: 0, atis: 0.9, genis: 0.95 }, ada: [{ id: 'ana', x: 0, z: 0, katlar: [{ sekil: 'kare', r: +r.toFixed(3), rz: +rz.toFixed(3), ust: 0, kal: 0.75 }] }], kopru: [], parca: out, hareketTip: d.h || 'sabit' };
   let tip = d.h;
   if (tip === 'don') B.hareket = { tip, w: 0.35 }; else if (tip === 'asansor') B.hareket = { tip, a: 1.4, h: 0.85 }; else if (tip === 'kay') B.hareket = { tip, a: 1.8, h: 0.7 };
+  else if (tip === 'hizli') { B.hareket = { tip: 'kay', a: 2.4, h: 1.25 }; } else if (tip === 'daire') B.hareket = { tip, a: 1.8, h: 0.7, b: 1.1 }; else if (tip === 'denge') B.hareket = { tip, d: 0.11 };
   else if (tip === 'iki' || tip === 'uc') {
     const r2 = S + 0.25, X = r + 1.3 + r2; if (tip === 'uc' && r > 6) tip = B.hareketTip = 'iki';
     (tip === 'iki' ? [['yan', n % 2 ? X : -X]] : [['yan', X], ['sol', -X]]).forEach(([id, XX], yi) => {

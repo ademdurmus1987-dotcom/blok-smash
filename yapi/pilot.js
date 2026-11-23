@@ -9,7 +9,7 @@
 //   parca: [{ t, x, y?, z, ry?, rx?, rz?, p: 'adaId.kat', id?, kir? }]   y: parcanin ALT yuzu (verilmezse katin ustu),
 //          ry/rx/rz derece. kir: bu hizdan sert sabit yuzeye carpinca kirilir (turun kendi 'carp' degeri yerine).
 //   kam:   { pitch, yaw } derece. top: top sayisi.
-import { genislet } from './pilot/izgara.js?v=1';   // v12: izgara tasarimlari (pilot/tasarim/)
+import { genislet } from './pilot/izgara.js?v=2';   // v12: izgara tasarimlari (pilot/tasarim/)
 import { pilotSekilKur } from './pilot_sekil.js?v=6';
 
 // v9.0 (19 Kas 2026, Adem: 'zorluk egrisine gore araya serpistir'): ana: true -> ANA OYUN KIPI. Sekil bolumleri ana oyunun 2000 bolumunun arasinda
@@ -23,7 +23,7 @@ export function pilotKur(A, ana) {
   let DUVAR = false, RESIM = false;
   const ayarla = (n) => { N = n; DUVAR = (N >= 55 && N <= 999) || N >= 4000; RESIM = (N >= 31 && N <= 54) || DUVAR; };
   ayarla(N);
-  const dosyaOf = (n) => n >= 4000 ? 'pilot/tasarim/t' + Math.floor((n - 4000) / 100) + '.json?v=1' : n >= 3000 ? 'pilot/karma.json?v=2' : n >= 2900 ? 'pilot/ogretici.json?v=4' : n >= 960 ? 'pilot/yapi.json?v=6' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
+  const dosyaOf = (n) => n >= 4000 ? 'pilot/tasarim/t' + Math.floor((n - 4000) / 100) + '.json?v=2' : n >= 3000 ? 'pilot/karma.json?v=2' : n >= 2900 ? 'pilot/ogretici.json?v=4' : n >= 960 ? 'pilot/yapi.json?v=6' : n >= 950 ? 'pilot/ucb.json?v=1' : n >= 900 ? 'pilot/ornek.json?v=1' : n >= 109 ? 'pilot/yeni.json?v=1' : n >= 55 ? 'pilot/duvar.json?v=5' : n >= 31 ? 'pilot/resim.json?v=6' : 'pilot/pilot.json?v=5';
   const DOS = {}, DOSV = {}, HAZ = new Set();
   const veriAl = (n) => { const u = dosyaOf(n); return DOS[u] || (DOS[u] = fetch(u).then((r) => r.json()).then((v) => { if (v.tasarim) { v.bolumler = {}; for (const k in v.tasarim) { let b; Object.defineProperty(v.bolumler, k, { enumerable: true, get: () => b || (b = genislet(+k, v.tasarim[k])) }); } } return (DOSV[u] = v); }).catch(() => { delete DOS[u]; return null; })); };
   // v9.0: ana oyunda tas, fici ve sise Adem'in cizimindeki gibi gri tas / fici / sise (oyun.js GRI: ayni turun eski gorunumlu esi)
@@ -269,6 +269,8 @@ export function pilotKur(A, ana) {
       HQ = A.PLS[adaKat[B.ada[0].id][0]]; const h = B.hareket;
       if (h.tip === 'asansor') { HQ.asn = { a: h.a || 1.4, h: h.h || 0.85 }; HQ.ah = 0; HQ.yb = 0; }
       else if (h.tip === 'kay') { HQ.kay = { a: h.a || 2, h: h.h || 0.8 }; HQ.ph = 0; HQ.cx = HQ.x; }
+      else if (h.tip === 'daire') { HQ.kay = { a: h.a || 1.8, h: h.h || 0.7 }; HQ.ph = 0; HQ.cx = HQ.x; HQ.asn = { a: h.b || 1.1, h: (h.h || 0.7) * 2 }; HQ.ah = 0; HQ.yb = 0; }   // v12.1: hem kayar hem iner kalkar
+      else if (h.tip === 'denge') { HQ.den = 1; HQ.dmax = h.d || 0.11; HQ.eg = 0; }   // v12.1: tahterevalli: yuk bir yana kayinca egilir
     }
     if (!ana && B.hareket && TUM0.length) {   // v8.7 (Adem 19 Kas: donen, asansor, kayan platform yoktu): ana platform hareketli
       const ML = [], L = []; for (const [g, m] of TUM0) { let i = ML.indexOf(m); if (i < 0) { i = ML.length; ML.push(m); } L.push([g, i]); }
@@ -328,6 +330,7 @@ export function pilotKur(A, ana) {
     if (B.hareket) {   // hareketin bütün yolu kameraya sigsin
       const h = B.hareket, ek = [];
       if (h.tip === 'asansor') for (const q of pts) ek.push([q[0], q[1] - (h.a || 1.4), q[2]]);
+      if (h.tip === 'daire') for (const q of pts) { ek.push([q[0] + (h.a || 1.8), q[1] - (h.b || 1.1), q[2]]); ek.push([q[0] - (h.a || 1.8), q[1] - (h.b || 1.1), q[2]]); }
       if (h.tip === 'kay') for (const q of pts) { ek.push([q[0] + (h.a || 2), q[1], q[2]]); ek.push([q[0] - (h.a || 2), q[1], q[2]]); }
       if (h.tip === 'don') for (const q of pts) for (let i = 1; i < 8; i++) { const a = i * Pi / 4, c = Math.cos(a), s2 = Math.sin(a); ek.push([q[0] * c + q[2] * s2, q[1], -q[0] * s2 + q[2] * c]); }
       for (const q of ek) { pts.push(q); rmax = Math.max(rmax, Math.hypot(q[0], q[2])); }
@@ -475,7 +478,9 @@ export function pilotKur(A, ana) {
     A.wakeAll(sp); if (g) g.busy = Math.max(g.busy, 1);
   }
   function zemin(x, z) {   // dusen kirintilar icin: noktanin altindaki en yuksek kat yuzu
-    let y = -1e9; for (const q of KATLAR) if (q.ust > y && icinde(q.P, x, z)) y = q.ust;
+    // v12.1 (Adem: 'kirilan kiymiklar platformla ic ice geciyor'): kayan, inip kalkan ve donen platformun o anki yeri
+    let y = -1e9; const pa = A.PANG || 0, c = Math.cos(pa), s = Math.sin(pa);
+    for (const q of KATLAR) { let lx = x - (q.kay ? q.cx - q.x : 0), lz = z; if (pa && q === A.PLS[0]) { const u = lx * c - lz * s; lz = lx * s + lz * c; lx = u; } const u2 = q.ust + (q.asn ? q.cy - (q.yb || 0) : 0); if (u2 > y && icinde(q.P, lx, lz)) y = u2; }
     return y > -1e8 ? y : A.GY;
   }
 

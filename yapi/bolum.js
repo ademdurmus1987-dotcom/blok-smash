@@ -5,7 +5,17 @@ import { kaleYapi, hazineYapi } from './kale.js?v=4';   // v4.3
 
 // ---------------- sekil aileleri: kartta gorunen ad ve aciklama ----------------
 export const AILE = {
-  oy: ['Patili Oyuncak Küp', 'Tek atışta kırılır. Hepsini platformdan düşür!'],
+  oy: ['Patili Oyuncak Küp', 'Platformdan düşür! İlk vuruşta çatlar, ikinci vuruşta kırılır.'],
+  uz: ['Uzun Çubuk', 'İki, üç ya da dört küp boyunda. Ucundan vurursan döner, ortasından vurursan kayar.'],   // v12.1
+  kj: ['Küçük Kavanoz', 'Camdır: vurunca ya da düşünce kırılır, içindeki boya saçılır.'],
+  kr3: ['Şerit Blok', 'Üç küp boyunda sağlam bir şerit. Alttakini vurursan üstü çöker.'],
+  m_kay: ['Kayan Platform', 'Platform sağa sola kayar. Yapı önüne gelince at!'],
+  m_asansor: ['Asansör Platform', 'Platform iner kalkar. Hedefini yükseklik değişirken iyi seç!'],
+  m_don: ['Dönen Platform', 'İlk atıştan sonra platform döner. Her yanını vurabilirsin!'],
+  m_iki: ['İki Platform', 'Yanda küçük bir platform daha var. Onu da temizle!'],
+  m_uc: ['Üç Platform', 'İki yanda küçük platformlar var. Hepsini temizle!'],
+  m_daire: ['Gezen Platform', 'Platform hem kayar hem iner kalkar. Zamanlamana dikkat!'],
+  m_denge: ['Tahterevalli', 'Platform ağırlığa göre eğilir. Bir tarafı boşalt, kalanlar kayar!'],
   ksDirek: ['Tahta Direk', 'İki kat boyunda, demir kuşaklı. Devrilince üstündekileri de düşürür.'],   // v5.1
   // v4.5: (Adem) Korsan Kalesi bloklarinin her biri kendi kartiyla tanitilir (renk cesitleri ayni karti paylasir)
   ksSandik: ['Sandık', 'Vurunca parçalanır. Köşelerindeki metal onu biraz ağırlaştırır.'],
@@ -60,11 +70,12 @@ export const AILE = {
   m_ada: ['İki Ada', 'Yapı iki adaya bölündü. Önce yüksek olanı temizle!']
 };
 // mekanik kartinda donen blok
-export const MEKBLOK = { domino: 'ksSutun', kopru: 'ksTas4', denge: 'ksKalas3', tnt: 'ksTNT', gemi: 'ksFici', hazine: 'ksYakut', magara: 'ksBuz', kemerSira: 'ksKemer', ada: 'ksSandik' };
+export const MEKBLOK = { kay: 'ksSandik', asansor: 'ksSandikK', don: 'ksSandikM', iki: 'oyK', uc: 'oyM', daire: 'oyT', denge: 'ksKalas3', domino: 'ksSutun', kopru: 'ksTas4', denge: 'ksKalas3', tnt: 'ksTNT', gemi: 'ksFici', hazine: 'ksYakut', magara: 'ksBuz', kemerSira: 'ksKemer', ada: 'ksSandik' };
 const KSA = { ksSandikM: 'ksSandik', ksSandikK: 'ksSandik', ksKalas1: 'ksKalas', ksKalas2: 'ksKalas', ksKalas3: 'ksKalas', ksTas2: 'ksTas', ksFiciK: 'ksFici', ksSiseM: 'ksSise', ksSiseY: 'ksSise', ksSiseB: 'ksSise', ksYakut: 'ksMucevher', ksElmas: 'ksMucevher', ksTas3: 'ksTas', ksTas4: 'ksTas', ksBuz3: 'ksBuz' };
 export function aileOf(t) {
   if (typeof t !== 'string') return null;
   if (t.startsWith('ks')) return KSA[t] || (AILE[t] ? t : null);   // v4.5: kale blogu kendi turuyla (renk cesitleri birlikte)
+  if (/^uz\d/.test(t)) return 'uz'; if (/^kj[A-Z]/.test(t)) return 'kj'; if (/^kr3/.test(t)) return 'kr3';   // v12.1
   const p = { oy: 'oy', jo: 'jo', hd: 'hd', kr: 'kr', kv: 'kv', mk: 'mk', kn: 'kn' }[t.slice(0, 2)];
   if (p && /^[a-z]{2}[A-Z]/.test(t)) return p;
   if (t === 'tas2' || t === 'tas4') return 'tas'; if (t === 'tug2') return 'tug'; if (t === 'tug3') return 'tug3'; if (t === 'buzP') return 'buzP'; if (t === 'buzP3') return 'buzP3';

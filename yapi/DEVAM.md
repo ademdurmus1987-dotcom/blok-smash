@@ -88,6 +88,19 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 
 ## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
 
+## v12.1 (23 Kas 2026): gercekci vurus, ilk 25 bolum, yeni engel ve hareketler (Adem: 'birini vururken cevresindeki kiriliyor, bolumler cok basit, kiymik platforma giriyor, dikey kup donen platformdan geciyor, ilk 25 sade olsun, tanitim karti, engel ve hareket artsin, zorluk egrisi')
+- Fizik (eski: ?fiz=eski): oyuncak kup/cubuk (oy*, uz*, kr3) ilk dogrudan vurusta catlar (catlak izi + kiymik), ikinci vurusta kirilir; top ilk carpismada hizinin %32'sini tutar (eski %45);
+  ilk vurustan sonra topun ve kuplerin kirma esigi 2.2-2.4 kat, atis basina carpismayla en cok 1 kirilma (eski 3); vurus yalniz 7 birim cevreyi uyandirir (uzak kose kipirdamaz).
+- Kiymiklar: pilot zemin() kayan/asansor/donen platformun o anki yerini kullanir; parca platformun yanindan girerse geri seker, yukaridan gelirse konar (kiyZemin).
+- Donen platform: dusen kup platform tablasinin icinde kalirsa disari itilir.
+- Ilk 25 bolum: uretici/tasarim/ilk25.mjs (yapi 5900-5924, pilot/tasarim/t19.json): az renk, her bolum bir sey ogretir; 12 pervane, 21 sarkac, 24 cark; 16 kayan, 18 asansor, 22 donen, 23 iki platform.
+- Kartlar: uzun cubuk, kucuk kavanoz, serit blok ve her platform hareketi (kay, asansor, don, iki, uc, daire, denge) ilk geldigi bolumde (bolum.js AILE, oyun.js yeniSekil).
+- Engeller: +3 (dev yengec, doner kapi, marti surusu); engeller sirayla acilir (oyun.js ENGACIL: 12 pervane ... 226 martilar), siklik %30'dan %62'ye.
+- Hareketler: +3 (daire: kayar ve iner kalkar, hizli kayan, denge: tahterevalli); sira2.py HACIL ile sirayla acilir, hareketli bolum orani %24'ten %60'a.
+- Top sayisi (egri.js sekilTop): bot atisi x (0.45 + genel egri) x testere: 26'da ~1.45 kat, 1000'de ~1.13, 2000'de ~1.09; en az botun %90'i. Butun yapilar yeni fizikle botla olculdu
+  (yeni tasarimlarin ornegi, Adem'in 176 cizimi, ilk 25, butun duzenekli bolumler). Duzenekli bolumlerin olcumu sira.js DUZBOT; 45 atista bitirilemeyenler sirada baska bolumle degisti.
+  Agir bloga (tas, kemer, sutun, yildiz) carpan top eski gucunu korur (TOPKAYIP 0.45).
+
 ## v12.0 (23 Kas 2026): 2000 bolum yeniden dizildi, 6 yeni engel (Adem: 'ayni gorsel ikinci kez olmasin, yeni engelleyiciler, monoton gitmesin; onay sende, tekte yayinla')
 - Sorun: 1601-1700 arasinda 100 bolumun yalniz 10'u Adem'in cizimlerinden, 1776'dan sonra hic yoktu; geri kalan 19 kaliptan uretilmis kule/kale/piramit.
 - Yeni tasarimlar (pilot 4000+, `yapi/pilot/tasarim/t*.json`, 100'er): izgara harfleri, oyunda `pilot/izgara.js` ile bloklara cevrilir (on sira resim, arka siralar birlesik dolgu).

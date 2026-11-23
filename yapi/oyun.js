@@ -23,12 +23,12 @@ import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek Instance
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=5';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
 import { merkezKur } from './merkez.js?v=47';
-import * as EG from './egri.js?v=5';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
+import * as EG from './egri.js?v=6';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
-import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=8';
+import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=9';
 import { parcacikKur } from './fx/parcacik.js?v=2';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { patlamaKur } from './fx/patlama.js?v=4';
-import { ENG4, ENG4HAVUZ, ENG4KART, engel4Kur } from './engel4.js?v=1';   // v12: 6 yeni engel (eski havuz ?eng4=0)   // v11.11: guclu vurus efektleri (eski ?efk=0)
+import { ENG4, ENG4HAVUZ, ENG4KART, engel4Kur } from './engel4.js?v=2';   // v12: 6 yeni engel (eski havuz ?eng4=0)   // v11.11: guclu vurus efektleri (eski ?efk=0)
 import { sesSinirKur } from './fx/ses.js?v=1';
 import { hisKur } from './fx/his.js?v=1';
 import { vurusKur } from './fx/vurus.js?v=3';   // v7.0 (Adem 18 Kas): vurus hissi B+A (sok halkasi, bum, yildizlar, kombo sayaci, son blok agir cekim). Kapatma: ?vurus=0   // v4.2 Faz 1C: malzemeye gore vurus/kirilma geri bildirimi   // v4.0 Faz 1B: ses turu basina tekrar araligi ve es zamanli ses siniri   // v3.16: bolum dizilisi bastan, yeni sekil kartlari   // v3.0: ana sayfa, kartlar, kazanma/kaybetme sahneleri
@@ -45,8 +45,9 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 // v9.0 (19 Kas 2026, Adem: 'zorluk egrisine gore araya serpistir'): sekil bolumleri (pilot 31+) ana oyunun bolumleri arasinda (pilot/sira.js).
 // Ayni motor (pilot.js ana kipi); kayit, ilerleme, top sayisi ve kartlar ana oyunun. Kapatma: ?sekil=0 (o bolumlerde eski uretilmis yapi).
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
-const SKS = SEKQ ? (await import('./pilot/sira.js?v=4')).SEKIL : {};
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=37') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const FIZ2Q = Q.get('fiz') !== 'eski';
+const SKM = SEKQ ? await import('./pilot/sira.js?v=5') : {}, SKS = SKM.SEKIL || {}, DZB = (FIZ2Q && SKM.DUZBOT) || {};   // v12.1 DUZBOT: duzenekli bolumlerin yeni fizikle bot atisi
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=38') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 let SV = { L: 1, max: 1 };
 try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Object.assign(SV, d); } catch (e) {}
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
@@ -54,10 +55,12 @@ const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.par
 const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
+const FIZ2 = Q.get('fiz') !== 'eski';   // v12.1: gercekci vurus ve kirilma, kiymik-platform carpismasi (eski: ?fiz=eski)
+const OYUNCAK = (k) => typeof k === 'string' && /^(oy[A-Z]|uz\d|kr3)/.test(k) && k !== 'oyA';
 const KAL3 = Q.get('kal3') !== '0' && !window.KORSAN;   // v11.9 (golge, yeni blok karti, kazanma ekrani)
 if (KAL3 && !window.KORSAN) document.documentElement.classList.add('kal3', 'kz-' + (Q.get('kzrenk') || 'deniz'));   // v11.9: yeni blok karti ve kazanma ekrani (menu3.css sonu)
 if (Q.get('menu3') !== '0' && !window.KORSAN) document.documentElement.classList.add('menu3');   // v11.6: gostergeler, kartlar, harita yeni kimlikte (menu3.css)
-const SURUM = 'v12.0', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
+const SURUM = 'v12.1', ZOR_ODUL = 20;   // ayarlar ekraninda gorunen surum: her surumde guncellenir
 const EGRI = !K && !PILOTQ && !Q.has('dene') && (Q.get('egri') === '1' || (!TEST && Q.get('egri') !== '0'));   // v8.0: dogrulayici (test) eski kurallarla calisir
 const zorMu = (L) => (EGRI && L > 25 ? !!EG.plan(L, BV.el).etiket : L >= 5 && (L <= 25 ? L % 5 === 0 : L % 10 === 0));   // v5.0: 1-25'te her 5. bolum, sonra 10'luk dongunun sonu 'zor bolum': mor dugme, +20 altin
 // ================= v5.0 (Adem 15 Kas): sabit bolumler =================
@@ -78,7 +81,7 @@ function bolumYukle(L) {
 function bvY(L) {
   if (BV.Y.has(L)) return BV.Y.get(L);
   const p = BV.p.get(bvNo(L)); if (!p) return null; const v = p.b[L - p.ilk]; if (!v) return null;
-  const c = v.c, Y = { ad: v.ad, veri: 1, a: v.a, ip: v.ip, zor: v.zor, engel: v.engel || [], top: EGRI ? EG.topSay(L, v) : v.top, ek: v.ek || 0, yeni: v.yeni, make: () => c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) };
+  const c = v.c, Y = { ad: v.ad, veri: 1, a: v.a, ip: v.ip, zor: v.zor, engel: v.engel || [], top: EGRI ? (DZB[L] ? EG.sekilTop(L, DZB[L], (v.pl && v.pl.some((p) => p.kay || p.asn)) || v.don || v.denge ? 'kay' : 'sabit', EG.planY(L, v).tip) : FIZ2Q && L > 25 ? Math.round(EG.topSay(L, v) * 1.4) : EG.topSay(L, v)) : v.top,   /* v12.1: yeni fizikte olculmemis kayitli bolume pay */ ek: v.ek || 0, yeni: v.yeni, make: () => c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) };
   if (v.pl) Y.pl = v.pl; if (v.don) Y.don = v.don; if (v.denge) Y.denge = 1;
   BV.Y.set(L, Y); return Y;
 }
@@ -86,7 +89,7 @@ function bvY(L) {
 const SKY = new Map();
 function sekilY(L) {
   if (SKY.has(L) && SKY.get(L).sekil === SKS[L][0]) return SKY.get(L);   // v12: olcum araci ayni bolume baska yapi koyabilir
-  const [n, ad, bot, ht] = SKS[L], Y = { ad, veri: 1, engel: [], sekil: n, top: EG.sekilTop(L, bot, ht, EGRI ? EG.plan(L).tip : null), make: () => [] };
+  const [n, ad, bot, ht] = SKS[L], Y = { ad, veri: 1, engel: SKS[L][4] ? [{ t: SKS[L][4], hiz: 0.8, ek: 2 }] : [], sekil: n, top: EG.sekilTop(L, bot, ht, EGRI ? EG.plan(L).tip : null), make: () => [] };
   SKY.set(L, Y); return Y;
 }
 const ist = () => SV.ist || (SV.ist = { ilk: 0, seri: 0, enSeri: 0, kazan: 0, blok: 0 });   // profil istatistikleri
@@ -1099,12 +1102,16 @@ function uretBolum(L) {
 // v10.27 (Adem: 'farkli engelleyiciler ilave edelim, engelleyici olan bolumleri arttiralim'): kayitli bolumlerde engel yoksa bolume gore
 // (hep ayni) ~%45 olasilikla bir engel eklenir; havuzda yeni engeller (capa, surgulu kapi, inip kalkan duvar). Anahtarli kapi, giyotin,
 // denge tahtasi ve cok platformlu bolumlere eklenmez. Eklenen engel basina +1 top (engKur). Eski: ?engel2=eski
+const ENGACIL = [['kurek', 12], ['kalkan', 21], ['cark', 24], ['kayan', 31], ['capa', 42], ['surgu', 55], ['yukari', 68], ['papagan', 82], ['gulle', 97], ['balon', 113], ['fici3', 131], ['yengec', 152], ['ahtapot', 174], ['donerkapi', 198], ['martilar', 226]];   // v12.1: engelin ilk geldigi bolum
 const ENGFAZLA = Q.get('engel2') !== 'eski', ENGHAVUZ = ['kurek', 'kalkan', 'kayan', 'capa', 'surgu', 'yukari'].concat(ENG4 ? ENG4HAVUZ : []);
 function engelEk(L, Y) {
-  const ve = Y.engel || []; if (ve.length || L < 12 || Y.anahtar || Y.denge || (Y.pl && Y.pl.length > 1)) return ve;
-  const r = mul32(L * 7919 + 31); if (r() > (ENG4 ? 0.55 : 0.45)) return ve;
-  // v12 (Adem: 'oyun monoton gitmesin'): tur sirayla doner, ust uste ayni engel gelmez; yeni engeller +2 top
-  const t = ENG4 ? ENGHAVUZ[(L * 5 + Math.floor(L / 12)) % ENGHAVUZ.length] : ENGHAVUZ[Math.floor(r() * ENGHAVUZ.length)], d = zorluk(L);
+  const ve = Y.engel || []; if (ve.length || L < (SKS[L] ? 26 : 12) || Y.anahtar || Y.denge || (Y.pl && Y.pl.length > 1)) return ve;
+  const r = mul32(L * 7919 + 31);
+  // v12.1 (Adem: 'zorluk egrisi mutlaka olsun'): engeller sirayla acilir (her biri kendi bolumunde kartla tanitilir), siklik ilerledikce artar
+  if (ENG4) { const ac = ENGACIL.filter(([, l]) => l <= L), yeni = ac.find(([, l]) => l === L); if (yeni) return [{ t: yeni[0], hiz: 0.85, ek: 2 }];
+    if (r() > Math.min(0.62, 0.3 + L / 2400)) return ve; const t = ac[(L * 5 + Math.floor(L / 12)) % ac.length][0], d = zorluk(L); return [{ t, hiz: 0.9 + 0.4 * d, ek: ENG4HAVUZ.includes(t) ? 2 : 1 }]; }
+  if (r() > 0.45) return ve;
+  const t = ENGHAVUZ[Math.floor(r() * ENGHAVUZ.length)], d = zorluk(L);
   return [{ t, hiz: 0.9 + 0.4 * d, ek: ENG4HAVUZ.includes(t) ? 2 : 1 }];
 }
 function engelOf(L, Y) {
@@ -1706,11 +1713,12 @@ function parcaKur(col, pn, yer, donus) {
     if (kd && (kd.kir || kd.boom)) body.addEventListener('collide', (e) => {
       if (!g || !g.armed || c.out || c.fuse != null || (c.gone && !kd.esya)) return;   // dusen kavanoz yerde de kirilir
       // v3.21: (Adem: bir atista cok sekil kiriliyordu) topun ilk vurdugu ve ilk vurulan dahil carpismayla kirilma atis basina en cok 3; kupun kupe carpmasi daha sert olmali
-      const top = e.body.collisionFilterGroup === 2, esik = (kd.kir || 3.2) * (top ? 1 : 1.6);
+      const top = e.body.collisionFilterGroup === 2, ilkTop = top && balls.some((q) => q.body === e.body && !q.hit), esik = (kd.kir || 3.2) * (top ? (FIZ2 && !ilkTop ? 2.4 : 1) : FIZ2 ? 2.2 : 1.6);   // v12.1: ilk vurustan sonra top ve kupler daha zor kirar
       if (Math.abs(e.contact.getImpactVelocityAlongNormal()) > esik) {
+        if (FIZ2 && top && OYUNCAK(col) && !c.vur) return;   // v12.1: oyuncak ilk vurusta kirilmaz (blast isaretler)
         // v10.0 (Adem: 'buz kati cisim, kolay kirilmasin'): buz ilk sert vurusta catlar (kirintilar), ikinci vurusta kirilir. ?buz2=0 eski
         if (SAGBUZ && MATSND[col] === 'buz') { if (!c.catlak) { c.catlak = 1; c.catlakA = g.shots; buzCatla(c, e); return; } if (c.catlakA === g.shots) return; }   // ayni atista ikinci carpma kirmaz
-        if (!kd.esya) { if ((g.kirB || 0) >= 3) return; g.kirB = (g.kirB || 0) + 1; } c.fuse = 0; FUSE.push(c); }
+        if (!kd.esya) { if ((g.kirB || 0) >= (FIZ2 ? 1 : 3)) return; g.kirB = (g.kirB || 0) + 1; } c.fuse = 0; FUSE.push(c); }
     });
     cubes.push(c); CUBE_OF.set(body, c);
     // v6.14: (Adem) dusen kup yere degdigi an kirilsin, sekip sonradan patlamasin: zemine/ayaga (sabit govde) temas aninda isaretlenir
@@ -1887,6 +1895,9 @@ function spin(dt) {
   platBody.quaternion = QSPIN.mult(platBody.quaternion); platBody.aabbNeedsUpdate = true;
   const rot = (v) => { const x = v.x, z = v.z; v.x = x * ca + z * sa; v.z = -x * sa + z * ca; };
   for (const c of cubes) { if (c.gone || c.out || c.pi) continue; const b = c.body; rot(b.position); rot(b.velocity); b.quaternion = QSPIN.mult(b.quaternion); b.aabbNeedsUpdate = true; }
+  // v12.1 (Adem: 'yere dusen dikey kup donen platform icinden geciyor'): platform elle donduruldugu icin dusmekte olan kupun icine girebiliyordu;
+  // platform tablasinin icinde kalan dusen kup disari itilir (platform onu yana savurur gibi)
+  if (FIZ2) { const rm = Math.max(R, RZ); for (const c of cubes) { if (!c.gone || c.landed || c.out) continue; const p = c.body.position; if (p.y > 0.3 || p.y < -1.3) continue; const d = Math.hypot(p.x, p.z); if (d > rm + 0.2) continue; const k = (rm + S * 0.55) / Math.max(0.01, d); p.x *= k; p.z *= k; c.body.velocity.x += p.x / Math.max(0.01, d) * 1.5; c.body.velocity.z += p.z / Math.max(0.01, d) * 1.5; c.body.aabbNeedsUpdate = true; } }
 }
 // ================= v3.20 (Adem) ?fon=yeni platform temalari =================
 // Ust: dunyaya gore dokulu kutu (ahsap, tas, seker, buz, altin, kemik) + kenar cercevesi; ayak: kodla 3B Group.
@@ -2361,7 +2372,7 @@ function denge(dt) {
 function syncMeshes() { for (const c of cubes) { if (c.landed === true) continue; c.mesh.position.copy(c.body.position); c.mesh.quaternion.copy(c.body.quaternion); } }
 function wakeAll(p) {   // v8.7: buyuk pilot yapilarda (120+ parca) her vurusta butun parcalari uyandirmak seri atista oyunu yavaslatiyordu:
   // yalniz vurulan yerin 7 birim yatay cevresi (o sutunun ustundekiler dahil) uyanir; uzaktakiler hareket eden parcaya degince kendiliginden uyanir
-  if (p && PLT && cubes.length > 120) { for (const c of cubes) if (!c.out && Math.hypot(c.body.position.x - p.x, c.body.position.z - p.z) < 7) c.body.wakeUp(); return; }
+  if (p && ((PLT && cubes.length > 120) || (FIZ2 && cubes.length > 30))) { for (const c of cubes) if (!c.out && Math.hypot(c.body.position.x - p.x, c.body.position.z - p.z) < 7) c.body.wakeUp(); return; }
   for (const c of cubes) if (!c.out) c.body.wakeUp();
 }
 
@@ -2785,9 +2796,8 @@ function fragPieces(c, p, q, dir) {
     fx(grp, life, (o, kk, dt) => {
       if (st.in) softPiece(o, v, w, st, hs, dt);
       else { v.y -= 24 * dt; o.position.addScaledVector(v, dt); o.rotation.x += w.x * dt; o.rotation.y += w.y * dt; o.rotation.z += w.z * dt; }
-      const fl = floorAt(o.position.x, o.position.z) + hs;
       if (!st.in && softPiece(o, v, w, st, hs, dt)) { /* kuma/kara saplandi ya da suya dustu */ }
-      else if (!st.in && o.position.y < fl && o.position.y > fl - 1.2) { o.position.y = fl; if (v.y < 0) { v.y *= -0.25; v.x *= 0.5; v.z *= 0.5; w.multiplyScalar(0.5); if (Math.abs(v.y) < 0.6) { v.y = 0; w.multiplyScalar(0.6); } } }
+      else if (!st.in) kiyZemin(o, v, w, hs, st, dt, 0.25, 0.5);
       const f = kk > 0.8 ? Math.max(0.001, (1 - kk) / 0.2) : 1; o.scale.copy(sc).multiplyScalar(f);
       if (kk >= 0.999 && !o.userData.cnt) { o.userData.cnt = 1; PARN--; }
     });
@@ -2835,9 +2845,8 @@ function realPieces(c, p, q, dir, max) {
     fx(grp, life, (o, kk, dt) => {
       if (st.in) softPiece(o, v, w, st, hs, dt);
       else { v.y -= 26 * dt; o.position.addScaledVector(v, dt); o.rotation.x += w.x * dt; o.rotation.y += w.y * dt; o.rotation.z += w.z * dt; }
-      const fl = floorAt(o.position.x, o.position.z) + hs;
       if (!st.in && softPiece(o, v, w, st, hs, dt)) { /* kuma/kara saplandi ya da suya dustu */ }
-      else if (!st.in && o.position.y < fl && o.position.y > fl - 1.2) { o.position.y = fl; if (v.y < 0) { v.y *= -0.28; v.x *= 0.55; v.z *= 0.55; w.multiplyScalar(0.55); } }
+      else if (!st.in) kiyZemin(o, v, w, hs, st, dt, 0.28, 0.55);
       const sc = kk > 0.78 ? Math.max(0.001, (1 - kk) / 0.22) : 1; nd.scale.copy(fs).multiplyScalar(sc);
       if (kk >= 0.999 && !o.userData.cnt) { o.userData.cnt = 1; PARN--; }
     });
@@ -2854,6 +2863,7 @@ function blast(b) {
     // Metal, celik, tas, tugla, altin ve tas piramit kirilmaz, sadece itilir (yere dusunce kirilir).
     if (KIND[c0.kind] && KIND[c0.kind].boom && c0.fuse == null) { c0.fuse = 0; FUSE.push(c0); }
     else if (SAGBUZ && MATSND[c0.kind] === 'buz' && (!c0.catlak || c0.catlakA === g.shots)) { if (!c0.catlak) { c0.catlak = 1; c0.catlakA = g.shots; buzCatla(c0); } }   // v10.0: buz ilk vurusta catlar, kirilmaz
+    else if (FIZ2 && OYUNCAK(c0.kind) && !c0.vur) { c0.vur = 1; sfx('kir', c0.kind); const pv = new THREE.Vector3().copy(c0.body.position); HIS.vurus(pv, b.dir, malzOf(c0.kind), 0.5); kiymik(pv, bColor(c0), b.dir); catlakIz(c0); }   // v12.1 (Adem: 'kirilma biraz zor olmali, fizik devreye girsin'): oyuncak kup/cubuk ilk vurusta itilir, ikinci vurusta kirilir
     else if (KIRILGAN.has(c0.kind)) breakBlock(c0, b.dir, 14);
     else sfx(c0.kind === 'celik' || c0.kind === 'metal' || c0.kind === 'altin' ? 'metal' : 'kir', c0.kind);
     if (!KAL()) buzz(28);
@@ -2873,7 +2883,7 @@ function blast(b) {
   }
 }
 // Blok Smash 2. asama: (Adem: bir atis cok kup deviriyordu) top ilk kupe carpinca hizinin cogunu kaybeder, yapinin icinden surup gitmez
-const TOPKAYIP = 0.45;
+const TOPKAYIP = Q.get('fiz') === 'eski' ? 0.45 : 0.32;   // v12.1: top ilk carpismada daha cok yavaslar (yapinin icinden surup arkadakileri de kirmasin)
 // v1.3: (Adem: alttaki kupu vurunca ustteki ziplıyor, bolumler pat pat geciyor) top cok hizli (95) oldugu icin carptigi kup ve
 // komsulari 40-50 birim/sn hizla firliyordu. Her fizik adimindan sonra: carpisma noktasinin 3 birim cevresindeki kuplerin hizi sinirlanir,
 // top hafifler; patlama disinda hicbir kup yukari firlamaz.
@@ -2882,7 +2892,7 @@ world.addEventListener('postStep', () => {
   if (K || !g) return;
   const patlama = g.t - BOOMT < 0.9;
   while (YUM.length) { const [p, b] = YUM.pop();
-    if (b && !b.hafif) { b.hafif = 1; b.body.velocity.scale(GUC ? 0.6 : TOPKAYIP, b.body.velocity); b.body.mass = GUC ? 2.8 : 2; b.body.updateMassProperties(); }
+    if (b && !b.hafif) { b.hafif = 1; b.body.velocity.scale(GUC ? 0.6 : FIZ2 && b.hc && /^ks(Tas|Kemer|Yildiz|Sutun|MorSutun)|^oyA$/.test(b.hc.kind || '') ? 0.45 : TOPKAYIP, b.body.velocity); b.body.mass = GUC ? 2.8 : 2; b.body.updateMassProperties(); }
     if (patlama) continue;
     for (const c of cubes) { if (c.out) continue; const q = c.body.position; if ((q.x - p.x) ** 2 + (q.y - p.y) ** 2 + (q.z - p.z) ** 2 > 9) continue;
       const v = c.body.velocity; if (v.y > VUP) v.y = VUP; const h = Math.hypot(v.x, v.z); if (h > VMAX) { v.x *= VMAX / h; v.z *= VMAX / h; }
@@ -2998,6 +3008,25 @@ function hitFlash(p) {
 const SHGEO = [new THREE.BoxGeometry(1, 1, 1), new THREE.TetrahedronGeometry(0.8), new THREE.BoxGeometry(1, 0.45, 0.8), new THREE.OctahedronGeometry(0.7)];
 const CHGEO = roundBox(1, 1, 1, 0.08, 2), SHMAT = {};
 const STAR = canvasTex(64, 64, (x, w, h) => { x.translate(w / 2, h / 2); x.fillStyle = '#fff'; x.beginPath(); for (let i = 0; i < 8; i++) { const r = i % 2 ? 6 : 30, a = i * Math.PI / 4; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.fill(); });
+// v12.1 (Adem: 'kirilan kiymiklar platformla ic ice geciyor'): parca yukaridan gelirse yuzeye konar ve seker; platformun yanindan
+// (alttan) girerse yuzeye siçramaz, yandan geri seker. Hareketli platformda zemin o anki yuzeydir (floorAt / pilot zemin). Eski: ?fiz=eski
+function kiyZemin(o, v, w, hs, st, dt, ky, kx) {
+  const fl = floorAt(o.position.x, o.position.z) + hs;
+  if (FIZ2 && st.oy != null && o.position.y < fl && st.oy < st.ofl - 0.12 && fl - st.ofl > 0.3) {   // yandan girdi: geri it
+    o.position.x -= v.x * dt * 1.5; o.position.z -= v.z * dt * 1.5; v.x *= -0.35; v.z *= -0.35; w.multiplyScalar(0.7);
+  } else if (o.position.y < fl && o.position.y > fl - 1.2) { o.position.y = fl; if (v.y < 0) { v.y *= -ky; v.x *= kx; v.z *= kx; w.multiplyScalar(kx); if (Math.abs(v.y) < 0.6) { v.y = 0; w.multiplyScalar(0.6); } } }
+  else if (FIZ2 && st.dur && fl > GY + 0.3 && o.position.y > fl + 0.02 && Math.abs(v.y) < 0.8) { o.position.y = fl; }   // inen asansorde parca havada kalmasin
+  st.dur = Math.abs(v.y) < 0.7 && Math.abs(o.position.y - fl) < 0.05; st.oy = o.position.y; st.ofl = floorAt(o.position.x, o.position.z) + hs;
+}
+// v12.1: ilk vurusta catlayan oyuncak kup: kucuk koyu catlak izi (kupun on yuzune yapisik ince cizgiler), ikinci vurusta kirilir
+let CATG = null;
+function catlakIz(c) {
+  if (!c || !c.mesh) return;
+  if (!CATG) { const t = canvasTex(128, 128, (x, w, h) => { x.strokeStyle = 'rgba(30,18,10,.85)'; x.lineWidth = 5; x.lineCap = 'round'; x.beginPath(); x.moveTo(64, 64); x.lineTo(30, 30); x.lineTo(18, 44); x.moveTo(64, 64); x.lineTo(100, 40); x.lineTo(112, 54); x.moveTo(64, 64); x.lineTo(70, 108); x.lineTo(54, 120); x.moveTo(64, 64); x.lineTo(24, 86); x.stroke(); }); CATG = new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }); }
+  const w = (SEK.TUR[c.kind] && SEK.TUR[c.kind].w) || 1, m = new THREE.Mesh(new THREE.PlaneGeometry(S * 0.8, S * 0.8), CATG); m.position.set((Math.random() - 0.5) * S * (w - 1) * 0.8, 0, S * 0.505);
+  const tut = new THREE.Group(); tut.add(m); const b = new THREE.Mesh(new THREE.PlaneGeometry(S * 0.8, S * 0.8), CATG); b.position.set(m.position.x, 0, -S * 0.505); b.rotation.y = Math.PI; tut.add(b);
+  const sc = c.mesh.scale; tut.scale.set(1 / (sc.x || 1), 1 / (sc.y || 1), 1 / (sc.z || 1)); c.mesh.add(tut); c.catIz = tut;   // kupun gorunusune bagli: onunla tasinir, onunla silinir
+}
 function piece(m, p, dir, sz, spd, life) {
   m.scale.setScalar(sz); m.castShadow = true; m.userData.shared = true;
   m.position.set(p.x + (Math.random() - 0.5) * S * 0.6, p.y + (Math.random() - 0.5) * S * 0.6, p.z + (Math.random() - 0.5) * S * 0.6);
@@ -3010,8 +3039,7 @@ function piece(m, p, dir, sz, spd, life) {
     if (st.in) { softPiece(o, v, w, st, sz * 0.45, dt); o.scale.setScalar(sz * (k > 0.7 ? Math.max(0, (1 - k) / 0.3) : 1)); return; }
     v.y -= 24 * dt; o.position.addScaledVector(v, dt); o.rotation.x += w.x * dt; o.rotation.y += w.y * dt; o.rotation.z += w.z * dt;
     if (softPiece(o, v, w, st, sz * 0.45, dt)) return;
-    const fl = floorAt(o.position.x, o.position.z) + sz * 0.45;
-    if (o.position.y < fl && o.position.y > fl - 1.2) { o.position.y = fl; if (v.y < 0) { v.y *= -0.32; v.x *= 0.55; v.z *= 0.55; w.multiplyScalar(0.5); } }
+    kiyZemin(o, v, w, sz * 0.45, st, dt, 0.32, 0.55);
     o.scale.setScalar(sz * (k > 0.7 ? Math.max(0, (1 - k) / 0.3) : 1));
   });
 }
@@ -4093,7 +4121,8 @@ function yeniSekil() {
   if (K || TEST || Q.get('kart') === '0' || !g) return;
   if (!SV.gor) SV.gor = [];
   const yeni = []; for (const c of cubes) { const a = aileOf(c.col); if (a && !SV.gor.includes(a) && !yeni.some((y) => y[0] === a)) yeni.push([a, c.col]); }
-  { const Yd = levelOf(LV); for (const y of (Yd && Yd.yeni) || []) { const [tp, ad] = y.split(':'); if (tp === 'mek' && AILE['m_' + ad] && !SV.gor.includes('m_' + ad)) yeni.unshift(['m_' + ad, mucDeg(MEKBLOK[ad] || 'ksSandik')]); } }   // v5.0: yeni mekanik karti
+  { const Yd = levelOf(LV); for (const y of (Yd && Yd.yeni) || []) { const [tp, ad] = y.split(':'); if (tp === 'mek' && AILE['m_' + ad] && !SV.gor.includes('m_' + ad)) yeni.unshift(['m_' + ad, mucDeg(MEKBLOK[ad] || 'ksSandik')]); }
+    const sh = SKS[LV] && (SKS[LV][3] === 'hizli' ? 'kay' : SKS[LV][3]); if (sh && sh !== 'sabit' && AILE['m_' + sh] && !SV.gor.includes('m_' + sh)) yeni.unshift(['m_' + sh, MEKBLOK[sh] || 'ksSandik']); }   // v12.1: platform hareketinin ilk geldigi bolumde tanitim karti   // v5.0: yeni mekanik karti
   if (!yeni.length) return yeniEngel();
   yeni.length = Math.min(yeni.length, 3);   // v4.5: bir bolumde en cok 3 yeni blok karti; kalanlar sonraki bolumlerde
   const goster = (n) => {
@@ -4454,6 +4483,7 @@ world.addEventListener('postStep', () => {
 // PILOT: pilot.js'in kullandigi motor parcalari (yalniz ?pilot=N kipinde cagrilir)
 function pilotBag() {
   return { THREE, CANNON, scene, world, PM, platBody, GB, SIRK, LEG, legBoy, PLS, cubes, balls, S, KAIDE, SEK, KIND, SEKSH, MATSND, KIRILGAN, FLOAT, ORNEK, ren, cam, TC, Q, $, canvasTex, ENV,
+    get PANG() { return PANG; },
     parcaKur, bolumBasla, fit, breakBlock, wakeAll, start, modal, closeModal, sfx, buzz, kamera(p, a) { CPITCH = p; CAZ = a; }, get CAZ() { return CAZ; },
     HAVUZ, setLeg, zoneAt, GRI, CILA_T, fonAd: () => (fonOf(LV) || {}).f || '', fonZem: () => (fonOf(LV) || {}).zem || '', get ZW() { return ZW; }, get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
 }

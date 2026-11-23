@@ -100,7 +100,11 @@ export const ETIKET = { zor: 'Zor bölüm', cokzor: 'Çok zor bölüm' };
 
 // v9.0 (19 Kas 2026): ana oyunun arasina serpistirilen sekil bolumleri (pilot/sira.js). bot: oyuncu botunun ortalama atisi (yay atis, hareketsiz).
 // Top: botun atisi x1.2 x genel egri + 2 (hareketli platformda +2); en az botun %75'i (normal bolumlerin tabani gibi), en az 12.
+const FIZESKI = typeof location !== 'undefined' && /[?&]fiz=eski/.test(location.search);
 export function sekilTop(L, bot, hareket, tip) {
   const k = genel(L) * AYAR.testere[L % AYAR.dunya] * (tip && tip !== 'normal' ? AYAR.tur[tip] : 1);   // v12: zincir / kaptan / altin yagmuru sekil bolumlerinde de
-  return Math.max(tip === 'altin' ? 14 : 12, Math.round(bot * 1.2 * k) + 2 + (hareket && hareket !== 'sabit' ? 2 : 0), Math.ceil(bot * 0.75));
+  if (FIZESKI) return Math.max(tip === 'altin' ? 14 : 12, Math.round(bot * 1.2 * k) + 2 + (hareket && hareket !== 'sabit' ? 2 : 0), Math.ceil(bot * 0.75));
+  // v12.1 (Adem: 'zorluk egrisi mutlaka olsun'): bot (kusursuz nisan) atisinin 26. bolumde ~1.45 kati, 1000'de ~1.13, 2000'de ~1.09 kati; en az botun %90'i
+  const k2 = (0.45 + genel(L)) * AYAR.testere[L % AYAR.dunya] * (tip && tip !== 'normal' ? AYAR.tur[tip] : 1);
+  return Math.max(tip === 'altin' ? 14 : L <= 25 ? 8 : 10, Math.round(bot * k2) + 2 + (hareket && hareket !== 'sabit' ? 2 : 0), Math.ceil(bot * 0.9));
 }
