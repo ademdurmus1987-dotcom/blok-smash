@@ -88,6 +88,14 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 
 ## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
 
+## v12.6 DENEME (24 Kas 2026, ?plat5=1): platform sekil cesitleri (Adem: 'platform cesit olsun yuvarlak kare vs')
+- plat5.js: sekiller kare (tahta kaplama yan), yuvarlak / hap (turkuaz yumusak kenar), sekizgen / altigen (mercan, keskin pah); tek platformda daire/elips (kupleri icine alir).
+  Kamera neredeyse yatay: sekil ailesi yan yuzun renk/stilinden okunur. Ustte ayri pahli guverte kalaslari, 3 iplikli halat, altin bant + percin, MeshPhysical vernik + ENV.
+- Tasarim (pilot) bolumleri: tek katli dikdortgen kat yeni sekle doner; yeni cokgen dikdortgeni HER ZAMAN icine alir, fizik ayni cokgen (pilot.js p5Kat).
+- Ayak: Blender uretici/blender/platform5.py -> model/plat5/ayak.glb (1.3 MB; Y yuvarlak, K sekizgen takim). Koseli platformda K ayak.
+- Deneme: ?psekil=kare|yuvarlak|hap|sekizgen|altigen|daire|elips her bolumde ayni sekil. Selenium (swiftshader) oyun sinamasi cok yavas, yalniz ekran goruntusu alindi.
+- Sira: Adem onaylarsa PLAT5 kosulu `!== '0'`; sonra bloklar.
+
 ## v12.5 (24 Kas 2026): Blender top arabasi ve tek platform sutunu VARSAYILAN (Adem onayladi)
 - oyun.js TOP5 / AYAK4 kosulu `!== '0'`. Eski araba `?top5=0`, eski iki ayak `?ayak4=0`. Atis dalgasi kapali: `?dalga=0`. oyun.js?v=233, CACHE v183.
 

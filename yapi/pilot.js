@@ -234,8 +234,10 @@ export function pilotKur(A, ana) {
     for (const ada of B.ada) {
       const ax = ada.x || 0, az = ada.z || 0, GL = []; adaKat[ada.id] = [];
       ada.katlar.forEach((k, ki) => {
-        const P = ccw(cevre(k)).map(([x, z]) => [x + ax, z + az]), Pl = ccw(cevre(k)), alt = ki === 0 ? k.ust - (k.kal || 0.75) : ada.katlar[ki - 1].ust;
-        const body = ilk ? pb : yeniGovde(); katGovde(body, k, Pl, ana ? 0 : ax, ana ? 0 : az, alt, k.ust);   // v9.0 ana: govde adanin yerinde (temali platform govdenin yerine cizilir)
+        // v12.6 deneme (?plat5=1): tek katli adanin dikdortgen kati yeni sekle (dikdortgeni icine alan kare/altigen/yuvarlak/sekizgen/hap) doner; fizik ayni cokgen
+        const p5 = ana && A.p5Kat && ki === 0 && ada.katlar.length === 1 && k.sekil === 'kare' && !(B.hareket && ada === B.ada[0]) ? A.p5Kat(k, n) : null;
+        const P = ccw(p5 ? p5.P : cevre(k)).map(([x, z]) => [x + ax, z + az]), Pl = ccw(p5 ? p5.P : cevre(k)), alt = ki === 0 ? k.ust - (k.kal || 0.75) : ada.katlar[ki - 1].ust;
+        const body = ilk ? pb : yeniGovde(); katGovde(body, p5 ? Object.assign({}, k, { sekil: 'cokgen' }) : k, Pl, ana ? 0 : ax, ana ? 0 : az, alt, k.ust);   // v9.0 ana: govde adanin yerinde (temali platform govdenin yerine cizilir)
         if (ana) body.position.set(ax, 0, az); else katParca(GL, Pl, k.ust, alt);
         // ada gorunusu ilk katin kaydinda; diger katlarin kaydinda bos yer tutucu (clearPX her kaydin mesh'ini kaldirir)
         const mesh = new THREE.Mesh(new THREE.BufferGeometry());   // yer tutucu: gorunus asagida tek birlesik mesh'te
@@ -249,7 +251,7 @@ export function pilotKur(A, ana) {
         if (!ilk) A.world.addBody(body);
         // cy: 'dustu' siniri (oyun: parca merkezi cy - 0.45'in altina inince dustu). Alcak basamakta (alt kattan < 1.3) alt kata dusen
         // kup merkezi bu sinirin ustunde kalirdi; sinir alt katin 1.3 ustune cekilir. ust: katin gercek yuzu (yerlesim, kirinti).
-        const q = { body, mesh, leg, x: ax, z: az, cx: ax, r: k.r, rz: ana ? (k.rz || k.r) : k.r, cy: ki > 0 ? Math.max(k.ust, alt + 1.3) : k.ust, ust: k.ust, yb: 0, kay: null, ph: 0, den: 0, eg: 0, th: 0.375, P, kat: k, ada: ada.id };
+        const q = { body, mesh, leg, x: ax, z: az, cx: ax, r: k.r, rz: ana ? (k.rz || k.r) : k.r, cy: ki > 0 ? Math.max(k.ust, alt + 1.3) : k.ust, ust: k.ust, yb: 0, kay: null, ph: 0, den: 0, eg: 0, th: 0.375, P, kat: k, ada: ada.id, p5ad: p5 && p5.ad, gx: p5 ? p5.gx : 0 };
         if (ilk) A.SIRK.mesh = mesh;
         adaKat[ada.id].push(A.PLS.length); A.PLS.push(q); KATLAR.push(q);
         for (const [x, z] of P) { pts.push([x, k.ust, z]); pts.push([x, alt - 0.35, z]); }

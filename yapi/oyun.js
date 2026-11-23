@@ -14,7 +14,8 @@ import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak 
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
 import { blok3bKur } from './blok3b.js?v=42';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { ENG3, engel3Kur } from './engel3.js?v=7';   // v11.1: boyali engeller ve top (eski ?eng3=0)
-import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=6';   // v11.2: boyali platform (eski ?plat3=0)
+import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=6';
+import { PLAT5, plat5Kur } from './plat5.js?v=3';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=7';
 import { GOR, gorSec } from './gorunum.js?v=1';
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
@@ -49,7 +50,7 @@ const PILOTQ = !K && Q.has('pilot');   // PILOT
 const SEKQ = !K && !PILOTQ && !Q.has('dene') && Q.get('sekil') !== '0' && (!TEST || Q.get('sekil') === '1');
 const FIZ2Q = Q.get('fiz') !== 'eski';
 const SKM = SEKQ ? await import('./pilot/sira.js?v=6') : {}, SKS = SKM.SEKIL || {}, DZB = (FIZ2Q && SKM.DUZBOT) || {};   // v12.1 DUZBOT: duzenekli bolumlerin yeni fizikle bot atisi
-const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=39') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
+const PLTM = PILOTQ || SEKQ ? await import('./pilot.js?v=40') : null; let PLT = null, PLTA = null;   // PILOT (PLT: bu bolumu kuran pilot motoru; PLTA: ana kipteki motor)
 const TOP5 = Q.get('top5') !== '0';   // v12.5 VARSAYILAN (Adem onayladi), eski araba ?top5=0   // v12.4 deneme: Blender top arabasi (model/top5/araba.glb), parlak vernikli malzeme
 const TOP4 = (Q.get('top4') === '1' || Q.get('yeni4') === '1' || TOP5) && TOP3 && !window.KORSAN;   // v12.3 deneme: arkadan okunan top arabasi; namlu agzi ekranin %76'sinda, araba tamamen gorunur
 const AYAK4 = Q.get('ayak4') !== '0' || Q.get('yeni4') === '1';   // v12.5 VARSAYILAN (Adem onayladi), eski iki ayak ?ayak4=0   // v12.3 deneme: tek kalin platform ayagi
@@ -810,7 +811,7 @@ const rndV = (k) => new THREE.Vector3((Math.random() - 0.5) * k, (Math.random() 
 function floorAt(x, z) {
   if (K) return K.floorAt(x, z);
   if (PLT) return PLT.zemin(x, z);   // PILOT: adalarin gercek ust yuzeyi
-  if (PLS.length > 1 || (PLS[0] && PLS[0].cx)) { for (const q of PLS) if (Math.abs(x - q.cx) < q.r && Math.abs(z - q.z) < q.rz) return 0; return GY; } if (PANG) { const c = Math.cos(PANG), s2 = Math.sin(PANG), lx = x * c - z * s2, lz = x * s2 + z * c; x = lx; z = lz; } return (TEMA_YAPI[1] === 'sirk' ? Math.abs(x) < R && Math.abs(z) < RZ : KARE(TEMA_YAPI[1]) ? Math.abs(x) < R && Math.abs(z) < R : x * x + z * z < R * R) ? 0 : GY; }
+  if (PLS.length > 1 || (PLS[0] && PLS[0].cx)) { for (const q of PLS) if (q.poly ? icinde(q.poly, x - q.cx, z - (q.z || 0)) : Math.abs(x - q.cx) < q.r && Math.abs(z - q.z) < q.rz) return 0; return GY; } if (PANG) { const c = Math.cos(PANG), s2 = Math.sin(PANG), lx = x * c - z * s2, lz = x * s2 + z * c; x = lx; z = lz; } if (PLS[0] && PLS[0].poly) return icinde(PLS[0].poly, x, z) ? 0 : GY; return (TEMA_YAPI[1] === 'sirk' ? Math.abs(x) < R && Math.abs(z) < RZ : KARE(TEMA_YAPI[1]) ? Math.abs(x) < R && Math.abs(z) < R : x * x + z * z < R * R) ? 0 : GY; }
 function debris(m, pos, vel, spin, life, kind, h, sr) { m.position.copy(pos); scene.add(m); DEB.push({ m, v: vel, w: spin, life, kind, s: m.scale.clone(), h, sr }); return DEB[DEB.length - 1]; }
 // v3.2: (Adem 11 Kas) sivi damlasi: hiz yonunde uzar (gercek damla gibi), carpinca kucuk damlalar sacar
 const UPV = new THREE.Vector3(0, 1, 0), TVV = new THREE.Vector3();
@@ -1626,6 +1627,7 @@ function buildLevel() {
   else { platBody.addShape(new CANNON.Cylinder(R, R, PT, 32), new CANNON.Vec3(0, -PT / 2, 0)); platBody.addShape(new CANNON.Cylinder(1.05, 1.3, -GY - PT, 16), new CANNON.Vec3(0, (GY - PT) / 2, 0)); }
   POFI.z = RZ + 5.6; pedG.position.copy(POFI); PF.holder.position.copy(POFI); fit(); TC.aimYaw = TC.yaw = Math.PI + CAZ;
   PLS.push({ body: platBody, mesh: SIRK.mesh, leg: LEG, x: 0, z: 0, cx: 0, r: R, rz: RZ, kay: null, ph: 0, den: dengeMu(LV, Y) ? 1 : 0, eg: 0, cy: 0, th: 0.375, dmax: Y.veri && Y.denge ? 0.2 : 0 }); DENGEVAR = !!PLS[0].den; platBody.position.set(0, 0, 0); LEG.position.set(0, 0, 0); if (SIRK.mesh) SIRK.mesh.position.set(0, 0, 0);
+  if (PLAT5) PLS[0].kos = list.map(([i, , k, col]) => { const o = olcu(col); return [(Math.abs(i - ci) + o[0]) * S, (Math.abs(k - ck) + o[2]) * S]; });   // v12.6: daire/elips platform butun kupleri icine alsin
   addCubes(Y, list, () => [ci, ck, 0, 0]); if (YER) fit();   // v9.4: cerceve kuplerin kutusuna gore (kupler artik var)
 }
 // v6.13: birden fazla ya da kayan platformlu bolum
@@ -1924,6 +1926,7 @@ const PTEM = {
 const DENGE_MAX = 0.06;
 // v11.2: pistonlu / makasli / dislili ayaklarda ve rayda gri celikler canli celik mavisi, kahverengimsi altinlar parlak altin
 const P3 = PLAT3 ? plat3Kur({ THREE, pKaydir: (P, d) => pKaydir(P, d) }) : null;
+const P5 = PLAT5 ? plat5Kur({ THREE, pKaydir: (P, d) => pKaydir(P, d), ENV, GLTFLoader }) : null;   // v12.6 deneme
 const P3RENK = { '#55606c': '#5868c4', '#3c444e': '#4453a8', '#5a6470': '#5868c4', '#4a5866': '#5868c4', '#c8d2dc': '#b4c4f2', '#e4ebf2': '#ccd8fa', '#9aa2ac': '#8f9fe0', '#e0a63a': P3ALTIN, '#ffc93a': P3ALTIN, '#3c434c': '#4453a8' };
 const PTD = {}, PTMAT = {};
 function ptMat(renk, ro, me, o) {
@@ -2155,8 +2158,9 @@ function pKaydir(P, d) {
 function pCcw(P) { let a = 0; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length]; a += p[0] * q[1] - q[0] * p[1]; } return a < 0 ? P : P.slice().reverse(); }   // ustten bakista (x, z) saat yonunun tersi = a<0
 // platformun dis cizgisi (yerel x, z) ve sekil adi
 function pSekil(q, n) {
-  if (q.P && q.P.length > 2) return { ad: q.kat && q.kat.sekil || 'kare', P: pCcw(q.P.map(([x, z]) => [x - (q.x || 0), z - (q.z || 0)])) };
+  if (q.P && q.P.length > 2) { const ad = q.p5ad || q.kat && q.kat.sekil || 'kare'; return { ad, P: pCcw(q.P.map(([x, z]) => [x - (q.x || 0), z - (q.z || 0)])), kose: ad === 'kare' || ad === 'sekizgen' || ad === 'altigen' || ad === 'cokgen' }; }   // v12.6: kose -> kose ayak
   const r = q.r, rz = q.rz, P = [];
+  if (P5 && !(g && g.don && n === 0)) { const k = P5.sekil(q, n, LV, S, PLS.length === 1); q.poly = k.P; q.gx = k.gx; return k; }   // v12.6 deneme
   if (g && g.don && n === 0) {   // donen: daire, kuplerin hepsini icine alir
     const rd = Math.max(r, rz, Math.hypot(r - S * 0.5, rz - S * 0.45) + S * 0.4);
     for (let i = 0; i < 40; i++) { const a = i / 40 * 6.283; P.push([Math.cos(a) * rd, Math.sin(a) * rd]); } return { ad: 'disk', P: pCcw(P), rd };
@@ -2196,6 +2200,7 @@ function pTabla(P, th) {
 }
 function ptUst2(q, sk) {
   const g = new THREE.Group(), th = q.th, P = sk.P;
+  if (P5) { g.add(P5.tabla(P, th, sk.ad)); return g; }   // v12.6 deneme
   if (PLAT3) { const m = P3.tabla(P, th); m.castShadow = m.receiveShadow = true; g.add(m); return g; }   // v11.2
   g.add(ptMesh(pTabla(P, th), [pMat('ust'), pMat('yan')]));
   // ust kenarda altin serit (tablanin biraz disinda ince halka)
@@ -2226,11 +2231,12 @@ function pAyak(q, sk, h) {
   for (const x of xs) {
     const s = new THREE.Group(); s.position.x = x; G.add(s); if (AYAK4) { const k = Math.min(1.9, Math.max(1.35, q.r * 0.26)); s.scale.set(k, 1, k); }
     // taban: yere gomulu genis basamaklar (alt basamak GY'nin 0.12 altindan baslar)
-    const tb = new THREE.Group(); if (PLAT3) { const m = P3.taban(); m.castShadow = m.receiveShadow = true; tb.add(m); } else tb.add(sil(1.35, 1.25, -0.12, 0.16, koyu, 36), sil(1.12, 1.02, 0.16, 0.36, altin, 36), sil(0.86, 0.78, 0.36, 0.5, yan, 32)); s.add(tb); u.taban.push(tb);
+    const tk = sk.kose ? '_K' : '_Y';
+    const tb = new THREE.Group(); if (P5) tb.add(P5.parca('Taban' + tk)); else if (PLAT3) { const m = P3.taban(); m.castShadow = m.receiveShadow = true; tb.add(m); } else tb.add(sil(1.35, 1.25, -0.12, 0.16, koyu, 36), sil(1.12, 1.02, 0.16, 0.36, altin, 36), sil(0.86, 0.78, 0.36, 0.5, yan, 32)); s.add(tb); u.taban.push(tb);
     // govde: sutun (yukseklige gore uzar), iki altin bilezik, platformun altinda altin baslik
-    const gv = PLAT3 ? P3.govde() : ptMesh(new THREE.CylinderGeometry(0.5, 0.56, 1, 28), yan); gv.castShadow = gv.receiveShadow = true; s.add(gv);
-    const b1 = PLAT3 ? P3.bilezik() : ptMesh(new THREE.TorusGeometry(0.56, 0.08, 10, 28), altin, 0, 0, 0, 0), b2 = b1.clone(); if (PLAT3) b1.scale.setScalar(0.98), b2.scale.set(0.9, 1, 0.9), b1.visible = false; else b1.rotation.x = b2.rotation.x = Math.PI / 2; s.add(b1, b2);
-    const bas = new THREE.Group(); if (PLAT3) { const m = P3.baslik(); m.castShadow = true; bas.add(m); } else bas.add(sil(0.58, 0.82, 0, 0.22, altin, 32), sil(0.82, 0.95, 0.22, 0.34, pMat('altinKoyu'), 32)); s.add(bas);
+    const gv = P5 ? P5.parca('Govde' + tk) : PLAT3 ? P3.govde() : ptMesh(new THREE.CylinderGeometry(0.5, 0.56, 1, 28), yan); gv.castShadow = gv.receiveShadow = true; s.add(gv);
+    const b1 = P5 ? new THREE.Group() : PLAT3 ? P3.bilezik() : ptMesh(new THREE.TorusGeometry(0.56, 0.08, 10, 28), altin, 0, 0, 0, 0), b2 = P5 ? P5.parca('Bilezik' + tk) : b1.clone(); if (P5) b1.visible = false; else if (PLAT3) b1.scale.setScalar(0.98), b2.scale.set(0.9, 1, 0.9), b1.visible = false; else b1.rotation.x = b2.rotation.x = Math.PI / 2; s.add(b1, b2);
+    const bas = new THREE.Group(); if (P5) bas.add(P5.parca('Baslik' + tk)); else if (PLAT3) { const m = P3.baslik(); m.castShadow = true; bas.add(m); } else bas.add(sil(0.58, 0.82, 0, 0.22, altin, 32), sil(0.82, 0.95, 0.22, 0.34, pMat('altinKoyu'), 32)); s.add(bas);
     u.sut.push({ gv, b1, b2, bas });
     // temas golgesi ve zemin seti (kum/kar), kopuk (su)
     const go = new THREE.Mesh(SPLGEO, pGolgeMat()); go.rotation.x = -Math.PI / 2; go.scale.setScalar(2.1); go.position.y = 0.02; go.renderOrder = 2; s.add(go); u.golge = (u.golge || []).concat(go);
@@ -4301,7 +4307,7 @@ function fit() {
       let kx = 0, ky = 0; for (const q of PLS) { if (q.kay) kx = Math.max(kx, q.kay.a || 0); if (q.asn) ky = Math.max(ky, q.asn.a || q.asn || 0); }
       if (yD && yD.don) { const mx = (bb.min.x + bb.max.x) / 2, r = Math.hypot(bb.max.x - mx, Math.max(Math.abs(bb.min.z), Math.abs(bb.max.z))); bb.min.x = mx - r; bb.max.x = mx + r; bb.max.z = Math.max(bb.max.z, r); bb.min.z = Math.min(bb.min.z, -r); }
       bb.min.x -= kx; bb.max.x += kx; if (ky > 0 && ky < 20) bb.max.y += ky;
-      if (KAM3 && PLS[0]) { const p0 = PLS[0]; bb.min.x = Math.min(bb.min.x, (p0.x || 0) - p0.r); bb.max.x = Math.max(bb.max.x, (p0.x || 0) + p0.r); }   // v12.2: platformun tamami gorunur
+      if (KAM3 && PLS[0]) { const p0 = PLS[0]; bb.min.x = Math.min(bb.min.x, (p0.x || 0) - (p0.gx || p0.r)); bb.max.x = Math.max(bb.max.x, (p0.x || 0) + (p0.gx || p0.r)); }   // v12.2: platformun tamami gorunur
     }
     if (!bb.isEmpty()) { YB = bb; CX = (bb.min.x + bb.max.x) / 2; const mz = Math.max(RZ, bb.max.z);
       tops.length = 0; for (const x of [bb.min.x, bb.max.x]) for (const z of [bb.min.z, mz]) tops.push([x, bb.max.y, z]); bots.length = 0; bots.push([bb.min.x, -0.8, mz], [bb.max.x, -0.8, mz]); } }
@@ -4547,7 +4553,7 @@ world.addEventListener('postStep', () => {
 });
 // PILOT: pilot.js'in kullandigi motor parcalari (yalniz ?pilot=N kipinde cagrilir)
 function pilotBag() {
-  return { THREE, CANNON, scene, world, PM, platBody, GB, SIRK, LEG, legBoy, PLS, cubes, balls, S, KAIDE, SEK, KIND, SEKSH, MATSND, KIRILGAN, FLOAT, ORNEK, ren, cam, TC, Q, $, canvasTex, ENV,
+  return { p5Kat: P5 ? (k, n) => P5.katSekil(k, n) : null, THREE, CANNON, scene, world, PM, platBody, GB, SIRK, LEG, legBoy, PLS, cubes, balls, S, KAIDE, SEK, KIND, SEKSH, MATSND, KIRILGAN, FLOAT, ORNEK, ren, cam, TC, Q, $, canvasTex, ENV,
     get PANG() { return PANG; },
     parcaKur, bolumBasla, fit, breakBlock, wakeAll, start, modal, closeModal, sfx, buzz, kamera(p, a) { CPITCH = p; CAZ = a; }, get CAZ() { return CAZ; },
     HAVUZ, setLeg, zoneAt, GRI, CILA_T, fonAd: () => (fonOf(LV) || {}).f || '', fonZem: () => (fonOf(LV) || {}).zem || '', get ZW() { return ZW; }, get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
