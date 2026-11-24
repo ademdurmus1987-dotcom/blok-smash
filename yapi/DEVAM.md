@@ -270,3 +270,4 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - v12.32: ?sv= ile acilan deneme bolumunde kurtarilmis uye yine cikar (Adem telefonda tekrar denerken anahtar cikmiyordu: uye bir kez kurtarilinca o bolumde bir daha anahtar olmaz).
 - v12.33: Kunduz videosu (Adem, Pro + duzenleme istemi: kafes ayni kaldi). 9.0 sn kesildi (sonda kafese geri giriyordu). VIDEOLU: papagan, kunduz.
 - v12.34: Penguen videosu (Adem, Google Flow, 6 sn, kesilmedi). VIDEOLU: papagan, kunduz, penguen.
+- v12.35: Kirpi videosu (Flow, 6 sn; yesil fular sarimsi, ayiklamada korunuyor). VIDEOLU: papagan, kunduz, penguen, kirpi.
