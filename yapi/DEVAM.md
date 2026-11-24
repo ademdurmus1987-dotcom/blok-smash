@@ -197,3 +197,4 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - blok6.js: ksYildiz (sari-turuncu boyali kup, iri krem yildiz), ksDirek (dikey damarli tahta, ust-alt demir bant), ksSutun / ksMorSutun (yivli boyali tas sutun, LatheGeometry; mor yerine turkuaz).
 - Kapsam disi kalan: ksKemer (kemer bicimi), oyA (Foxi kupu, bilerek eski). Onizleme: uretici/blender/onizleme/blok6_yildiz_sutun.png.
 - Siradaki: Kingdom'daki gibi bloklarin altinda koyu yumusak temas golgesi (anahtar arkasinda), sonra ?blok6=1 varsayilan icin Adem onayi.
+- v12.11 denendi, yayinlanmadi: blok altina koyu temas golgesi (Kingdom). Bizim neredeyse yatay kamerada golge gorunmuyor, yan kenarlarda ince siyah cizgi olarak tasiyor. Kingdom'da kamera daha yukaridan bakiyor; once kamera acisi denenmeli.
