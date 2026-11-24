@@ -15,7 +15,7 @@ export const DOSTLAR = [
 ];
 // v12.31 (Adem'in Gemini videolari: uye kafeste, anahtar kilide girer, kafes acilir, uye sevincle cikar; kendi sesiyle):
 // karakter/dost/video/{id}.mp4 (sessiz, 540x960) + {id}.mp3. Video canli yesil ayiklamayla (WebGL) oynar, ses oyunun ses zincirinden.
-export const VIDEOLU = new Set(['papagan', 'ahtapot', 'kunduz', 'penguen', 'kirpi', 'kurbaga']);
+export const VIDEOLU = new Set(['papagan', 'maymun', 'ahtapot', 'kunduz', 'penguen', 'kirpi', 'kurbaga']);
 const VYOL = (id, uz) => '../karakter/dost/video/' + id + '.' + uz + '?v=1';
 export function dostOnYukle(d) { if (!d || !VIDEOLU.has(d.id)) return; for (const u of ['mp4', 'mp3']) fetch(VYOL(d.id, u)).catch(() => {}); }
 // bu bolumde kurtarilacak uye (yoksa null): 5, 10, 15 ... sirayla; daha once kurtarildiysa anahtar yok
