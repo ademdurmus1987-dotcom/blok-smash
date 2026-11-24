@@ -13,6 +13,11 @@ export const DOSTLAR = [
   { id: 'kurbaga', ad: 'Kurbağa Vırak', gorev: 'Borazancı', e: '🐸' },
   { id: 'fok', ad: 'Fok Foki', gorev: 'Dalgıç', e: '🦭' }
 ];
+// v12.31 (Adem'in Gemini videolari: uye kafeste, anahtar kilide girer, kafes acilir, uye sevincle cikar; kendi sesiyle):
+// karakter/dost/video/{id}.mp4 (sessiz, 540x960) + {id}.mp3. Video canli yesil ayiklamayla (WebGL) oynar, ses oyunun ses zincirinden.
+export const VIDEOLU = new Set(['papagan']);
+const VYOL = (id, uz) => '../karakter/dost/video/' + id + '.' + uz + '?v=1';
+export function dostOnYukle(d) { if (!d || !VIDEOLU.has(d.id)) return; for (const u of ['mp4', 'mp3']) fetch(VYOL(d.id, u)).catch(() => {}); }
 // bu bolumde kurtarilacak uye (yoksa null): 5, 10, 15 ... sirayla; daha once kurtarildiysa anahtar yok
 export function dostBolum(L, SV) {
   if (!DOST || L < 5 || L % 5) return null;
@@ -39,7 +44,7 @@ function stil() {
 @keyframes dyzip{0%{transform:scale(1)}35%{transform:scale(1.35) rotate(-10deg)}70%{transform:scale(.95)}100%{transform:scale(1)}}
 .dk-an{position:fixed;left:0;top:0;width:60px;height:26px;z-index:61;pointer-events:none;filter:drop-shadow(0 0 7px #ffd54a) drop-shadow(0 2px 2px #0008)}.dk-an img{width:100%;height:100%;display:block}
 #dekran{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,#2a63ad 0,#102048 72%);color:#fff;opacity:0;transition:opacity .35s;overflow:hidden}
-#dekran.on{opacity:1}#dekran .de-isin{position:absolute;left:50%;top:40%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;background:repeating-conic-gradient(rgba(255,230,150,.15) 0 9deg,transparent 9deg 22deg);animation:dedon 18s linear infinite;pointer-events:none;opacity:0;transition:opacity .6s}
+#dekran.on{opacity:1}#dekran .de-vid{position:relative;width:min(92vw,calc(62vh * 9 / 16));aspect-ratio:9/16;margin-top:-4vh}#dekran .de-vid canvas{width:100%;height:100%;display:block}#dekran.vid h2{margin-top:-2vh}#dekran .de-isin{position:absolute;left:50%;top:40%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;background:repeating-conic-gradient(rgba(255,230,150,.15) 0 9deg,transparent 9deg 22deg);animation:dedon 18s linear infinite;pointer-events:none;opacity:0;transition:opacity .6s}
 #dekran.acik .de-isin{opacity:1}@keyframes dedon{to{transform:rotate(360deg)}}
 #dekran .de-ust{position:relative;font-size:20px;font-weight:900;color:#ffe27a;text-shadow:0 2px 0 #6a3400;margin-bottom:10px;transition:opacity .3s}#dekran.acik .de-ust{opacity:0}
 #dekran .de-kutu{position:relative;width:min(78vw,320px);height:min(88vw,360px)}
@@ -70,7 +75,11 @@ export function dostUc(at, ses) {
   ucur(at[0], at[1], r.left + r.width / 2, r.top + r.height / 2, 950, 140, 720, (a) => { a.remove(); k.classList.add('dolu'); if (ses) ses('bonus'); if (navigator.vibrate) try { navigator.vibrate(40); } catch (e) {} });
 }
 // bolum sonu sayfasi: kilitli kafes -> anahtar yuvadan gelir, kilide girer, doner -> kafes acilir -> uye cikar
-export function dostEkran(d, n, devam, ses) {
+export function dostEkran(d, n, devam, ses, kayit) {
+  stil(); if (VIDEOLU.has(d.id) && !/[?&]dvid=0/.test(location.search) && videoEkran(d, n, devam, kayit)) { dostKafes(false); return; }
+  dostEkranResim(d, n, devam, ses);
+}
+function dostEkranResim(d, n, devam, ses) {
   stil(); const yv = yuvaEl(), yr = yv.getBoundingClientRect(); dostKafes(false);
   const E = document.createElement('div'); E.id = 'dekran';
   E.innerHTML = '<div class="de-isin"></div><div class="de-ust">Mürettebatından biri kafeste!</div><div class="de-kutu"><div class="de-kafes"></div><img class="de-hay" alt=""><div class="de-flas"></div></div>' +
@@ -108,4 +117,41 @@ export function dostEkran(d, n, devam, ses) {
     });
   }, 700);
   E.querySelector('button').onclick = () => { E.classList.remove('on'); setTimeout(() => { E.remove(); devam(); }, 300); };
+}
+
+// v12.31: videolu kurtarma (uye kafeste -> anahtar -> kafes acilir -> uye cikar). Video bitince son kare kalir, yazi ve dugme gelir.
+// kayit(url): oyunun ses zincirinden mp3 calar (AudioContext ilk dokunusta acildi; iPhone'da video sesi kilitli olabilir).
+function videoEkran(d, n, devam, kayit) {
+  const E = document.createElement('div'); E.id = 'dekran'; E.className = 'vid';
+  E.innerHTML = '<div class="de-isin"></div><div class="de-vid"><canvas></canvas></div><h2>' + d.ad + ' kurtuldu!</h2><p><b>' + d.gorev + '</b> · Mürettebat ' + n + ' / ' + DOSTLAR.length + '</p><button>Harika!</button>';
+  const cv = E.querySelector('canvas'), gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
+  if (!gl) return false;
+  document.body.appendChild(E);
+  const vid = document.createElement('video'); vid.muted = true; vid.playsInline = true; vid.setAttribute('playsinline', ''); vid.setAttribute('webkit-playsinline', ''); vid.preload = 'auto'; vid.crossOrigin = 'anonymous'; vid.src = VYOL(d.id, 'mp4');
+  const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return o; }, pg = gl.createProgram();
+  gl.attachShader(pg, sh(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 u; void main(){ u = vec2(p.x * 0.5 + 0.5, 0.5 - p.y * 0.5); gl_Position = vec4(p, 0.0, 1.0); }'));
+  gl.attachShader(pg, sh(gl.FRAGMENT_SHADER, `precision mediump float; uniform sampler2D v; uniform vec2 px; varying vec2 u;
+    float k(vec3 c){ return c.g - max(c.r, c.b); }
+    void main(){ vec3 c = texture2D(v, u).rgb; float g = k(c);
+      float g2 = max(max(k(texture2D(v, u + vec2(px.x, 0.0)).rgb), k(texture2D(v, u - vec2(px.x, 0.0)).rgb)), max(k(texture2D(v, u + vec2(0.0, px.y)).rgb), k(texture2D(v, u - vec2(0.0, px.y)).rgb)));
+      float a = 1.0 - smoothstep(0.06, 0.16, mix(g, g2, 0.35));
+      float m = max(c.r, c.b); c.g = min(c.g, m + 0.03);
+      gl_FragColor = vec4(c * a, a); }`));
+  gl.linkProgram(pg); gl.useProgram(pg);
+  const bf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  const lp = gl.getAttribLocation(pg, 'p'); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 0, 0);
+  const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx);
+  for (const [a, b] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, a, b);
+  gl.uniform2f(gl.getUniformLocation(pg, 'px'), 1 / 540, 1 / 960);
+  const boyut = () => { const pr = Math.min(2, devicePixelRatio || 1); cv.width = Math.round(cv.clientWidth * pr); cv.height = Math.round(cv.clientHeight * pr); gl.viewport(0, 0, cv.width, cv.height); };
+  const ciz = () => { if (vid.readyState < 2) return; gl.bindTexture(gl.TEXTURE_2D, tx); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); };
+  let bitti = false, basladi = false; const son = () => { if (bitti) return; bitti = true; ciz(); E.classList.add('acik', 'cik'); if (navigator.vibrate) try { navigator.vibrate([40, 30, 60]); } catch (e) {} };
+  const kare = () => { if (!E.isConnected) return; if (!bitti) { ciz(); requestAnimationFrame(kare); } };
+  const basla = () => { if (basladi) return; basladi = true; boyut(); vid.play().then(() => { if (kayit) kayit(VYOL(d.id, 'mp3')); requestAnimationFrame(kare); }).catch(() => son()); };
+  vid.addEventListener('canplaythrough', basla); vid.addEventListener('loadeddata', () => setTimeout(basla, 1500)); vid.addEventListener('ended', son);
+  vid.addEventListener('error', () => { E.remove(); const g = document.getElementById('dekran'); if (g) g.remove(); dostEkranResim(d, n, devam); });
+  setTimeout(() => { if (!basladi) basla(); }, 6000); setTimeout(() => { if (!bitti) son(); }, 16000);   // takilirsa dugme yine de gelir
+  vid.load(); requestAnimationFrame(() => E.classList.add('on'));
+  E.querySelector('button').onclick = () => { vid.pause(); E.classList.remove('on'); setTimeout(() => { E.remove(); devam(); }, 300); };
+  return true;
 }
