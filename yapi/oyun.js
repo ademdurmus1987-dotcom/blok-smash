@@ -4290,7 +4290,9 @@ for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) glc.addEventLis
 
 // ---------------- kamera ----------------
 // platformun tamami ve altta Pofi ekrana sigar; dar (telefon) ekranda geriye cekilir
-let CPITCH = 9 * Math.PI / 180, CAZ = 0; const CTG = new THREE.Vector3(); let CAMI = 0;   // PILOT: CPITCH/CAZ let (yalniz pilot kurulumunda degisir)   // v2.0: kamera acisi; CAMI: bolum basinda kisa donus
+// v12.17 deneme (Adem 24 Kas: 'kamera test edelim'; Kingdom gibi biraz daha yukaridan): ?kam4=1 her bolumde egim KAM4 derece (?kpit= ile degisir). Eski: anahtarsiz (9 / pilotta en cok 13)
+const KAM4 = Q.get('kam4') === '1' || Q.has('kpit'), KPIT = +(Q.get('kpit') || 18) * Math.PI / 180;
+let CPITCH = KAM4 ? KPIT : 9 * Math.PI / 180, CAZ = 0; const CTG = new THREE.Vector3(); let CAMI = 0;   // PILOT: CPITCH/CAZ let (yalniz pilot kurulumunda degisir)   // v2.0: kamera acisi; CAMI: bolum basinda kisa donus
 const YER = Q.get('yer') !== '0';   // v9.4 (Adem 19 Kas): referans oyundaki yerlesim olculdu (390x844 oraninda): tabla ust yuzu ekranin %64'u, yapi tepesi en fazla ~%15, namlu agzi ~%81, araba ekran genisliginin ~%46'si. ?yer=0 eski yerlesim
 // v11.4 (Adem 22 Kas: 'kamera yaklastirma'; rakipte yapi ekranin %80-90'i): yapi ekran genisliginin ~%80'ini doldurur; bir blok ekranin en cok
 // %11.5'i (390 pikselde 45) olur ki kucuk yapi dev gorunmesin (v10.23 sikayeti). Varsayilan (Adem 23 Kas), eski ?kam2=0. ?kam2b= yarim genislik tabani (kucuk = yakin)
@@ -4349,7 +4351,9 @@ function fit() {
   // top arabasi
   if (TC.gun) {
     const dH = Math.hypot(cam.position.x, cam.position.z), dc = Math.max(2.8, Math.min(dH - (reach + CGAP), (dH - reach) / 3.6));   // v6.29: (Adem) gozle gorulen aralik her bolumde ayni: kameranin platforma uzakligi arabaya uzakliginin 3.6 kati
-    const k = ((YER ? (TOP4 ? +(Q.get('t4w') || 0.3) : 0.36) : 0.4) * 2 * dc * thx) / TC.w0; TC.holder.scale.setScalar(k); TC.k = k;
+    const kW = (YER ? (TOP4 ? +(Q.get('t4w') || 0.3) : 0.36) : 0.4) * 2 * thx / TC.w0; let k = kW * dc; TC.holder.scale.setScalar(k); TC.k = k;
+    for (let tur = 0; tur < (KAM4 ? 3 : 1); tur++) {   // v12.17 KAM4: yuksek egimde araba asagida kalir, gercek derinlik yatay uzakliktan buyuk; boy derinlige gore yeniden olculur (ekranda ayni genislik)
+    if (tur) { cam.getWorldDirection(V); const dz = TC.holder.position.clone().sub(cam.position).dot(V); k = kW * dz; TC.holder.scale.setScalar(k); TC.k = k; }
     let lo = GY - 30, hi = cam.position.y; const tipY = YER ? YER_NAMLU : PC ? -0.7   /* v8.7 PILOT: top arabasi her bolumde ekranda ayni yerde; platform ona gore (kamera) hizalanir */
       : Math.max(-0.8, Math.min(-0.6, V.set(0, GY + 0.3, 2).project(cam).y - 0.16));   // v6.29: (Adem) namlu ucu ekranda platform ayaginin altinda kalir, ayagin ustune binmez
     const UST = new THREE.Box3(), ustY = () => { UST.setFromObject(TC.gun); let m = -9; for (const x of [UST.min.x, UST.max.x]) for (const z of [UST.min.z, UST.max.z]) m = Math.max(m, V.set(x, UST.max.y, z).project(cam).y); return m; };
@@ -4357,6 +4361,7 @@ function fit() {
       const yy = trunkTip(V).project(cam).y; if (yy > tipY) hi = by; else lo = by; }
     TC.by = (lo + hi) / 2; TC.holder.position.y = TC.by; TC.holder.updateMatrixWorld(true);
     if (PC) TC.ustF = ustY() - tipY;   // v8.7: arabanin ekrandaki ust ucu, namlu ucunun ne kadar ustunde (kamera hizalamasi icin)
+    }
     const ph = Math.max(0.2, (TC.by - GY) / TC.k); TC.pad.scale.y = ph; TC.pad.position.y = -ph / 2; TC.rim2.position.y = -ph + 0.12;
   }
   { const foH = fonOf(LV); if (FONYENI && foH && foH.yeni && !K) { const p0 = PLS[0]; V.set(p0 ? p0.x : 0, GY, p0 ? p0.z : 0).project(cam); fonHizala(foH, (V.x + 1) / 2 * innerWidth, (1 - V.y) / 2 * innerHeight); } }
@@ -4570,7 +4575,7 @@ world.addEventListener('postStep', () => {
 function pilotBag() {
   return { p5Kat: P5 ? (k, n) => P5.katSekil(k, n) : null, THREE, CANNON, scene, world, PM, platBody, GB, SIRK, LEG, legBoy, PLS, cubes, balls, S, KAIDE, SEK, KIND, SEKSH, MATSND, KIRILGAN, FLOAT, ORNEK, ren, cam, TC, Q, $, canvasTex, ENV,
     get PANG() { return PANG; },
-    parcaKur, bolumBasla, fit, breakBlock, wakeAll, start, modal, closeModal, sfx, buzz, kamera(p, a) { CPITCH = p; CAZ = a; }, get CAZ() { return CAZ; },
+    parcaKur, bolumBasla, fit, breakBlock, wakeAll, start, modal, closeModal, sfx, buzz, kamera(p, a) { CPITCH = KAM4 ? KPIT : p; CAZ = a; }, get CAZ() { return CAZ; },
     HAVUZ, setLeg, zoneAt, GRI, CILA_T, fonAd: () => (fonOf(LV) || {}).f || '', fonZem: () => (fonOf(LV) || {}).zem || '', get ZW() { return ZW; }, get g() { return g; }, get LV() { return LV; }, get GY() { return GY; }, set R(v) { R = v; }, set RZ(v) { RZ = v; }, set RZB(v) { RZB = v; }, set TOPY(v) { TOPY = v; } };
 }
 if (PILOTQ) PLT = PLTM.pilotKur(pilotBag());   // PILOT

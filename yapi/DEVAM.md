@@ -223,3 +223,9 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 ## v12.16 (24 Kas 2026): yeni acilis varsayilan
 - Adem onayladi: acilis ekrani artik tam ekran resim (yapi/fon/acilis5.webp). Eski video acilis: ?logo4=0. Denemeler: ?logo4=1 tek renk + ayri logo, ?logo4=2 sahil + ayri logo.
 - Ikon (simge/cc/ikon4-*.png) hala manifest'e konmadi; Adem'in onayini bekliyor.
+
+## v12.17 deneme (24 Kas 2026, ?kam4=1): kamera biraz daha yukaridan (Kingdom gibi)
+- oyun.js KAM4: her bolumde (pilot dahil) egim 18 derece (eski: ana kip 9, pilot en cok 13). ?kpit=N ile baska aci denenir (kpit verilince kam4 kendiliginden acik).
+- Yuksek egimde top arabasi asagida kalip kuculuyordu: KAM4'te araba boyu gercek derinlige gore yeniden olculur (ekranda ayni genislik).
+- Karsilastirma (390x844): 16 / 20 / 24 derece denendi; 18 secildi. Atis sinamasi hatasiz. Adem telefonda begenirse KAM4 varsayilan, sonra temas golgesi (v12.11) yeniden.
+- Ikon: CellCog kullanilmayacak (Adem 24 Kas). Aday simge/cc/ikon4-*.png Adem'e gosterildi.
