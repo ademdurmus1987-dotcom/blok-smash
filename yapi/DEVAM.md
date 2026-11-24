@@ -188,3 +188,7 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - Test betikleri (Playwright) oturum gecici klasorundeydi; gerekirse yeniden yazilir: pilot ekran goruntusu (`?pilot=N`), ana bolum (`?test&sekil=1`), bot olcumu (`uretici/pilot_test.js` botEkran).
 - Blender (bpy 5.3) gecici sanal ortamdaydi; yeni oturumda gerekirse `python3 -m venv bpyenv && bpyenv/bin/pip install bpy` ile yeniden kurulur (v10.23'te kuruldu ama platformlar olcuye gore kodla uretildigi icin kullanilmadi).
 - Test: `python3 -m http.server 8765` (repo kokunde) + Playwright, `yapi/index.html?sv=<bolum>&kart=0` dogrudan bolumu acar (Yeni Blok karti yok). `&olc` ile window.__kam, __zon, __px, __fon, __it (kupleri it), __cs (kup durumlari).
+
+## v12.9c (24 Kas 2026) — Adem'in iki hatası
+- Platform ayağının Blender başlığı (plat5) güverte tahtalarının arasından (-0.05) görünüyordu: P5'te başlık/gövde üstü 0.42 aşağıda (`pAyak` `u.upd`).
+- Çatlak izi rastgele x'te ön+arka yüze konuyordu: artık topun değdiği noktaya (b.blast) en yakın yüzde, o noktada (`catlakIz(c, p)`). Eski: `?cat2=0`.

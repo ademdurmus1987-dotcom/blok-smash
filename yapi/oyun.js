@@ -2243,7 +2243,7 @@ function pAyak(q, sk, h) {
     const st = pSet(); s.add(st); u.set.push(st);
     const kp = suKopuk(0); kp.scale.setScalar(0.95); s.add(kp); u.kpk.push(kp);
   }
-  u.upd = (hh) => { for (const o of u.sut) { const y0 = 0.5, y1 = hh - 0.34; o.gv.scale.y = Math.max(0.05, y1 - y0); o.gv.position.y = (y0 + y1) / 2; o.b1.position.y = y0 + 0.25; o.b2.position.y = y1 - 0.2; o.bas.position.y = hh - 0.34; } };
+  u.upd = (hh) => { const us = P5 ? 0.42 : 0.34; for (const o of u.sut) { const y0 = 0.5, y1 = hh - us; o.gv.scale.y = Math.max(0.05, y1 - y0); o.gv.position.y = (y0 + y1) / 2; o.b1.position.y = y0 + 0.25; o.b2.position.y = y1 - 0.2; o.bas.position.y = hh - us; } };   // v12.9c: P5 baslik ustu guverte araliginin (-0.05) altinda kalsin
   u.zon = (zn, dip) => {   // ayagin bastigi zemin: su ise taban/golge/set gizli, sutun suya girer
     const su = zn === 'su', yum = zn === 'kum' || zn === 'kar';
     for (const t of u.taban) t.visible = !su; for (const go of u.golge) go.visible = !su; for (const k of u.kpk) { k.visible = su; k.position.y = dip + 0.05; k.scale.setScalar(1.45); k.material.opacity = 0.9; }
@@ -2930,7 +2930,7 @@ function blast(b) {
     // Metal, celik, tas, tugla, altin ve tas piramit kirilmaz, sadece itilir (yere dusunce kirilir).
     if (KIND[c0.kind] && KIND[c0.kind].boom && c0.fuse == null) { c0.fuse = 0; FUSE.push(c0); }
     else if (SAGBUZ && MATSND[c0.kind] === 'buz' && (!c0.catlak || c0.catlakA === g.shots)) { if (!c0.catlak) { c0.catlak = 1; c0.catlakA = g.shots; buzCatla(c0); } }   // v10.0: buz ilk vurusta catlar, kirilmaz
-    else if (FIZ2 && OYUNCAK(c0.kind) && !c0.vur) { c0.vur = 1; sfx('kir', c0.kind); const pv = new THREE.Vector3().copy(c0.body.position); HIS.vurus(pv, b.dir, malzOf(c0.kind), 0.5); kiymik(pv, bColor(c0), b.dir); catlakIz(c0); }   // v12.1 (Adem: 'kirilma biraz zor olmali, fizik devreye girsin'): oyuncak kup/cubuk ilk vurusta itilir, ikinci vurusta kirilir
+    else if (FIZ2 && OYUNCAK(c0.kind) && !c0.vur) { c0.vur = 1; sfx('kir', c0.kind); const pv = new THREE.Vector3().copy(c0.body.position); HIS.vurus(pv, b.dir, malzOf(c0.kind), 0.5); kiymik(pv, bColor(c0), b.dir); catlakIz(c0, b.blast); }   // v12.1 (Adem: 'kirilma biraz zor olmali, fizik devreye girsin'): oyuncak kup/cubuk ilk vurusta itilir, ikinci vurusta kirilir
     else if (KIRILGAN.has(c0.kind)) breakBlock(c0, b.dir, 14);
     else sfx(c0.kind === 'celik' || c0.kind === 'metal' || c0.kind === 'altin' ? 'metal' : 'kir', c0.kind);
     if (!KAL()) buzz(28);
@@ -3087,12 +3087,24 @@ function kiyZemin(o, v, w, hs, st, dt, ky, kx) {
 }
 // v12.1: ilk vurusta catlayan oyuncak kup: kucuk koyu catlak izi (kupun on yuzune yapisik ince cizgiler), ikinci vurusta kirilir
 let CATG = null;
-function catlakIz(c) {
+function catlakIz(c, p) {
   if (!c || !c.mesh) return;
   if (!CATG) { const t = canvasTex(128, 128, (x, w, h) => { x.strokeStyle = 'rgba(30,18,10,.85)'; x.lineWidth = 5; x.lineCap = 'round'; x.beginPath(); x.moveTo(64, 64); x.lineTo(30, 30); x.lineTo(18, 44); x.moveTo(64, 64); x.lineTo(100, 40); x.lineTo(112, 54); x.moveTo(64, 64); x.lineTo(70, 108); x.lineTo(54, 120); x.moveTo(64, 64); x.lineTo(24, 86); x.stroke(); }); CATG = new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }); }
-  const w = (SEK.TUR[c.kind] && SEK.TUR[c.kind].w) || 1, m = new THREE.Mesh(new THREE.PlaneGeometry(S * 0.8, S * 0.8), CATG); m.position.set((Math.random() - 0.5) * S * (w - 1) * 0.8, 0, S * 0.505);
-  const tut = new THREE.Group(); tut.add(m); const b = new THREE.Mesh(new THREE.PlaneGeometry(S * 0.8, S * 0.8), CATG); b.position.set(m.position.x, 0, -S * 0.505); b.rotation.y = Math.PI; tut.add(b);
-  const sc = c.mesh.scale; tut.scale.set(1 / (sc.x || 1), 1 / (sc.y || 1), 1 / (sc.z || 1)); c.mesh.add(tut); c.catIz = tut;   // kupun gorunusune bagli: onunla tasinir, onunla silinir
+  // v12.9c (Adem: 'top degdigi yeri degil baska kosesini catlatir'): iz, topun degdigi noktaya en yakin yuzde ve o noktada; eski: ?cat2=0
+  const t = SEK.TUR[c.kind] || {}, hx = S * (t.w || 1) / 2, hy = S * (t.h || 1) / 2, hz = S * (t.d || 1) / 2, sc = c.mesh.scale, tut = new THREE.Group(); tut.scale.set(1 / (sc.x || 1), 1 / (sc.y || 1), 1 / (sc.z || 1));
+  const yap = () => new THREE.Mesh(new THREE.PlaneGeometry(S * 0.8, S * 0.8), CATG);
+  if (p && Q.get('cat2') !== '0') {
+    c.mesh.updateMatrixWorld(true); const q = c.mesh.worldToLocal(p.clone()).multiply(sc), m = yap(), e = S * 0.005;
+    const ax = Math.abs(q.x) / hx, ay = Math.abs(q.y) / hy, az = Math.abs(q.z) / hz, cl = (v, h) => Math.max(-h + S * 0.4, Math.min(h - S * 0.4, v)) || 0, sg = (v) => (v < 0 ? -1 : 1);
+    if (az >= ax && az >= ay) { m.position.set(cl(q.x, hx), cl(q.y, hy), sg(q.z) * (hz + e)); if (q.z < 0) m.rotation.y = Math.PI; }
+    else if (ax >= ay) { m.position.set(sg(q.x) * (hx + e), cl(q.y, hy), cl(q.z, hz)); m.rotation.y = sg(q.x) * Math.PI / 2; }
+    else { m.position.set(cl(q.x, hx), sg(q.y) * (hy + e), cl(q.z, hz)); m.rotation.x = -sg(q.y) * Math.PI / 2; }
+    tut.add(m);
+  } else {
+    const m = yap(); m.position.set((Math.random() - 0.5) * S * ((t.w || 1) - 1) * 0.8, 0, S * 0.505); tut.add(m);
+    const b = yap(); b.position.set(m.position.x, 0, -S * 0.505); b.rotation.y = Math.PI; tut.add(b);
+  }
+  c.mesh.add(tut); c.catIz = tut;   // kupun gorunusune bagli: onunla tasinir, onunla silinir
 }
 function piece(m, p, dir, sz, spd, life) {
   m.scale.setScalar(sz); m.castShadow = true; m.userData.shared = true;
