@@ -18,6 +18,13 @@ export function blok6Kur({ THREE, ENV, S }) {
       const o = v.clone().sub(ic); if (o.lengthSq() > 1e-9) v.copy(ic).add(o.normalize().multiplyScalar(r));
       p.setXYZ(i, v.x, v.y, v.z);
     }
+    // UV konumdan yeniden: kose kaydirma ara koselerin UV'sini 1/3, 2/3'te birakiyordu (yuzde dokunun yalniz ortasi gorunuyordu)
+    const uv = g.attributes.uv, U = (x, a) => (x + a) / (2 * a);
+    for (const q of g.groups) for (let j = q.start; j < q.start + q.count; j++) {
+      const i = g.index.getX(j), x = p.getX(i), y = p.getY(i), z = p.getZ(i), [a, b, c] = A;
+      const [u, vv] = [[U(-z, c), U(y, b)], [U(z, c), U(y, b)], [U(x, a), U(-z, c)], [U(x, a), U(z, c)], [U(x, a), U(y, b)], [U(-x, a), U(y, b)]][q.materialIndex];
+      uv.setXY(i, u, vv);
+    }
     g.computeVertexNormals(); return g;
   }
   // BoxGeometry yuz sirasi: +x -x +y -y +z -z ; +z/-z (on/arka) atlasin sol bolumu, digerleri sag (her kose bir kez kaydirilir)
@@ -63,26 +70,84 @@ export function blok6Kur({ THREE, ENV, S }) {
           x.fillStyle = rgb(T, -0.7, 0.9); x.fillRect(X, y0 - 3, Wb, 6);
         }
         x.fillStyle = '#4a4f5c'; for (const a of [X, X + Wb - 40]) for (const b of [0, H - 40]) { x.fillRect(a, b, 40, 40); x.fillStyle = '#c9cfdb'; x.beginPath(); x.arc(a + 20, b + 20, 7, 0, 6.2832); x.fill(); x.fillStyle = '#4a4f5c'; }   // demir kose
-        if (on) for (let i = 0; i < n; i++) pati(x, X + 128 + i * 256, H * 0.55, H * 0.36, '#fff3dc', 'rgba(60,25,5,0.45)');
+        if (on) for (let i = 0; i < n; i++) pati(x, X + 128 + i * 256, H * 0.55, H * 0.62, '#fff3dc', 'rgba(60,25,5,0.45)');
+      } else if (stil === 'tas') {   // boyali tas: mavi-gri, lekeler, ince benekler, her birimde oyma halka
+        let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, rgb(c, 0.2)); g.addColorStop(1, rgb(c, -0.3)); x.fillStyle = g; x.fillRect(X, 0, Wb, H);
+        lekeler(x, X, Wb, H, c, 16 * (on ? n : 1), 0.22);
+        for (let i = 0; i < 260 * (on ? n : 1); i++) { x.fillStyle = rnd() < 0.5 ? rgb(c, -0.4, 0.35) : rgb(c, 0.4, 0.35); x.fillRect(X + rnd() * Wb, rnd() * H, 2, 2); }
+        x.strokeStyle = rgb(c, -0.55, 0.5); x.lineWidth = 3; for (let i = 0; i < 3; i++) { x.beginPath(); let px = X + rnd() * Wb, py = rnd() * H; x.moveTo(px, py); for (let k = 0; k < 3; k++) { px += (rnd() - 0.5) * 60; py += (rnd() - 0.5) * 50; x.lineTo(px, py); } x.stroke(); }   // catlak
+        if (on) for (let i = 0; i < n; i++) { const cx = X + 128 + i * 256, cy = H * 0.52; x.lineWidth = 22; x.strokeStyle = rgb(c, 0.45, 0.7); x.beginPath(); x.arc(cx + 3, cy + 4, 70, 0, 6.2832); x.stroke(); x.strokeStyle = rgb(c, -0.6, 0.8); x.beginPath(); x.arc(cx, cy, 70, 0, 6.2832); x.stroke(); }
+      } else if (stil === 'tnt') {
+        let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#ff5a44'); g.addColorStop(1, '#b8160f'); x.fillStyle = g; x.fillRect(X, 0, Wb, H);
+        lekeler(x, X, Wb, H, [230, 40, 30], 10, 0.2);
+        x.fillStyle = '#fff1d6'; x.fillRect(X, H * 0.33, Wb, H * 0.34); x.fillStyle = 'rgba(90,20,10,0.35)'; x.fillRect(X, H * 0.64, Wb, H * 0.03);
+        if (on) { x.font = 'bold 84px Arial Black, Arial, sans-serif'; { const m = x.measureText('TNT').width; if (m > Wb * 0.8) x.font = 'bold ' + Math.floor(84 * Wb * 0.8 / m) + 'px Arial Black, Arial, sans-serif'; } x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = 'rgba(80,10,5,0.35)'; x.fillText('TNT', X + Wb / 2 + 3, H * 0.505 + 4); x.fillStyle = '#c4170f'; x.fillText('TNT', X + Wb / 2, H * 0.505); }
+      } else if (stil === 'kalas') {   // uzun tahta kalas: boyuna damar, iki ucta demir bant
+        const T = [214, 128, 52]; let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, rgb(T, 0.2)); g.addColorStop(1, rgb(T, -0.2)); x.fillStyle = g; x.fillRect(X, 0, Wb, H);
+        x.strokeStyle = rgb(T, -0.5, 0.4); x.lineWidth = 2.4; for (let j = 0; j < 6; j++) { const yy = 20 + j * 40, f = rnd() * 6; x.beginPath(); for (let u = 0; u <= Wb; u += 10) x.lineTo(X + u, yy + Math.sin(u * 0.02 + f) * 5); x.stroke(); }
+        for (let i = 0; i < 2 * (on ? n : 1); i++) { const bx = X + rnd() * Wb, by = rnd() * H; x.fillStyle = rgb(T, -0.55, 0.6); x.beginPath(); x.ellipse(bx, by, 14, 8, 0, 0, 6.2832); x.fill(); }   // budak
+        if (on) for (const a of [X + 30, X + Wb - 60]) { x.fillStyle = '#4a4f5c'; x.fillRect(a, 0, 30, H); x.fillStyle = '#c9cfdb'; for (const b of [H * 0.25, H * 0.75]) { x.beginPath(); x.arc(a + 15, b, 7, 0, 6.2832); x.fill(); } }
       } else {
         let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, rgb(c, 0.22)); g.addColorStop(0.5, rgb(c, 0)); g.addColorStop(1, rgb(c, -0.22)); x.fillStyle = g; x.fillRect(X, 0, Wb, H);
         lekeler(x, X, Wb, H, c, 14 * (on ? n : 1), 0.16);
-        if (on) { const k = n === 1 ? 1 : 0; for (let i = 0; i < (k ? 1 : 1); i++) pati(x, X + Wb / 2, H * 0.56, H * 0.48, '#fff3dc', rgb(c, -0.55, 0.55)); }
+        if (on) { const k = n === 1 ? 1 : 0; for (let i = 0; i < (k ? 1 : 1); i++) pati(x, X + Wb / 2, H * 0.55, H * 0.8, '#fff3dc', rgb(c, -0.55, 0.55)); }
       }
-      if (stil !== 'kristal') kenar(x, X, Wb, H, stil === 'tahta' ? [201, 116, 47] : c);
+      if (stil !== 'kristal') kenar(x, X, Wb, H, stil === 'tahta' ? [201, 116, 47] : stil === 'kalas' ? [214, 128, 52] : stil === 'tnt' ? [200, 30, 20] : c);
       x.restore();
     }
     const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return { t, oran: W1 / W };
   }
+  // ---------- silindirler: kavanoz ve fici (LatheGeometry; v = yukseklik orani, u = cevre, u 0 ve 0.5 on/arka) ----------
+  function torna(pr, seg) { const pts = pr.map(([r, y]) => new THREE.Vector2(r, y)), g = new THREE.LatheGeometry(pts, seg), p = g.attributes.position, uv = g.attributes.uv; let y0 = 1e9, y1 = -1e9; for (const [, y] of pr) { y0 = Math.min(y0, y); y1 = Math.max(y1, y); } for (let i = 0; i < p.count; i++) uv.setY(i, (p.getY(i) - y0) / (y1 - y0)); g.computeVertexNormals(); return g; }
+  function kavanozGeo(R, H) { const h = H / 2; return torna([[0, -h], [R * 0.82, -h], [R * 0.97, -h + 0.05 * H], [R, -h + 0.16 * H], [R, h - 0.3 * H], [R * 0.9, h - 0.2 * H], [R * 0.74, h - 0.17 * H], [R * 0.84, h - 0.155 * H], [R * 0.86, h - 0.04 * H], [R * 0.7, h], [0, h]], 40); }
+  function ficiGeo(R, H) { const h = H / 2, pr = []; for (let i = 0; i <= 10; i++) { const t = i / 10; pr.push([R * (0.86 + 0.14 * Math.sin(t * Math.PI)), -h + t * H]); } return torna([[0, -h], ...pr, [0, h]], 40); }
+  function silBoya(stil, hex) {
+    const Wt = 512, Ht = 256, cv = document.createElement('canvas'); cv.width = Wt; cv.height = Ht; const x = cv.getContext('2d'), c = hx(hex); tohum = 31 + hex.length;
+    const yv = (v) => Ht * (1 - v);   // doku v (alt 0) -> tuval y
+    if (stil === 'kavanoz') {
+      const g = x.createLinearGradient(0, 0, Wt, 0), L = [0.18, 0.05, -0.15, 0.05, 0.18, 0.05, -0.15, 0.05, 0.18]; for (let i = 0; i <= 8; i++) g.addColorStop(i / 8, rgb(c, L[i])); x.fillStyle = g; x.fillRect(0, 0, Wt, Ht);
+      lekeler(x, 0, Wt, Ht, c, 14, 0.14);
+      x.fillStyle = 'rgba(255,255,255,0.35)'; for (const u of [0.08, 0.58]) x.fillRect(u * Wt, yv(0.78), 14, yv(0.12) - yv(0.78));   // dikey parlama seridi
+      for (const px of [0, Wt / 2, Wt]) pati(x, px, yv(0.42), Ht * 0.42, '#fff3dc', rgb(c, -0.55, 0.55));
+      x.fillStyle = '#fff0cf'; x.fillRect(0, 0, Wt, yv(0.83));   // bez kapak
+      x.fillStyle = 'rgba(150,100,50,0.5)'; x.fillRect(0, yv(0.93), Wt, 5);
+      x.fillStyle = '#e9cf9b'; x.fillRect(0, yv(0.86), Wt, yv(0.8) - yv(0.86)); x.strokeStyle = 'rgba(140,90,40,0.6)'; x.lineWidth = 3; for (let u = 0; u < Wt; u += 12) { x.beginPath(); x.moveTo(u, yv(0.86)); x.lineTo(u + 9, yv(0.8)); x.stroke(); }   // halat serit
+      x.fillStyle = rgb(c, -0.35); x.fillRect(0, yv(0.8), Wt, yv(0.76) - yv(0.8));   // boyun
+    } else {   // fici: dikey tahta cubuklar, iki demir cember
+      const T = hex === '#ee3628' ? [226, 60, 40] : [214, 128, 52], nS = 14;
+      for (let i = 0; i < nS; i++) { const t = [T[0] * (0.9 + rnd() * 0.2), T[1] * (0.9 + rnd() * 0.2), T[2]], g = x.createLinearGradient(i * Wt / nS, 0, (i + 1) * Wt / nS, 0); g.addColorStop(0, rgb(t, -0.1)); g.addColorStop(0.5, rgb(t, 0.15)); g.addColorStop(1, rgb(t, -0.15)); x.fillStyle = g; x.fillRect(i * Wt / nS, 0, Wt / nS, Ht); x.fillStyle = rgb(T, -0.7, 0.8); x.fillRect(i * Wt / nS - 1, 0, 3, Ht); }
+      for (const v of [0.16, 0.84]) { x.fillStyle = '#3f4450'; x.fillRect(0, yv(v + 0.06), Wt, Ht * 0.12); x.fillStyle = 'rgba(255,255,255,0.35)'; x.fillRect(0, yv(v + 0.06), Wt, 3); x.fillStyle = '#c9cfdb'; for (let u = 18; u < Wt; u += 64) { x.beginPath(); x.arc(u, yv(v), 5, 0, 6.2832); x.fill(); } }
+      for (const px of [0, Wt / 2, Wt]) pati(x, px, yv(0.5), Ht * 0.4, '#fff3dc', 'rgba(60,25,5,0.45)');
+    }
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.wrapS = THREE.RepeatWrapping; return t;
+  }
   // ---------- tur secimi ----------
   function stilOf(k) {
     if (/^ksSandik/.test(k)) return ['tahta', 1];
+    if (/^ksTas\d?$/.test(k)) return ['tas', 0];
+    if (/^ksBuz/.test(k)) return ['kristal', 0];
+    if (/^ksKalas/.test(k)) return ['kalas', 0];
+    if (k === 'ksTNT') return ['tnt', 1];
+    if (/^kr3[A-Z]$/.test(k)) return ['boya', 3];
+    if (/^(kj|kvU|kvL|kvB)[A-Z]$/.test(k) || /^ksSise/.test(k)) return ['kavanoz', -1];
+    if (/^ksFici/.test(k)) return ['fici', -1];
     const m = /^(oy|uz(\d))([A-Z])$/.exec(k); if (!m) return null;
     return [m[3] === 'L' || m[3] === 'A' ? 'kristal' : 'boya', m[2] ? +m[2] : 1, m[3]];
   }
-  function yap(k, hex) {
+  // boy: mevcut modelin olculeri (Vector3; fizik ayni kalir)
+  function yap(k, hex, boy) {
     if (HAZ[k]) return HAZ[k]; const s = stilOf(k); if (!s) return null;
-    const [stil, n] = s, { t, oran } = boya(stil, hex, n), geo = uvAtlas2(kutu(n * S * 0.994, S * 0.992, S * 0.992, 0.065 * S), oran);
+    let [stil, n] = s;
+    if (n < 0) {   // silindir
+      const R = Math.min(boy.x, boy.z) / 2 * 0.99, Hh = boy.y * 0.99, geo = stil === 'kavanoz' ? kavanozGeo(R, Hh) : ficiGeo(R, Hh), t = silBoya(stil, hex);
+      const mat = new THREE.MeshPhysicalMaterial({ map: t, roughness: stil === 'fici' ? 0.55 : 0.3, clearcoat: stil === 'fici' ? 0.2 : 0.7, clearcoatRoughness: 0.12, envMap: ENV, envMapIntensity: 0.4 }); mat.toneMapped = false; mat.userData.yeni = 1;
+      return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: hex, roughness: 0.5 }) });
+    }
+    const yar = (v) => Math.max(0.5, Math.round(v / S * 2) / 2) * S;   // modelin cikintilari (TNT fitili vb.) olcuye girmesin: yarim kup katlari
+    const bx = boy ? yar(boy.x) * 0.994 : n * S * 0.994, by = boy ? yar(boy.y) * 0.992 : S * 0.992, bz = boy ? yar(boy.z) * 0.992 : S * 0.992;
+    if (!n) n = Math.max(1, Math.round(bx / Math.max(by, 0.3)));   // dokudaki birim sayisi (uzun taslarda her birimde halka)
+    if (stil === 'tas') hex = '#6470b4';
+    const { t, oran } = boya(stil, hex, n), geo = uvAtlas2(kutu(bx, by, bz, Math.min(0.065 * S, by * 0.2)), oran);
     const mat = stil === 'kristal' ? new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.22, clearcoat: 0.6, clearcoatRoughness: 0.08, envMap: ENV, envMapIntensity: 0.3, emissive: '#ffffff', emissiveMap: t, emissiveIntensity: 0.35 })
       : new THREE.MeshPhysicalMaterial({ map: t, roughness: stil === 'tahta' ? 0.6 : 0.38, clearcoat: stil === 'tahta' ? 0.2 : 0.5, clearcoatRoughness: 0.2, envMap: ENV, envMapIntensity: 0.35 });
     mat.toneMapped = false; mat.userData.yeni = 1;

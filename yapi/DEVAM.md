@@ -92,6 +92,10 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 - Rakipte kaliteyi yapan: keskin ince pahli kutu, boyali doku (yuz tek duz renk degil), iri sade kontrastli amblem, yuzde isik gecisi, ust kenarda parlak cizgi.
 - blok6.js: BoxGeometry kose pahi (0.065 S), kodla boyanan tek doku atlasi (on/arka amblemli, diger yuzler duz). Stiller: boya (renkli kup/cubuk + iri krem pati),
   kristal (oyL / oyA turkuaz: derin lekeler, ince ic catlaklar, parilti), tahta (ksSandik: kalaslar, damar, demir kose, pati). blok3b.js yap() once B6'ya sorar.
+- v12.9b: tas (mavi-gri benekli, oyma halka), kristal buz (ksBuz), kalas (damar, demir uclar), TNT (krem bant, kirmizi yazi), kr3 kiris, kavanoz/sise (LatheGeometry:
+  boyali govde, pati, halat serit, bez kapak), fici (tahta cubuklar, demir cember). Olculer mevcut modelin kutusundan (yarim kup katlarina yuvarlanir; fizik degismez).
+  Hata dersi: kutuda kose kaydirinca UV yeniden hesaplanmali (yoksa yuzde dokunun yalniz ortasi gorunur).
+  Kapsam disi (eski gorunum): oyA Foxi kupu, ksDirek, dalga, ksSutun, ksYildiz, ksKemer. Atis sinamasi bu makinede (swiftshader) zaman asimi; telefonda denenmeli.
 - Ornek: uretici/blender/onizleme/blok6_ornek.png. Adem 24 Kas gece: 'sirayla yap, toplu deneyip oyuna aliriz' -> once anahtar arkasinda, sonra birlikte varsayilan.
 
 ## v12.8 DENEME (24 Kas 2026, ?blok5=1): sade parlak oyuncak kupler (Adem: 'basla'; 'kuplerdeki cok fazla detay belki kotu gosteriyordur')

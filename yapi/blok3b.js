@@ -4,7 +4,7 @@
 // Modelde renk kose renginde, ortam golgesi + yumusak isik 512'lik dokuya gomulu (malzeme: doku x kose rengi).
 // Tam beyaz kose rengi "govde rengi" isaretidir: o.govde verilirse o renge boyanir (tek dosyadan farkli renkli turler: yakut / elmas).
 import { SEKER, SEKERL, sekerBoya, sekerMat } from './seker.js?v=8';
-import { BLOK6, blok6Kur } from './blok6.js?v=3';   // v12.9 deneme ?blok6=1: boyali dokulu keskin kutular (Smash Kingdom kalitesi)   // v11: varsayilan, eski ?yeni=0
+import { BLOK6, blok6Kur } from './blok6.js?v=7';   // v12.9 deneme ?blok6=1: boyali dokulu keskin kutular (Smash Kingdom kalitesi)   // v11: varsayilan, eski ?yeni=0
 export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]
@@ -158,8 +158,8 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   // sekil.js TUR[k].yap yerine: model hazirsa onun cizimi, degilse null (eski cizim kullanilir). Tur basina bir kez kurulur.
   function yap(k) {
     const L = LISTE[k]; if (!B3 || !L) return null; if (HAZ[k]) return HAZ[k];
-    if (B6 && B6.var(k)) { const r = B6.yap(k, (L[3] && L[3].govde) || L[2]); if (r) return (HAZ[k] = r); }   // v12.9 deneme
     const G = GLB[L[0]]; if (!G) return null;
+    if (B6 && B6.var(k)) { G.geo.computeBoundingBox(); const r = B6.yap(k, (L[3] && L[3].govde) || L[2], G.geo.boundingBox.getSize(new THREE.Vector3())); if (r) return (HAZ[k] = r); }   // v12.9 deneme: olculer mevcut modelden
     const o = L[3] || {};
     if (o.sk && o.parla) {   // v12.8 deneme ?blok5=1: boyali tonlar korunur, malzeme top arabasi gibi parlak vernik (MeshPhysical clearcoat + ENV)
       const g = sekerBoya(THREE, G.geo, o), mat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.34, metalness: 0, clearcoat: 0.85, clearcoatRoughness: 0.14, envMap: ENV, envMapIntensity: 0.55 }); mat.toneMapped = false; mat.userData.yeni = 1;   // ton eslemesi renkleri soldurmasin (boyali set gibi)
