@@ -271,3 +271,4 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - v12.33: Kunduz videosu (Adem, Pro + duzenleme istemi: kafes ayni kaldi). 9.0 sn kesildi (sonda kafese geri giriyordu). VIDEOLU: papagan, kunduz.
 - v12.34: Penguen videosu (Adem, Google Flow, 6 sn, kesilmedi). VIDEOLU: papagan, kunduz, penguen.
 - v12.35: Kirpi videosu (Flow, 6 sn; yesil fular sarimsi, ayiklamada korunuyor). VIDEOLU: papagan, kunduz, penguen, kirpi.
+- v12.36: Kurbaga videosu (Flow). Kaplumbaga videosu kabuksuz/kulakli geldi, kullanilmadi (kaynak/kaplumbaga_kafes_video_kabuksuz.mp4). VIDEOLU: papagan, kunduz, penguen, kirpi, kurbaga.
