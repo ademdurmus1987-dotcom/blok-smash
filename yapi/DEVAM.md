@@ -264,3 +264,4 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - Ag: kenney.nl ve opengameart.org icin 'Foxi Smash' kisisel bulut ortami olusturuldu (CC0 ses indirmek icin).
 - v12.26: kafesteki murettebat VARSAYILAN (Adem: "oyunda yok"; simgeden/normal baglantidan acinca ?dost=1 yoktu). Kapatmak: ?dost=0.
 - v12.27: ?tani=1 tani penceresi (surum, murettebat durumu, ayak modeli yuklendi mi, GPU, hatalar). Adem telefonda anahtar ve platform ayagini goremiyor; bilgisayar ve telefon taklidinde ikisi de var.
+- v12.28-29 (Adem: "anahtar delige girip kilidi acmiyor, yuzeyinde yapmaya calisiyor"): anahtar ucu delige hizali (donme merkezi uc), kulp perspektifle bize doner (rotateY 62), iceri itilir, sonra kendi govdesi etrafinda doner (rotateX -80), mandal sesi, kafes acilir.

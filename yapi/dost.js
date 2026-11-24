@@ -60,7 +60,7 @@ export function dostKafes(goster) { if (!DOST) return; const k = yuvaEl(); k.cla
 // p0 -> p1 yay cizerek ucan anahtar; bitince cb
 function ucur(x0, y0, x1, y1, ms, yuk, don, cb) {
   const a = document.createElement('div'); a.className = 'dk-an'; a.innerHTML = ANAHTAR; document.body.appendChild(a);
-  const n = 16, kf = []; for (let i = 0; i <= n; i++) { const u = i / n, e = u * u * (3 - 2 * u), x = x0 + (x1 - x0) * e - 26, y = y0 + (y1 - y0) * e - 13 - Math.sin(Math.PI * u) * yuk;
+  const n = 16, kf = []; for (let i = 0; i <= n; i++) { const u = i / n, e = u * u * (3 - 2 * u), x = x0 + (x1 - x0) * e - 30, y = y0 + (y1 - y0) * e - 13 - Math.sin(Math.PI * u) * yuk;
     kf.push({ transform: 'translate(' + x + 'px,' + y + 'px) rotate(' + (u * don) + 'deg) scale(' + (1.5 - 0.5 * u) + ')' }); }
   const an = a.animate(kf, { duration: ms, easing: 'linear', fill: 'forwards' }); an.onfinish = () => cb(a);
 }
@@ -87,12 +87,22 @@ export function dostEkran(d, n, devam, ses) {
   setTimeout(() => {   // anahtar kilide (kafesin ortasi, biraz alti)
     const kr = E.querySelector('.de-kutu').getBoundingClientRect(), ki = kf.querySelector('img'); let lx = kr.left + kr.width / 2, ly = kr.top + kr.height * 0.56;
     if (ki && ki.naturalWidth) { const ar = ki.naturalWidth / ki.naturalHeight, dw = Math.min(kr.width, kr.height * ar), dh = dw / ar;   // Gemini kafesi: kilit deligi resmin (0.533, 0.746) noktasinda
-      lx = kr.left + (kr.width - dw) / 2 + dw * 0.533; ly = kr.top + kr.height - dh + dh * 0.746; }
+      lx = kr.left + (kr.width - dw) / 2 + dw * 0.533; ly = kr.top + kr.height - dh + dh * 0.738; }
     if (ses) ses('bonus');
-    ucur(sx, sy, lx, ly, 900, 120, 540, (a) => {
-      // kilitte ceyrek tur doner, tikirdar
-      const t = a.animate([{ transform: a.style.transform || getComputedStyle(a).transform }, { transform: 'translate(' + (lx - 26) + 'px,' + (ly - 13) + 'px) rotate(0deg) scale(1)' }, { transform: 'translate(' + (lx - 26) + 'px,' + (ly - 13) + 'px) rotate(90deg) scale(1)' }], { duration: 650, fill: 'forwards' });
-      kf.classList.add('sars'); if (ses) { ses('kilitgir'); setTimeout(() => ses('kilitac'), 380); }   // v12.25 gercek kilit sesleri (Kenney CC0)
+    // v12.28 (Adem: 'anahtar delige girip kilidi acmiyor, yuzeyinde yapmaya calisiyor'): anahtar ucu delige hizali gelir, saga kayarak ICERI girer
+    // (delikten sonrasi kirpilir, disarida kulp kalir), sonra kendi ekseninde ceyrek tur doner (dikey basiklasir), mandal tiklar, kafes acilir
+    // v12.29: one bakan kilitte takili anahtar ucuyla bize bakar: uc delikte sabit (donme merkezi), kulp bize dogru doner (rotateY, perspektif),
+    // iceri itilir, sonra delik etrafinda ekran duzleminde ceyrek tur (rotateZ)
+    const W = 60; ly -= 0; const x0 = lx - W + 3, tr = (z, y, k) => 'translate(' + x0 + 'px,' + (ly - 13) + 'px) perspective(260px) rotateY(' + y + 'deg) rotateX(' + z + 'deg) scale(' + k + ')';   // z: anahtar govdesi etrafinda donus
+    ucur(sx, sy, x0 + 30, ly, 900, 120, 720, (a) => {
+      a.style.transformOrigin = '100% 50%';
+      const t = a.animate([
+        { transform: tr(0, 0, 1), offset: 0 },
+        { transform: tr(0, 62, 1.05), offset: 0.35, easing: 'cubic-bezier(.3,.8,.4,1)' },
+        { transform: tr(0, 62, 0.92), offset: 0.5 },
+        { transform: tr(-80, 62, 0.92), offset: 0.85, easing: 'cubic-bezier(.5,0,.3,1)' },
+        { transform: tr(-80, 62, 0.92), offset: 1 }], { duration: 1150, fill: 'forwards' });
+      if (ses) { ses('kilitgir'); setTimeout(() => { kf.classList.add('sars'); ses('kilitac'); }, 960); }   // v12.25 gercek kilit sesleri (Kenney CC0)
       t.onfinish = () => { a.remove(); kafes(true); E.classList.add('acik'); if (ses) { ses('kafesac'); setTimeout(() => ses('bonus'), 250); } if (navigator.vibrate) try { navigator.vibrate([40, 30, 60]); } catch (e) {}
         setTimeout(() => E.classList.add('cik'), 180); };
     });
