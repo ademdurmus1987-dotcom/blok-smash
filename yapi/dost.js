@@ -2,7 +2,7 @@
 // Oyunda: her 5 bolumde bir kupun onunde altin anahtar rozeti. Kup kirilinca/dusunce anahtar ekranin sag ustundeki anahtar yuvasina ucar (kafes oyunda YOK).
 // Bolum kazanilinca ayri sayfa: ortada kilitli kafes, anahtar gelip kilide girer, doner, kafes acilir, murettebat uyesi sevinerek cikar; sonra kazanma karti.
 // Kayit: SV.dost = [kurtarilan id]. Resimler (Adem'in Gemini cizimleri): karakter/dost/{id}.webp, kafes karakter/dost/kafes_kapali.webp + kafes_acik.webp; yoksa kodla cizim / emoji yedegi.
-export const DOST = /[?&]dost=1/.test(location.search);
+export const DOST = !/[?&]dost=0/.test(location.search);   // v12.26: VARSAYILAN (Adem: 'oyunda yok'); kapatmak icin ?dost=0
 export const DOSTLAR = [
   { id: 'papagan', ad: 'Papağan Pako', gorev: 'Gözcü', e: '🦜' },
   { id: 'kaplumbaga', ad: 'Kaplumbağa Tosbi', gorev: 'Dümenci', e: '🐢' },
