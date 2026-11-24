@@ -216,3 +216,4 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - Ikon adayi: simge/cc/ikon4-*.png (Gemini, kesildi). Manifest DEGISMEDI; Adem onaylayinca icon-192/512, maskable, apple-touch-icon yerine konur.
 - CellCog logo/ikon adaylari (simge/cc/logo_a,b, ikon_a,b) elde top tutma mantik hatasi yuzunden secilmedi.
 - v12.15d: fon tek renk turkuaz (#2fb4d8, ortasi hafif acik), Adem goz yormasin diye istedi; ada resmi denemesi (v12.15c) kaldirildi. logo4.webp altinda kesik golge izi yumusatildi, 40 px bos alan eklendi (?v=4).
+- v12.15e: ?logo4=2 ikinci secenek: rakip videolarindaki gibi keskin sahne fonu (fon/ana_ada2.webp, kenarlar hafif koyu), Foxi adanin cimeninde duruyor. ?logo4=1 tek renk turkuaz kaldi.
