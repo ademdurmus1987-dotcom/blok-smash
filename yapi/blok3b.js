@@ -4,7 +4,7 @@
 // Modelde renk kose renginde, ortam golgesi + yumusak isik 512'lik dokuya gomulu (malzeme: doku x kose rengi).
 // Tam beyaz kose rengi "govde rengi" isaretidir: o.govde verilirse o renge boyanir (tek dosyadan farkli renkli turler: yakut / elmas).
 import { SEKER, SEKERL, sekerBoya, sekerMat } from './seker.js?v=8';
-import { BLOK6, blok6Kur } from './blok6.js?v=9';   // v12.9 deneme ?blok6=1: boyali dokulu keskin kutular (Smash Kingdom kalitesi)   // v11: varsayilan, eski ?yeni=0
+import { BLOK6, blok6Kur } from './blok6.js?v=10';   // v12.9 deneme ?blok6=1: boyali dokulu keskin kutular (Smash Kingdom kalitesi)   // v11: varsayilan, eski ?yeni=0
 export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]

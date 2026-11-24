@@ -2,7 +2,7 @@
 // Rakipte kaliteyi yapan: keskin ince pahli kutu, boyali doku (yuz duz tek renk degil), iri sade kontrastli amblem, yuzde isik gecisi (ust acik, alt koyu,
 // ust kenarda ince parlak cizgi). Renk ve motif bizim: turkuaz kristal, tahta sandik, renkli boyali kup + krem tilki patisi (mor-altin ve tac yok).
 // Geometri: BoxGeometry kose pahi (tek dilim) ; doku: tek atlas (sol: on/arka yuz amblemli, sag: diger yuzler duz), kodla boyanir, tur basina bir kez.
-export const BLOK6 = new URLSearchParams(location.search).get('blok6') === '1';
+export const BLOK6 = new URLSearchParams(location.search).get('blok6') !== '0';   // v12.13: VARSAYILAN (Adem onayladi 24 Kas), eski gorunum ?blok6=0
 export function blok6Kur({ THREE, ENV, S }) {
   const HAZ = {};
   let tohum = 1; const rnd = () => ((tohum = (tohum * 16807) % 2147483647) / 2147483647);

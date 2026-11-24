@@ -202,3 +202,6 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 ## v12.12 deneme (24 Kas 2026, ?blok6=1) — kemer
 - blok6.js kemerYap: ksKemer boyali tas kemer (ExtrudeGeometry, pahli; aciklik ve yay merkezi kemerSekil fizigiyle ayni). On yuzde acik kemer taslari (iri kilit tasi), ayaklarda iki tas; tas rengi ksTas ile ayni. Onizleme: uretici/blender/onizleme/blok6_kemer.png.
 - Boylece ?blok6=1'de bolum bloklarinin hepsi boyali (oyA Foxi kupu bilerek eski). Siradaki: Adem onayi ile ?blok6=1 varsayilan; sonra kamera acisi denemesi (temas golgesi icin).
+
+## v12.13 (24 Kas 2026): boyali bloklar (blok6) VARSAYILAN (Adem onayladi), eski ?blok6=0
+- Siradaki: kamera biraz daha yukaridan (Kingdom gibi) denemesi, anahtar arkasinda; sonra temas golgesi yeniden.
