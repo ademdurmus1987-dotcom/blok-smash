@@ -91,17 +91,17 @@ export function dostEkran(d, n, devam, ses) {
     if (ses) ses('bonus');
     // v12.28 (Adem: 'anahtar delige girip kilidi acmiyor, yuzeyinde yapmaya calisiyor'): anahtar ucu delige hizali gelir, saga kayarak ICERI girer
     // (delikten sonrasi kirpilir, disarida kulp kalir), sonra kendi ekseninde ceyrek tur doner (dikey basiklasir), mandal tiklar, kafes acilir
-    // v12.29: one bakan kilitte takili anahtar ucuyla bize bakar: uc delikte sabit (donme merkezi), kulp bize dogru doner (rotateY, perspektif),
-    // iceri itilir, sonra delik etrafinda ekran duzleminde ceyrek tur (rotateZ)
-    const W = 60; ly -= 0; const x0 = lx - W + 3, tr = (z, y, k) => 'translate(' + x0 + 'px,' + (ly - 13) + 'px) perspective(260px) rotateY(' + y + 'deg) rotateX(' + z + 'deg) scale(' + k + ')';   // z: anahtar govdesi etrafinda donus
-    ucur(sx, sy, x0 + 30, ly, 900, 120, 720, (a) => {
-      a.style.transformOrigin = '100% 50%';
+    // v12.30 (Adem: 'bakis acisi ters dusmesin'): kafes tam onden; anahtarin govdesi delikte kaybolur (delikten sagi kirpilir), delikte yalniz kulp kalir,
+    // sonra kulp ekran duzleminde ceyrek tur doner (onden bakan birinin gordugu). Kulp merkezi anahtar resminde soldan ~%19.
+    const W = 60, KX = 11.5, xa = lx - W + 2, xb = lx - KX, tr = (x, r, k) => 'translate(' + x + 'px,' + (ly - 13) + 'px) rotate(' + r + 'deg) scale(' + k + ')', kes = (x) => 'inset(-20px ' + Math.max(0, x + W - Math.max(lx, x + 2 * KX)) + 'px -20px -20px)';   // kulp (soldan 2*KX) hep gorunur, govde delikte kaybolur
+    ucur(sx, sy, xa + 30, ly, 900, 120, 720, (a) => {
+      a.style.transformOrigin = KX + 'px 13px';
       const t = a.animate([
-        { transform: tr(0, 0, 1), offset: 0 },
-        { transform: tr(0, 62, 1.05), offset: 0.35, easing: 'cubic-bezier(.3,.8,.4,1)' },
-        { transform: tr(0, 62, 0.92), offset: 0.5 },
-        { transform: tr(-80, 62, 0.92), offset: 0.85, easing: 'cubic-bezier(.5,0,.3,1)' },
-        { transform: tr(-80, 62, 0.92), offset: 1 }], { duration: 1150, fill: 'forwards' });
+        { transform: tr(xa, 0, 1), clipPath: kes(xa), offset: 0 },
+        { transform: tr(xb, 0, 1), clipPath: kes(xb), offset: 0.42, easing: 'cubic-bezier(.35,.9,.4,1)' },
+        { transform: tr(xb, 0, 0.92), clipPath: kes(xb), offset: 0.52 },
+        { transform: tr(xb, 90, 0.92), clipPath: kes(xb), offset: 0.85, easing: 'cubic-bezier(.5,0,.3,1)' },
+        { transform: tr(xb, 90, 0.92), clipPath: kes(xb), offset: 1 }], { duration: 1150, fill: 'forwards' });
       if (ses) { ses('kilitgir'); setTimeout(() => { kf.classList.add('sars'); ses('kilitac'); }, 960); }   // v12.25 gercek kilit sesleri (Kenney CC0)
       t.onfinish = () => { a.remove(); kafes(true); E.classList.add('acik'); if (ses) { ses('kafesac'); setTimeout(() => ses('bonus'), 250); } if (navigator.vibrate) try { navigator.vibrate([40, 30, 60]); } catch (e) {}
         setTimeout(() => E.classList.add('cik'), 180); };
