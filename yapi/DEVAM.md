@@ -209,3 +209,9 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 ## v12.14 deneme (24 Kas 2026, ?ses3=1): CellCog sesleri
 - oyun.js SES3 / CCS: atis, vurus, tahta, tas, cam/buz, patlama ses/cc/'den; kazan/kaybet zil yerine kayit (kazan3/kaybet3). Yalniz Yapi modu (K degil). Kaynak: ses/KAYNAKLAR.md.
 - CellCog her istekte en az 60 kredi; 8 ses tek istekte uretildi. Adem begenirse varsayilan yapilir.
+
+## v12.15 deneme (24 Kas 2026, ?logo4=1): yeni logo acilista
+- Logo: Adem'in Gemini cizimi (tabela + Foxi top arabasinin fitilini yakiyor). Damali sahte saydamlik kodla silindi -> simge/logo4.webp (kaynak simge/cc/logo_g1.png).
+- index.html: ?logo4=1'de acilis videosu yerine logo, sade gok-deniz-kum fon, en az 3.2 sn gorunur. Eski: anahtarsiz (video).
+- Ikon adayi: simge/cc/ikon4-*.png (Gemini, kesildi). Manifest DEGISMEDI; Adem onaylayinca icon-192/512, maskable, apple-touch-icon yerine konur.
+- CellCog logo/ikon adaylari (simge/cc/logo_a,b, ikon_a,b) elde top tutma mantik hatasi yuzunden secilmedi.
