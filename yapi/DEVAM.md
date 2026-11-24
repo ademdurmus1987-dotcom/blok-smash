@@ -215,3 +215,4 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - index.html: ?logo4=1'de acilis videosu yerine logo, sade gok-deniz-kum fon, en az 3.2 sn gorunur. Eski: anahtarsiz (video).
 - Ikon adayi: simge/cc/ikon4-*.png (Gemini, kesildi). Manifest DEGISMEDI; Adem onaylayinca icon-192/512, maskable, apple-touch-icon yerine konur.
 - CellCog logo/ikon adaylari (simge/cc/logo_a,b, ikon_a,b) elde top tutma mantik hatasi yuzunden secilmedi.
+- v12.15d: fon tek renk turkuaz (#2fb4d8, ortasi hafif acik), Adem goz yormasin diye istedi; ada resmi denemesi (v12.15c) kaldirildi. logo4.webp altinda kesik golge izi yumusatildi, 40 px bos alan eklendi (?v=4).
