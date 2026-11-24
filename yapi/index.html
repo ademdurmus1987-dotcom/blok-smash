@@ -185,7 +185,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
     setTimeout(function () { try { V.pause(); } catch (e) {} L.remove(); dispatchEvent(new Event('bsacildi')); }, 550);
   }
   // v12.15 deneme ?logo4=1 (Adem 24 Kas): video yerine yeni logo (Gemini, arka plani temizlendi: simge/logo4.webp)
-  if (/[?&]logo4=1/.test(location.search)) { L.classList.add('logo4'); V.removeAttribute('src'); V.removeAttribute('poster'); V.style.display = 'none'; S.style.display = 'none'; var LG = new Image(); LG.className = 'a-logo4'; LG.alt = 'Foxi Smash'; LG.src = '../simge/logo4.webp?v=1'; L.insertBefore(LG, L.querySelector('.a-alt')); setTimeout(function () { bitti = true; if (hazir) kapat(); }, 3200); }   // logo en az 3 sn gorunsun
+  if (/[?&]logo4=1/.test(location.search)) { L.classList.add('logo4'); V.removeAttribute('src'); V.removeAttribute('poster'); V.style.display = 'none'; S.style.display = 'none'; var LG = new Image(); LG.className = 'a-logo4'; LG.alt = 'Foxi Smash'; LG.src = '../simge/logo4.webp?v=3'; L.insertBefore(LG, L.querySelector('.a-alt')); setTimeout(function () { bitti = true; if (hazir) kapat(); }, 3200); }   // logo en az 3 sn gorunsun
   V.addEventListener('ended', function () { bitti = true; if (hazir) kapat(); });
   V.addEventListener('error', function () { if (L.classList.contains('logo4')) return; bitti = true; if (hazir) kapat(); });
   var pr = V.play(); if (pr && pr.catch) pr.catch(function () {});
