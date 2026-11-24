@@ -3689,7 +3689,10 @@ const sesYolu = (k) => SECILEN.has(k) || (!K && (k === 'para' || k === 'tik')) ?
 // v6.22: (Adem 6 Kas) korsan modunda sesler korsan/ses/ klasorunden: gercek top, su, tahta, zincir, altin kayitlari (kaynaklar: korsan/ses/KAYNAKLAR.md)
 if (K) Object.assign(SFILES, { su: 4, kabarcik: 0, zincir: 0, para: 0, sandik: 0, dalga: 0, yelken: 0, pop: undefined });
 const SDIR = K ? '../korsan/ses/' : 'ses/', SV2 = K ? 2 : 1;
-for (const k in SFILES) { if (SFILES[k] === undefined) continue; const n = SFILES[k] || 1; for (let i = 0; i < n; i++) { const f = SFILES[k] ? k + i : k; const [yol, sv] = sesYolu(k); RAW[f] = fetch(yol + f + '.mp3?v=' + sv).then((r) => r.arrayBuffer()).catch(() => null); } }
+// v12.14 deneme ?ses3=1 (Adem 24 Kas): CellCog ile uretilen sesler (ses/cc/, kaynak ses/KAYNAKLAR.md); cesitlilik perde oynamasiyla. Kazan/kaybet zil yerine kayit.
+const SES3 = Q.get('ses3') === '1' && !K, CCS = { atis: 'atis', vurus: 'vurus', tahta: 'tahta', tas: 'tas', cam: 'cam', buz: 'cam', patlama: 'patlama' };
+if (SES3) for (const k of ['kazan', 'kaybet']) RAW[k + '3'] = fetch('../ses/cc/' + k + '.mp3?v=1').then((r) => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
+for (const k in SFILES) { if (SFILES[k] === undefined) continue; const n = SFILES[k] || 1; for (let i = 0; i < n; i++) { const f = SFILES[k] ? k + i : k; const [yol, sv] = sesYolu(k); RAW[f] = fetch(SES3 && CCS[k] ? '../ses/cc/' + CCS[k] + '.mp3?v=1' : yol + f + '.mp3?v=' + sv).then((r) => r.arrayBuffer()).catch(() => null); } }
 function decodeAll() { for (const f in RAW) RAW[f].then((ab) => { if (ab && !BUF[f]) AC.decodeAudioData(ab.slice(0), (b) => { BUF[f] = b; }, () => {}); }); }
 const MATSND = { kola: 'metal', ahsap: 'tahta', sandik: 'tahta', ahsapmetal: 'tahta', kirmizi: 'tahta', hediye: 'tahta', kabak: 'tahta', recel: 'cam', tas: 'tas', tugla: 'tas', piramitTas: 'tas', metal: 'metal', celik: 'metal', altin: 'metal', fici: 'metal', yildiz: 'metal', cam: 'cam', buz: 'buz', jole: 'cam', buz2: 'buz', buzDikey: 'buz', ahsap2: 'tahta', alevUzun: 'tas', morDikey: 'tahta' };
 for (const k in SEK.TUR) { const t = SEK.TUR[k]; if (t.kir) KIRILGAN.add(k); if (t.yuzer) FLOAT.add(k); MATSND[k] = t.ses; }   // v3.1
@@ -3792,8 +3795,8 @@ function sfx(k, n) {
   else if (k === 'su') splashSnd(n ? 0.55 : 0.3);
   else if (k === 'slap') play('dusme', 0.5, 0.8);
   else if (k === 'bonus') chime([1318.5, 1760], 0.07, 0.16);
-  else if (k === 'win') chime([523.25, 659.25, 783.99, 1046.5, 1318.5], 0.11, 0.2, true);
-  else if (k === 'lose') chime([392, 329.63, 261.63], 0.2, 0.14);
+  else if (k === 'win') { if (SES3 && BUF.kazan3) play('kazan3', 0.7, 1); else chime([523.25, 659.25, 783.99, 1046.5, 1318.5], 0.11, 0.2, true); }
+  else if (k === 'lose') { if (SES3 && BUF.kaybet3) play('kaybet3', 0.6, 1); else chime([392, 329.63, 261.63], 0.2, 0.14); }
   else if (k === 'tik') play('tik', 0.55, 1);
   else if (k === 'para') play('para', 0.5, 0.97 + Math.random() * 0.06);
   // v6.5: her blokta calan 'pop' sayac sesi kaldirildi (yigilinca kulak tirmaliyordu)

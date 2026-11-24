@@ -205,3 +205,7 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 ## v12.13 (24 Kas 2026): boyali bloklar (blok6) VARSAYILAN (Adem onayladi), eski ?blok6=0
 - Siradaki: kamera biraz daha yukaridan (Kingdom gibi) denemesi, anahtar arkasinda; sonra temas golgesi yeniden.
+
+## v12.14 deneme (24 Kas 2026, ?ses3=1): CellCog sesleri
+- oyun.js SES3 / CCS: atis, vurus, tahta, tas, cam/buz, patlama ses/cc/'den; kazan/kaybet zil yerine kayit (kazan3/kaybet3). Yalniz Yapi modu (K degil). Kaynak: ses/KAYNAKLAR.md.
+- CellCog her istekte en az 60 kredi; 8 ses tek istekte uretildi. Adem begenirse varsayilan yapilir.

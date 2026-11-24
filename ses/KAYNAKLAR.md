@@ -19,3 +19,7 @@ Başındaki sessizlik kesildi, ses seviyesi eşitlendi, 0/1/2 dosyaları perdesi
 ## Altın sesi (v3.6, Adem 11 Kas 2026)
 - para.mp3: Pixabay "coin collect" araması, aday P14 (https://cdn.pixabay.com/audio/2025/08/05/audio_69f210e199.mp3), Pixabay Content License
 - tik.mp3: kenney_interfacesounds drop_002.ogg (aday Tuş 14), CC0
+
+## CellCog sesleri (v12.14 deneme, ?ses3=1; Adem 24 Kas 2026)
+- ses/cc/: atis, vurus, tahta, tas, cam (buz da bunu kullanir), patlama, kazan, kaybet. CellCog (cellcog.ai, Adem'in hesabi) ile uretildi; CellCog'a gore telifsiz (royalty-free), ticari kullanim serbest.
+- cam, tahta, tas ses seviyesi esitlendi (ffmpeg volume + alimiter). dinle_hepsi.mp3: hepsi sirayla (yalniz dinleme icin, oyunda kullanilmaz).
