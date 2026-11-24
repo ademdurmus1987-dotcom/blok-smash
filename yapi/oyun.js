@@ -18,7 +18,7 @@ import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=4';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
-import { DOST, dostBolum, dostKafes, dostUc, dostEkran } from './dost.js?v=5';   // v12.20 deneme ?dost=1: kafesteki dost
+import { DOST, dostBolum, dostKafes, dostUc, dostEkran } from './dost.js?v=6';   // v12.20 deneme ?dost=1: kafesteki dost
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
@@ -1318,9 +1318,9 @@ function kapi2Kur(E, grp, body) {
 let DROZ = null;
 function dostRozet() { if (DROZ) return DROZ; const cv = document.createElement('canvas'); cv.width = cv.height = 128; const x = cv.getContext('2d');
   x.beginPath(); x.arc(64, 64, 58, 0, 7); x.fillStyle = '#fff4d6'; x.fill(); x.beginPath(); x.arc(64, 64, 50, 0, 7); const gr = x.createRadialGradient(54, 50, 6, 64, 64, 52); gr.addColorStop(0, '#3fd2e6'); gr.addColorStop(1, '#0b7f99'); x.fillStyle = gr; x.fill();
-  x.save(); x.translate(64, 64); x.rotate(-0.7); x.lineCap = 'round'; x.strokeStyle = '#5a3200'; x.lineWidth = 17; x.beginPath(); x.arc(-20, 0, 14, 0, 7); x.moveTo(-6, 0); x.lineTo(34, 0); x.moveTo(24, 0); x.lineTo(24, 14); x.moveTo(33, 0); x.lineTo(33, 11); x.stroke();
-  x.strokeStyle = '#ffd23a'; x.lineWidth = 10; x.beginPath(); x.arc(-20, 0, 14, 0, 7); x.moveTo(-6, 0); x.lineTo(34, 0); x.moveTo(24, 0); x.lineTo(24, 14); x.moveTo(33, 0); x.lineTo(33, 11); x.stroke(); x.restore();
-  DROZ = new THREE.CanvasTexture(cv); DROZ.colorSpace = THREE.SRGBColorSpace; return DROZ; }
+  DROZ = new THREE.CanvasTexture(cv); DROZ.colorSpace = THREE.SRGBColorSpace;
+  const im = new Image(); im.onload = () => { x.save(); x.translate(64, 64); x.rotate(-0.6); const w = 96, h = w * im.height / im.width; x.shadowColor = 'rgba(40,20,0,.55)'; x.shadowBlur = 4; x.shadowOffsetY = 2; x.drawImage(im, -w / 2, -h / 2, w, h); x.restore(); DROZ.needsUpdate = true; };   // v12.25 Gemini anahtari
+  im.src = '../karakter/dost/anahtar.webp?v=1'; return DROZ; }
 function anahtarUc(c) {
   const E = c.anahtar; if (!E || E.durum !== 'kapali') return;
   if (E.km) c.mesh.remove(E.km);
@@ -3692,13 +3692,13 @@ function noise(ft, fq, q, t0, dur, vol, sweep) {
 }
 // v6.3: sesler artik onceden uretilmis kayitlar (ses/*.mp3): katmanli, yankili; her olay icin 2-3 cesit, her calista perde hafif degisir.
 // Malzemeye gore kirilma: tahta, tas, metal, cam. Ayni ses cok sik calmaz, ayni anda en fazla 6 ses.
-const SFILES = { atis: 3, vurus: 3, tahta: 3, tas: 3, metal: 3, cam: 3, buz: 3, yerkum: 3, yerkar: 3, yersu: 3, dusme: 3, patlama: 2, pop: 0, bonus: 0, kazan: 0, kaybet: 0, tik: 0, para: 0, sandik: 0 };   // v3.0: para ve sandik (korsan/ses, gercek kayit)
+const SFILES = { atis: 3, vurus: 3, tahta: 3, tas: 3, metal: 3, cam: 3, buz: 3, yerkum: 3, yerkar: 3, yersu: 3, dusme: 3, patlama: 2, pop: 0, bonus: 0, kazan: 0, kaybet: 0, tik: 0, para: 0, sandik: 0, kilitgir: 0, kilitac: 0, kafesac: 0 };   // v12.25: kilit/kafes (Kenney CC0 gercek kayit, ses/KAYNAKLAR.md)   // v3.0: para ve sandik (korsan/ses, gercek kayit)
 const RAW = {}, BUF = {};
 // v6.29: (Adem: metal sesleri duruyor) yapi/ses/vurus, tahta, tas uretilmis kayitlardi: vurus 0.6 sn cinlayan 'dong', tahta/tas 1 sn boyunca
 // sonmeyen, tek perdede cinlayan yanki (metal gibi). Yerine korsanin gercek kisa kayitlari (CC0, korsan/ses/KAYNAKLAR.md).
 const GERCEK = new Set(['vurus', 'para', 'sandik']);
 // Blok Smash (Adem 9 Kas): tas, cam, tahta, buz kirilma sesleri Adem'in sectigi kayitlar, iki modda da ortak ses/ klasorunden (kaynak: ses/KAYNAKLAR.md)
-const SECILEN = new Set(['tahta', 'tas', 'cam', 'buz', 'atis', 'yerkum', 'yerkar', 'yersu']);
+const SECILEN = new Set(['tahta', 'tas', 'cam', 'buz', 'atis', 'yerkum', 'yerkar', 'yersu', 'kilitgir', 'kilitac', 'kafesac']);
 // v3.3: (Adem 11 Kas) Yapi'da altin sesi = ses/para.mp3 (aday Altin 6), tus sesi = ses/tik.mp3 (aday Tus 14); Korsan eski seslerinde
 const sesYolu = (k) => SECILEN.has(k) || (!K && (k === 'para' || k === 'tik')) ? ['../ses/', 'b9'] : !K && GERCEK.has(k) ? ['../korsan/ses/', 2] : [SDIR, SV2];
 // v6.22: (Adem 6 Kas) korsan modunda sesler korsan/ses/ klasorunden: gercek top, su, tahta, zincir, altin kayitlari (kaynaklar: korsan/ses/KAYNAKLAR.md)
@@ -3814,6 +3814,7 @@ function sfx(k, n) {
   else if (k === 'lose') { if (SES3 && BUF.kaybet3) play('kaybet3', 0.6, 1); else chime([392, 329.63, 261.63], 0.2, 0.14); }
   else if (k === 'tik') play('tik', 0.55, 1);
   else if (k === 'para') play('para', 0.5, 0.97 + Math.random() * 0.06);
+  else if (k === 'kilitgir' || k === 'kilitac' || k === 'kafesac') play(k, k === 'kafesac' ? 0.6 : 0.85, 1);   // v12.25 ?dost=1 kafes acilisi
   // v6.5: her blokta calan 'pop' sayac sesi kaldirildi (yigilinca kulak tirmaliyordu)
 }
 

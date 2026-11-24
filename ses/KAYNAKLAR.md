@@ -23,3 +23,10 @@ Başındaki sessizlik kesildi, ses seviyesi eşitlendi, 0/1/2 dosyaları perdesi
 ## CellCog sesleri (v12.14 deneme, ?ses3=1; Adem 24 Kas 2026)
 - ses/cc/: atis, vurus, tahta, tas, cam (buz da bunu kullanir), patlama, kazan, kaybet. CellCog (cellcog.ai, Adem'in hesabi) ile uretildi; CellCog'a gore telifsiz (royalty-free), ticari kullanim serbest.
 - cam, tahta, tas ses seviyesi esitlendi (ffmpeg volume + alimiter). dinle_hepsi.mp3: hepsi sirayla (yalniz dinleme icin, oyunda kullanilmaz).
+
+## Kilit ve kafes sesleri (v12.25, 24 Kas 2026)
+Kaynak: Kenney "RPG Audio" (kenney.nl/assets/rpg-audio), lisans CC0 1.0 (ticari kullanim serbest, atif gerekmez).
+- kilitgir.mp3 <- metalClick.ogg (anahtar kilide girer)
+- kilitac.mp3 <- metalLatch.ogg (kilit mandali acilir)
+- kafesac.mp3 <- creak1.ogg (kafes kapisi gicirdar)
+Hepsi ffmpeg loudnorm (-16 LUFS), mono 128k.

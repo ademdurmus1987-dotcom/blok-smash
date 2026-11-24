@@ -19,7 +19,7 @@ export function dostBolum(L, SV) {
   const d = DOSTLAR[(L / 5 - 1) % DOSTLAR.length];
   return (SV.dost || []).includes(d.id) ? null : d;
 }
-const ANAHTAR = '<svg viewBox="0 0 48 24" aria-hidden="true"><g stroke-linecap="round" fill="none"><g stroke="#5a3200" stroke-width="7.5"><circle cx="10" cy="12" r="6.5"/><path d="M16.5 12h27M35 12v7.5M41.5 12v6"/></g>' +
+const ANAHTAR = '<img src="../karakter/dost/anahtar.webp?v=1" alt="" draggable="false">';   // v12.25: Adem'in Gemini anahtari (kulpta tilki patisi)
   '<g stroke="#ffd23a" stroke-width="4.2"><circle cx="10" cy="12" r="6.5"/><path d="M16.5 12h27M35 12v7.5M41.5 12v6"/></g></g></svg>';
 // yedek kafes (Gemini kafesi gelene kadar): ahsap taban, altin kubbe, demir parmaklik, ortada asma kilit
 const KAFES = (acik) => '<svg viewBox="0 0 200 230" aria-hidden="true"><defs><linearGradient id="dkA" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#c8881e"/></linearGradient>' +
@@ -35,9 +35,9 @@ let CSS = false;
 function stil() {
   if (CSS) return; CSS = true; const s = document.createElement('style');
   s.textContent = `#dyuva{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 92px);width:52px;height:52px;z-index:6;pointer-events:none;border-radius:50%;background:radial-gradient(circle at 45% 40%,#3fd2e6,#0b6f88);border:3px solid #fff4d6;box-shadow:0 3px 6px #0007;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.6);transition:opacity .3s,transform .3s}
-#dyuva.on{opacity:1;transform:scale(1)}#dyuva svg{width:40px;height:20px;opacity:.28;filter:grayscale(1) brightness(2);transform:rotate(-35deg)}#dyuva.dolu svg{opacity:1;filter:none}#dyuva.dolu{animation:dyzip .6s;box-shadow:0 0 16px #ffd54a,0 3px 6px #0007}
+#dyuva.on{opacity:1;transform:scale(1)}#dyuva img{width:42px;height:18px;opacity:.28;filter:grayscale(1) brightness(2);transform:rotate(-35deg)}#dyuva.dolu img{opacity:1;filter:none}#dyuva.dolu{animation:dyzip .6s;box-shadow:0 0 16px #ffd54a,0 3px 6px #0007}
 @keyframes dyzip{0%{transform:scale(1)}35%{transform:scale(1.35) rotate(-10deg)}70%{transform:scale(.95)}100%{transform:scale(1)}}
-.dk-an{position:fixed;left:0;top:0;width:52px;height:26px;z-index:61;pointer-events:none;filter:drop-shadow(0 0 7px #ffd54a) drop-shadow(0 2px 2px #0008)}.dk-an svg{width:100%;height:100%}
+.dk-an{position:fixed;left:0;top:0;width:60px;height:26px;z-index:61;pointer-events:none;filter:drop-shadow(0 0 7px #ffd54a) drop-shadow(0 2px 2px #0008)}.dk-an img{width:100%;height:100%;display:block}
 #dekran{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,#2a63ad 0,#102048 72%);color:#fff;opacity:0;transition:opacity .35s;overflow:hidden}
 #dekran.on{opacity:1}#dekran .de-isin{position:absolute;left:50%;top:40%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;background:repeating-conic-gradient(rgba(255,230,150,.15) 0 9deg,transparent 9deg 22deg);animation:dedon 18s linear infinite;pointer-events:none;opacity:0;transition:opacity .6s}
 #dekran.acik .de-isin{opacity:1}@keyframes dedon{to{transform:rotate(360deg)}}
@@ -92,8 +92,8 @@ export function dostEkran(d, n, devam, ses) {
     ucur(sx, sy, lx, ly, 900, 120, 540, (a) => {
       // kilitte ceyrek tur doner, tikirdar
       const t = a.animate([{ transform: a.style.transform || getComputedStyle(a).transform }, { transform: 'translate(' + (lx - 26) + 'px,' + (ly - 13) + 'px) rotate(0deg) scale(1)' }, { transform: 'translate(' + (lx - 26) + 'px,' + (ly - 13) + 'px) rotate(90deg) scale(1)' }], { duration: 650, fill: 'forwards' });
-      kf.classList.add('sars'); if (ses) setTimeout(() => ses('slap'), 300);
-      t.onfinish = () => { a.remove(); kafes(true); E.classList.add('acik'); if (ses) ses('bonus'); if (navigator.vibrate) try { navigator.vibrate([40, 30, 60]); } catch (e) {}
+      kf.classList.add('sars'); if (ses) { ses('kilitgir'); setTimeout(() => ses('kilitac'), 380); }   // v12.25 gercek kilit sesleri (Kenney CC0)
+      t.onfinish = () => { a.remove(); kafes(true); E.classList.add('acik'); if (ses) { ses('kafesac'); setTimeout(() => ses('bonus'), 250); } if (navigator.vibrate) try { navigator.vibrate([40, 30, 60]); } catch (e) {}
         setTimeout(() => E.classList.add('cik'), 180); };
     });
   }, 700);
