@@ -254,3 +254,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - Oyunda kafes YOK: anahtar kupten sag ustteki anahtar yuvasina (#dyuva) ucar. Bolum sonu ayri sayfa (#dekran): kilitli kafes, anahtar yuvadan gelip kilide girer, ceyrek tur doner, kafes sarsilir ve acilir (flas, isinlar), uye cikar: '<ad> kurtuldu! <gorev> · Murettebat n/8'.
 - Murettebat (dost.js DOSTLAR): Papagan Pako (Gozcu), Kaplumbaga Tosbi (Dumenci), Ahtapot Ahmo (Asci), Kunduz Kundi (Marangoz), Penguen Pengo (Gulle Ustasi), Kirpi Diken (Haritaci), Kurbaga Virak (Borazanci), Fok Foki (Dalgic).
 - Bekleyen Gemini resimleri: karakter/dost/{id}.webp (korsan kiyafetli, sevinerek cikan poz) ve kafes_kapali.webp / kafes_acik.webp. Simdilik kodla kafes ve emoji. Istemler: yapi/uretici/istem/murettebat.md
+
+## v12.22-23 deneme (24 Kas 2026, ?dost=1): murettebat resimleri + video
+- Adem'in Gemini cizimleri 8 uye -> karakter/dost/{id}.webp (kaynak karakter/dost/kaynak/). Sarimsi zeminde (kaplumbaga, kirpi) yeni yol: satir satir zemin rengi tahmini (kenar medyanlari), renk orani yakinsa silinir + en buyuk parca disindaki yesil lekeler (scratchpad dostek3.py mantigi). Kurbaga: ton 62-170 kenara bagli silme.
+- Video: Adem'in Gemini videosu (kunduz, 4 sn, yesil zemin) -> 15 fps kareler, her kare anahtar() + alt golge -> hareketli saydam WebP karakter/dost/kunduz_anim.webp (61 kare, 359x520, ~950 KB). dost.js once {id}_anim.webp, yoksa {id}.webp, yoksa emoji.
+- Bitis ekrani: kafes acilinca sola-geri kucilir, uye onde zipler.

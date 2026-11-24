@@ -44,9 +44,9 @@ function stil() {
 #dekran .de-ust{position:relative;font-size:20px;font-weight:900;color:#ffe27a;text-shadow:0 2px 0 #6a3400;margin-bottom:10px;transition:opacity .3s}#dekran.acik .de-ust{opacity:0}
 #dekran .de-kutu{position:relative;width:min(78vw,320px);height:min(88vw,360px)}
 #dekran .de-kafes{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;transition:transform .25s}#dekran .de-kafes>*{width:100%;height:100%;object-fit:contain}
-#dekran .de-kafes.sars{animation:desars .35s}@keyframes desars{25%{transform:translateX(-6px) rotate(-1.5deg)}75%{transform:translateX(6px) rotate(1.5deg)}}
+#dekran.cik .de-kafes{transform:translate(-22%,10%) scale(.62);opacity:.85;transition:transform .6s cubic-bezier(.3,1.3,.5,1),opacity .6s}#dekran .de-kafes.sars{animation:desars .35s}@keyframes desars{25%{transform:translateX(-6px) rotate(-1.5deg)}75%{transform:translateX(6px) rotate(1.5deg)}}
 #dekran .de-hay{position:absolute;left:50%;bottom:6%;width:86%;height:86%;margin-left:-43%;object-fit:contain;transform:translateY(25%) scale(.15);opacity:0;transition:transform .75s cubic-bezier(.3,1.55,.5,1),opacity .25s;filter:drop-shadow(0 10px 12px #0009);z-index:2}
-#dekran .de-hay.em{font-size:min(40vw,170px);line-height:1;text-align:center;display:flex;align-items:flex-end;justify-content:center}#dekran.cik .de-hay{transform:translateY(-6%) scale(1);opacity:1}
+#dekran .de-hay.em{font-size:min(40vw,170px);line-height:1;text-align:center;display:flex;align-items:flex-end;justify-content:center}#dekran.cik .de-hay{transform:translate(14%,4%) scale(1.08);opacity:1}
 #dekran .de-flas{position:absolute;inset:-20%;background:radial-gradient(circle,#fff8d0 0,rgba(255,240,170,.6) 30%,transparent 62%);opacity:0;pointer-events:none;z-index:3}#dekran.acik .de-flas{animation:deflas .7s}
 @keyframes deflas{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
 #dekran h2{position:relative;margin:16px 16px 2px;font-size:28px;text-align:center;color:#ffe27a;text-shadow:0 3px 0 #7a3c00,0 0 18px #0008;transform:scale(.6);opacity:0;transition:all .4s .5s cubic-bezier(.3,1.6,.5,1)}
