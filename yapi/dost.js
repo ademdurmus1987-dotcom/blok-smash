@@ -43,7 +43,7 @@ function stil() {
 #dekran.acik .de-isin{opacity:1}@keyframes dedon{to{transform:rotate(360deg)}}
 #dekran .de-ust{position:relative;font-size:20px;font-weight:900;color:#ffe27a;text-shadow:0 2px 0 #6a3400;margin-bottom:10px;transition:opacity .3s}#dekran.acik .de-ust{opacity:0}
 #dekran .de-kutu{position:relative;width:min(78vw,320px);height:min(88vw,360px)}
-#dekran .de-kafes{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;transition:transform .25s}#dekran .de-kafes>*{width:100%;height:100%;object-fit:contain}
+#dekran .de-kafes{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;transition:transform .25s}#dekran .de-kafes>*{width:100%;height:100%;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 10px 12px #0008)}
 #dekran.cik .de-kafes{transform:translate(-22%,10%) scale(.62);opacity:.85;transition:transform .6s cubic-bezier(.3,1.3,.5,1),opacity .6s}#dekran .de-kafes.sars{animation:desars .35s}@keyframes desars{25%{transform:translateX(-6px) rotate(-1.5deg)}75%{transform:translateX(6px) rotate(1.5deg)}}
 #dekran .de-hay{position:absolute;left:50%;bottom:6%;width:86%;height:86%;margin-left:-43%;object-fit:contain;transform:translateY(25%) scale(.15);opacity:0;transition:transform .75s cubic-bezier(.3,1.55,.5,1),opacity .25s;filter:drop-shadow(0 10px 12px #0009);z-index:2}
 #dekran .de-hay.em{font-size:min(40vw,170px);line-height:1;text-align:center;display:flex;align-items:flex-end;justify-content:center}#dekran.cik .de-hay{transform:translate(14%,4%) scale(1.08);opacity:1}
@@ -85,7 +85,9 @@ export function dostEkran(d, n, devam, ses) {
   const sx = yr.width ? yr.left + yr.width / 2 : innerWidth - 40, sy = yr.width ? yr.top + yr.height / 2 : 110;
   requestAnimationFrame(() => E.classList.add('on'));
   setTimeout(() => {   // anahtar kilide (kafesin ortasi, biraz alti)
-    const kr = E.querySelector('.de-kutu').getBoundingClientRect(), lx = kr.left + kr.width / 2, ly = kr.top + kr.height * 0.56;
+    const kr = E.querySelector('.de-kutu').getBoundingClientRect(), ki = kf.querySelector('img'); let lx = kr.left + kr.width / 2, ly = kr.top + kr.height * 0.56;
+    if (ki && ki.naturalWidth) { const ar = ki.naturalWidth / ki.naturalHeight, dw = Math.min(kr.width, kr.height * ar), dh = dw / ar;   // Gemini kafesi: kilit deligi resmin (0.533, 0.746) noktasinda
+      lx = kr.left + (kr.width - dw) / 2 + dw * 0.533; ly = kr.top + kr.height - dh + dh * 0.746; }
     if (ses) ses('bonus');
     ucur(sx, sy, lx, ly, 900, 120, 540, (a) => {
       // kilitte ceyrek tur doner, tikirdar
