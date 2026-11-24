@@ -219,3 +219,7 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - v12.15e: ?logo4=2 ikinci secenek: rakip videolarindaki gibi keskin sahne fonu (fon/ana_ada2.webp, kenarlar hafif koyu), Foxi adanin cimeninde duruyor. ?logo4=1 tek renk turkuaz kaldi.
 - v12.15f: ada sahnesi 'cok kalabalik' bulundu; ?logo4=2 fonu sade sahil (fon/sahil3_bos.webp: gok, deniz, kum) oldu.
 - v12.15g: ?logo4=3 tam ekran tek parca acilis resmi (Adem'in Gemini cizimi, kaynak simge/cc/acilis_g.jpg; alti kum aynalanarak telefon oranina uzatildi -> yapi/fon/acilis5.webp). Ayri logo gizli.
+
+## v12.16 (24 Kas 2026): yeni acilis varsayilan
+- Adem onayladi: acilis ekrani artik tam ekran resim (yapi/fon/acilis5.webp). Eski video acilis: ?logo4=0. Denemeler: ?logo4=1 tek renk + ayri logo, ?logo4=2 sahil + ayri logo.
+- Ikon (simge/cc/ikon4-*.png) hala manifest'e konmadi; Adem'in onayini bekliyor.
