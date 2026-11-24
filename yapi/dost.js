@@ -79,8 +79,9 @@ export function dostEkran(d, n, devam, ses) {
   const kf = E.querySelector('.de-kafes'), kafes = (acik) => { const im = new Image(); im.alt = ''; im.onerror = () => { kf.innerHTML = KAFES(acik); }; im.src = '../karakter/dost/kafes_' + (acik ? 'acik' : 'kapali') + '.webp?v=1'; kf.innerHTML = ''; kf.appendChild(im); };
   kafes(false);
   const hy = E.querySelector('.de-hay');
-  hy.onerror = () => { const s = document.createElement('div'); s.className = 'de-hay em'; s.textContent = d.e; hy.replaceWith(s); };
-  hy.src = '../karakter/dost/' + d.id + '.webp?v=1';
+  // once hareketli (Adem'in Gemini videosundan: {id}_anim.webp), yoksa sabit resim, o da yoksa emoji
+  let den = 0; hy.onerror = () => { if (!den++) { hy.src = '../karakter/dost/' + d.id + '.webp?v=1'; return; } const s = document.createElement('div'); s.className = 'de-hay em'; s.textContent = d.e; hy.replaceWith(s); };
+  hy.src = '../karakter/dost/' + d.id + '_anim.webp?v=1';
   const sx = yr.width ? yr.left + yr.width / 2 : innerWidth - 40, sy = yr.width ? yr.top + yr.height / 2 : 110;
   requestAnimationFrame(() => E.classList.add('on'));
   setTimeout(() => {   // anahtar kilide (kafesin ortasi, biraz alti)
