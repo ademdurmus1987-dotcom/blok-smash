@@ -18,7 +18,7 @@ import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=4';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
-import { DOST, dostBolum, dostKafes, dostUc, dostEkran } from './dost.js?v=1';   // v12.20 deneme ?dost=1: kafesteki dost
+import { DOST, dostBolum, dostKafes, dostUc, dostEkran } from './dost.js?v=2';   // v12.20 deneme ?dost=1: kafesteki dost
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
@@ -3854,7 +3854,7 @@ function win() {
     const I = ist(); I.kazan++; if (SV.dus !== LV) { I.ilk++; I.seri++; I.enSeri = Math.max(I.enSeri, I.seri); } else I.seri = 1; SV.dus = 0;
     if (ilk) SV.sn = (SV.sn || 0) + 1;
     gorevKaydet(true); if (sonB) { SV.final = 1; save(); finalGoster(); return; } const kz = () => M.kazan({ L: LV, st, kaz, once, kalan: g.shots, bonus, zorB, yeniK, ilk, yag, hed, tip: PLAN && PLAN.tip, etiket: PLAN && PLAN.etiket });
-    if (g.dost && g.dost.acik) { const ds = SV.dost || (SV.dost = []); if (!ds.includes(g.dost.d.id)) ds.push(g.dost.d.id); save(); const dd = g.dost.d; g.dost = null; dostEkran(dd, ds.length, kz); } else { dostKafes(false); kz(); } return;
+    if (g.dost && g.dost.acik) { const ds = SV.dost || (SV.dost = []); if (!ds.includes(g.dost.d.id)) ds.push(g.dost.d.id); save(); const dd = g.dost.d; g.dost = null; dostEkran(dd, ds.length, kz, sfx); } else { dostKafes(false); kz(); } return;
   }
   gorevKaydet(true);
   modal('<div class="rib">Tebrikler!</div><div class="stars">' + yildizHtml(st) + '</div><h2>Bölüm ' + LV + ' tamam</h2>' +

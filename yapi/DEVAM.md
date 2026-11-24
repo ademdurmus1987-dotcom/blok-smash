@@ -249,3 +249,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
   Kafes: ekranin sag ustunde SVG (#dkafes), anahtar DOM'da yay cizip ucar, kapi acilir. Bolum sonu #dekran: isinlar, acik kafes, hayvan (karakter/dost/{id}.webp; yoksa emoji), 'X'i kurtardin!', Harika -> kazanma karti.
 - oyun.js: bolumBasla one bakan orta yukseklikteki kupe kameraya donuk rozet (dostRozet: turkuaz daire + altin anahtar, nabiz parlama); knock -> dostUc; win -> dostEkran sonra M.kazan.
 - Bekleyen: Adem'in Gemini hayvan cizimleri (yesil zemin, sevinen poz) -> karakter/dost/*.webp. Sonra: 'Dostlarim' sayfasi, paylas.
+
+## v12.21 deneme (24 Kas 2026, ?dost=1): korsan murettebati (Adem duzeltti)
+- Oyunda kafes YOK: anahtar kupten sag ustteki anahtar yuvasina (#dyuva) ucar. Bolum sonu ayri sayfa (#dekran): kilitli kafes, anahtar yuvadan gelip kilide girer, ceyrek tur doner, kafes sarsilir ve acilir (flas, isinlar), uye cikar: '<ad> kurtuldu! <gorev> · Murettebat n/8'.
+- Murettebat (dost.js DOSTLAR): Papagan Pako (Gozcu), Kaplumbaga Tosbi (Dumenci), Ahtapot Ahmo (Asci), Kunduz Kundi (Marangoz), Penguen Pengo (Gulle Ustasi), Kirpi Diken (Haritaci), Kurbaga Virak (Borazanci), Fok Foki (Dalgic).
+- Bekleyen Gemini resimleri: karakter/dost/{id}.webp (korsan kiyafetli, sevinerek cikan poz) ve kafes_kapali.webp / kafes_acik.webp. Simdilik kodla kafes ve emoji. Istemler: yapi/uretici/istem/murettebat.md
