@@ -88,6 +88,12 @@ Yeni sohbette once bunu ve `CLAUDE.md`'yi oku. Ayrintili surum notlari: `yapi/pi
 
 ## v11.14 (23 Kas): vurus efektleri varsayilan (Adem onayi), eski ?efk=0
 
+## v12.9 DENEME (24 Kas 2026, ?blok6=1): Smash Kingdom kalitesinde boyali bloklar (Adem: 'kalitede yine cok fark var', 23 Kas zip Smash Kingdom ekranlari)
+- Rakipte kaliteyi yapan: keskin ince pahli kutu, boyali doku (yuz tek duz renk degil), iri sade kontrastli amblem, yuzde isik gecisi, ust kenarda parlak cizgi.
+- blok6.js: BoxGeometry kose pahi (0.065 S), kodla boyanan tek doku atlasi (on/arka amblemli, diger yuzler duz). Stiller: boya (renkli kup/cubuk + iri krem pati),
+  kristal (oyL / oyA turkuaz: derin lekeler, ince ic catlaklar, parilti), tahta (ksSandik: kalaslar, damar, demir kose, pati). blok3b.js yap() once B6'ya sorar.
+- Ornek: uretici/blender/onizleme/blok6_ornek.png. Adem 24 Kas gece: 'sirayla yap, toplu deneyip oyuna aliriz' -> once anahtar arkasinda, sonra birlikte varsayilan.
+
 ## v12.8 DENEME (24 Kas 2026, ?blok5=1): sade parlak oyuncak kupler (Adem: 'basla'; 'kuplerdeki cok fazla detay belki kotu gosteriyordur')
 - seker_set.py kup5 -> model/blok3/kup5_1..4.glb: oluk ve ic cerceveler yok; tek genis duz pah (2 dilim), hafif cukur duz pano, iri pati. oy* ve uz* (seker.js BLOK5).
 - blok3b.js: o.parla -> boyali tonlar korunur, malzeme MeshPhysical (clearcoat 0.85, puruz 0.34, ENV 0.55), toneMapped false (renk solmasin).
