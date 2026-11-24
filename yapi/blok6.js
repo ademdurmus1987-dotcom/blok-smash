@@ -143,6 +143,46 @@ export function blok6Kur({ THREE, ENV, S }) {
     }
     const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.wrapS = THREE.RepeatWrapping; return t;
   }
+  // ---------- v12.12: tas kemer (3x2, aciklik R=0.66 kup, yay merkezi tabandan 0.62 kup; olculer kemerSekil / seker_set.py ile ayni) ----------
+  function kemerYap(boy) {
+    const w = boy.x, h = boy.y, d = boy.z, Sk = h / 2, R = 0.66 * Sk, ym = -h / 2 + 0.62 * Sk, r = Math.min(0.065 * Sk, d * 0.2);
+    const sh = new THREE.Shape(); sh.moveTo(-w / 2, -h / 2); sh.lineTo(-R, -h / 2); sh.lineTo(-R, ym); sh.absarc(0, ym, R, Math.PI, 0, true); sh.lineTo(R, -h / 2); sh.lineTo(w / 2, -h / 2); sh.lineTo(w / 2, h / 2); sh.lineTo(-w / 2, h / 2); sh.lineTo(-w / 2, -h / 2);
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: d - 2 * r, bevelEnabled: true, bevelThickness: r, bevelSize: r, bevelOffset: -r, bevelSegments: 1, curveSegments: 28 }); geo.translate(0, 0, -(d - 2 * r) / 2);
+    const FW = 384, SW = 128, H = 256, oran = FW / (FW + SW), cv = document.createElement('canvas'); cv.width = FW + SW; cv.height = H; const x = cv.getContext('2d'), c = hx('#6470b4'); tohum = 57;
+    const P = (px, py) => [(px + w / 2) / w * FW, H * (1 - (py + h / 2) / h)], k = FW / w;
+    for (const [X, Wb] of [[0, FW], [FW, SW]]) {
+      x.save(); x.beginPath(); x.rect(X, 0, Wb, H); x.clip();
+      let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, rgb(c, 0.2)); g.addColorStop(1, rgb(c, -0.3)); x.fillStyle = g; x.fillRect(X, 0, Wb, H);
+      lekeler(x, X, Wb, H, c, X ? 5 : 16, 0.22);
+      for (let i = 0; i < (X ? 90 : 260); i++) { x.fillStyle = rnd() < 0.5 ? rgb(c, -0.4, 0.35) : rgb(c, 0.4, 0.35); x.fillRect(X + rnd() * Wb, rnd() * H, 2, 2); }
+      if (!X) {
+        const tas = (pts, ton) => {   // acik kabartma tas: golge, govde, ust parlak kenar
+          x.save(); x.translate(3, 4); x.beginPath(); pts.forEach(([a, b], i) => (i ? x.lineTo(a, b) : x.moveTo(a, b))); x.closePath(); x.fillStyle = rgb(c, -0.6, 0.55); x.fill(); x.restore();
+          x.beginPath(); pts.forEach(([a, b], i) => (i ? x.lineTo(a, b) : x.moveTo(a, b))); x.closePath(); x.fillStyle = rgb(c, ton); x.fill(); x.lineWidth = 3; x.strokeStyle = rgb(c, 0.6, 0.6); x.stroke();
+        };
+        for (let i = 0; i < 7; i++) {   // kemer taslari (ortadaki kilit tasi iri ve daha acik)
+          const t0 = Math.PI * (i + 0.05) / 7, t1 = Math.PI * (i + 0.95) / 7, r0 = R * 1.01, r1 = R + (i === 3 ? 0.3 : 0.22) * Sk, pts = [];
+          for (const [rr, a] of [[r0, t0], [r1, t0], [r1, (t0 + t1) / 2], [r1, t1], [r0, t1], [r0, (t0 + t1) / 2]]) pts.push(P(rr * Math.cos(a), ym + rr * Math.sin(a)));
+          tas(pts, i === 3 ? 0.5 : 0.36);
+        }
+        for (const sx of [-1, 1]) for (const [yy, ww] of [[0.3, 0.5], [0.8, 0.36]]) {   // ayaklarda iki tas (yay baslangicinin altinda)
+          const cx = sx * (w / 2 - r - ww * Sk / 2 - 0.03 * Sk), cy = -h / 2 + yy * Sk, hh = 0.17 * Sk, [a0, b0] = P(cx - ww * Sk / 2, cy + hh), [a1, b1] = P(cx + ww * Sk / 2, cy - hh), e = 5;
+          tas([[a0 + e, b0], [a1 - e, b0], [a1, b0 + e], [a1, b1 - e], [a1 - e, b1], [a0 + e, b1], [a0, b1 - e], [a0, b0 + e]], 0.3);
+        }
+      }
+      kenar(x, X, Wb, H, c); x.restore();
+    }
+    const uv = geo.attributes.uv, p = geo.attributes.position, A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
+    for (let i = 0; i < p.count; i += 3) {   // yuz yonune gore: on/arka atlas solu, digerleri sag serit
+      A.fromBufferAttribute(p, i); B.fromBufferAttribute(p, i + 1); C.fromBufferAttribute(p, i + 2); const n = B.clone().sub(A).cross(C.clone().sub(A)).normalize();
+      for (let j = 0; j < 3; j++) { const X = p.getX(i + j), Y = p.getY(i + j), Z = p.getZ(i + j), U = (X + w / 2) / w, V = (Y + h / 2) / h, W = (Z + d / 2) / d;
+        if (Math.abs(n.z) > 0.7) uv.setXY(i + j, U * oran, V); else if (Math.abs(n.x) > Math.abs(n.y)) uv.setXY(i + j, oran + W * (1 - oran), V); else uv.setXY(i + j, oran + U * (1 - oran), W); }
+    }
+    geo.clearGroups(); geo.computeVertexNormals();
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+    const mat = new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.42, clearcoat: 0.45, clearcoatRoughness: 0.2, envMap: ENV, envMapIntensity: 0.35 }); mat.toneMapped = false; mat.userData.yeni = 1;
+    return { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: '#6470b4', roughness: 0.5 }) };
+  }
   // ---------- tur secimi ----------
   function stilOf(k) {
     if (/^ksSandik/.test(k)) return ['tahta', 1];
@@ -156,6 +196,7 @@ export function blok6Kur({ THREE, ENV, S }) {
     if (k === 'ksYildiz') return ['yildiz', 1];   // v12.10
     if (k === 'ksDirek') return ['direk', 1];
     if (k === 'ksSutun' || k === 'ksMorSutun') return ['sutun', -1];
+    if (k === 'ksKemer') return ['kemer', 0];   // v12.12
     const m = /^(oy|uz(\d))([A-Z])$/.exec(k); if (!m) return null;
     return [m[3] === 'L' || m[3] === 'A' ? 'kristal' : 'boya', m[2] ? +m[2] : 1, m[3]];
   }
@@ -163,6 +204,7 @@ export function blok6Kur({ THREE, ENV, S }) {
   function yap(k, hex, boy) {
     if (HAZ[k]) return HAZ[k]; const s = stilOf(k); if (!s) return null;
     let [stil, n] = s;
+    if (stil === 'kemer') return (HAZ[k] = kemerYap(boy));
     if (n < 0) {   // silindir
       if (stil === 'sutun') hex = /Mor/.test(k) ? '#2aa9b4' : '#8790c4';   // mor yerine turkuaz (rakip mor-altin)
       const R = Math.min(boy.x, boy.z) / 2 * 0.99, Hh = boy.y * 0.99, geo = stil === 'kavanoz' ? kavanozGeo(R, Hh) : stil === 'sutun' ? sutunGeo(R, Hh) : ficiGeo(R, Hh), t = silBoya(stil, hex);

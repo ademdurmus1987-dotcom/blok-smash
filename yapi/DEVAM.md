@@ -198,3 +198,7 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - Kapsam disi kalan: ksKemer (kemer bicimi), oyA (Foxi kupu, bilerek eski). Onizleme: uretici/blender/onizleme/blok6_yildiz_sutun.png.
 - Siradaki: Kingdom'daki gibi bloklarin altinda koyu yumusak temas golgesi (anahtar arkasinda), sonra ?blok6=1 varsayilan icin Adem onayi.
 - v12.11 denendi, yayinlanmadi: blok altina koyu temas golgesi (Kingdom). Bizim neredeyse yatay kamerada golge gorunmuyor, yan kenarlarda ince siyah cizgi olarak tasiyor. Kingdom'da kamera daha yukaridan bakiyor; once kamera acisi denenmeli.
+
+## v12.12 deneme (24 Kas 2026, ?blok6=1) — kemer
+- blok6.js kemerYap: ksKemer boyali tas kemer (ExtrudeGeometry, pahli; aciklik ve yay merkezi kemerSekil fizigiyle ayni). On yuzde acik kemer taslari (iri kilit tasi), ayaklarda iki tas; tas rengi ksTas ile ayni. Onizleme: uretici/blender/onizleme/blok6_kemer.png.
+- Boylece ?blok6=1'de bolum bloklarinin hepsi boyali (oyA Foxi kupu bilerek eski). Siradaki: Adem onayi ile ?blok6=1 varsayilan; sonra kamera acisi denemesi (temas golgesi icin).
