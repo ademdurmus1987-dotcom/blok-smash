@@ -5,13 +5,13 @@
 export const DOST = !/[?&]dost=0/.test(location.search);   // v12.26: VARSAYILAN (Adem: 'oyunda yok'); kapatmak icin ?dost=0
 export const DOSTLAR = [
   { id: 'papagan', ad: 'Papağan Pako', gorev: 'Gözcü', e: '🦜' },
-  { id: 'kaplumbaga', ad: 'Kaplumbağa Tosbi', gorev: 'Dümenci', e: '🐢' },
+  { id: 'maymun', ad: 'Maymun Miko', gorev: 'Direkçi', e: '🐒' },   // v12.38: kaplumbaga yerine (Flow videoda kabugu kayboluyordu)
   { id: 'ahtapot', ad: 'Ahtapot Ahmo', gorev: 'Aşçı', e: '🐙' },
   { id: 'kunduz', ad: 'Kunduz Kundi', gorev: 'Marangoz', e: '🦫' },
   { id: 'penguen', ad: 'Penguen Pengo', gorev: 'Gülle Ustası', e: '🐧' },
   { id: 'kirpi', ad: 'Kirpi Diken', gorev: 'Haritacı', e: '🦔' },
   { id: 'kurbaga', ad: 'Kurbağa Vırak', gorev: 'Borazancı', e: '🐸' },
-  { id: 'fok', ad: 'Fok Foki', gorev: 'Dalgıç', e: '🦭' }
+  { id: 'kedi', ad: 'Kedi Mırmır', gorev: 'Ambar Bekçisi', e: '🐱' }   // v12.38: fok yerine (Flow videoda kulak cikiyordu)
 ];
 // v12.31 (Adem'in Gemini videolari: uye kafeste, anahtar kilide girer, kafes acilir, uye sevincle cikar; kendi sesiyle):
 // karakter/dost/video/{id}.mp4 (sessiz, 540x960) + {id}.mp3. Video canli yesil ayiklamayla (WebGL) oynar, ses oyunun ses zincirinden.

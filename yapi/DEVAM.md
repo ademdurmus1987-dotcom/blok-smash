@@ -273,3 +273,4 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - v12.35: Kirpi videosu (Flow, 6 sn; yesil fular sarimsi, ayiklamada korunuyor). VIDEOLU: papagan, kunduz, penguen, kirpi.
 - v12.36: Kurbaga videosu (Flow). Kaplumbaga videosu kabuksuz/kulakli geldi, kullanilmadi (kaynak/kaplumbaga_kafes_video_kabuksuz.mp4). VIDEOLU: papagan, kunduz, penguen, kirpi, kurbaga.
 - v12.37: Ahtapot videosu (Flow). Fok videosu kulakli (kedi gibi) geldi, kullanilmadi (kaynak/fok_kafes_video_kulakli.mp4). Adem: bozulan kaplumbaga ve fok yerine baska karakterler. VIDEOLU 6/8.
+- v12.38: kaplumbaga -> Maymun Miko (Direkci, 10. bolum), fok -> Kedi Mirmir (Ambar Bekcisi, 40. bolum). Resimler Adem (CapCut AI, Pixar tarzi istem) -> karakter/dost/{maymun,kedi}.webp. Eski kaplumbaga.webp/fok.webp duruyor (kullanilmiyor). Videolari bekleniyor.
