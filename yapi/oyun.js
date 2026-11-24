@@ -18,6 +18,7 @@ import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=4';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
+import { DOST, dostBolum, dostKafes, dostUc, dostEkran } from './dost.js?v=1';   // v12.20 deneme ?dost=1: kafesteki dost
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
@@ -1313,6 +1314,13 @@ function kapi2Kur(E, grp, body) {
   if (E.kup) { const am = anahtarMesh(0.62); am.position.set(0, 0, S / 2 + 0.05); am.rotation.x = -Math.PI / 2; E.kup.mesh.add(am); E.kup.anahtar = E; E.km = am; E.kup.body.addEventListener('collide', (ev) => { const b = balls.find((q) => q.body === ev.body); if (b && !b.eng && E.durum === 'kapali') E.vur = 1; });
     const par = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#ffd23f', transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false })); par.scale.setScalar(S * 1.9); scene.add(par); E.par = par; }
 }
+// v12.20 ?dost=1: kupun onunde kameraya donuk rozet: turkuaz daire, krem kenar, altin anahtar (blok ~30 px: iri ve kontrastli)
+let DROZ = null;
+function dostRozet() { if (DROZ) return DROZ; const cv = document.createElement('canvas'); cv.width = cv.height = 128; const x = cv.getContext('2d');
+  x.beginPath(); x.arc(64, 64, 58, 0, 7); x.fillStyle = '#fff4d6'; x.fill(); x.beginPath(); x.arc(64, 64, 50, 0, 7); const gr = x.createRadialGradient(54, 50, 6, 64, 64, 52); gr.addColorStop(0, '#3fd2e6'); gr.addColorStop(1, '#0b7f99'); x.fillStyle = gr; x.fill();
+  x.save(); x.translate(64, 64); x.rotate(-0.7); x.lineCap = 'round'; x.strokeStyle = '#5a3200'; x.lineWidth = 17; x.beginPath(); x.arc(-20, 0, 14, 0, 7); x.moveTo(-6, 0); x.lineTo(34, 0); x.moveTo(24, 0); x.lineTo(24, 14); x.moveTo(33, 0); x.lineTo(33, 11); x.stroke();
+  x.strokeStyle = '#ffd23a'; x.lineWidth = 10; x.beginPath(); x.arc(-20, 0, 14, 0, 7); x.moveTo(-6, 0); x.lineTo(34, 0); x.moveTo(24, 0); x.lineTo(24, 14); x.moveTo(33, 0); x.lineTo(33, 11); x.stroke(); x.restore();
+  DROZ = new THREE.CanvasTexture(cv); DROZ.colorSpace = THREE.SRGBColorSpace; return DROZ; }
 function anahtarUc(c) {
   const E = c.anahtar; if (!E || E.durum !== 'kapali') return;
   if (E.km) c.mesh.remove(E.km);
@@ -1804,6 +1812,13 @@ function bolumBasla(Y) {
   g = { don: Y.don || 0, L: LV, ad: Y.ad, total: cubes.length, left: cubes.length, shots: shotsFor(cubes.length, Y), max: shotsFor(cubes.length, Y), state: 'play', t: 0, busy: 0, quiet: 0, combo: null, armed: false, bonus: 0, gold: 0 };
   FUSE.length = 0;
   egriBasla(Y);   // v8.0: bolum turu, hazine hedefleri, Foxi yardimi
+  { const d = DOST && M && !K && !PILOTQ ? dostBolum(LV, SV) : null; g.dost = null; dostKafes(false);   // v12.20 ?dost=1: one bakan, orta yukseklikteki kupe altin anahtar
+    const cs = d ? cubes.filter((c) => !c.out && !c.gone && c.mesh) : [];
+    if (cs.length > 2) { const zm = Math.max(...cs.map((c) => c.body.position.z)), on = cs.filter((c) => c.body.position.z > zm - S * 0.6).sort((p, q) => p.body.position.y - q.body.position.y), c = on[Math.floor(on.length * 0.55)];
+      const par = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#fff3a0', transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false })); par.scale.setScalar(S * 2.2); par.position.z = S * 0.55; c.mesh.add(par);
+      const ak = new THREE.Sprite(new THREE.SpriteMaterial({ map: dostRozet(), transparent: true, depthWrite: false })); ak.scale.setScalar(S * 0.95); ak.position.z = S * 0.62; ak.renderOrder = 5; c.mesh.add(ak);
+      ak.onBeforeRender = () => { const t = performance.now() / 1000, k = 1 + 0.12 * Math.sin(t * 5); ak.scale.setScalar(S * 0.95 * k); par.material.opacity = 0.55 + 0.35 * Math.sin(t * 5); };
+      c.dostA = 1; g.dost = { d, acik: false }; dostKafes(true); } }
   if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + (fo.yeni ? 'yeni/' + fo.r + '.webp?v=2' : fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2')) + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; $('bg').classList.toggle('koyu', Q.get('koyufon') === '1' && !!fo.yeni && LV % 5 === 0)   /* v11.5 (Adem: '1520. bolumde ekran kararmasi'): 5'in katlarinda fon karartmasi kapali, eski ?koyufon=1 */; setPlat(tm[1]); setDirt(fo); setSea(fo); if (fo.yeni) DIRT.visible = false; canliFon(fo.yeni ? { f: fo.f, vid: 1 } : fo); videoFon(fo); fonIsi(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); if (fo.yeni) temaKur(); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
   let ipu = ''; if (Y.ip && Y.a && !K) { if (!SV.ark) SV.ark = []; if (!SV.ark.includes(Y.a)) { SV.ark.push(Y.a); ipu = '<i>' + Y.ip + '</i>'; } }   // v5.0: yeni yapi tipinin cozum ipucu (ilk karsilasmada)
   const nm = $('nm'); const dfo = !PILOTQ && !K && FONYENI ? fonOf(LV) : null, dyeni = dfo && (LV === 1 || fonOf(LV - 1) !== dfo);   // v6.6: dunya adi; dunyanin ilk bolumunde 'YENI DUNYA'
@@ -3576,7 +3591,7 @@ function puanBirik(at) {
   if (!PB.t) PB.t = setTimeout(() => { const n = PB.n; if (n) floatText('+' + n, Math.max(40, Math.min(innerWidth - 40, PB.x / n)), PB.y / n, 'mini'); PB = { n: 0, x: 0, y: 0, t: 0 }; }, 160);
 }
 function knock(c, remove) {
-  c.gone = true; if (c.anahtar) anahtarUc(c); g.left--; gorevArt('blok', 1); if (M) ist().blok = (ist().blok || 0) + 1; if (g.combo) { g.combo.n++; g.combo.t = 0; if (!g.combo.at) g.combo.at = screenAt(c.body.position, 0.3); }
+  c.gone = true; if (c.anahtar) anahtarUc(c); if (c.dostA && g.dost && !g.dost.acik) { g.dost.acik = true; dostUc(screenAt(c.body.position, 0), sfx); } g.left--; gorevArt('blok', 1); if (M) ist().blok = (ist().blok || 0) + 1; if (g.combo) { g.combo.n++; g.combo.t = 0; if (!g.combo.at) g.combo.at = screenAt(c.body.position, 0.3); }
   const p = c.body.position, at = screenAt(p, 0.3);
   if (c.kind === 'hediye') { g.shots += 2; floatText('+2 Top', at[0], at[1], 'blue'); burst(new THREE.Vector3().copy(p), '#ffd23f', 16, 6); sfx('bonus'); }
   else if (c.kind === 'altin' || c.kind === 'kkA' || c.kind === 'oyA') { g.gold++; floatText('Hazine!', at[0], at[1], 'gold'); burst(new THREE.Vector3().copy(p), '#ffd23f', 20, 7); sfx('bonus'); }
@@ -3838,7 +3853,8 @@ function win() {
   if (M) {   // v3.0: istatistik (ilk denemede kazanma, seri), hazine sandigi ilerlemesi ve yeni kazanma sahnesi
     const I = ist(); I.kazan++; if (SV.dus !== LV) { I.ilk++; I.seri++; I.enSeri = Math.max(I.enSeri, I.seri); } else I.seri = 1; SV.dus = 0;
     if (ilk) SV.sn = (SV.sn || 0) + 1;
-    gorevKaydet(true); if (sonB) { SV.final = 1; save(); finalGoster(); return; } M.kazan({ L: LV, st, kaz, once, kalan: g.shots, bonus, zorB, yeniK, ilk, yag, hed, tip: PLAN && PLAN.tip, etiket: PLAN && PLAN.etiket }); return;
+    gorevKaydet(true); if (sonB) { SV.final = 1; save(); finalGoster(); return; } const kz = () => M.kazan({ L: LV, st, kaz, once, kalan: g.shots, bonus, zorB, yeniK, ilk, yag, hed, tip: PLAN && PLAN.tip, etiket: PLAN && PLAN.etiket });
+    if (g.dost && g.dost.acik) { const ds = SV.dost || (SV.dost = []); if (!ds.includes(g.dost.d.id)) ds.push(g.dost.d.id); save(); const dd = g.dost.d; g.dost = null; dostEkran(dd, ds.length, kz); } else { dostKafes(false); kz(); } return;
   }
   gorevKaydet(true);
   modal('<div class="rib">Tebrikler!</div><div class="stars">' + yildizHtml(st) + '</div><h2>Bölüm ' + LV + ' tamam</h2>' +

@@ -242,3 +242,10 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - gorunum.js KOSTUM (fiyat altin + gereken yildiz: Osmanli 2000, Sovalye 4000/40, Samuray 7000/90, Viking 10000/150, Roma 15000/250), kostumSec(SV), kayit SV.gor.k.
 - merkez.js: Magaza > Gardirop ustunde 'Topcu Ocagi' kostum kartlari; kostumUygula(): ana sayfa Foxi tuvali yenilenir (korsan = eski video, digerleri ocakTilki resim), kazanma (kazan2.js sevincSec) ve kaybetme resmi degisir.
 - Siradaki: Adem onaylarsa OCAK varsayilan; her cagin top arabasi/gullesi (Sahi topu ...), gelistirme seviyeleri.
+
+## v12.20 deneme (24 Kas 2026, ?dost=1): kafesteki dost
+- Adem'in tarifi: kafes bir yerde durur; yikimda kupun icinden anahtar cikar, kafesi acar; hayvan oyun icinde gorunmez, bolum sonunda ayri ekranda.
+- yapi/dost.js: DOSTLAR (8: baykus, kirpi, tavsan, kunduz, kaplumbaga, sincap, penguen, koala), her 5. bolum sirayla (kurtarilmissa yok), kayit SV.dost.
+  Kafes: ekranin sag ustunde SVG (#dkafes), anahtar DOM'da yay cizip ucar, kapi acilir. Bolum sonu #dekran: isinlar, acik kafes, hayvan (karakter/dost/{id}.webp; yoksa emoji), 'X'i kurtardin!', Harika -> kazanma karti.
+- oyun.js: bolumBasla one bakan orta yukseklikteki kupe kameraya donuk rozet (dostRozet: turkuaz daire + altin anahtar, nabiz parlama); knock -> dostUc; win -> dostEkran sonra M.kazan.
+- Bekleyen: Adem'in Gemini hayvan cizimleri (yesil zemin, sevinen poz) -> karakter/dost/*.webp. Sonra: 'Dostlarim' sayfasi, paylas.
