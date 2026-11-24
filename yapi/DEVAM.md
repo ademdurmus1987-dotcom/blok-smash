@@ -235,3 +235,10 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - Istemler: yapi/uretici/istem/ocak_kostum.md (referans: acilis resminden kesilen boy Foxi). Adem'in Gemini cizimleri: karakter/ocak/kaynak/*.jpg -> yesil_ayikla.py anahtar() -> karakter/ocak/osmanli_{durus,sevinc,uzgun}.webp.
 - ?ocak=1: ana sayfada video yerine osmanli_durus (merkez.js ocakTilki: 2B tuval, nefes/salinim, dokununca ziplar, kendi sozleri); kazanma karti sevinc (kazan2.js), kaybetme karti uzgun (merkez.js UZANIM).
 - Siradaki: Topcu Ocagi sayfasi (Gardirop yerine: cag kartlari, parca secimi, gelistirme 1-5), tunc Sahi topu + gulle, kayit SV.ocak. Sonra diger cag kostumleri.
+
+## v12.19 deneme (24 Kas 2026, ?ocak=1): Topcu Ocagi kostum secimi (5 kostum)
+- Adem'in Gemini cizimleri (her biri durus/el sallama, sevinc, uzgun): Osmanli, Sovalye, Samuray (miğferde pati), Viking (mavi tunik; yesil tunik zeminle silinirdi), Roma (miğferde pati, hac yok).
+  Kaynak: karakter/ocak/kaynak/*.jpg -> karakter/ocak/{kostum}_{durus,sevinc,uzgun,kart}.webp. Sarimsi yesil zeminde (roma_uzgun, samuray_sevinc) yesil_ayikla anahtar() yetmedi: ek temizleme (ton 62-170 derece, kenara bagli; alt gölge g>=r, b<0.4g).
+- gorunum.js KOSTUM (fiyat altin + gereken yildiz: Osmanli 2000, Sovalye 4000/40, Samuray 7000/90, Viking 10000/150, Roma 15000/250), kostumSec(SV), kayit SV.gor.k.
+- merkez.js: Magaza > Gardirop ustunde 'Topcu Ocagi' kostum kartlari; kostumUygula(): ana sayfa Foxi tuvali yenilenir (korsan = eski video, digerleri ocakTilki resim), kazanma (kazan2.js sevincSec) ve kaybetme resmi degisir.
+- Siradaki: Adem onaylarsa OCAK varsayilan; her cagin top arabasi/gullesi (Sahi topu ...), gelistirme seviyeleri.

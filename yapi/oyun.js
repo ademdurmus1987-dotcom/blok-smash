@@ -17,7 +17,7 @@ import { ENG3, engel3Kur } from './engel3.js?v=8';   // v11.1: boyali engeller v
 import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=4';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
-import { GOR, gorSec } from './gorunum.js?v=1';
+import { GOR, gorSec } from './gorunum.js?v=2';
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
@@ -25,7 +25,7 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=6';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=49';
+import { merkezKur } from './merkez.js?v=50';
 import * as EG from './egri.js?v=6';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=9';

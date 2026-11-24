@@ -36,3 +36,16 @@ export function gulleSvg(c) {
   return '<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="43" rx="14" ry="3" fill="#0003"/><circle cx="24" cy="23" r="16" fill="' + c + '" stroke="#0005" stroke-width="1.6"/>' +
     '<ellipse cx="18" cy="16" rx="6" ry="4" fill="#fff8" transform="rotate(-30 18 16)"/><circle cx="31" cy="30" r="3" fill="#0002"/></svg>';
 }
+// v12.19 deneme (?ocak=1): Topcu Ocagi kostumleri (Adem'in Gemini cizimleri, karakter/ocak/). Kahraman hep Foxi; yalniz gorunum.
+// Kayit: SV.gor.k = secili kostum, sahiplik SV.gor.s (araba/gulle ile ayni dizi).
+export const OCAK = /[?&]ocak=1/.test(location.search);
+export const KOSTUM = [
+  { id: 'korsan', ad: 'Korsan', f: 0, y: 0, soz: ['Ahoy Kaptan!', 'Kuleyi yıkalım!', 'Toplar hazır!', 'Yelkenler fora!'] },
+  { id: 'osmanli', ad: 'Osmanlı Topçusu', f: 2000, y: 0, soz: ['Şahi topu ateşe hazır!', 'Haydi topçular!', 'Kuleyi yıkalım!'] },
+  { id: 'sovalye', ad: 'Şövalye', f: 4000, y: 40, soz: ['Kalkan hazır, top hazır!', 'Kaleyi yıkalım!', 'İleri şövalyeler!'] },
+  { id: 'samuray', ad: 'Samuray', f: 7000, y: 90, soz: ['Sabır ve nişan!', 'Tek atış, tam isabet!', 'Kuleyi yıkalım!'] },
+  { id: 'viking', ad: 'Viking', f: 10000, y: 150, soz: ['Kuzeyden geldik!', 'Toplar hazır!', 'Haydi tayfa!'] },
+  { id: 'roma', ad: 'Roma Lejyoneri', f: 15000, y: 250, soz: ['Lejyon hazır!', 'Hedef kule!', 'İleri!'] }
+];
+export const kostumSec = (SV) => (OCAK && KOSTUM.find((k) => k.id === (SV.gor || {}).k)) || KOSTUM[0];
+export const kostumResim = (id, poz) => '../karakter/ocak/' + id + '_' + poz + '.webp?v=1';

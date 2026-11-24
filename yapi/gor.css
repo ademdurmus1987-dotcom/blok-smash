@@ -15,3 +15,7 @@
 .gr-b.kul{background:linear-gradient(180deg,#7fd6ff,#1f8fd8);border-color:#0d4a7a;box-shadow:0 4px 0 #0d4a7a,inset 0 3px 0 rgba(255,255,255,.5);text-shadow:0 2px 0 #0d4a7a}
 .gr-b.sec{background:#fff8;border-color:#3fb82a;box-shadow:none;color:#1f6a12;text-shadow:none;font-size:15px;cursor:default}
 .gr-b.kil{background:linear-gradient(180deg,#8a90b8,#5a6090);border-color:#2a2f58;box-shadow:0 4px 0 #2a2f58,inset 0 3px 0 rgba(255,255,255,.35);text-shadow:0 2px 0 #2a2f58}
+/* v12.19 (?ocak=1): Topcu Ocagi kostum kartlari (boy resim) */
+.gr-kz .gr-r{height:110px}
+.gr-kos{height:100%;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 4px #0006)}
+.gr-k.kl .gr-kos{filter:brightness(0) opacity(.45)}

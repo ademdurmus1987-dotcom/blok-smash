@@ -6,9 +6,9 @@
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { kazanSahne, yazi } from './kazan2.js?v=12';
+import { kazanSahne, yazi, sevincSec } from './kazan2.js?v=13';
 import { logoSVG } from './logo2.js?v=4';
-import { GOR, ARABA, GULLE, gorSec, arabaSvg, gulleSvg } from './gorunum.js?v=1';   // v12.2 Gardirop (eski ?gor=0)   // v10.13: Blender ile gercek 3B logo resmi (ikon/logo3d.webp, uretici/blender/logo3d.py); eski: ?logo=eski
+import { GOR, ARABA, GULLE, gorSec, arabaSvg, gulleSvg, OCAK, KOSTUM, kostumSec, kostumResim } from './gorunum.js?v=2';   // v12.2 Gardirop (eski ?gor=0)   // v10.13: Blender ile gercek 3B logo resmi (ikon/logo3d.webp, uretici/blender/logo3d.py); eski: ?logo=eski
 const LOGO2 = !/[?&]logo=eski/.test(location.search);   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 import { ADA, adaKur } from './ada.js?v=1';
@@ -265,10 +265,10 @@ export function merkezKur(A) {
   // Video yesil fonlu (karakter/tilki_dans.mp4); yesil fon WebGL ile canli olarak saydam yapilir,
   // kenardaki yesil tasma temizlenir. Her telefonda calisir (saydam video bicimi gerekmez).
   // v12.18 deneme (?ocak=1): Topcu Ocagi, Osmanli kostumlu Foxi (Adem'in Gemini cizimi, karakter/ocak/): video yerine sabit resim, nefes alir, el sallar gibi hafif salinir.
-  const OCAK = /[?&]ocak=1/.test(location.search);
+  let tilkiNo = 0;   // v12.19: kostum degisince eski Foxi dongusu durur
   function ocakTilki() {
     const kc = $('m-kc'), c = kc.getContext('2d'), im = new Image(); let hazir = false, t0 = performance.now(), zip = 0;
-    im.onload = () => { hazir = true; boyut(); }; im.src = '../karakter/ocak/osmanli_durus.webp?v=1';
+    im.onload = () => { hazir = true; boyut(); }; im.src = kostumResim(kostumSec(SV).id, 'durus'); const no = tilkiNo;
     let pr = 1, FH = 0, FW = 0, AY = 0;
     const boyut = () => {
       const w = kc.clientWidth, h = kc.clientHeight; if (!w || !h) return; pr = Math.min(2, devicePixelRatio || 1);
@@ -277,7 +277,7 @@ export function merkezKur(A) {
       AY = VH * 0.153; FH = VH * 0.7; FW = hazir ? FH * im.width / im.height : 0; if (FW > kc.width * 0.98) { FW = kc.width * 0.98; FH = FW * im.height / im.width; }
       const sn = kc.parentElement.style; sn.setProperty('--ay', (AY / pr).toFixed(1) + 'px'); sn.setProperty('--gen', (FW / pr * 0.62).toFixed(1) + 'px');
     };
-    const kare = (t) => { requestAnimationFrame(kare); if (!hazir || document.hidden || !acik || sekmeAd !== 'ana') return;
+    const kare = (t) => { if (no !== tilkiNo) return; requestAnimationFrame(kare); if (!hazir || document.hidden || !acik || sekmeAd !== 'ana') return;
       const s = (t - t0) / 1000, z = zip > 0 ? Math.sin(Math.min(1, (t - zip) / 450) * Math.PI) : 0; if (zip && t - zip > 450) zip = 0;
       const sy = 1 + 0.012 * Math.sin(s * 2.1) + 0.05 * z, sx = 1 - 0.006 * Math.sin(s * 2.1) - 0.025 * z, r = 0.012 * Math.sin(s * 1.3);
       c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, kc.width, kc.height);
@@ -285,7 +285,7 @@ export function merkezKur(A) {
     kc.addEventListener('click', () => {
       if ($('m-sahne').classList.contains('kilitli')) { salla($('m-sahne').querySelector('.m-kil')); tik(); return; }
       zip = performance.now(); A.sfx('bonus');
-      const OS = ['Toplar hazır!', 'Kuleyi yıkalım!', 'Şahi topu ateşe hazır!', 'Alt sıraya nişan al!', 'Haydi topçular!'];
+      const OS = kostumSec(SV).soz;
       const b = $('m-balon'); b.textContent = OS[Math.floor(Math.random() * OS.length)]; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
     });
     addEventListener('resize', boyut); if (window.ResizeObserver) new ResizeObserver(() => boyut()).observe(kc);
@@ -294,7 +294,8 @@ export function merkezKur(A) {
   }
   function tilkiKur() {
     if (t3yuk) return t3yuk;
-    if (OCAK) return (t3yuk = Promise.resolve(ocakTilki()));
+    if (kostumSec(SV).id !== 'korsan') return (t3yuk = Promise.resolve(ocakTilki()));
+    const no = tilkiNo;
     return (t3yuk = (async () => {
       const kc = $('m-kc'), gl = kc.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
       if (!gl) return null;
@@ -344,7 +345,7 @@ export function merkezKur(A) {
         const duy = gor && sesIzin && !SV.sessiz && !SV.muziksiz; if (vid.muted === duy) vid.muted = !duy;
         const kis = duy && !vid.paused; if (kis !== kisik) { kisik = kis; if (!FV.classList.contains('on') && A.muzikKis) A.muzikKis(kis); }
       };
-      const kare = () => { requestAnimationFrame(kare); oynat(); if (!vid.paused) ciz(); };
+      const kare = () => { if (no !== tilkiNo) { vid.pause(); vid.muted = true; if (kisik && A.muzikKis) A.muzikKis(false); return; } requestAnimationFrame(kare); oynat(); if (!vid.paused) ciz(); };
       vid.addEventListener('loadeddata', () => { boyut(); ciz(true); });
       document.addEventListener('visibilitychange', oynat);
       const zipla = (n) => { kc.classList.remove('zip'); void kc.offsetWidth; kc.style.setProperty('--zn', n || 1); kc.classList.add('zip'); };
@@ -373,6 +374,13 @@ export function merkezKur(A) {
 
   // ---------------- magaza ----------------
   // v12.2 Gardirop (Adem: 'o kadar altin yildiz kazandik harcayacak bir sey yok'): top arabasi ve gulle gorunumleri; pahalilar yildiz da ister
+  // v12.19 (?ocak=1): kostum degisince ana sayfa Foxi'si yeni tuvalde yeniden kurulur (2B tuval ile WebGL ayni tuvalde olmaz), kartlarin resimleri de degisir
+  function kostumUygula() {
+    const k = kostumSec(SV); tilkiNo++; t3yuk = null; T3 = null;
+    const eski = $('m-kc'), yeni = eski.cloneNode(false); eski.replaceWith(yeni); tilkiKur().then((t) => { if (t) t.boyut(); });
+    const ia = new Image(); ia.onload = () => { UZANIM = ia.src; }; ia.src = k.id !== 'korsan' ? kostumResim(k.id, 'uzgun') : '../karakter/tilki_uzgun_anim.webp?v=1';
+    sevincSec(k.id !== 'korsan' ? kostumResim(k.id, 'sevinc') : '../karakter/tilki_sevinc_anim.webp?v=1');
+  }
   function gardirop() {
     const g = SV.gor || {}, sahip = g.s || [], sec = gorSec(SV), yl = yilTop(), al = SV.altin || 0;
     const kart = (k, u, res, secili) => { const var_ = !u.f || sahip.includes(u.id), kilit = !var_ && yl < u.y;
@@ -381,7 +389,9 @@ export function merkezKur(A) {
         : kilit ? '<button class="gr-b kil" data-k="' + k + '" data-id="' + u.id + '">' + I3('yildiz') + u.y + '</button>'
         : '<button class="gr-b' + (al < u.f ? ' yok' : '') + '" data-k="' + k + '" data-id="' + u.id + '"><i class="coin"></i>' + u.f + '</button>';
       return '<div class="gr-k' + (secili ? ' on' : '') + (kilit ? ' kl' : '') + '"><div class="gr-r">' + res + '</div><b>' + u.ad + '</b>' + btn + '</div>'; };
-    return '<h3 class="gr-bas">Top Arabası</h3><div class="gr-iz">' + ARABA.map((u) => kart('t', u, arabaSvg(u.r), u.id === sec.araba.id)).join('') + '</div>' +
+    const ks = kostumSec(SV), kk = (u) => '<img class="gr-kos" src="' + (u.id === 'korsan' ? '../karakter/tilki_avatar.webp?v=1' : '../karakter/ocak/' + u.id + '_kart.webp?v=1') + '" alt="">';
+    return (OCAK ? '<h3 class="gr-bas">Topçu Ocağı: Foxi\'nin Kostümü</h3><div class="gr-iz gr-kz">' + KOSTUM.map((u) => kart('k', u, kk(u), u.id === ks.id)).join('') + '</div>' : '') +
+      '<h3 class="gr-bas">Top Arabası</h3><div class="gr-iz">' + ARABA.map((u) => kart('t', u, arabaSvg(u.r), u.id === sec.araba.id)).join('') + '</div>' +
       '<h3 class="gr-bas">Gülle</h3><div class="gr-iz">' + GULLE.map((u) => kart('g', u, gulleSvg(u.c), u.id === sec.gulle.id)).join('') + '</div>' +
       '<p class="p-not" style="color:#dfe8ff!important;text-align:center">' + I3('yildiz') + ' Yıldızlar harcanmaz; yeterince toplayınca yeni görünümün kilidi açılır.</p>';
   }
@@ -396,11 +406,11 @@ export function merkezKur(A) {
       (GOR ? gardirop() : '') +
       '<p class="p-not" style="color:#dfe8ff!important;text-align:center">Altını bölüm kazanarak, görevlerden, günlük ödülden ve hazine sandığından toplarsın.</p>';
     for (const b of $('d-liste').querySelectorAll('.gr-b')) b.onclick = () => {   // v12.2 Gardirop: al / kullan
-      const L = b.dataset.k === 't' ? ARABA : GULLE, u = L.find((x) => x.id === b.dataset.id), g = SV.gor || (SV.gor = { s: [] }); g.s = g.s || [];
+      const L = b.dataset.k === 'k' ? KOSTUM : b.dataset.k === 't' ? ARABA : GULLE, u = L.find((x) => x.id === b.dataset.id), g = SV.gor || (SV.gor = { s: [] }); g.s = g.s || [];
       if (!u || b.classList.contains('sec')) return;
-      if (g.s.includes(u.id) || !u.f) { g[b.dataset.k] = u.id; A.save(); A.gorUygula && A.gorUygula(); A.sfx('bonus'); A.buzz(25); magazaCiz(); return; }
+      if (g.s.includes(u.id) || !u.f) { g[b.dataset.k] = u.id; A.save(); if (b.dataset.k === 'k') kostumUygula(); A.gorUygula && A.gorUygula(); A.sfx('bonus'); A.buzz(25); magazaCiz(); return; }
       if (yilTop() < u.y || (SV.altin || 0) < u.f) { salla(b); tik(); return; }
-      const eski = SV.altin || 0; SV.altin = eski - u.f; g.s.push(u.id); g[b.dataset.k] = u.id; A.save(); A.gorUygula && A.gorUygula(); A.sfx('bonus'); A.ses('para', 0.5); A.buzz(40); ciz(); magazaCiz();
+      const eski = SV.altin || 0; SV.altin = eski - u.f; g.s.push(u.id); g[b.dataset.k] = u.id; A.save(); if (b.dataset.k === 'k') kostumUygula(); A.gorUygula && A.gorUygula(); A.sfx('bonus'); A.ses('para', 0.5); A.buzz(40); ciz(); magazaCiz();
     };
     for (const b of $('d-liste').querySelectorAll('.d-al')) b.onclick = () => {
       const u = URUN[+b.dataset.n]; if ((SV.altin || 0) < u.f) { salla(b); tik(); return; }
@@ -609,7 +619,7 @@ export function merkezKur(A) {
   // ---------------- kaybetme: devam et? ----------------
   // d: { L, kaldi, bedava, fiyat }
   // v10.8: uzgun Foxi cizimi (Adem'in Gemini cizimi gelince karakter/tilki_uzgun.webp); yoksa normal avatar, basi egik
-  let UZGUN = null, UZANIM = null; setTimeout(() => { const im = new Image(); im.onload = () => { UZGUN = im.src; }; im.src = '../karakter/tilki_uzgun.webp?v=1'; const ia = new Image(); ia.onload = () => { UZANIM = ia.src; }; ia.src = /[?&]ocak=1/.test(location.search) ? '../karakter/ocak/osmanli_uzgun.webp?v=1' : '../karakter/tilki_uzgun_anim.webp?v=1'; }, 7000)   // v10.9: Adem'in Gemini cizimleri (yesil zemin ayiklandi)
+  let UZGUN = null, UZANIM = null; setTimeout(() => { const im = new Image(); im.onload = () => { UZGUN = im.src; }; im.src = '../karakter/tilki_uzgun.webp?v=1'; const ia = new Image(); ia.onload = () => { UZANIM = ia.src; }; ia.src = kostumSec(SV).id !== 'korsan' ? kostumResim(kostumSec(SV).id, 'uzgun') : '../karakter/tilki_uzgun_anim.webp?v=1'; sevincSec(kostumSec(SV).id !== 'korsan' ? kostumResim(kostumSec(SV).id, 'sevinc') : null); }, 7000)   // v10.9: Adem'in Gemini cizimleri (yesil zemin ayiklandi)
   function kaybet(d) {
     const yeter = (SV.altin || 0) >= d.fiyat, I = ist(), dev = d.bedava || yeter;
     // v10.7 (Adem: ticari kalite): yeni kaybetme karti: uzgun Foxi, 'Neredeyse!' basligi, kalan blok rozeti, buyuk +3 top teklifi (geri sayim halkasi),

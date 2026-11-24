@@ -17,6 +17,6 @@ Background: solid flat pure green (#00FF00) chroma key, no shadow on the backgro
 ## Kostümler
 - Osmanlı: Ottoman-era artillery officer outfit inspired by janissary style: tall white felt börk hat with a soft fold falling at the back and a small golden band (no emblem), long deep red kaftan with golden embroidery and round golden buttons, wide sash belt in teal, baggy navy şalvar trousers, red curled-toe leather boots.
 - Şövalye: medieval knight in shiny rounded toy-like silver armor, helmet with the visor raised showing the face, a short blue cape, a small round shield with a fox paw print on it (no crosses, no heraldic lions).
-- Samuray: samurai outfit with lacquered red and black layered armor plates tied with gold cords, kabuto helmet with small rounded golden crests shaped like fox ears, white hakama trousers (no rising sun, no flags, no sword).
-- Viking: Viking outfit with a round steel helmet without horns, thick brown fur collar, green wool tunic with braided leather belt, fur boots, braided ribbons in the tail fur.
-- Roma: Roman legionary outfit with golden-bronze helmet and a short red crest, red tunic, segmented golden chest armor, leather strap skirt, sandals, short red cape.
+- Samuray: samurai outfit with lacquered red and black layered armor plates tied with gold cords, kabuto helmet with small rounded golden crests and a small golden fox paw emblem (no skull), white hakama trousers (no rising sun, no flags, no sword).
+- Viking: Viking outfit with a round steel helmet without horns, thick brown fur collar, deep blue wool tunic with braided leather belt (NOT green: green background is keyed out), fur boots, braided ribbons in the tail fur.
+- Roma: Roman legionary outfit with golden-bronze helmet with a small golden fox paw emblem (no cross shapes) and a short red crest, red tunic, segmented golden chest armor, leather strap skirt, sandals, short red cape.
