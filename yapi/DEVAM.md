@@ -229,3 +229,9 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - Yuksek egimde top arabasi asagida kalip kuculuyordu: KAM4'te araba boyu gercek derinlige gore yeniden olculur (ekranda ayni genislik).
 - Karsilastirma (390x844): 16 / 20 / 24 derece denendi; 18 secildi. Atis sinamasi hatasiz. Adem telefonda begenirse KAM4 varsayilan, sonra temas golgesi (v12.11) yeniden.
 - Ikon: CellCog kullanilmayacak (Adem 24 Kas). Aday simge/cc/ikon4-*.png Adem'e gosterildi.
+
+## v12.18 deneme (24 Kas 2026, ?ocak=1): Topcu Ocagi basladi, Osmanli Foxi
+- Fikir (Adem): oyuncu karakterini sekillendirsin; tarihten topcular (Osmanli, Sovalye, Samuray, Viking, Roma). Kahraman hep Foxi, kostum degisir. Dini simge, bayrak, savas anlatimi, gercek kisi YOK; sevimli oyuncak tarzi.
+- Istemler: yapi/uretici/istem/ocak_kostum.md (referans: acilis resminden kesilen boy Foxi). Adem'in Gemini cizimleri: karakter/ocak/kaynak/*.jpg -> yesil_ayikla.py anahtar() -> karakter/ocak/osmanli_{durus,sevinc,uzgun}.webp.
+- ?ocak=1: ana sayfada video yerine osmanli_durus (merkez.js ocakTilki: 2B tuval, nefes/salinim, dokununca ziplar, kendi sozleri); kazanma karti sevinc (kazan2.js), kaybetme karti uzgun (merkez.js UZANIM).
+- Siradaki: Topcu Ocagi sayfasi (Gardirop yerine: cag kartlari, parca secimi, gelistirme 1-5), tunc Sahi topu + gulle, kayit SV.ocak. Sonra diger cag kostumleri.
