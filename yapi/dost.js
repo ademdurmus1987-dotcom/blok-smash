@@ -22,7 +22,7 @@ export function dostOnYukle(d) { if (!d || !VIDEOLU.has(d.id)) return; for (cons
 export function dostBolum(L, SV) {
   if (!DOST || L < 5 || L % 5) return null;
   const d = DOSTLAR[(L / 5 - 1) % DOSTLAR.length];
-  return (SV.dost || []).includes(d.id) ? null : d;
+  return (SV.dost || []).includes(d.id) && !/[?&]sv=/.test(location.search) ? null : d;   // v12.32: ?sv= deneme baglantisinda kurtarilmis uye yine cikar (Adem tekrar tekrar deneyebilsin)
 }
 const ANAHTAR = '<img src="../karakter/dost/anahtar.webp?v=1" alt="" draggable="false">';   // v12.25: Adem'in Gemini anahtari (kulpta tilki patisi)
   '<g stroke="#ffd23a" stroke-width="4.2"><circle cx="10" cy="12" r="6.5"/><path d="M16.5 12h27M35 12v7.5M41.5 12v6"/></g></g></svg>';
