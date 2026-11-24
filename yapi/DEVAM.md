@@ -263,3 +263,4 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - v12.25: Adem'in Gemini anahtari (kulpta pati) -> karakter/dost/anahtar.webp (480x208, kulp bosluklari saydam): oyundaki rozet (oyun.js dostRozet tuvaline cizilir), sag ust yuva, ucan anahtar. Gercek kilit sesleri: Kenney RPG Audio (CC0) -> ses/kilitgir.mp3 (metalClick), kilitac.mp3 (metalLatch), kafesac.mp3 (creak1); oyun.js SFILES/SECILEN + sfx. Kaynak ses/KAYNAKLAR.md.
 - Ag: kenney.nl ve opengameart.org icin 'Foxi Smash' kisisel bulut ortami olusturuldu (CC0 ses indirmek icin).
 - v12.26: kafesteki murettebat VARSAYILAN (Adem: "oyunda yok"; simgeden/normal baglantidan acinca ?dost=1 yoktu). Kapatmak: ?dost=0.
+- v12.27: ?tani=1 tani penceresi (surum, murettebat durumu, ayak modeli yuklendi mi, GPU, hatalar). Adem telefonda anahtar ve platform ayagini goremiyor; bilgisayar ve telefon taklidinde ikisi de var.

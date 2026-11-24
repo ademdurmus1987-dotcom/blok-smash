@@ -15,7 +15,7 @@ import { hdrOrtam } from './gorsel/ortam.js?v=2';
 import { blok3bKur } from './blok3b.js?v=48';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { ENG3, engel3Kur } from './engel3.js?v=8';   // v11.1: boyali engeller ve top (eski ?eng3=0)
 import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
-import { PLAT5, plat5Kur } from './plat5.js?v=4';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
+import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
 import { DOST, dostBolum, dostKafes, dostUc, dostEkran } from './dost.js?v=7';   // v12.20 deneme ?dost=1: kafesteki dost
@@ -39,6 +39,8 @@ import { vurusKur } from './fx/vurus.js?v=3';   // v7.0 (Adem 18 Kas): vurus his
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search), TEST = Q.has('test'), TEST_TILKISIZ = Q.get('tilki') === '0';
+// v12.27 (Adem: telefonda anahtar ve platform ayagi yok): ?tani=1 ekranin altinda tani penceresi (surum, murettebat, ayak modeli, hatalar)
+const TANI = Q.has('tani'), THATA = []; if (TANI) { addEventListener('error', (e) => THATA.push((e.message || (e.target && (e.target.src || e.target.href)) || 'hata').slice(0, 140)), true); addEventListener('unhandledrejection', (e) => THATA.push(String(e.reason).slice(0, 140))); }
 // v6.19: (Adem) Korsan modu pilotu: beta/korsan/index.html ayni motoru window.KORSAN ile acar; korsan.js sahneyi, hedefleri ve kartlari kurar.
 // KORSAN yoksa (Yapi modu) K null'dur ve asagidaki 'if (K)' satirlarinin hicbiri calismaz.
 const K = window.KORSAN ? await import('../korsan/korsan.js?v=9') : null;
@@ -1825,6 +1827,10 @@ function bolumBasla(Y) {
   const eu = egriYazi(); if (eu) ipu = eu + ipu;
   nm.innerHTML = '<div class="rb1' + (PLAN && PLAN.tip !== 'normal' ? ' eg-' + PLAN.tip : '') + '"><small>' + (PILOTQ ? 'PİLOT ' : 'BÖLÜM ') /* PILOT */ + LV + (dfo ? ' · ' + (dyeni ? 'YENİ DÜNYA: ' : '') + dfo.ad.toLocaleUpperCase('tr') : '') + '</small><b>' + Y.ad + '</b></div>' + ipu; nm.classList.toggle('ipu', !!ipu); nm.classList.remove('on'); void nm.offsetWidth; if (BASYAZI) nm.classList.add('on'); $('hint').style.opacity = 1;
   hud(true);
+  if (TANI && !window.__taniT) window.__taniT = setInterval(() => { let d = document.getElementById('tani'); if (!d) { d = document.createElement('pre'); d.id = 'tani'; d.style.cssText = 'position:fixed;left:6px;right:6px;bottom:6px;z-index:99;margin:0;padding:8px;font:11px/1.35 monospace;color:#fff;background:#000c;border-radius:8px;white-space:pre-wrap;pointer-events:none'; document.body.appendChild(d); }
+    const gl = ren.getContext(), dbg = gl.getExtension('WEBGL_debug_renderer_info');
+    d.textContent = 'SURUM v12.27 | bolum ' + LV + ' | K ' + !!K + ' M ' + !!M + ' PILOT ' + !!PILOTQ + '\nDOST ' + DOST + ' | bu bolum: ' + (dostBolum(LV, SV) || {}).id + ' | g.dost ' + (g.dost ? g.dost.d.id : '-') + ' | kurtarilan: ' + JSON.stringify(SV.dost || []) +
+      '\nayak: P5 ' + !!P5 + ' ' + (P5 && P5.durum ? P5.durum() : '-') + ' | AYAK4 ' + AYAK4 + '\nGPU: ' + (dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : '?') + ' | dpr ' + devicePixelRatio + '\n' + navigator.userAgent.slice(0, 120) + '\nHATALAR: ' + (THATA.length ? THATA.join(' || ') : 'yok'); }, 2000);
   rehberKur();
 }
 // v10.16 (Adem: 'ogretici bolumler'): REHBER. Ogretici bolumlerde (pilot verisinde 'ipucu') ilk oynayista vurulacak blogun

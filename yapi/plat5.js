@@ -112,13 +112,13 @@ export function plat5Kur({ THREE, pKaydir, ENV, GLTFLoader }) {
     return G;
   }
   // ---------- ayak (Blender) ----------
-  let GLB = null; const BEK = [];
+  let GLB = null, AHATA = ''; const BEK = [];
   const doldur = (g, ad) => { const k = GLB.getObjectByName(ad); if (!k) return; const c = k.clone(true); c.position.set(0, 0, 0); c.traverse((m) => { if (m.isMesh) { m.geometry = m.geometry.clone(); m.castShadow = m.receiveShadow = true; } }); g.add(c); };
   new GLTFLoader().load('model/plat5/ayak.glb?v=1', (gl) => {
     gl.scene.traverse((m) => { if (m.isMesh) m.material = mat((m.material && m.material.name || '').replace(/\.\d+$/, '')); });
     GLB = gl.scene; for (const [g, ad] of BEK.splice(0)) doldur(g, ad);
-  }, undefined, () => console.warn('plat5: ayak modeli yuklenemedi'));
+  }, undefined, (e) => { AHATA = String(e && e.message || e).slice(0, 120); console.warn('plat5: ayak modeli yuklenemedi', e); });
   const parca = (ad) => { const g = new THREE.Group(); if (GLB) doldur(g, ad); else BEK.push([g, ad]); return g; };
-  return { sekil, katSekil, tabla, parca };
+  return { sekil, katSekil, tabla, parca, durum: () => (GLB ? 'yuklu' : AHATA ? 'HATA: ' + AHATA : 'bekliyor') };   // v12.27 ?tani=1
 }
 const Q5 = new URLSearchParams(location.search).get('psekil');   // deneme: ?psekil=daire|elips|kare|yuvarlak|hap|sekizgen|altigen her bolumde
