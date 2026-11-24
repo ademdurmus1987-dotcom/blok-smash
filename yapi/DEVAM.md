@@ -192,3 +192,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 ## v12.9c (24 Kas 2026) — Adem'in iki hatası
 - Platform ayağının Blender başlığı (plat5) güverte tahtalarının arasından (-0.05) görünüyordu: P5'te başlık/gövde üstü 0.42 aşağıda (`pAyak` `u.upd`).
 - Çatlak izi rastgele x'te ön+arka yüze konuyordu: artık topun değdiği noktaya (b.blast) en yakın yüzde, o noktada (`catlakIz(c, p)`). Eski: `?cat2=0`.
+
+## v12.10 deneme (24 Kas 2026, ?blok6=1) — kalan bloklar
+- blok6.js: ksYildiz (sari-turuncu boyali kup, iri krem yildiz), ksDirek (dikey damarli tahta, ust-alt demir bant), ksSutun / ksMorSutun (yivli boyali tas sutun, LatheGeometry; mor yerine turkuaz).
+- Kapsam disi kalan: ksKemer (kemer bicimi), oyA (Foxi kupu, bilerek eski). Onizleme: uretici/blender/onizleme/blok6_yildiz_sutun.png.
+- Siradaki: Kingdom'daki gibi bloklarin altinda koyu yumusak temas golgesi (anahtar arkasinda), sonra ?blok6=1 varsayilan icin Adem onayi.
