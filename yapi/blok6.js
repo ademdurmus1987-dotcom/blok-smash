@@ -2,9 +2,10 @@
 // Rakipte kaliteyi yapan: keskin ince pahli kutu, boyali doku (yuz duz tek renk degil), iri sade kontrastli amblem, yuzde isik gecisi (ust acik, alt koyu,
 // ust kenarda ince parlak cizgi). Renk ve motif bizim: turkuaz kristal, tahta sandik, renkli boyali kup + krem tilki patisi (mor-altin ve tac yok).
 // Geometri: BoxGeometry kose pahi (tek dilim) ; doku: tek atlas (sol: on/arka yuz amblemli, sag: diger yuzler duz), kodla boyanir, tur basina bir kez.
+import { BLOK7, blok7Kur } from './blok7.js?v=1';
 export const BLOK6 = new URLSearchParams(location.search).get('blok6') !== '0';   // v12.13: VARSAYILAN (Adem onayladi 24 Kas), eski gorunum ?blok6=0
 export function blok6Kur({ THREE, ENV, S }) {
-  const HAZ = {};
+  const HAZ = {}, B7 = BLOK7 ? blok7Kur({ THREE, ENV }) : null;
   let tohum = 1; const rnd = () => ((tohum = (tohum * 16807) % 2147483647) / 2147483647);
   const hx = (h) => { h = h.replace('#', ''); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)); };   // sRGB (THREE.Color dogrusal verir, renk kayiyordu)
   const rgb = (c, k = 0, a = 1) => { const f = (x) => Math.round(Math.max(0, Math.min(255, k >= 0 ? x + (255 - x) * k : x * (1 + k)))); return `rgba(${f(c[0])},${f(c[1])},${f(c[2])},${a})`; };
@@ -215,6 +216,7 @@ export function blok6Kur({ THREE, ENV, S }) {
     const bx = boy ? yar(boy.x) * 0.994 : n * S * 0.994, by = boy ? yar(boy.y) * 0.992 : S * 0.992, bz = boy ? yar(boy.z) * 0.992 : S * 0.992;
     if (!n) n = Math.max(1, Math.round(bx / Math.max(by, 0.3)));   // dokudaki birim sayisi (uzun taslarda her birimde halka)
     if (stil === 'tas') hex = '#6470b4';
+    if (B7 && B7.var(stil)) return (HAZ[k] = B7.yap(stil, hex, bx, by, bz));   // v12.59 deneme ?blok7=1: kabartmali parlak plastik
     const { t, oran } = boya(stil, hex, n), geo = uvAtlas2(kutu(bx, by, bz, Math.min(0.065 * S, by * 0.2)), oran);
     const mat = stil === 'kristal' ? new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.22, clearcoat: 0.6, clearcoatRoughness: 0.08, envMap: ENV, envMapIntensity: 0.3, emissive: '#ffffff', emissiveMap: t, emissiveIntensity: 0.35 })
       : new THREE.MeshPhysicalMaterial({ map: t, roughness: stil === 'tahta' ? 0.6 : 0.38, clearcoat: stil === 'tahta' ? 0.2 : 0.5, clearcoatRoughness: 0.2, envMap: ENV, envMapIntensity: 0.35 });

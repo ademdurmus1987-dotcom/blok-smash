@@ -321,3 +321,8 @@ Sonra (uretim gerektirmez):
 6. Paylas dugmesi (kurtarma ani).
 7. Telefonda denenecek: kurtarma/yolculuk/insa videolarinin sesi ve Oynat dugmesi (iPhone), acilis videosu.
 8. Bekleyen eski onaylar: ?kam4=1 kamera, yeni ikon (simge/cc/ikon4), platform ayagi (?tani=1).
+
+## v12.59 (25 Kas 2026)
+- Sade üst bar VARSAYILAN: "Yapı N · Küp N" ve ilerleme çubuğu gizli, yalnız top kutusu ve duraklat (index.html `html.ustsade`), eski `?ustbar=eski`. Hazine bölümlerinde kalan sayacı da gizli (parlayan küpler ve vuruşta "1/4" yazısı duruyor).
+- DENEME `?blok7=1` (yapi/blok7.js): iri pah, parlak plastik, kabarık çerçeve, 3B korsan işareti. Renkli küp/çubuk -> kurukafa, sandık -> çapa, taş -> dümen. İşaret yalnız ön yüzde, blok başına ~3 bin üçgen. Telefonda hız ve Adem onayı bekliyor; onaylanırsa kalan türler (kalas, direk, kavanoz, fıçı ...).
+- Boş kumsal fon istemi: uretici/istem/fon_kumsal.md (resimler gelince fon + zemin haritası (su/kara) ayarlanacak).
