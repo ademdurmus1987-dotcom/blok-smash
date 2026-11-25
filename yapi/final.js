@@ -19,7 +19,7 @@ export function finalSahne({ toplam, eksik, ilkEksik, yildiz, ses, titret, harit
 
   // ---- Foxi dans videosu: yesil fon saydam (kucuk tuvalde islenir, CSS ile buyur) ----
   const cv = E.querySelector('.f-foxi'), cx = cv.getContext('2d', { willReadFrequently: true });
-  const v = document.createElement('video'); v.src = '../karakter/tilki_dans.mp4?v=2'; v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.crossOrigin = 'anonymous';
+  const v = document.createElement('video'); v.src = '../karakter/tilki_dans.mp4?v=3'; v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.crossOrigin = 'anonymous';
   const p = v.play(); if (p && p.catch) p.catch(() => {});
   let calis = true;
   const kare = () => {

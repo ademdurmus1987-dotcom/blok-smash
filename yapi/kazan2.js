@@ -82,7 +82,7 @@ function fxBasla(cv, ortam, ses) {
 }
 
 // v10.9 (Adem'in Gemini cizimi): kazanma kartinda sevinen Foxi (hareketli, yesil zemin ayiklandi). Yuklenemezse eski yuvarlak avatar.
-let SEVINC = null, SEVSRC = null; setTimeout(() => { if (SEVSRC) return; const im = new Image(); im.onload = () => { if (!SEVSRC) SEVINC = im.src; }; im.src = '../karakter/tilki_sevinc_anim.webp?v=1'; }, 7000);
+let SEVINC = null, SEVSRC = null; setTimeout(() => { if (SEVSRC) return; const im = new Image(); im.onload = () => { if (!SEVSRC) SEVINC = im.src; }; im.src = '../karakter/tilki_sevinc_anim.webp?v=2'; }, 7000);
 // v12.19 (?ocak=1): secili kostumun sevinen Foxi'si (merkez.js cagirir); null: eski hareketli korsan
 export function sevincSec(u) { if (!u) return; SEVSRC = u; const im = new Image(); im.onload = () => { if (SEVSRC === u) SEVINC = im.src; }; im.src = u; }   // v10.15: acilistan sonra iner
 export function kazanSahne(KZ, d, o) {

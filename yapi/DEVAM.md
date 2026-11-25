@@ -290,6 +290,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 - v12.45: Insa videolari karakter/insa/asama02..10.mp4 (12 sn; Seedance 2.5 start_image=gemiNN, end_image=gemiNN+1, Foxi calisir, sonda kadrajdan cikar). asama09 (8->9) 4.6 sn'de kesildi: yelken bir asama erken cikiyordu, yeniden uretilecek. 'Insa Et' -> video -> parlama + yeni resim. Son asamadan sonra denize.mp4 (15 sn) + yolculuk [0 + kurtarilanlar]. Hikaye: yolculuk parcalari ancak gemi denize indikten sonra (gemi < 10 iken kurtarmada parca oynamaz, denize inince hepsi sirayla). Tayfa sayfasindaki 'Yolculugu izle' de gemi bitince. ?insav=0 insa videolarini kapatir.
 
+- v12.47: Foxi duygulari yeniden (Seedance 2.5, start=end=foxi_referans.jpg yesil fon, kesintisiz dongu). tilki_dans.mp4 (10 sn, 480x700 kirpildi, final ekrani), tilki_sevinc_anim.webp / tilki_uzgun_anim.webp (260x380, 61 kare, 12 fps, oyunun yesil esigiyle saydam). Eskileri karakter/kaynak_eski/.
+
 ## SIRADAKI (25 Kas 2026 gece, yarin buradan devam)
 1. Hikaye kartlari: her kartta en fazla 2 karakter + referans resimler (Gemini cok karakterli sahnede karakterleri tutamiyor; firtina kartinda ilk resim kaldi). Sirada: (8. bolum yapildi v12.43) Pako gemide (11), komik Rako (50). Istemler sohbet gecmisinde; KARTLAR'a eklenecek.
 2. Kazanma ekraninda 'sonraki tayfa' sayaci (tasarimda vardi, yapilmadi).

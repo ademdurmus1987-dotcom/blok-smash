@@ -6,7 +6,7 @@
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
-import { kazanSahne, yazi, sevincSec } from './kazan2.js?v=13';
+import { kazanSahne, yazi, sevincSec } from './kazan2.js?v=14';
 import { DOST, DOSTLAR, TAKVIM, YARDIM, dostVar, dostSonraki } from './dost.js?v=23';   // v12.41 murettebat sayfasi, yardimlar
 import { YOLCULUK, yolculukOynat } from './yolculuk.js?v=3';   // v12.44 Tayfa sayfasinda 'Yolculugu izle'
 import { logoSVG } from './logo2.js?v=4';
@@ -384,8 +384,8 @@ export function merkezKur(A) {
   function kostumUygula() {
     const k = kostumSec(SV); tilkiNo++; t3yuk = null; T3 = null;
     const eski = $('m-kc'), yeni = eski.cloneNode(false); eski.replaceWith(yeni); tilkiKur().then((t) => { if (t) t.boyut(); });
-    const ia = new Image(); ia.onload = () => { UZANIM = ia.src; }; ia.src = k.id !== 'korsan' ? kostumResim(k.id, 'uzgun') : '../karakter/tilki_uzgun_anim.webp?v=1';
-    sevincSec(k.id !== 'korsan' ? kostumResim(k.id, 'sevinc') : '../karakter/tilki_sevinc_anim.webp?v=1');
+    const ia = new Image(); ia.onload = () => { UZANIM = ia.src; }; ia.src = k.id !== 'korsan' ? kostumResim(k.id, 'uzgun') : '../karakter/tilki_uzgun_anim.webp?v=2';
+    sevincSec(k.id !== 'korsan' ? kostumResim(k.id, 'sevinc') : '../karakter/tilki_sevinc_anim.webp?v=2');
   }
   function gardirop() {
     const g = SV.gor || {}, sahip = g.s || [], sec = gorSec(SV), yl = yilTop(), al = SV.altin || 0;
@@ -625,7 +625,7 @@ export function merkezKur(A) {
   // ---------------- kaybetme: devam et? ----------------
   // d: { L, kaldi, bedava, fiyat }
   // v10.8: uzgun Foxi cizimi (Adem'in Gemini cizimi gelince karakter/tilki_uzgun.webp); yoksa normal avatar, basi egik
-  let UZGUN = null, UZANIM = null; setTimeout(() => { const im = new Image(); im.onload = () => { UZGUN = im.src; }; im.src = '../karakter/tilki_uzgun.webp?v=1'; const ia = new Image(); ia.onload = () => { UZANIM = ia.src; }; ia.src = kostumSec(SV).id !== 'korsan' ? kostumResim(kostumSec(SV).id, 'uzgun') : '../karakter/tilki_uzgun_anim.webp?v=1'; sevincSec(kostumSec(SV).id !== 'korsan' ? kostumResim(kostumSec(SV).id, 'sevinc') : null); }, 7000)   // v10.9: Adem'in Gemini cizimleri (yesil zemin ayiklandi)
+  let UZGUN = null, UZANIM = null; setTimeout(() => { const im = new Image(); im.onload = () => { UZGUN = im.src; }; im.src = '../karakter/tilki_uzgun.webp?v=1'; const ia = new Image(); ia.onload = () => { UZANIM = ia.src; }; ia.src = kostumSec(SV).id !== 'korsan' ? kostumResim(kostumSec(SV).id, 'uzgun') : '../karakter/tilki_uzgun_anim.webp?v=2'; sevincSec(kostumSec(SV).id !== 'korsan' ? kostumResim(kostumSec(SV).id, 'sevinc') : null); }, 7000)   // v10.9: Adem'in Gemini cizimleri (yesil zemin ayiklandi)
   function kaybet(d) {
     const yeter = (SV.altin || 0) >= d.fiyat, I = ist(), dev = d.bedava || yeter;
     // v10.7 (Adem: ticari kalite): yeni kaybetme karti: uzgun Foxi, 'Neredeyse!' basligi, kalan blok rozeti, buyuk +3 top teklifi (geri sayim halkasi),
