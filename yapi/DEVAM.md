@@ -308,6 +308,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 - v12.56: yukleme ekraninda hikaye kartlari (Adem'in gosterdigi rakip ornegi gibi ama kendi karakterlerimizle). Acilis videosu bir kez izlenince (localStorage bs_acv) sonraki acilislarda rastgele kart: karakter/acilis/yk/y01..17.webp (videolarimizin kareleri) + komik cumle (index.html YK listesi), en az 3.5 sn; ?logo4=7 her seferinde kart, ?logo4=5 her seferinde video. Video src artik yalniz video kipinde verilir.
 
+- v12.57 (Adem: 'kartlar bolum baslamadan hazirlanirken cikiyor'): hikaye kartlari bolume geciste (yapi/yukkart.js, ?ykart=0 kapatir): oyun.js start(L), L !== LV iken (ayni bolum yeniden degil, acilista degil). Kart once cizilir, agir kurulum bir sonraki karede baslar (yoksa kart hic gorunmuyordu); hazirlik bitince ve en az 1.6 sn sonra kapanir, dokununca gecer. Acilis yine video (?logo4=7 acilista kart).
+
 ## SIRADAKI (25 Kas 2026 aksam guncel)
 Higgsfield sinirsiz deneme 28 Kas 10:36'da biter (Claude Code'dan sinirsiz yok; Adem claude.ai sohbetinde uretir, ben oyuna eklerim). Otomatik yenileme iptali Adem'in kararinda.
 Once uretim isteyenler (deneme bitmeden):

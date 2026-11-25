@@ -19,7 +19,8 @@ import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: pl
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
 import { hikayeKart } from './hikaye.js?v=4';
-import { TANIT } from './tanit.js?v=1';   // v12.55 yeni blogun ilk bolumu yalniz o bloktan   // v12.42 hikaye kartlari (Rako, firtina)
+import { TANIT } from './tanit.js?v=2';
+import { ykGoster, ykKapat } from './yukkart.js?v=2';   // v12.57 bolum hazirlanirken hikaye karti   // v12.55 yeni blogun ilk bolumu yalniz o bloktan   // v12.42 hikaye kartlari (Rako, firtina)
 import { DOST, DOSTLAR, YARDIM, dostBolum, dostKafes, dostUc, dostEkran, dostOnYukle, dostVar, dostSonraki } from './dost.js?v=23';   // v12.20 deneme ?dost=1: kafesteki dost
 import { YOLCULUK, yolculukOynat, yolOnYukle } from './yolculuk.js?v=3';   // v12.44 Foxi'nin Yolculugu: kurtarmadan sonra gemi parcasi
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
@@ -4605,10 +4606,11 @@ function gerekliModel(L) {
 let STARTN = 0;
 function start(L) {
   L = Math.max(1, Math.min(K ? 1e9 : TOPLAM(), Math.floor(+L) || 1)); const n = ++STARTN;   // v5.0: oyun TOPLAM bolum
+  if (!K && !PILOTQ && !TEST && L !== LV && !$('load') && ykGoster()) { requestAnimationFrame(() => setTimeout(() => { if (n === STARTN) start(L); }, 40)); return; }   // v12.57: baska bolume geciste hikaye karti; kurulum kart ekrana cizildikten sonra (agir kurulum ekrani kilitler)
   if (SKS[L] && PLTA && !PLTA.hazir(SKS[L][0])) { bolumYukle(L).then(() => { if (n === STARTN) start(L); }); return; }   // v9.0: sekil bolumunun verisi once iner
   if (!K && !SKS[L] && L > BV.el && !BV.p.has(bvNo(L)) && Q.get('uret') !== 'eski') { bolumYukle(L).then(() => { if (n === STARTN) start(L); }); return; }   // bolum parcasi once iner
   const ks = gerekliModel(L);
-  const bitti = () => { if (n !== STARTN) return; start0(L); loadPieces(ks);
+  const bitti = () => { if (n !== STARTN) return; start0(L); ykKapat(); loadPieces(ks);
     setTimeout(() => { if (n === STARTN && L < TOPLAM()) bolumYukle(L + 1).then(() => { const s2 = gerekliModel(L + 1); modelYukle(s2).then(() => loadPieces(s2)); }); }, 2500); };   // sonraki bolum arkada hazirlanir, gecis beklemesiz olur
   if (ks.every((k) => MHAZIR.has(k) || !MFILE[k])) bitti(); else modelYukle(ks).then(bitti);
 }

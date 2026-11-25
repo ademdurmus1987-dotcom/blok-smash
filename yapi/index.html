@@ -188,7 +188,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
   // v12.15 deneme ?logo4=1 (Adem 24 Kas): video yerine yeni logo (Gemini, arka plani temizlendi: simge/logo4.webp)
   var LVQ = location.search.match(/[?&]logo4=(\d)/), LV = (LVQ || [0, '5'])[1];
   // v12.56 (Adem: yukleme ekraninda hikaye kartlari): acilis videosu bir kez izlendiyse sonraki acilislarda rastgele hikaye karti (resim + komik cumle), ?logo4=7 her seferinde
-  try { if (!LVQ && localStorage.getItem('bs_acv') === '1') LV = '7'; } catch (e) {}
+  // v12.57: kartlar bolum hazirlanirken cikiyor (yapi/yukkart.js); acilis yine video. Acilista kart ?logo4=7
   if (LV === '7') { var YK = [['Rako yine kule diziyor. Bu sefer daha yüksek, daha sallantılı!'], ['Rako kulenin tepesinde poz veriyor. Topu hazırla Kaptan!'], ['Gemi kendi kendine yapılmaz. Foxi çekici kaptı bile!'], ['Kırmızı boya, altın süs… Foxi\'nin gemisi parlıyor!'], ['Şapır şupur! Gemi denize indi, sıra tayfada.'], ['Dümen Foxi\'de. Rotamız: Rako\'nun kuleleri!'], ['Pako fenerde kafeste. Gözcü olmak da zor iş!'], ['Foxi sarmaşığa tutundu. Miko, geliyoruz!'], ['Foxi dalgıç kaskını taktı. Ahmo mutfakta bekliyor!'], ['Sal akıntıda hızlanıyor. Kundi, sıkı tutun!'], ['Buz mağarası kaygan. Foxi de kayıyor!'], ['Nilüferden nilüfere… Timsahı uyandırmayalım!'], ['Rako ambarda nöbette. Ama altına hiç dayanamaz!'], ['Anahtar havada! Kafesin kilidi çıt diye açılacak.'], ['TNT patladı, Rako uçtu! Sıradaki kule hazır mı?'], ['Tayfa büyüyor! Sıradaki adaya tam yol.'], ['Fırtına bitti. Şimdi sıra tayfayı toplamakta!']];
     var yi = Math.floor(Math.random() * YK.length); try { var ys = +localStorage.getItem('bs_yk'); if (ys === yi) yi = (yi + 1) % YK.length; localStorage.setItem('bs_yk', yi); } catch (e) {}
     L.classList.add('logo4', 'logo7'); V.removeAttribute('src'); V.removeAttribute('poster'); V.style.display = 'none'; S.style.display = 'none';
@@ -241,6 +241,6 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7cc6ff;font-family:va
   }
 })();
 </script>
-<script type="module" src="oyun.js?v=285"></script>
+<script type="module" src="oyun.js?v=287"></script>
 </body>
 </html>
