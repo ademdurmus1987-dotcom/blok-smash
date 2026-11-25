@@ -283,3 +283,10 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - Ana sayfa: 'Korsan' dugmesi yerine 'Tayfa' (n/8), Oyna ustunde 'N bolum sonra kafesten kurtar' seridi (siradaki uyenin golgesi). Tayfa sayfasi: 8 kart (kurtarilan renkli + gorev + yardim, kalan golge + Bolum N).
 - Siradaki: Rako resmi (Adem) -> hikaye kartlari sistemi; gemi ekraninda tayfa; paylas dugmesi.
 - v12.42: hikaye kartlari yapi/hikaye.js (KARTLAR: L, id, bas, yazi). Tam ekran dikey (karakter/kart/{id}.webp 720x1280, Adem Gemini), alt yazi + Devam, bolum basinda bir kez (SV.kart); ?hikaye=0 kapatir, ?sv= her seferinde gosterir. Ilk iki: firtina (1. bolum), rako (3. bolum). Not: firtina kartinda papagan/kurbaga yesil (tayfadan farkli).
+
+## SIRADAKI (25 Kas 2026 gece, yarin buradan devam)
+1. Hikaye kartlari: her kartta en fazla 2 karakter + referans resimler (Gemini cok karakterli sahnede karakterleri tutamiyor; firtina kartinda ilk resim kaldi). Sirada: Rako Pako'yu kafese koyuyor (8. bolum), Pako gemide (11), komik Rako (50). Istemler sohbet gecmisinde; KARTLAR'a eklenecek.
+2. Kazanma ekraninda 'sonraki tayfa' sayaci (tasarimda vardi, yapilmadi).
+3. Gemi (Insa) ekraninda tayfa yerleri (Adem'den guverte cizimi).
+4. Paylas dugmesi (kurtarma ani).
+5. Bekleyen eski isler: ?kam4=1 kamera denemesi onayi, yeni ikon (simge/cc/ikon4) onayi, telefonda platform ayagi gorunuyor mu (?tani=1).
