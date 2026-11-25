@@ -296,6 +296,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 - v12.50: acilis videosu (varsayilan ?logo4=5): karakter/acilis/acilis6.mp4 (10 sn, Seedance 2.5 genis yan cekim: Rako kuleyi diziyor, Foxi topla yikar, TNT, altin, kafes acilir, Pako kurtulur) + ilk kare poster. Tabela simge/tabela.webp (logo4.webp'den yalniz tabela kesildi) 6.8. sn'de iner ve sallanir. Video biterse ya da dokununca oyun acilir. Onceki tam ekran resim ?logo4=3, eski sarki videosu ?logo4=0. Sinematik B surumu (yakin cekimler) kullanilmadi, ileride hikaye girisi olabilir.
 
+- v12.51: acilis videosu yeniden: karakter/acilis/acilis7.mp4 (sinematik, gun batimi, az ama iri bloklar; Rako kulenin tepesinde anahtari korur, kafes palmiyede atis hattinin disinda; patlama, anahtar kafesin kilidine ucar, Pako cikar, Foxi + Pako poz). Ders: oyun ekran goruntusunu referans vermek kaliteyi oyunun sade gorunusune indirdi, kalabaliklasti; kafes kulede olunca top papagana ates ediyor gibiydi. Tabela 9.2. sn'de iner (62vw), video bitince son kare 1.6 sn kalir. Onceki genis cekim ?logo4=6.
+
 ## SIRADAKI (25 Kas 2026 gece, yarin buradan devam)
 1. Hikaye kartlari: her kartta en fazla 2 karakter + referans resimler (Gemini cok karakterli sahnede karakterleri tutamiyor; firtina kartinda ilk resim kaldi). Sirada: (8. bolum yapildi v12.43) Pako gemide (11), komik Rako (50). Istemler sohbet gecmisinde; KARTLAR'a eklenecek.
 2. Kazanma ekraninda 'sonraki tayfa' sayaci (tasarimda vardi, yapilmadi).
