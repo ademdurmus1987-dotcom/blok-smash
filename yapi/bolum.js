@@ -74,6 +74,7 @@ export const MEKBLOK = { kay: 'ksSandik', asansor: 'ksSandikK', don: 'ksSandikM'
 const KSA = { ksSandikM: 'ksSandik', ksSandikK: 'ksSandik', ksKalas1: 'ksKalas', ksKalas2: 'ksKalas', ksKalas3: 'ksKalas', ksTas2: 'ksTas', ksFiciK: 'ksFici', ksSiseM: 'ksSise', ksSiseY: 'ksSise', ksSiseB: 'ksSise', ksYakut: 'ksMucevher', ksElmas: 'ksMucevher', ksTas3: 'ksTas', ksTas4: 'ksTas', ksBuz3: 'ksBuz' };
 export function aileOf(t) {
   if (typeof t !== 'string') return null;
+  if (/^ks[A-Za-z0-9]+C$/.test(t) && !AILE[t] && !KSA[t]) t = t.slice(0, -1);   // v12.55: cilali es (ksSandikC, ksTNTC...) kendi ailesinde sayilir; yoksa 'Yeni Blok' karti hic cikmiyordu
   if (t.startsWith('ks')) return KSA[t] || (AILE[t] ? t : null);   // v4.5: kale blogu kendi turuyla (renk cesitleri birlikte)
   if (/^uz\d/.test(t)) return 'uz'; if (/^kj[A-Z]/.test(t)) return 'kj'; if (/^kr3/.test(t)) return 'kr3';   // v12.1
   const p = { oy: 'oy', jo: 'jo', hd: 'hd', kr: 'kr', kv: 'kv', mk: 'mk', kn: 'kn' }[t.slice(0, 2)];

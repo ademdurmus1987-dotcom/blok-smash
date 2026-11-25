@@ -18,7 +18,8 @@ import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
-import { hikayeKart } from './hikaye.js?v=4';   // v12.42 hikaye kartlari (Rako, firtina)
+import { hikayeKart } from './hikaye.js?v=4';
+import { TANIT } from './tanit.js?v=1';   // v12.55 yeni blogun ilk bolumu yalniz o bloktan   // v12.42 hikaye kartlari (Rako, firtina)
 import { DOST, DOSTLAR, YARDIM, dostBolum, dostKafes, dostUc, dostEkran, dostOnYukle, dostVar, dostSonraki } from './dost.js?v=23';   // v12.20 deneme ?dost=1: kafesteki dost
 import { YOLCULUK, yolculukOynat, yolOnYukle } from './yolculuk.js?v=3';   // v12.44 Foxi'nin Yolculugu: kurtarmadan sonra gemi parcasi
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
@@ -31,7 +32,7 @@ import { kaideKur } from './kaide.js?v=6';   // v4.4: turkuaz-bakir kaide platfo
 import { merkezKur } from './merkez.js?v=59';
 import * as EG from './egri.js?v=6';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=3';   // v5.0: son bolum gecilince
-import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=9';
+import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=10';
 import { parcacikKur } from './fx/parcacik.js?v=2';   // v4.0 Faz 1A: tek cizim cagrili parcacik havuzu
 import { patlamaKur } from './fx/patlama.js?v=4';
 import { ENG4, ENG4HAVUZ, ENG4KART, engel4Kur } from './engel4.js?v=3';   // v12: 6 yeni engel (eski havuz ?eng4=0)   // v11.11: guclu vurus efektleri (eski ?efk=0)
@@ -1021,6 +1022,22 @@ function rnd3(a, b, c, d) { let h = (a * 73856093) ^ (b * 19349663) ^ (c * 83492
 // (kup govdesi: ust uste duz oturur, havada duruyormus gibi gorunmez). Bolum verisi degismez; eski hal: ?mucevher=1
 const MUCDEG = Q.get('mucevher') === '1' ? {} : { ksYakut: 'oyK', ksElmas: 'oyM', ksKaro: 'oyM' };
 const mucDeg = (t) => MUCDEG[t] || t;
+// v12.55 (Adem: 'her yeni cisimde ilk bolum sadece o cisim olsun, sonra kazanilan cisimlerden karma kule'): TANIT[L] bolumunde asil yapi yerine
+// yalniz yeni gelen turlerden duzenli bir kule. Kup boyundakiler piramit, uzun olanlar tugla orgusu, uzun boylular sutun duvari. Hareket, engel yok.
+const TANITQ = !/[?&]tanit=0/.test(location.search), TANY = new Map();
+function tanitY(L) {
+  if (TANY.has(L)) return TANY.get(L);
+  const ts = TANIT[L].filter((t) => SEK.TUR[t] || KIND[t]), ol = (t) => { const o = olcu(t); return [o[0] * 2, o[1], o[2] * 2]; };
+  const grup = {}; for (const t of ts.length ? ts : TANIT[L]) { const [w, h, d] = ol(t), k = w.toFixed(2) + 'x' + h.toFixed(2) + 'x' + d.toFixed(2); (grup[k] || (grup[k] = [])).push(t); }
+  const T = Object.values(grup).sort((a, b) => b.length - a.length)[0] || ['oyK'], [w, h, d] = ol(T[0]), tur = (n) => T[n % T.length];
+  const ozel = ts.some((t) => /^(ksTNT|hediye|yildiz|kkA|kkL|kola)/.test(t)), o = [], Dp = d > 1.2 ? 1 : 2;
+  if (w > 1.5) { const n = Math.max(3, Math.min(8, Math.round(4 / h)));   // uzun: tugla orgusu (cift sira iki parca, tek sira ortada bir)
+    for (let j = 0; j < n; j++) for (let k = 0; k < Dp; k++) { if (j % 2 === 0) { o.push([0, j * h, k, tur(j), 0]); o.push([w, j * h, k, tur(j + 1), 0]); } else o.push([w / 2, j * h, k, tur(j), 0]); } }
+  else if (h > 1.5) { for (let j = 0; j < 2; j++) for (let i = 0; i < 4; i++) for (let k = 0; k < Dp; k++) o.push([i * w, j * h, k, tur(i + j), 0]); }   // uzun boylu: 4 x 2 sutun
+  else { const B = ozel ? 4 : 5; for (let l = 0; l < B; l++) for (let n = 0; n < B - l; n++) for (let k = 0; k < Dp; k++) o.push([(l / 2 + n) * w, l * h, k, tur(l), 0]); }   // kup: piramit
+  const ad = (AILE[aileOf(T[0])] || ['Yeni Blok'])[0], Y = { ad: ad + ' Kulesi', veri: 1, tanit: 1, engel: [], top: Math.max(6, Math.min(12, Math.round(o.length / 4) + 4)), make: () => o.map((c) => c.slice()) };
+  TANY.set(L, Y); return Y;
+}
 function convertLevel(list, L) {
   list = list.map((c) => { if (typeof c[3] !== 'string' || !MUCDEG[c[3]]) return c; const d = c.slice(); d[3] = MUCDEG[c[3]]; return d; });
   let ia = 1e9, ib = -1e9; for (const [i] of list) { ia = Math.min(ia, i); ib = Math.max(ib, i); }
@@ -1128,6 +1145,7 @@ function engelEk(L, Y) {
   return [{ t, hiz: 0.9 + 0.4 * d, ek: ENG4HAVUZ.includes(t) ? 2 : 1 }];
 }
 function engelOf(L, Y) {
+  if (Y && Y.tanit) return [];   // v12.55: tanitim bolumunde engel yok, yalniz yeni blok
   { const qe = Q.get('engel'); if (['kapi', 'kapi2', 'giyotin', 'kurek', 'kalkan', 'kayan', 'capa', 'surgu', 'yukari'].concat(ENG4HAVUZ).includes(qe)) return [{ t: qe }]; }   // deneme: ?engel=<tur> her bolumde   // deneme: ?engel=kapi|kapi2|giyotin her bolumde
   if (Y && Y.veri) return ENGFAZLA ? engelEk(L, Y) : Y.engel;   // v5.0: kayitli bolumun engeli uretimde secildi
   if (FONYENIQ && !K && L === 9) return [{ t: 'kapi2' }]; if (FONYENIQ && !K && L === 14) return [{ t: 'giyotin' }];   // v3.21: yalniz resim fonda tanitim bolumleri
@@ -1140,7 +1158,7 @@ function engelOf(L, Y) {
 }
 const UCACHE = new Map(); let DENE = null;   // v5.0: DENE: dogrulayicinin verdigi bolum (YP.dene)
 function asansorMu(L) { return Q.get('asansor') === '1' || (Q.get('asansor') !== '0' && L >= 5 && L % 4 === 1); }
-function levelOf(L) { if (PILOTQ && PLT) return PLT.Y;   /* PILOT */ if (DENEQ) return DENEQ; if (K) return K.bolum(L); if (SKS[L]) return sekilY(L); if (Q.get('eski') === '1' ? L <= LSIRA.length : L <= BOLUMLER.length) return Q.get('eski') === '1' ? LSIRA[L - 1] : BOLUMLER[L - 1]; if (DENE && DENE.L === L) return DENE.Y; { const v = bvY(L); if (v) return v; } if (!UCACHE.has(L)) UCACHE.set(L, uretBolum(L)); return UCACHE.get(L); }
+function levelOf(L) { if (PILOTQ && PLT) return PLT.Y;   /* PILOT */ if (DENEQ) return DENEQ; if (K) return K.bolum(L); if (TANITQ && TANIT[L]) return tanitY(L); if (SKS[L]) return sekilY(L); if (Q.get('eski') === '1' ? L <= LSIRA.length : L <= BOLUMLER.length) return Q.get('eski') === '1' ? LSIRA[L - 1] : BOLUMLER[L - 1]; if (DENE && DENE.L === L) return DENE.Y; { const v = bvY(L); if (v) return v; } if (!UCACHE.has(L)) UCACHE.set(L, uretBolum(L)); return UCACHE.get(L); }
 // v6.13: kup listesindeki 5. alan platform numarasi (0, 1, ...); bolumun pl dizisi platformlarin yeri ve hareketi
 
 // ---------------- fizik ----------------
@@ -3912,7 +3930,9 @@ function finalGoster() {
 }
 // v12.53 (Adem 25 Kas: 'yeni oyuncu gozuyle bakayim'): Ayarlar > Oyunu sifirla. Ses/muzik/titresim ayarlari kalir, gerisi silinir, oyun bastan acilir.
 function oyunSifirla() { window.__bsSifir = true; try { localStorage.setItem(SKEY, JSON.stringify({ sessiz: SV.sessiz, muziksiz: SV.muziksiz, titresimsiz: SV.titresimsiz })); } catch (e) {} location.href = location.pathname; }
-window.BSFINAL = finalGoster;   // deneme: konsoldan final sahnesi
+window.BSFINAL = finalGoster;
+// v12.55 deneme: bolum bolum blok aileleri (tanitim bolumu tablosu icin). Konsoldan: BSBASLA(L), BSAILEL()
+window.BSBASLA = (L) => start(L); window.BSAILEL = () => { const m = {}; for (const c of cubes) { const a = aileOf(c.col); if (a && !m[a]) m[a] = c.col; } const t = {}; for (const c of cubes) t[c.col] = (t[c.col] || 0) + 1; return { L: LV, n: cubes.length, a: m, t }; };   // deneme: konsoldan final sahnesi
 function lose() {
   if (PILOTQ) return PLT.kaybet();   // PILOT
   sfx('lose'); gorevKaydet(true); tilkiDurum('kaybet');
@@ -4289,7 +4309,7 @@ function yeniSekil() {
   if (!SV.gor) SV.gor = [];
   const yeni = []; for (const c of cubes) { const a = aileOf(c.col); if (a && !SV.gor.includes(a) && !yeni.some((y) => y[0] === a)) yeni.push([a, c.col]); }
   { const Yd = levelOf(LV); for (const y of (Yd && Yd.yeni) || []) { const [tp, ad] = y.split(':'); if (tp === 'mek' && AILE['m_' + ad] && !SV.gor.includes('m_' + ad)) yeni.unshift(['m_' + ad, mucDeg(MEKBLOK[ad] || 'ksSandik')]); }
-    const sh = SKS[LV] && (SKS[LV][3] === 'hizli' ? 'kay' : SKS[LV][3]); if (sh && sh !== 'sabit' && AILE['m_' + sh] && !SV.gor.includes('m_' + sh)) yeni.unshift(['m_' + sh, MEKBLOK[sh] || 'ksSandik']); }   // v12.1: platform hareketinin ilk geldigi bolumde tanitim karti   // v5.0: yeni mekanik karti
+    const sh = !(TANITQ && TANIT[LV]) && SKS[LV] && (SKS[LV][3] === 'hizli' ? 'kay' : SKS[LV][3]); if (sh && sh !== 'sabit' && AILE['m_' + sh] && !SV.gor.includes('m_' + sh)) yeni.unshift(['m_' + sh, MEKBLOK[sh] || 'ksSandik']); }   // v12.1: platform hareketinin ilk geldigi bolumde tanitim karti   // v5.0: yeni mekanik karti
   if (!yeni.length) return yeniEngel();
   yeni.length = Math.min(yeni.length, 3);   // v4.5: bir bolumde en cok 3 yeni blok karti; kalanlar sonraki bolumlerde
   const goster = (n) => {
