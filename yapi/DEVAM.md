@@ -326,3 +326,7 @@ Sonra (uretim gerektirmez):
 - Sade üst bar VARSAYILAN: "Yapı N · Küp N" ve ilerleme çubuğu gizli, yalnız top kutusu ve duraklat (index.html `html.ustsade`), eski `?ustbar=eski`. Hazine bölümlerinde kalan sayacı da gizli (parlayan küpler ve vuruşta "1/4" yazısı duruyor).
 - DENEME `?blok7=1` (yapi/blok7.js): iri pah, parlak plastik, kabarık çerçeve, 3B korsan işareti. Renkli küp/çubuk -> kurukafa, sandık -> çapa, taş -> dümen. İşaret yalnız ön yüzde, blok başına ~3 bin üçgen. Telefonda hız ve Adem onayı bekliyor; onaylanırsa kalan türler (kalas, direk, kavanoz, fıçı ...).
 - Boş kumsal fon istemi: uretici/istem/fon_kumsal.md (resimler gelince fon + zemin haritası (su/kara) ayarlanacak).
+
+## v12.60 (26 Kas 2026)
+- Arka plan bulanıklığı KAPALI (Adem: 'bulandırma yapma'), eski bulanık hal yalnız ?fonnet=1.
+- 4 sade kumsal fonu (Adem, Higgsfield): fon/yeni/kumsal_{altin,koy,palmiye,lagun}.webp, 10 bölümde bir sırayla (oyun.js KUMSAL), zemin haritası su şeridi + koy kayaları. Eski tek plaj ?fon3=0, deneme ?fonsec=1..4. Ana sayfa fonu değişmedi.
