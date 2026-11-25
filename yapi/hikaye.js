@@ -7,7 +7,17 @@ const HVID = YOLCULUK && !/[?&]hvid=0/.test(location.search);
 export const KARTLAR = [
   { L: 1, id: 'firtina', v: 1, bas: 'Fırtına!', yazi: 'Dev bir fırtına Foxi\'nin tayfasını dört bir yana savurdu. Hepsini tek tek bulmalıyız!' },
   { L: 3, id: 'rako', v: 1, bas: 'Rakun Rako', yazi: 'Bu kuleleri o diziyor! Parlak altınlara bayılıyor ve tayfamızı kafeslere kapatıyor. Kulelerini yık!' },
-  { L: 8, id: 'pako_kafes', bas: 'Pako kafeste!', yazi: 'Sinsi Rako gözcümüz Papağan Pako\'yu kafese kilitledi! Kuleleri yıkmaya devam et, anahtarı bulup onu kurtaracağız.' }
+  { L: 5, id: 'pako_kafes', bas: 'Pako kafeste!', yazi: 'Sinsi Rako gözcümüz Papağan Pako\'yu kafese kilitledi! Kuleleri yıkmaya devam et, anahtarı bulup onu kurtaracağız.' },
+  // v12.53 (Adem 25 Kas: 'ara kartlarda tayfa ile ilgili bilgi verelim'): gemi ipucu + her kurtarmadan once tayfa ipucu (resim: kurtarma videosunun acilis karesi)
+  { L: 2, id: 'gemi', bas: 'Önce bir gemi lazım!', yazi: 'Fırtına gemimizi parçaladı. Bölüm geç, altın topla ve İnşa sekmesinde yeni gemini yap. Gemi bitince tayfanı toplamaya denize açılacaksın!' },
+  { L: 8, id: 'ipucu_papagan', bas: 'Fenerde bir ışık!', yazi: 'Gözcümüz Papağan Pako fenerin tepesinde kafeste! 10. bölümde kurtar. Pako, hazine sandığını 5 yerine 4 bölümde açar.' },
+  { L: 90, id: 'ipucu_maymun', bas: 'Şelalede bir kafes!', yazi: 'Direkçi Maymun Miko şelalenin üstünde sallanıyor! 100. bölümde kurtar. Miko, hazine sandığından %25 fazla altın çıkarır.' },
+  { L: 190, id: 'ipucu_ahtapot', bas: 'Batık gemide biri var!', yazi: 'Aşçı Ahtapot Ahmo batık geminin mutfağında kafeste! 200. bölümde kurtar. Ahmo, günlük ödülde %25 fazla altın getirir.' },
+  { L: 290, id: 'ipucu_kunduz', bas: 'Nehirde bir sal!', yazi: 'Marangoz Kunduz Kundi akıntıya kapılan salda kafeste! 300. bölümde kurtar. Kundi, gemi inşasını %10 ucuzlatır.' },
+  { L: 390, id: 'ipucu_penguen', bas: 'Buz mağarası!', yazi: 'Gülle Ustası Penguen Pengo buzun içinde kafeste! 400. bölümde kurtar. Pengo, her bölümde +1 top verir.' },
+  { L: 490, id: 'ipucu_kirpi', bas: 'Tapınak zindanı!', yazi: 'Haritacı Kirpi Diken eski tapınağın zindanında kafeste! 500. bölümde kurtar. Diken, bölüm altınına %10 ekler.' },
+  { L: 590, id: 'ipucu_kurbaga', bas: 'Ateşböcekli bataklık!', yazi: 'Borazancı Kurbağa Vırak nilüfer yaprağında kafeste! 600. bölümde kurtar. Vırak, 3 yıldızda +10 altın kazandırır.' },
+  { L: 690, id: 'ipucu_kedi', bas: 'Rako\'nun gemisi!', yazi: 'Ambar Bekçisi Kedi Mırmır, Rako\'nun kendi gemisinin ambarında! 700. bölümde son kurtarma. Mırmır, devam etmeyi %20 ucuzlatır.' }
 ];
 let CSS = false;
 function stil() {

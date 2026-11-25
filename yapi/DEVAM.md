@@ -300,6 +300,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 - v12.52: hikaye kartlari videolu (hikaye.js KARTLAR v alani; yolculukOynat ile tam ekran, baslik+yazi sonda; eski resim ?hvid=0). karakter/kart/firtina.mp4 (12 sn: firtina, Pako savrulur, gemi parcalanir, Foxi adaya vurur) ve rako.mp4 (10 sn: Rako cuvalla gelir, kuleyi dizer, anahtari koyar). Not: ana sayfa foxi_korsan.mp4 zaten yeni Foxi, yenilenmesi gerekmiyor.
 
+- v12.53: ipucu kartlari (hikaye.js): 2 gemi ('Once bir gemi lazim', resim gemi01), 5 pako_kafes (8'den alindi), 8 fener, 90/190/.../690 her tayfa uyesi (yer, kurtarma bolumu, yardimi); resimler kurtarma videolarinin acilis karesi (karakter/kart/ipucu_{id}.webp). Ayarlar > 'Oyunu sifirla' (onayli; ses/muzik/titresim kalir; oyun.js oyunSifirla, save() __bsSifir iken yazmaz).
+
 ## SIRADAKI (25 Kas 2026 aksam guncel)
 Higgsfield sinirsiz deneme 28 Kas 10:36'da biter (Claude Code'dan sinirsiz yok; Adem claude.ai sohbetinde uretir, ben oyuna eklerim). Otomatik yenileme iptali Adem'in kararinda.
 Once uretim isteyenler (deneme bitmeden):

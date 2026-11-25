@@ -18,7 +18,7 @@ import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
-import { hikayeKart } from './hikaye.js?v=3';   // v12.42 hikaye kartlari (Rako, firtina)
+import { hikayeKart } from './hikaye.js?v=4';   // v12.42 hikaye kartlari (Rako, firtina)
 import { DOST, DOSTLAR, YARDIM, dostBolum, dostKafes, dostUc, dostEkran, dostOnYukle, dostVar, dostSonraki } from './dost.js?v=23';   // v12.20 deneme ?dost=1: kafesteki dost
 import { YOLCULUK, yolculukOynat, yolOnYukle } from './yolculuk.js?v=3';   // v12.44 Foxi'nin Yolculugu: kurtarmadan sonra gemi parcasi
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
@@ -28,7 +28,7 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=6';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=57';
+import { merkezKur } from './merkez.js?v=58';
 import * as EG from './egri.js?v=6';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=3';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=9';
@@ -65,7 +65,7 @@ try { const d = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (d) SV = Ob
 if (Array.isArray(SV.dost)) SV.dost = SV.dost.filter((id, i, a) => DOSTLAR.some((x) => x.id === id) && a.indexOf(id) === i);
 // v6.12 (Adem 18 Kas): bolum duzenleyici (duzenle.html) -> index.html?dene=1: her bolum cizilen bolumle kurulur, ilerleme kaydedilmez
 const DENEQ = !K && !PILOTQ && Q.has('dene') ? (() => { try { const v = JSON.parse(localStorage.getItem('bs_dene') || 'null'); if (!v || !v.c || !v.c.length) return null; const Y = { ad: v.ad || 'Benim Bölümüm', veri: 1, engel: [], ek: 0, make: () => v.c.map((x) => [x[0], x[1], x[2], x[3], x[4] || 0]) }; if (v.top) Y.top = v.top; if (v.pl) Y.pl = v.pl; if (v.don) Y.don = v.don; return Y; } catch (e) { return null; } })() : null;
-const save = () => { if (PILOTQ || DENEQ) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
+const save = () => { if (PILOTQ || DENEQ || window.__bsSifir) return;   /* PILOT / DENE: kayit yok */ try { localStorage.setItem(SKEY, JSON.stringify(SV)); } catch (e) {} };
 // v3.0: M = merkez (yapi/merkez.js). Korsan modunda ve testte yoktur; o zaman eski kartlar calisir.
 let M = null;
 const FIZ2 = Q.get('fiz') !== 'eski';   // v12.1: gercekci vurus ve kirilma, kiymik-platform carpismasi (eski: ?fiz=eski)
@@ -3895,6 +3895,8 @@ function finalGoster() {
   finalSahne({ toplam: TOPLAM(), eksik, ilkEksik: ilk || TOPLAM(), yildiz: top, ses: (k) => sfx(k), titret: (n) => buzz(n),
     harita: (L) => { if (M) M.ac({ sekme: 'harita', odak: L }); }, anaSayfa: () => { if (M) M.ac({}); } });
 }
+// v12.53 (Adem 25 Kas: 'yeni oyuncu gozuyle bakayim'): Ayarlar > Oyunu sifirla. Ses/muzik/titresim ayarlari kalir, gerisi silinir, oyun bastan acilir.
+function oyunSifirla() { window.__bsSifir = true; try { localStorage.setItem(SKEY, JSON.stringify({ sessiz: SV.sessiz, muziksiz: SV.muziksiz, titresimsiz: SV.titresimsiz })); } catch (e) {} location.href = location.pathname; }
 window.BSFINAL = finalGoster;   // deneme: konsoldan final sahnesi
 function lose() {
   if (PILOTQ) return PLT.kaybet();   // PILOT
@@ -3959,7 +3961,7 @@ function devamEt() {
 // bolumden vazgecme (tekrar dene, ana sayfa): seri biter, bu bolum artik 'ilk denemede' sayilmaz
 function pesEt() { if (g && (g.armed || g.state === 'lose')) { SV.dus = LV; ist().seri = 0; save(); } }
 function merkezBagla() {
-  M = merkezKur({ SV, save, gorUygula, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, hazirla: (L) => { bolumYukle(L).then(() => { const ks = gerekliModel(L); modelYukle(ks).then(() => loadPieces(ks)); }); }, toplam: TOPLAM, SURUM, ZOR_ODUL,
+  M = merkezKur({ SV, save, sifirla: oyunSifirla, gorUygula, sfx, buzz, GGT, ggSay, ggHud, gorevler, GHAV, gorevHazir, muzikBasla, muzikKis, sarki, sarkiDur, oyna, devam: devamEt, pes: pesEt, ayar: ayarDegis, hazirla: (L) => { bolumYukle(L).then(() => { const ks = gerekliModel(L); modelYukle(ks).then(() => loadPieces(ks)); }); }, toplam: TOPLAM, SURUM, ZOR_ODUL,
     ses: (k, v, r) => { if (AC && !SV.sessiz) { out(); play(k, v, r || 1); } }, zor: zorMu, LV: () => LV,
     plan: (L) => (EGRI && L > BV.el ? EG.planY(L, bvY(L), BV.el) : null), EG,   // v8.0: harita ve bolum karti icin bolum turu
     sesAg: () => (AC && !SV.sessiz ? (out(), { AC, out: MASTER }) : null),   // v4.8: kazanma sahnesinin kodla uretilen sesleri icin

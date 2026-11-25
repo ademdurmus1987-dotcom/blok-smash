@@ -561,11 +561,14 @@ export function merkezKur(A) {
   // ---------------- ayarlar / duraklatma ----------------
   function ayarKarti(oyunda) {
     const sat = (id, ad, on) => '<div class="ay"><b>' + ad + '</b><button class="tg' + (on ? ' on' : '') + '" data-a="' + id + '" aria-label="' + ad + '"><i></i></button></div>';
-    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p></div>' +
+    pop(bas(oyunda ? 'Duraklatıldı' : 'Ayarlar') + '<div class="p-ic">' + sat('ses', 'Ses', !SV.sessiz) + sat('muzik', 'Müzik', !SV.muziksiz) + sat('titresim', 'Titreşim', !SV.titresimsiz) + '<p class="p-not">Foxi Smash ' + A.SURUM + '</p>' + (!oyunda && A.sifirla ? '<button id="p-sif" style="display:block;margin:10px auto 0;background:none;border:0;font:inherit;font-size:15px;font-weight:800;color:#b03a2e;text-decoration:underline;padding:8px">Oyunu sıfırla</button>' : '') + '</div>' +
       (oyunda ? '<button class="m-btn" id="p-dv">Devam Et</button><button class="m-btn tur kck" id="p-yb">Yeniden Başla</button><button class="m-btn mavi kck" id="p-as">Ana Sayfa</button>' : '<button class="m-btn kck" id="p-dv">Tamam</button>'));
     durak = !!oyunda;
     for (const b of P.querySelectorAll('.tg')) b.onclick = () => { A.ayar(b.dataset.a); tik(); ayarKarti(oyunda); };
     $('p-dv').onclick = () => { tik(); pkapat(); };
+    // v12.53: oyunu sifirla (onayli); bolumler, altin, tayfa, gemi, kartlar silinir
+    if ($('p-sif')) $('p-sif').onclick = () => { tik(); pop(bas('Baştan Başla') + '<div class="p-ic"><p style="text-align:center;font-size:17px;line-height:1.45;margin:6px 4px">Bütün ilerleme silinecek: bölümler, yıldızlar, altın, tayfa, gemi ve hikâye kartları. Oyun ilk günkü gibi baştan açılacak.</p><p class="p-not">Ses ve müzik ayarların kalır.</p></div><button class="m-btn" id="p-ev" style="background:linear-gradient(#ff6b5a,#d8392b);box-shadow:0 5px 0 #8e2117">Evet, sıfırla</button><button class="m-btn tur kck" id="p-hy">Vazgeç</button>');
+      $('p-ev').onclick = () => { tik(); A.sifirla(); }; $('p-hy').onclick = () => { tik(); ayarKarti(false); }; };
     if (oyunda) { $('p-yb').onclick = () => { tik(); A.pes(); bolumKarti(A.LV()); }; $('p-as').onclick = () => { tik(); A.pes(); pkapat(); ac(); }; }
   }
 
