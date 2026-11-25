@@ -8,7 +8,7 @@ import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { kazanSahne, yazi, sevincSec } from './kazan2.js?v=13';
 import { DOST, DOSTLAR, TAKVIM, YARDIM, dostVar, dostSonraki } from './dost.js?v=23';   // v12.41 murettebat sayfasi, yardimlar
-import { YOLCULUK, yolculukOynat } from './yolculuk.js?v=1';   // v12.44 Tayfa sayfasinda 'Yolculugu izle'
+import { YOLCULUK, yolculukOynat } from './yolculuk.js?v=2';   // v12.44 Tayfa sayfasinda 'Yolculugu izle'
 import { logoSVG } from './logo2.js?v=4';
 import { GOR, ARABA, GULLE, gorSec, arabaSvg, gulleSvg, OCAK, KOSTUM, kostumSec, kostumResim } from './gorunum.js?v=2';   // v12.2 Gardirop (eski ?gor=0)   // v10.13: Blender ile gercek 3B logo resmi (ikon/logo3d.webp, uretici/blender/logo3d.py); eski: ?logo=eski
 const LOGO2 = !/[?&]logo=eski/.test(location.search);   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
