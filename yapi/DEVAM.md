@@ -330,3 +330,8 @@ Sonra (uretim gerektirmez):
 ## v12.60 (26 Kas 2026)
 - Arka plan bulanıklığı KAPALI (Adem: 'bulandırma yapma'), eski bulanık hal yalnız ?fonnet=1.
 - 4 sade kumsal fonu (Adem, Higgsfield): fon/yeni/kumsal_{altin,koy,palmiye,lagun}.webp, 10 bölümde bir sırayla (oyun.js KUMSAL), zemin haritası su şeridi + koy kayaları. Eski tek plaj ?fon3=0, deneme ?fonsec=1..4. Ana sayfa fonu değişmedi.
+
+## v12.61 (26 Kas 2026): AGIR fizik VARSAYILAN (Adem: 'tek vurusla bircok sekil ucuyor, daha agir, balon gibi olmasin'), eski ?agir=0
+- oyun.js: kutle katsayisi KAGIR 1.8 -> 4, taban kutle KMIN 1 (makaron, kola, kurabiye gibi hafifler artik balon degil), yercekimi -32 -> -38,
+  blok-blok surtunme 0.48 -> 0.6, top-blok sekme 0.25 -> 0.08, top ilk carpista hizinin %30'unu tutar (eski %60), carpisma cevresi hiz siniri 13 -> 7, yukari 1.6 -> 0.7, donme 4 -> 2.8, sonum 0.09 / 0.32.
+- Olcum (390x844, 2 atis, bolum 60): yerinden oynayan blok 38 -> 12. Top sayilari degismedi: telefonda bolumler cok zorlasirsa top sayisi (egri.js) artirilacak.

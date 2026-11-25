@@ -1171,14 +1171,17 @@ function levelOf(L) { if (PILOTQ && PLT) return PLT.Y;   /* PILOT */ if (DENEQ) 
 // v6.13: kup listesindeki 5. alan platform numarasi (0, 1, ...); bolumun pl dizisi platformlarin yeri ve hareketi
 
 // ---------------- fizik ----------------
-const KAGIR = 1.8;   // v6.10: 2 de zordu (v6.9), 3 cok zordu   // v6.8: (Adem) kupler hafif (kagit gibi) hissettiriyordu: tum kup kutleleri bu katsayiyla carpilir
-const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -32, 0) });   // v6.8: (Adem) kupler agir dussun
+// v12.61 (Adem 26 Kas: 'tek vurusla bircok sekil ucuyor, daha agir olmali, balon gibi olmamali'): AGIR fizik. Eski: ?agir=0
+const AGIR = Q.get('agir') !== '0';
+const KAGIR = AGIR ? 4 : 1.8;
+const KMIN = AGIR ? 1 : 0;   // en hafif blok bile bu taban kutlenin altinda olmaz (makaron, kola, kurabiye balon gibi ucmasin)   // v6.10: 2 de zordu (v6.9), 3 cok zordu   // v6.8: (Adem) kupler hafif (kagit gibi) hissettiriyordu: tum kup kutleleri bu katsayiyla carpilir
+const world = new CANNON.World({ gravity: new CANNON.Vec3(0, Q.get('agir') !== '0' ? -38 : -32, 0) });   // v6.8: (Adem) kupler agir dussun
 world.broadphase = new CANNON.SAPBroadphase(world); world.allowSleep = true; world.solver.iterations = 14; world.solver.tolerance = 0.0005;
 // ozel malzemelerin kendi Material'i var; onlarla carpismada surtunme/sekme iki tarafin carpimidir (cannon-es)
 const PM = { cube: new CANNON.Material({ friction: 0.62, restitution: 0.2 }), ball: new CANNON.Material({ friction: 0.45, restitution: 0.5 }), plat: new CANNON.Material({ friction: 0.65, restitution: 0.25 }) };
-world.addContactMaterial(new CANNON.ContactMaterial(PM.cube, PM.cube, { friction: 0.48, restitution: 0 }));   // v6.7: eski 0.38, biraz daha tutunur
+world.addContactMaterial(new CANNON.ContactMaterial(PM.cube, PM.cube, { friction: Q.get('agir') !== '0' ? 0.6 : 0.48, restitution: 0 }));   // v6.7: eski 0.38, biraz daha tutunur
 world.addContactMaterial(new CANNON.ContactMaterial(PM.cube, PM.plat, { friction: 0.45, restitution: 0 }));
-world.addContactMaterial(new CANNON.ContactMaterial(PM.ball, PM.cube, { friction: 0.2, restitution: 0.25 }));
+world.addContactMaterial(new CANNON.ContactMaterial(PM.ball, PM.cube, { friction: 0.2, restitution: Q.get('agir') !== '0' ? 0.08 : 0.25 }));
 world.addContactMaterial(new CANNON.ContactMaterial(PM.ball, PM.plat, { friction: 0.3, restitution: 0.3 }));
 const platBody = new CANNON.Body({ mass: 0, material: PM.plat }); platBody.collisionFilterGroup = 4; world.addBody(platBody);   // v6.11: mermi (grup 2) platforma carpmaz
 const GB = new CANNON.Body({ mass: 0, material: PM.plat }); GB.addShape(new CANNON.Plane()); GB.quaternion.setFromEuler(-Math.PI / 2, 0, 0); GB.position.y = GY; world.addBody(GB);
@@ -1760,7 +1763,7 @@ function parcaKur(col, pn, yer, donus) {
     col = NOMETAL[col] || col;
     const kd = col[0] === '#' ? null : KIND[col], mg = fitCube(kd ? col : 'kup'), isF = col === 'fici' && !mg;
     const pm = kd ? (kd.pm || (kd.pm = new CANNON.Material({ friction: kd.f, restitution: kd.r }))) : PM.cube;
-    const body = new CANNON.Body({ mass: (kd ? kd.mass : 1) * KAGIR, material: pm, sleepSpeedLimit: 0.25, sleepTimeLimit: 0.4, linearDamping: 0.03, angularDamping: 0.16 });   // v6.8: 3 kat agir, kolay donmez
+    const body = new CANNON.Body({ mass: Math.max(KMIN, kd ? kd.mass : 1) * KAGIR, material: pm, sleepSpeedLimit: 0.25, sleepTimeLimit: 0.4, linearDamping: AGIR ? 0.09 : 0.03, angularDamping: AGIR ? 0.32 : 0.16 });   // v6.8: 3 kat agir, kolay donmez
     const sk = kd && kd.sek ? SEK.al(col) : null;   // v3.1: kodla cizilen sekil
     const isE = kd && kd.esya, gl = kd && kd.cam, kp = KEEP[col] && MOD[col] ? fitKeep(col) : null, ghh = sk ? sk.h : gl ? glassInfo(gl).hh : kp ? MOD[col].dim.h : S;
     if (KEMERDELIK && /^ksKemer/.test(col) && sk) kemerSekil(body);   // v11.3
@@ -3023,16 +3026,16 @@ const TOPKAYIP = Q.get('fiz') === 'eski' ? 0.45 : 0.32;   // v12.1: top ilk carp
 // v1.3: (Adem: alttaki kupu vurunca ustteki ziplıyor, bolumler pat pat geciyor) top cok hizli (95) oldugu icin carptigi kup ve
 // komsulari 40-50 birim/sn hizla firliyordu. Her fizik adimindan sonra: carpisma noktasinin 3 birim cevresindeki kuplerin hizi sinirlanir,
 // top hafifler; patlama disinda hicbir kup yukari firlamaz.
-const YUM = [], VMAX = 13, VUP = 1.6, VUPG = 3.5; let BOOMT = -9;
+const YUM = [], VMAX = AGIR ? 7 : 13, VUP = AGIR ? 0.7 : 1.6, VUPG = 3.5, WMAX = AGIR ? 2.8 : 4; let BOOMT = -9;
 world.addEventListener('postStep', () => {
   if (K || !g) return;
   const patlama = g.t - BOOMT < 0.9;
   while (YUM.length) { const [p, b] = YUM.pop();
-    if (b && !b.hafif) { b.hafif = 1; b.body.velocity.scale(GUC ? 0.6 : FIZ2 && b.hc && /^ks(Tas|Kemer|Yildiz|Sutun|MorSutun)|^oyA$/.test(b.hc.kind || '') ? 0.45 : TOPKAYIP, b.body.velocity); b.body.mass = GUC ? 2.8 : 2; b.body.updateMassProperties(); }
+    if (b && !b.hafif) { b.hafif = 1; b.body.velocity.scale(GUC ? (AGIR ? 0.3 : 0.6) : FIZ2 && b.hc && /^ks(Tas|Kemer|Yildiz|Sutun|MorSutun)|^oyA$/.test(b.hc.kind || '') ? 0.45 : TOPKAYIP, b.body.velocity); b.body.mass = GUC ? 2.8 : 2; b.body.updateMassProperties(); }
     if (patlama) continue;
     for (const c of cubes) { if (c.out) continue; const q = c.body.position; if ((q.x - p.x) ** 2 + (q.y - p.y) ** 2 + (q.z - p.z) ** 2 > 9) continue;
       const v = c.body.velocity; if (v.y > VUP) v.y = VUP; const h = Math.hypot(v.x, v.z); if (h > VMAX) { v.x *= VMAX / h; v.z *= VMAX / h; }
-      const w = c.body.angularVelocity, wl = w.length(); if (wl > 4) w.scale(4 / wl, w); } }
+      const w = c.body.angularVelocity, wl = w.length(); if (wl > WMAX) w.scale(WMAX / wl, w); } }
   if (!patlama) for (const c of cubes) { if (c.out || c.gone) continue; const v = c.body.velocity; if (v.y > VUPG) v.y = VUPG; }
 });
 const AZIZ = Q.get('iz') !== 'eski';
