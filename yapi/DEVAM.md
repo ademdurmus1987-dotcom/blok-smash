@@ -294,6 +294,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 - v12.48: tam ekran kurtarma videolari karakter/dost/kurtar/{id}.mp4 (15 sn, Seedance 2.5; Foxi anahtarla kafesi acar). Yerler: papagan fener, maymun selale, ahtapot batik gemi, kunduz nehir sali, penguen buz magarasi, kirpi tapinak zindani, kurbaga atesbocekli bataklik (timsah), kedi Rako'nun ambari (Rako kapaktan duser). oyun.js kurtarSonra: kurtarma videosu + (gemi denizdeyse) yolculuk parcasi + tek yazi (gorev, tayfa n/8, yardim, siradaki bolum). Eski kafes ekrani ?kurt2=0. Deneme: konsolda BSKURTAR('penguen').
 
+- v12.50: acilis videosu (varsayilan ?logo4=5): karakter/acilis/acilis6.mp4 (10 sn, Seedance 2.5 genis yan cekim: Rako kuleyi diziyor, Foxi topla yikar, TNT, altin, kafes acilir, Pako kurtulur) + ilk kare poster. Tabela simge/tabela.webp (logo4.webp'den yalniz tabela kesildi) 6.8. sn'de iner ve sallanir. Video biterse ya da dokununca oyun acilir. Onceki tam ekran resim ?logo4=3, eski sarki videosu ?logo4=0. Sinematik B surumu (yakin cekimler) kullanilmadi, ileride hikaye girisi olabilir.
+
 ## SIRADAKI (25 Kas 2026 gece, yarin buradan devam)
 1. Hikaye kartlari: her kartta en fazla 2 karakter + referans resimler (Gemini cok karakterli sahnede karakterleri tutamiyor; firtina kartinda ilk resim kaldi). Sirada: (8. bolum yapildi v12.43) Pako gemide (11), komik Rako (50). Istemler sohbet gecmisinde; KARTLAR'a eklenecek.
 2. Kazanma ekraninda 'sonraki tayfa' sayaci (tasarimda vardi, yapilmadi).
