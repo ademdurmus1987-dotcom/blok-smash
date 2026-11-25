@@ -19,7 +19,8 @@ import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: pl
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
 import { hikayeKart } from './hikaye.js?v=2';   // v12.42 hikaye kartlari (Rako, firtina)
-import { DOST, dostBolum, dostKafes, dostUc, dostEkran, dostOnYukle, dostVar } from './dost.js?v=23';   // v12.20 deneme ?dost=1: kafesteki dost
+import { DOST, DOSTLAR, dostBolum, dostKafes, dostUc, dostEkran, dostOnYukle, dostVar, dostSonraki } from './dost.js?v=23';   // v12.20 deneme ?dost=1: kafesteki dost
+import { yolculukOynat, yolOnYukle } from './yolculuk.js?v=1';   // v12.44 Foxi'nin Yolculugu: kurtarmadan sonra gemi parcasi
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
@@ -27,7 +28,7 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=6';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=51';
+import { merkezKur } from './merkez.js?v=52';
 import * as EG from './egri.js?v=6';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=9';
@@ -1822,7 +1823,7 @@ function bolumBasla(Y) {
       const par = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: '#fff3a0', transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false })); par.scale.setScalar(S * 2.2); par.position.z = S * 0.55; c.mesh.add(par);
       const ak = new THREE.Sprite(new THREE.SpriteMaterial({ map: dostRozet(), transparent: true, depthWrite: false })); ak.scale.setScalar(S * 0.95); ak.position.z = S * 0.62; ak.renderOrder = 5; c.mesh.add(ak);
       ak.onBeforeRender = () => { const t = performance.now() / 1000, k = 1 + 0.12 * Math.sin(t * 5); ak.scale.setScalar(S * 0.95 * k); par.material.opacity = 0.55 + 0.35 * Math.sin(t * 5); };
-      c.dostA = 1; g.dost = { d, acik: false }; dostKafes(true); dostOnYukle(d); } }
+      c.dostA = 1; g.dost = { d, acik: false }; dostKafes(true); dostOnYukle(d); yolOnYukle(DOSTLAR.indexOf(d) + 1); } }
   if (K) K.sahne(); else { const tm = TEMA_YAPI, fo = fonOf(LV); $('bg').style.backgroundImage = 'url(fon/' + (fo.yeni ? 'yeni/' + fo.r + '.webp?v=2' : fo.f + (BOSFON.has(fo.f) && !fo.vid ? '_bos.webp?v=1' : '.webp?v=2')) + ')'; $('bg').style.backgroundSize = fo.bs || ''; $('bg').style.backgroundPosition = fo.bp || ''; $('bg').classList.toggle('koyu', Q.get('koyufon') === '1' && !!fo.yeni && LV % 5 === 0)   /* v11.5 (Adem: '1520. bolumde ekran kararmasi'): 5'in katlarinda fon karartmasi kapali, eski ?koyufon=1 */; setPlat(tm[1]); setDirt(fo); setSea(fo); if (fo.yeni) DIRT.visible = false; canliFon(fo.yeni ? { f: fo.f, vid: 1 } : fo); videoFon(fo); fonIsi(fo); for (const q of PLS) if (q.yb && q.leg) legBoy(q.leg, q.yb); if (fo.yeni) temaKur(); }   // v6.11: (Adem) karli koyde platform koyun icinde duruyordu: fon buyuyup koy yukari, platformun arkasina alindi
   let ipu = ''; if (Y.ip && Y.a && !K) { if (!SV.ark) SV.ark = []; if (!SV.ark.includes(Y.a)) { SV.ark.push(Y.a); ipu = '<i>' + Y.ip + '</i>'; } }   // v5.0: yeni yapi tipinin cozum ipucu (ilk karsilasmada)
   const nm = $('nm'); const dfo = !PILOTQ && !K && FONYENI ? fonOf(LV) : null, dyeni = dfo && (LV === 1 || fonOf(LV - 1) !== dfo);   // v6.6: dunya adi; dunyanin ilk bolumunde 'YENI DUNYA'
@@ -3868,7 +3869,7 @@ function win() {
     const I = ist(); I.kazan++; if (SV.dus !== LV) { I.ilk++; I.seri++; I.enSeri = Math.max(I.enSeri, I.seri); } else I.seri = 1; SV.dus = 0;
     if (ilk) SV.sn = (SV.sn || 0) + 1;
     gorevKaydet(true); if (sonB) { SV.final = 1; save(); finalGoster(); return; } const kz = () => M.kazan({ L: LV, st, kaz, once, kalan: g.shots, bonus, zorB, yeniK, ilk, yag, hed, tip: PLAN && PLAN.tip, etiket: PLAN && PLAN.etiket });
-    if (g.dost && g.dost.acik) { const ds = SV.dost || (SV.dost = []); if (!ds.includes(g.dost.d.id)) ds.push(g.dost.d.id); save(); const dd = g.dost.d; g.dost = null; dostEkran(dd, ds.length, kz, sfx, kayitCal); } else { dostKafes(false); kz(); } return;
+    if (g.dost && g.dost.acik) { const ds = SV.dost || (SV.dost = []); if (!ds.includes(g.dost.d.id)) ds.push(g.dost.d.id); save(); const dd = g.dost.d; g.dost = null; dostEkran(dd, ds.length, () => yolSonra(dd, kz), sfx, kayitCal); } else { dostKafes(false); kz(); } return;
   }
   gorevKaydet(true);
   modal('<div class="rib">Tebrikler!</div><div class="stars">' + yildizHtml(st) + '</div><h2>Bölüm ' + LV + ' tamam</h2>' +
@@ -3978,6 +3979,8 @@ function mzKaynak(yol) {
 }
 let FXK = false;   // v3.14: Foxi'nin sarki videosu oynarken bolum muzigi tamamen susar
 function mzHedef() { return FXK ? 0 : SR && SR.calar ? MZV * 0.18 : MZV; }   // Foxi sarkisi calarken bolum muzigi kisik
+// v12.44: kurtarma ekranindan sonra yolculuk parcasi (yeni uye gemiye katilir, gemi siradaki adaya acilir)
+function yolSonra(d, kz) { const s = dostSonraki(SV); yolculukOynat([DOSTLAR.indexOf(d) + 1], d.ad + ' gemide!', s ? 'Tayfa büyüyor! Sıradaki kurtarma: Bölüm ' + s.L : 'Bütün tayfa gemide! Haydi, Rako\'nun kulelerine!', kz, muzikKis); }
 function muzikKis(b) { FXK = !!b; if (MZ && AC) MZ.g.gain.setTargetAtTime(mzHedef(), AC.currentTime, b ? 0.15 : 0.8); }
 function muzikBasla() {
   if (K || TEST || !AC || SV.sessiz || SV.muziksiz || $('load')) return;   // v3.14: acilis videosu (sarki) bitene kadar muzik yok

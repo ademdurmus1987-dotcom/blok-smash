@@ -286,6 +286,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 - v12.43: 8. bolum karti pako_kafes (Rako Pako'yu kafese kilitliyor). Resim Higgsfield Nano Banana Pro, 3 referansla (kart/rako, dost/papagan, dost/kafes_kapali; Pages adresinden media_import_url) Adem claude.ai sohbetinde sinirsiz haktan uretti (Claude Code'dan sinirsiz hak kullanilamiyor, kredi harciyor). Kaynak kart/kaynak/pako_kafes.jpg.
 
+- v12.44: Foxi'nin Yolculugu (yapi/yolculuk.js, ?yol=0 kapatir). karakter/yolculuk/parca0..8.mp4 (540x960 sesli, 6 sn; Higgsfield Seedance 2.5 omni_reference, Adem claude.ai sohbetinde sinirsiz hakla). parca0 Foxi yalniz, parcaN = DOSTLAR[N-1] gemiye katilir. Kurtarma ekraninda 'Harika!' sonrasi o parca + 'Siradaki kurtarma: Bolum N'. Tayfa sayfasinda 'Yolculugu izle' (0 + kurtarilanlarin parcalari arka arkaya). Istem kalibi: ayni acilis cekimi (guverte) / yeni uye girisi / herkes sevinir + kamera geri ve yukari, gemi adaya. Dersler: gemi resmi referansken Foxi bas heykeliyle karisiyor (parca0'da GEMI referansi verilmedi); 'herkes sevinsin' yabanci hayvan ekleyebiliyor; kalabalikta karakter ikizlenebiliyor ('every character exactly once'). Tam film 50 sn (Adem'e gonderildi, repoda yok).
+
 ## SIRADAKI (25 Kas 2026 gece, yarin buradan devam)
 1. Hikaye kartlari: her kartta en fazla 2 karakter + referans resimler (Gemini cok karakterli sahnede karakterleri tutamiyor; firtina kartinda ilk resim kaldi). Sirada: (8. bolum yapildi v12.43) Pako gemide (11), komik Rako (50). Istemler sohbet gecmisinde; KARTLAR'a eklenecek.
 2. Kazanma ekraninda 'sonraki tayfa' sayaci (tasarimda vardi, yapilmadi).

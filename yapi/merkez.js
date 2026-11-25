@@ -8,6 +8,7 @@ import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { kazanSahne, yazi, sevincSec } from './kazan2.js?v=13';
 import { DOST, DOSTLAR, TAKVIM, YARDIM, dostVar, dostSonraki } from './dost.js?v=23';   // v12.41 murettebat sayfasi, yardimlar
+import { YOLCULUK, yolculukOynat } from './yolculuk.js?v=1';   // v12.44 Tayfa sayfasinda 'Yolculugu izle'
 import { logoSVG } from './logo2.js?v=4';
 import { GOR, ARABA, GULLE, gorSec, arabaSvg, gulleSvg, OCAK, KOSTUM, kostumSec, kostumResim } from './gorunum.js?v=2';   // v12.2 Gardirop (eski ?gor=0)   // v10.13: Blender ile gercek 3B logo resmi (ikon/logo3d.webp, uretici/blender/logo3d.py); eski: ?logo=eski
 const LOGO2 = !/[?&]logo=eski/.test(location.search);   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
@@ -689,8 +690,11 @@ export function merkezKur(A) {
     const ds = SV.dost || [];
     pop(bas('Foxi\'nin Tayfası') + '<div class="p-ic"><p class="ty-ust">Rako\'nun kulelerini yık, kafesteki tayfanı kurtar! Her tayfa Foxi\'ye yardım eder.</p><div class="ty-izg">' + DOSTLAR.map((d, i) => { const v = ds.includes(d.id);
       return '<div class="ty-k' + (v ? ' var' : '') + '"><div class="ty-r"><img src="../karakter/dost/' + d.id + '.webp?v=1" alt=""></div><b>' + (v ? d.ad : '???') + '</b><small>' + (v ? d.gorev : 'Bölüm ' + TAKVIM[i]) + '</small><em>' + (v ? YARDIM[d.id] : '🔒 Kafeste') + '</em></div>'; }).join('') +
-      '</div><p class="p-not">' + ds.length + ' / ' + DOSTLAR.length + ' tayfa kurtarıldı</p></div><button class="m-btn kck" id="p-tm">Tamam</button>');
+      '</div><p class="p-not">' + ds.length + ' / ' + DOSTLAR.length + ' tayfa kurtarıldı</p></div>' + (YOLCULUK ? '<button class="m-btn tur" id="p-yol">▶ Yolculuğu izle</button>' : '') + '<button class="m-btn kck" id="p-tm">Tamam</button>');
     $('p-tm').onclick = () => { tik(); pkapat(); };
+    // v12.44: Foxi'nin Yolculugu, simdiye kadar katilanlarin parcalari arka arkaya (kurtarilmayanlar gosterilmez)
+    if ($('p-yol')) $('p-yol').onclick = () => { tik(); pkapat(); const ls = [0].concat(DOSTLAR.map((d, i) => (ds.includes(d.id) ? i + 1 : 0)).filter((x) => x));
+      yolculukOynat(ls, 'Foxi\'nin Yolculuğu', ds.length < DOSTLAR.length ? 'Yolculuk sürüyor! Kafesteki tayfanı kurtardıkça hikâye devam edecek.' : 'Bütün tayfa gemide. Ne yolculuktu!', null, A.muzikKis); };
   }
   if ($('m-tayfa')) $('m-tayfa').onclick = () => { tik(); tayfaKarti(); };
   $('m-sdost').onclick = () => { tik(); tayfaKarti(); };
