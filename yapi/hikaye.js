@@ -1,9 +1,12 @@
 // Foxi Smash v12.43: 8. bolum Pako kafeste karti (Higgsfield). v12.42 (Adem 25 Kas): hikaye kartlari. Bolum basinda (bir kez) tam ekran dikey resim + kisa yazi; dokununca kapanir.
 // Resimler: karakter/kart/{id}.webp (Adem'in Gemini cizimleri, 720x1280). Gorulenler SV.kart = [id]. Kapatma ?hikaye=0; ?sv= deneme baglantisinda her seferinde cikar.
 export const HIKAYE = !/[?&]hikaye=0/.test(location.search);
+// v12.52 (Adem 25 Kas): v'si olan kart tam ekran video olarak oynar (Higgsfield Seedance), baslik ve yazi videonun sonunda cikar. Eski resimli kart: ?hvid=0
+import { YOLCULUK, yolculukOynat } from './yolculuk.js?v=3';
+const HVID = YOLCULUK && !/[?&]hvid=0/.test(location.search);
 export const KARTLAR = [
-  { L: 1, id: 'firtina', bas: 'Fırtına!', yazi: 'Dev bir fırtına Foxi\'nin tayfasını dört bir yana savurdu. Hepsini tek tek bulmalıyız!' },
-  { L: 3, id: 'rako', bas: 'Rakun Rako', yazi: 'Bu kuleleri o diziyor! Parlak altınlara bayılıyor ve tayfamızı kafeslere kapatıyor. Kulelerini yık!' },
+  { L: 1, id: 'firtina', v: 1, bas: 'Fırtına!', yazi: 'Dev bir fırtına Foxi\'nin tayfasını dört bir yana savurdu. Hepsini tek tek bulmalıyız!' },
+  { L: 3, id: 'rako', v: 1, bas: 'Rakun Rako', yazi: 'Bu kuleleri o diziyor! Parlak altınlara bayılıyor ve tayfamızı kafeslere kapatıyor. Kulelerini yık!' },
   { L: 8, id: 'pako_kafes', bas: 'Pako kafeste!', yazi: 'Sinsi Rako gözcümüz Papağan Pako\'yu kafese kilitledi! Kuleleri yıkmaya devam et, anahtarı bulup onu kurtaracağız.' }
 ];
 let CSS = false;
@@ -19,10 +22,11 @@ function stil() {
   document.head.appendChild(s);
 }
 // bu bolumun karti varsa ve gorulmediyse gosterir; true doner
-export function hikayeKart(L, SV, save) {
+export function hikayeKart(L, SV, save, kis) {
   if (!HIKAYE) return false;
   const k = KARTLAR.find((x) => x.L === L), gor = SV.kart || [];
   if (!k || (gor.includes(k.id) && !/[?&]sv=/.test(location.search))) return false;
+  if (k.v && HVID) { if (!gor.includes(k.id)) { SV.kart = gor.concat(k.id); save(); } yolculukOynat(['../karakter/kart/' + k.id + '.mp4?v=' + k.v], k.bas, k.yazi, null, kis); return true; }
   stil(); const E = document.createElement('div'); E.id = 'hkart';
   E.innerHTML = '<img alt="" src="../karakter/kart/' + k.id + '.webp?v=1"><div class="hk-alt"><h2>' + k.bas + '</h2><p>' + k.yazi + '</p><button>Devam</button></div>';
   document.body.appendChild(E); requestAnimationFrame(() => requestAnimationFrame(() => E.classList.add('on')));

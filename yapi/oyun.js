@@ -18,7 +18,7 @@ import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
-import { hikayeKart } from './hikaye.js?v=2';   // v12.42 hikaye kartlari (Rako, firtina)
+import { hikayeKart } from './hikaye.js?v=3';   // v12.42 hikaye kartlari (Rako, firtina)
 import { DOST, DOSTLAR, YARDIM, dostBolum, dostKafes, dostUc, dostEkran, dostOnYukle, dostVar, dostSonraki } from './dost.js?v=23';   // v12.20 deneme ?dost=1: kafesteki dost
 import { YOLCULUK, yolculukOynat, yolOnYukle } from './yolculuk.js?v=3';   // v12.44 Foxi'nin Yolculugu: kurtarmadan sonra gemi parcasi
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
@@ -1818,7 +1818,7 @@ function bolumBasla(Y) {
   g = { don: Y.don || 0, L: LV, ad: Y.ad, total: cubes.length, left: cubes.length, shots: shotsFor(cubes.length, Y), max: shotsFor(cubes.length, Y), state: 'play', t: 0, busy: 0, quiet: 0, combo: null, armed: false, bonus: 0, gold: 0 };
   FUSE.length = 0;
   egriBasla(Y);   // v8.0: bolum turu, hazine hedefleri, Foxi yardimi
-  if (M && !K && !PILOTQ) try { hikayeKart(LV, SV, save); } catch (e) {}   // v12.42
+  if (M && !K && !PILOTQ) try { hikayeKart(LV, SV, save, muzikKis); } catch (e) {}   // v12.42
   { const d = DOST && M && !K && !PILOTQ ? dostBolum(LV, SV) : null; g.dost = null; dostKafes(false);   // v12.20 ?dost=1: one bakan, orta yukseklikteki kupe altin anahtar
     const cs = d ? cubes.filter((c) => !c.out && !c.gone && c.mesh) : [];
     if (cs.length > 2) { const zm = Math.max(...cs.map((c) => c.body.position.z)), on = cs.filter((c) => c.body.position.z > zm - S * 0.6).sort((p, q) => p.body.position.y - q.body.position.y), c = on[Math.floor(on.length * 0.55)];

@@ -298,12 +298,11 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 - v12.51: acilis videosu yeniden: karakter/acilis/acilis7.mp4 (sinematik, gun batimi, az ama iri bloklar; Rako kulenin tepesinde anahtari korur, kafes palmiyede atis hattinin disinda; patlama, anahtar kafesin kilidine ucar, Pako cikar, Foxi + Pako poz). Ders: oyun ekran goruntusunu referans vermek kaliteyi oyunun sade gorunusune indirdi, kalabaliklasti; kafes kulede olunca top papagana ates ediyor gibiydi. Tabela 9.2. sn'de iner (62vw), video bitince son kare 1.6 sn kalir. Onceki genis cekim ?logo4=6.
 
+- v12.52: hikaye kartlari videolu (hikaye.js KARTLAR v alani; yolculukOynat ile tam ekran, baslik+yazi sonda; eski resim ?hvid=0). karakter/kart/firtina.mp4 (12 sn: firtina, Pako savrulur, gemi parcalanir, Foxi adaya vurur) ve rako.mp4 (10 sn: Rako cuvalla gelir, kuleyi dizer, anahtari koyar). Not: ana sayfa foxi_korsan.mp4 zaten yeni Foxi, yenilenmesi gerekmiyor.
+
 ## SIRADAKI (25 Kas 2026 aksam guncel)
 Higgsfield sinirsiz deneme 28 Kas 10:36'da biter (Claude Code'dan sinirsiz yok; Adem claude.ai sohbetinde uretir, ben oyuna eklerim). Otomatik yenileme iptali Adem'in kararinda.
 Once uretim isteyenler (deneme bitmeden):
-1. Ana sayfa Foxi videosu (karakter/foxi_korsan.mp4, eski Foxi) yeni Foxi ile.
-2. Firtina karti (1. bolum) yenisi ya da kisa video: eski Foxi, tayfa renkleri yanlis, cok karakter.
-3. Rako tanitimi (3. bolum): kart yerine kuleyi dizen Rako videosu.
 4. Komik Rako karti (50. bolum). ('Pako gemide' karti artik gereksiz: gemi o zaman henuz yapilmiyor.)
 Sonra (uretim gerektirmez):
 5. Kazanma ekraninda 'sonraki tayfaya N bolum' sayaci.
