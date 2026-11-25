@@ -1,9 +1,10 @@
-// Foxi Smash v12.42 (Adem 25 Kas): hikaye kartlari. Bolum basinda (bir kez) tam ekran dikey resim + kisa yazi; dokununca kapanir.
+// Foxi Smash v12.43: 8. bolum Pako kafeste karti (Higgsfield). v12.42 (Adem 25 Kas): hikaye kartlari. Bolum basinda (bir kez) tam ekran dikey resim + kisa yazi; dokununca kapanir.
 // Resimler: karakter/kart/{id}.webp (Adem'in Gemini cizimleri, 720x1280). Gorulenler SV.kart = [id]. Kapatma ?hikaye=0; ?sv= deneme baglantisinda her seferinde cikar.
 export const HIKAYE = !/[?&]hikaye=0/.test(location.search);
 export const KARTLAR = [
   { L: 1, id: 'firtina', bas: 'Fırtına!', yazi: 'Dev bir fırtına Foxi\'nin tayfasını dört bir yana savurdu. Hepsini tek tek bulmalıyız!' },
-  { L: 3, id: 'rako', bas: 'Rakun Rako', yazi: 'Bu kuleleri o diziyor! Parlak altınlara bayılıyor ve tayfamızı kafeslere kapatıyor. Kulelerini yık!' }
+  { L: 3, id: 'rako', bas: 'Rakun Rako', yazi: 'Bu kuleleri o diziyor! Parlak altınlara bayılıyor ve tayfamızı kafeslere kapatıyor. Kulelerini yık!' },
+  { L: 8, id: 'pako_kafes', bas: 'Pako kafeste!', yazi: 'Sinsi Rako gözcümüz Papağan Pako\'yu kafese kilitledi! Kuleleri yıkmaya devam et, anahtarı bulup onu kurtaracağız.' }
 ];
 let CSS = false;
 function stil() {
