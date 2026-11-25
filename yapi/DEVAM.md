@@ -298,9 +298,15 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 - v12.51: acilis videosu yeniden: karakter/acilis/acilis7.mp4 (sinematik, gun batimi, az ama iri bloklar; Rako kulenin tepesinde anahtari korur, kafes palmiyede atis hattinin disinda; patlama, anahtar kafesin kilidine ucar, Pako cikar, Foxi + Pako poz). Ders: oyun ekran goruntusunu referans vermek kaliteyi oyunun sade gorunusune indirdi, kalabaliklasti; kafes kulede olunca top papagana ates ediyor gibiydi. Tabela 9.2. sn'de iner (62vw), video bitince son kare 1.6 sn kalir. Onceki genis cekim ?logo4=6.
 
-## SIRADAKI (25 Kas 2026 gece, yarin buradan devam)
-1. Hikaye kartlari: her kartta en fazla 2 karakter + referans resimler (Gemini cok karakterli sahnede karakterleri tutamiyor; firtina kartinda ilk resim kaldi). Sirada: (8. bolum yapildi v12.43) Pako gemide (11), komik Rako (50). Istemler sohbet gecmisinde; KARTLAR'a eklenecek.
-2. Kazanma ekraninda 'sonraki tayfa' sayaci (tasarimda vardi, yapilmadi).
-3. Gemi (Insa) ekraninda tayfa yerleri (Adem'den guverte cizimi).
-4. Paylas dugmesi (kurtarma ani).
-5. Bekleyen eski isler: ?kam4=1 kamera denemesi onayi, yeni ikon (simge/cc/ikon4) onayi, telefonda platform ayagi gorunuyor mu (?tani=1).
+## SIRADAKI (25 Kas 2026 aksam guncel)
+Higgsfield sinirsiz deneme 28 Kas 10:36'da biter (Claude Code'dan sinirsiz yok; Adem claude.ai sohbetinde uretir, ben oyuna eklerim). Otomatik yenileme iptali Adem'in kararinda.
+Once uretim isteyenler (deneme bitmeden):
+1. Ana sayfa Foxi videosu (karakter/foxi_korsan.mp4, eski Foxi) yeni Foxi ile.
+2. Firtina karti (1. bolum) yenisi ya da kisa video: eski Foxi, tayfa renkleri yanlis, cok karakter.
+3. Rako tanitimi (3. bolum): kart yerine kuleyi dizen Rako videosu.
+4. Komik Rako karti (50. bolum). ('Pako gemide' karti artik gereksiz: gemi o zaman henuz yapilmiyor.)
+Sonra (uretim gerektirmez):
+5. Kazanma ekraninda 'sonraki tayfaya N bolum' sayaci.
+6. Paylas dugmesi (kurtarma ani).
+7. Telefonda denenecek: kurtarma/yolculuk/insa videolarinin sesi ve Oynat dugmesi (iPhone), acilis videosu.
+8. Bekleyen eski onaylar: ?kam4=1 kamera, yeni ikon (simge/cc/ikon4), platform ayagi (?tani=1).
