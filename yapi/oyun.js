@@ -8,7 +8,7 @@ import { canliFon, canliKare } from './canli.js?v=4';   // v6.17: fondaki canli 
 import { clone as skClone } from '../SkeletonUtils.js';
 import { mergeGeometries } from '../BufferGeometryUtils.js';
 import { Tilki, tilkiYukle } from '../karakter/karakter.js?v=1';   // v2.1: Korsan Tilki (kazanilan karakter)
-import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
+import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=2';
 import { sekilKur, YAPI } from './sekil.js?v=13';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
@@ -28,7 +28,7 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=6';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=58';
+import { merkezKur } from './merkez.js?v=59';
 import * as EG from './egri.js?v=6';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=3';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=9';
@@ -1432,14 +1432,29 @@ function engCarp(E, ev) {
 const ENGKART = { kapi2: ['Anahtarlı Kapı', '🔑', 'Önce altın anahtar küpü düşür: anahtar kilide uçar, kapı açılır. Sonra arkadaki yapıyı da yık!'],
   giyotin: ['Giyotin', '⚔️', 'Çelik çeneler açılıp kapanır. Açıkken at! Kapalıyken çarpan top parçalanır. Kırmızı parlarsa kapanıyor.'],
   surgu: ['Sürgülü Kapı', '🚪', 'İki kanat ortada birleşip ayrılır. Aralık açılınca at!'],
-  yukari: ['Asansör Duvar', '↕️', 'Duvar iner kalkar. Yukarıdayken alttan, aşağıdayken üstten nişan al!'], ...ENG4KART };
+  yukari: ['Asansör Duvar', '↕️', 'Duvar iner kalkar. Yukarıdayken alttan, aşağıdayken üstten nişan al!'],
+  // v12.54 (Adem: 'her yeni engelde mutlaka bilgilendirme karti'): kartsiz kalan engeller
+  kurek: ['Dönen Pervane', '🌀', 'Kocaman pervane döner durur. Kanatlar yana dönünce aradan at!'],
+  kalkan: ['Sallanan Kalkan', '🛡️', 'Zincirli kalkan sarkaç gibi sallanır. Kenara gidince at!'],
+  kayan: ['Kayan Duvar', '↔️', 'Duvar sağa sola kayar. Önünden çekilince at!'],
+  capa: ['Gemi Çapası', '⚓', 'Dev çapa zincirden sallanır. Çarpan top yavaşlar, uzaklaşınca at!'],
+  kapi: ['Dev Kapı', '🚪', 'Kapı kalkar ve iner. Yukarıdayken altından at!'], ...ENG4KART };
 function yeniEngel() {
   if (K || TEST || Q.get('kart') === '0' || !g) return;
   if (!SV.gor) SV.gor = [];
-  const e = ENG.find((q) => ENGKART[q.t] && !SV.gor.includes('e_' + q.t)); if (!e) return;
-  const [ad, ic, ne] = ENGKART[e.t]; SV.gor.push('e_' + e.t); save();
-  setTimeout(() => { modal('<div class="rib ys">YENİ ENGEL!</div><div style="font-size:72px;line-height:1.2;margin:8px 0">' + ic + '</div><h2>' + ad + '</h2><p>' + ne + '</p><button class="btn" id="yeok">Anladım!</button>');
-    sfx('bonus'); buzz(25); $('yeok').onclick = () => { sfx('tik'); closeModal(); }; }, 450);
+  const ek = (q) => (q.capa ? 'capa' : q.t), e = ENG.find((q) => ENGKART[ek(q)] && !SV.gor.includes('e_' + ek(q))); if (!e) return;
+  const tk = ek(e), [ad, ic, ne] = ENGKART[tk]; SV.gor.push('e_' + tk); save();
+  // v12.54: blok kartiyla ayni kart; ortada engelin oyundaki modeli doner (olmazsa simgesi)
+  const g0 = g, ac = () => { if (g !== g0 || $('ysn')) return; const mz = $('merkez'), mp = $('mpop'), kz = $('mkazan');
+    if ((mz && mz.classList.contains('on')) || (mp && mp.classList.contains('on')) || (kz && kz.classList.contains('on'))) { setTimeout(ac, 400); return; }
+    const px = Math.round(200 * ren.getPixelRatio()), E = document.createElement('div'); E.id = 'ysn';
+    E.innerHTML = (KAL3 ? '<div class="ysn-kart">' : '') + '<div class="ysn-bas">Yeni Engel!</div><div class="ysn-ad">' + ad + '</div><div class="ysn-sah"><div class="ysn-isin"></div><div class="ysn-par"></div><canvas id="yscv" width="' + px + '" height="' + px + '"></canvas><div class="ysn-em" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:110px">' + ic + '</div></div><div class="ysn-ne">' + ne + '</div><button class="ysn-dv" id="ysok">Anladım!</button>' + (KAL3 ? '</div>' : '');
+    document.body.appendChild(E); requestAnimationFrame(() => E.classList.add('on'));
+    let ok3 = false; try { if (e.grp) { prvGoster(e.grp, $('yscv'), ['kurek', 'cark', 'gulle', 'donerkapi'].includes(tk) ? 'don' : ['kalkan', 'capa'].includes(tk) ? 'zincir' : 'sal'); ok3 = PRV.on; } } catch (x) {} if (!ok3) { $('yscv').style.display = 'none'; E.querySelector('.ysn-em').style.display = 'flex'; }
+    sfx('bonus'); buzz(25); const t0 = performance.now();
+    const kapa = () => { if (E.classList.contains('cik')) return; sfx('tik'); E.classList.add('cik'); setTimeout(() => { PRV.on = false; E.remove(); }, 300); };
+    E.addEventListener('pointerdown', (ev) => { if (performance.now() - t0 > 900 || ev.target.id === 'ysok') kapa(); }); };
+  setTimeout(ac, 450);
 }
 function engTemizle() { for (const e of ENG) { if (!e.bgit) world.removeBody(e.body); if (e.body2) world.removeBody(e.body2); if (e.ekB) for (const b of e.ekB) world.removeBody(b); if (e.par) { scene.remove(e.par); e.par.material.dispose(); } if (e.key) scene.remove(e.key); scene.remove(e.grp); } ENG.length = 0; }
 function engMesh(grp, geo, mat, x, y, z, rz) { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); if (rz) m.rotation.z = rz; m.castShadow = true; grp.add(m); return m; }
@@ -4218,6 +4233,28 @@ function ggKare(dt) {
 // Bolumde ilk kez gorulen sekil ailesi icin, oyuna baslamadan once kart: donen 3B sekil, adi ve ne yaptigi.
 // Onizleme ana cizici ile ekranin kosesine cizilip 2B tuvale kopyalanir (ayni malzeme ve isik ortami), sonra ana sahne ustune cizilir.
 const PRV = { on: false };
+// v12.54 (Adem: 'Kayan Platform kartinda sandik var, tutarsiz'): platform mekaniklerinde donen blok yerine platformun hareketi cizilir
+const MEKSVG = { m_kay: 'kay', m_asansor: 'asa', m_daire: 'dai', m_don: 'don', m_iki: 'iki', m_uc: 'uc' };
+function mekSvg(a) {
+  if (!document.getElementById('mksvcss')) { const s = document.createElement('style'); s.id = 'mksvcss';
+    s.textContent = '.mksv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:ysnGel .6s cubic-bezier(.2,1.5,.4,1) .3s both}.mksv svg{width:92%;height:92%;overflow:visible}.mksv .mp{transform-box:fill-box;transform-origin:50% 100%}' +
+      '.mk-kay .mp{animation:mkKay 2.6s ease-in-out infinite}@keyframes mkKay{0%,100%{transform:translateX(-36px)}50%{transform:translateX(36px)}}' +
+      '.mk-asa .mp{animation:mkAsa 2.6s ease-in-out infinite}@keyframes mkAsa{0%,100%{transform:translateY(22px)}50%{transform:translateY(-26px)}}' +
+      '.mk-dai .mp{animation:mkDai 3.2s linear infinite}@keyframes mkDai{0%,100%{transform:translate(-32px,0)}25%{transform:translate(0,-24px)}50%{transform:translate(32px,0)}75%{transform:translate(0,18px)}}' +
+      '.mk-don .mp{transform-origin:50% 50%;animation:mkDon 2.8s ease-in-out infinite}@keyframes mkDon{0%,100%{transform:scaleX(1)}50%{transform:scaleX(-1)}}' +
+      '.mk-iki .ms,.mk-uc .ms{animation:mkSal 2.4s ease-in-out infinite}@keyframes mkSal{50%{transform:translateY(-6px)}}';
+    document.head.appendChild(s); }
+  const t = MEKSVG[a], blk = (x, y, w, h, c) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="4" fill="' + c + '" stroke="#5a3a12" stroke-width="2"/>';
+  const plat = (cx, k, cl) => '<g class="' + (cl || 'mp') + '" transform="translate(' + cx + ' 0) scale(' + k + ')"><g transform="translate(' + (-100 * 0) + ' 0)">' +
+    blk(-14, 128, 28, 52, '#1c8796') + '<rect x="-62" y="112" width="124" height="18" rx="9" fill="#2fc4cf" stroke="#0b5f6b" stroke-width="3"/>' +
+    blk(-44, 80, 28, 32, '#f0a33b') + blk(-14, 80, 28, 32, '#e8574a') + blk(16, 80, 28, 32, '#4c9fe6') + blk(-30, 50, 28, 30, '#86cf4a') + blk(0, 50, 28, 30, '#f4d14a') + '</g></g>';
+  const ok = (d) => '<path d="' + d + '" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>';
+  let ic = '';
+  if (t === 'iki') ic = plat(78, 1) + plat(168, 0.55, 'ms');
+  else if (t === 'uc') ic = plat(32, 0.55, 'ms') + plat(100, 0.9) + plat(168, 0.55, 'ms');
+  else ic = plat(100, 1) + (t === 'kay' ? ok('M38 194h124M50 184l-12 10 12 10M150 184l12 10-12 10') : t === 'asa' ? ok('M176 70v100M166 82l10-12 10 12M166 158l10 12 10-12') : t === 'don' ? ok('M60 30a52 22 0 1 0 80 0M140 30l-2-14M140 30l-14 2') : ok('M40 194a60 26 0 1 0 120 0'));
+  return '<svg class="mk-' + t + '" viewBox="0 0 200 210" aria-hidden="true">' + ic + '</svg>';
+}
 function blokMesh(col) {
   const kd = KIND[col], sk = kd && kd.sek ? SEK.al(col) : null, gl = kd && kd.cam, isE = kd && kd.esya, kp = KEEP[col] && MOD[col] ? fitKeep(col) : null, mg = sk || gl || kp || isE ? null : fitCube(kd ? col : 'kup'), isF = col === 'fici' && !mg;
   return sk ? new THREE.Mesh(sk.geo, sk.mat) : gl ? makeGlass(gl) : kp ? new THREE.Mesh(kp, MOD[col].mat) : isE ? makeJar() : mg ? new THREE.Mesh(mg, kd ? MOD[col].mat : kupModelMat(col)) : new THREE.Mesh(isF ? FICIGEO : CUBEGEO, kd ? kindMat(col) : kupMat(col));
@@ -4229,17 +4266,18 @@ function prvKur() {
   const r2 = new THREE.DirectionalLight('#9fd4ff', 1.2); r2.position.set(-4, 2, -3); PRV.sc.add(r2);
   PRV.grp = new THREE.Group(); PRV.sc.add(PRV.grp);
 }
-function prvGoster(col, cv) {
+function prvGoster(col, cv, mod) {
   prvKur(); while (PRV.grp.children.length) PRV.grp.remove(PRV.grp.children[0]);
-  let m; try { m = blokMesh(col); } catch (e) { return; }
+  let m; try { if (col && col.isObject3D) { m = col.clone(true); m.position.set(0, 0, 0); m.rotation.set(0, 0, 0); m.scale.set(1, 1, 1); m.updateMatrixWorld(true); } else m = blokMesh(col); } catch (e) { return; }   // v12.54: engel modeli de
   PRV.sc.environment = scene.environment || null;
-  const b = new THREE.Box3().setFromObject(m), c = b.getCenter(new THREE.Vector3()), z = b.getSize(new THREE.Vector3()), k = 1.6 / Math.max(z.x, z.y, z.z, 0.01);
-  m.position.copy(c).multiplyScalar(-k); m.scale.multiplyScalar(k); PRV.grp.add(m); PRV.grp.rotation.set(0.12, 0.6, 0);
+  const obj = !!(col && col.isObject3D), b = new THREE.Box3().setFromObject(m), c = b.getCenter(new THREE.Vector3()), z = b.getSize(new THREE.Vector3()), k = (obj ? 2.3 : 1.6) / Math.max(z.x, mod === 'zincir' ? z.x : z.y, z.z, 0.01);
+  if (mod === 'zincir') c.y = b.min.y + z.x * 0.55;   // v12.54: zincirli engel (kalkan, capa): zincir kadrajin disinda, sarkan parca ortada
+  m.position.copy(c).multiplyScalar(-k); m.scale.multiplyScalar(k); PRV.grp.add(m); PRV.grp.rotation.set(obj ? 0.08 : 0.12, obj ? 0 : 0.6, 0); PRV.obj = obj ? (mod || 'sal') : '';   // v12.54: engel onden gorunur
   PRV.cv = cv; PRV.cx = cv.getContext('2d'); PRV.t = 0; PRV.on = true;
 }
 function prvKare(dt) {
   if (!PRV.on || !PRV.cv || !PRV.cv.isConnected) { PRV.on = false; return; }
-  PRV.t += dt; PRV.grp.rotation.y += dt * 1.3; PRV.grp.position.y = Math.sin(PRV.t * 2.2) * 0.08;
+  PRV.t += dt; if (PRV.obj === 'don') PRV.grp.rotation.z -= dt * 1.1; else if (PRV.obj) PRV.grp.rotation.z = 0.28 * Math.sin(PRV.t * 1.6); else PRV.grp.rotation.y += dt * 1.3; PRV.grp.position.y = Math.sin(PRV.t * 2.2) * 0.08;
   const pr = ren.getPixelRatio(), w = PRV.cv.width, wc = w / pr;
   ren.setScissorTest(true); ren.setScissor(0, 0, wc, wc); ren.setViewport(0, 0, wc, wc);
   const sh = ren.shadowMap.enabled; ren.shadowMap.enabled = false; ren.render(PRV.sc, PRV.cam); ren.shadowMap.enabled = sh;
@@ -4263,7 +4301,7 @@ function yeniSekil() {
       [[12, 18, 0], [80, 10, 0.5], [88, 64, 1], [8, 72, 0.3], [62, 86, 0.8]].map(([l, t, d]) => '<i class="ysn-ys" style="left:' + l + '%;top:' + t + '%;animation-delay:' + d + 's"></i>').join('') +
       '<canvas id="yscv" width="' + px + '" height="' + px + '"></canvas></div><div class="ysn-ne">' + ne + '</div><button class="ysn-dv" id="ysok">Devam Et</button>' + (KAL3 ? '</div>' : '');
     document.body.appendChild(E); requestAnimationFrame(() => E.classList.add('on'));
-    prvGoster(col, $('yscv')); sfx('bonus'); buzz(25); setTimeout(() => { if (E.isConnected) sfx('bonus'); }, 320);
+    if (MEKSVG[a]) { const cv = $('yscv'), d = document.createElement('div'); d.className = 'mksv'; d.innerHTML = mekSvg(a); cv.replaceWith(d); } else prvGoster(col, $('yscv')); sfx('bonus'); buzz(25); setTimeout(() => { if (E.isConnected) sfx('bonus'); }, 320);
     const kapa = () => { if (E.classList.contains('cik')) return; sfx('tik'); E.classList.add('cik'); setTimeout(() => { PRV.on = false; E.remove(); if (n + 1 < yeni.length) setTimeout(() => goster(n + 1), 180); else yeniEngel(); }, 300); };
     E.addEventListener('pointerdown', (ev) => { if (performance.now() - t0 > 900 || ev.target.id === 'ysok') kapa(); }); const t0 = performance.now();
   };

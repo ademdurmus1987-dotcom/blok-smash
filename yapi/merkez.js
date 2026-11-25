@@ -5,7 +5,7 @@
 // hazine sandigi, profil + istatistik, ayarlar / duraklatma, kazanma ve kaybetme sahneleri.
 // oyun.js bu dosyayi merkezKur(A) ile baglar; A oyunun kayit, ses ve bolum islevlerini verir. Korsan modunda ve testte kurulmaz.
 import * as THREE from '../three.module.min.js';
-import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
+import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=2';
 import { kazanSahne, yazi, sevincSec } from './kazan2.js?v=14';
 import { DOST, DOSTLAR, TAKVIM, YARDIM, dostVar, dostSonraki } from './dost.js?v=23';   // v12.41 murettebat sayfasi, yardimlar
 import { YOLCULUK, yolculukOynat } from './yolculuk.js?v=3';   // v12.44 Tayfa sayfasinda 'Yolculugu izle'
@@ -256,7 +256,7 @@ export function merkezKur(A) {
     const ok = $('m-oynak'); ok.classList.toggle('zor', zor); ok.classList.toggle('etk', !!ek); ok.classList.toggle('cokzor', !!Pl && (Pl.etiket === 'cokzor')); ok.classList.toggle('t-altin', !!Pl && Pl.tip === 'altin'); $('m-oynak').querySelector('.m-zor').textContent = ek || 'Zor bölüm!';
     b.querySelector('b').textContent = 'Bölüm ' + max; b.querySelector('small').textContent = A.bolumAdi(max) || '';
     if (DOST) { const sd = dostSonraki(SV), e = $('m-sdost'), kalan = sd ? sd.L - max : 0;   // v12.41: siradaki murettebat
-      e.style.display = sd ? '' : 'none'; if (sd) e.innerHTML = '<img src="../karakter/dost/' + sd.d.id + '.webp?v=1" alt=""><span>' + (kalan > 0 ? '<b>' + kalan + '</b> bölüm sonra kafesten kurtar' : '<b>Bu bölümde</b> kafesi aç') + '<small>' + sd.d.ad + ' · Bölüm ' + sd.L + '</small></span>';
+      e.style.display = sd ? '' : 'none'; if (sd) e.innerHTML = '<img src="../karakter/dost/' + sd.d.id + '.webp?v=1" alt=""><span>' + (kalan > 0 ? sd.d.ad.split(' ').pop() + ' kafeste · <b>' + kalan + '</b> bölüm' : sd.d.ad.split(' ').pop() + ' · <b>Bu bölümde</b> kafesi aç!') + '</span>';   // v12.54 (Adem: 'yazilar cok boguyor'): tek satir
       e.classList.toggle('simdi', !!sd && kalan <= 0); $('m-tayfan').textContent = (SV.dost || []).length + '/' + DOSTLAR.length; $('m-tayfan').classList.add('on'); }
     $('m-seri').innerHTML = I.seri >= 2 ? IK.alev + ' ' + I.seri + ' bölümlük seri' : '';
     const tilkiAcik = acikMi('tilki', max), kr = KARAKTERLER.find((k) => k.id === 'tilki');
@@ -529,7 +529,7 @@ export function merkezKur(A) {
 
   // ---------------- yeni karakter ----------------
   function yeniKarakter() {
-    const Pf = profilOku(), k = KARAKTERLER.find((x) => acikMi(x.id, maxL()) && !Pf.gor[x.id]); if (!k) return false;
+    const Pf = profilOku(), k = KARAKTERLER.find((x) => x.sart > 1 && acikMi(x.id, maxL()) && !Pf.gor[x.id]); if (!k) return false;   // v12.54: bastan acik karakter icin 'kazandin' karti yok
     pop(bas('Yeni Karakter!', false) + '<div class="p-ic"><div class="o-sahne"><div class="m-isin"></div><img src="../' + k.av + '?v=1" alt=""></div><h3>' + k.ad + '</h3><p>Ana sayfada seni karşılar: göz kırpar, el sallar, dans eder!</p></div><button class="m-btn" id="p-tm">Harika!</button>');
     A.sfx('win'); if (T3) T3.t.oyna('sevin', 5);
     $('p-tm').onclick = () => { Pf.gor[k.id] = 1; if (!Pf.kar) Pf.kar = k.id; if (Pf.av === 'a1') Pf.av = k.id; profilYaz(Pf); tik(); pkapat(); ciz(); };

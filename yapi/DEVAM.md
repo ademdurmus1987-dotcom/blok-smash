@@ -302,6 +302,8 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 
 - v12.53: ipucu kartlari (hikaye.js): 2 gemi ('Once bir gemi lazim', resim gemi01), 5 pako_kafes (8'den alindi), 8 fener, 90/190/.../690 her tayfa uyesi (yer, kurtarma bolumu, yardimi); resimler kurtarma videolarinin acilis karesi (karakter/kart/ipucu_{id}.webp). Ayarlar > 'Oyunu sifirla' (onayli; ses/muzik/titresim kalir; oyun.js oyunSifirla, save() __bsSifir iken yazmaz).
 
+- v12.54 (Adem: tutarsizlik, yazilar boguyor, her yenide kart): Foxi bastan acik (profil.js sart 1, 'kazandin' karti yok). Ana sayfa tayfa seridi tek satir. Kartsiz engellere kart: kurek, kalkan, kayan, capa, kapi. Engel karti blok kartiyla ayni gorunum, ortada engelin kendi modeli (pervane doner, zincirliler sarkan parcaya odakli). Platform mekanik kartlarinda (kay, asansor, daire, don, iki, uc) donen sandik yerine platform hareketi SVG cizimi.
+
 ## SIRADAKI (25 Kas 2026 aksam guncel)
 Higgsfield sinirsiz deneme 28 Kas 10:36'da biter (Claude Code'dan sinirsiz yok; Adem claude.ai sohbetinde uretir, ben oyuna eklerim). Otomatik yenileme iptali Adem'in kararinda.
 Once uretim isteyenler (deneme bitmeden):

@@ -4,7 +4,8 @@
 const PKEY = 'bloksmash_profil', YKEY = 'blokpop_yapi_v3';
 // sart: Yapi modunda bu bolume ulasinca acilir (bir onceki bolum gecilince)
 export const KARAKTERLER = [
-  { id: 'tilki', ad: 'Korsan Tilki', sart: 3, av: 'karakter/tilki_avatar.webp' }
+  { id: 'tilki', ad: 'Korsan Tilki', sart: 1,   // v12.54 (Adem: tutarsizlik) Foxi hikayenin kahramani, bastan acik
+    av: 'karakter/tilki_avatar.webp' }
 ];
 // hazir avatarlar (karakter avatarlari kazanildikca listeye eklenir)
 export const AVATARLAR = [
