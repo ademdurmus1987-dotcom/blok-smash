@@ -346,7 +346,7 @@ export function merkezKur(A) {
       const izin = () => { sesIzin = true; removeEventListener('pointerdown', izin, true); };
       addEventListener('pointerdown', izin, true);
       const oynat = () => {
-        const gor = acik && sekmeAd === 'ana' && !document.hidden && !FV.classList.contains('on');
+        const gor = acik && sekmeAd === 'ana' && !document.hidden && !FV.classList.contains('on') && !document.getElementById('yolk');   // v12.49: yolculuk/kurtarma videosu acikken ana sayfa Foxi'si susar
         if (gor) { if (vid.paused) vid.play().catch(() => {}); } else if (!vid.paused) vid.pause();
         const duy = gor && sesIzin && !SV.sessiz && !SV.muziksiz; if (vid.muted === duy) vid.muted = !duy;
         const kis = duy && !vid.paused; if (kis !== kisik) { kisik = kis; if (!FV.classList.contains('on') && A.muzikKis) A.muzikKis(kis); }
