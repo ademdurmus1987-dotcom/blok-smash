@@ -14,7 +14,7 @@ import { GOR, ARABA, GULLE, gorSec, arabaSvg, gulleSvg, OCAK, KOSTUM, kostumSec,
 const LOGO2 = !/[?&]logo=eski/.test(location.search);   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 import { ADA, adaKur } from './ada.js?v=1';
-import { insaKur } from './insa.js?v=4';   // v7.2: (Adem 18 Kas) ayri Insa sayfasi (gemi 10 asama)   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
+import { insaKur } from './insa.js?v=5';   // v7.2: (Adem 18 Kas) ayri Insa sayfasi (gemi 10 asama)   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
 const $ = (id) => document.getElementById(id);
 const ESKI_MENU = !/[?&]ada=1/.test(location.search);   // v7.1: (Adem 18 Kas) ada ana sayfadan kaldirildi (ayri sayfa olacak); deneme: ?ada=1
 const ALT3B = /[?&]altnav=eski/.test(location.search) ? '' : '_3b';   // v10.43 (Adem 21 Kas): alt menu ikonlari konturu temizlenmis 3B surum (ikon/*_3b.webp); eski: ?altnav=eski

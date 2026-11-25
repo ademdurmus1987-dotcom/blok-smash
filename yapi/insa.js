@@ -10,7 +10,7 @@
 import { YOLCULUK, yolculukOynat } from './yolculuk.js?v=3';
 import { DOSTLAR } from './dost.js?v=23';
 const INSAV = YOLCULUK && !/[?&]insav=0/.test(location.search);
-const IVID = (k) => '../karakter/insa/asama' + String(k).padStart(2, '0') + '.mp4?v=1';
+const IVID = (k) => '../karakter/insa/asama' + String(k).padStart(2, '0') + '.mp4?v=' + (k === 9 ? 2 : 1);   // v12.46: asama09 yeniden (Adem, yelkensiz)
 export const DENIZDE = (SV) => ((SV.insa || {}).gemi || 0) >= 10;   // gemi bitti = denize indi (yolculuk parcalari bundan sonra)
 export const PROJE = [{
   id: 'gemi', ad: 'Foxi\'nin Gemisi', n: 10, res: (i) => 'insa/gemi' + String(i).padStart(2, '0') + '.webp?v=1',
