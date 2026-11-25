@@ -2,7 +2,7 @@
 // Videolar: karakter/yolculuk/parca{0..8}.mp4 (540x960, sesli; Higgsfield Seedance 2.5, Adem claude.ai sohbetinde sinirsiz haktan uretti).
 // parca0 = Foxi yalniz, parca N = N. uye katildi (DOSTLAR sirasi). Kapatma ?yol=0.
 export const YOLCULUK = !/[?&]yol=0/.test(location.search);
-const YOL = (i) => '../karakter/yolculuk/parca' + i + '.mp4?v=1';
+const YOL = (i) => (typeof i === 'string' ? i : '../karakter/yolculuk/parca' + i + '.mp4?v=1');   // v12.45: sayi = yolculuk parcasi, yazi = dosya adresi (insa videolari)
 export function yolOnYukle(i) { if (YOLCULUK) fetch(YOL(i)).catch(() => {}); }
 let CSS = false;
 function stil() {
@@ -18,7 +18,7 @@ function stil() {
 #yolk .yk-dv{font:inherit;font-size:20px;font-weight:900;color:#fff;padding:11px 44px;border:0;border-radius:16px;background:linear-gradient(#5fd35a,#2f9a2a);box-shadow:0 5px 0 #1d6a1a,0 8px 14px #0006}`;
   document.head.appendChild(s);
 }
-// liste: oynatilacak parca numaralari; bas/yazi: sonda cikan yazi; devam: kapaninca; kis(b): oyun muzigini kisar
+// liste: oynatilacak parca numaralari ya da adresler; bas/yazi: sonda cikan yazi (ikisi de bossa video bitince kendiliginden kapanir); devam: kapaninca; kis(b): oyun muzigini kisar
 export function yolculukOynat(liste, bas, yazi, devam, kis) {
   if (!YOLCULUK || !liste.length) { if (devam) devam(); return false; }
   stil(); if (kis) kis(true);
@@ -33,7 +33,7 @@ export function yolculukOynat(liste, bas, yazi, devam, kis) {
   v.addEventListener('playing', () => E.classList.remove('dur'));
   setTimeout(() => { if (!kapandi && v.paused && !E.classList.contains('bitti')) dur(); }, 2500);
   const yukle = (k) => { v.src = YOL(liste[k]); v.load(); oynat(); if (liste[k + 1] != null) yolOnYukle(liste[k + 1]); };
-  const son = () => { E.classList.add('bitti'); E.querySelector('.yk-gec').style.display = 'none'; };
+  const son = () => { if (!bas && !yazi) { kapat(); return; } E.classList.add('bitti'); E.querySelector('.yk-gec').style.display = 'none'; };
   const kapat = () => { if (kapandi) return; kapandi = true; v.pause(); if (kis) kis(false); E.classList.remove('on'); setTimeout(() => { E.remove(); if (devam) devam(); }, 350); };
   v.addEventListener('ended', () => { if (++i < liste.length) { v.classList.add('gec'); setTimeout(() => { yukle(i); v.classList.remove('gec'); }, 220); } else son(); });
   v.addEventListener('error', son);

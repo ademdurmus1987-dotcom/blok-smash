@@ -5,6 +5,13 @@
 // resim bir sonraki asamaya gecer, isilti + "Kaburgalar yerlesti!" yazisi. 10. asamada buyuk kutlama.
 // Kayit: SV.insa = { gemi: 1..10 } (oyunun ana kaydinda ayri alan).
 // Disari: PROJE, insaKur(o) -> { ciz(), goster(bool), hazirMi() }
+// v12.45 (Adem 25 Kas): her asamada Foxi'nin gemiyi yaptigi video (karakter/insa/asamaNN.mp4, Higgsfield Seedance; ilk kare bu asamanin resmi, son kare sonrakinin).
+// Son asamadan sonra denize indirme videosu (karakter/insa/denize.mp4) + Foxi'nin Yolculugu (o ana kadar kurtarilan tayfa). Kapatma ?insav=0.
+import { YOLCULUK, yolculukOynat } from './yolculuk.js?v=3';
+import { DOSTLAR } from './dost.js?v=23';
+const INSAV = YOLCULUK && !/[?&]insav=0/.test(location.search);
+const IVID = (k) => '../karakter/insa/asama' + String(k).padStart(2, '0') + '.mp4?v=1';
+export const DENIZDE = (SV) => ((SV.insa || {}).gemi || 0) >= 10;   // gemi bitti = denize indi (yolculuk parcalari bundan sonra)
 export const PROJE = [{
   id: 'gemi', ad: 'Foxi\'nin Gemisi', n: 10, res: (i) => 'insa/gemi' + String(i).padStart(2, '0') + '.webp?v=1',
   bas: 'Tersane hazır, omurga kızakta!',
@@ -91,12 +98,13 @@ export function insaKur(o) {
     mesgul = true; $('in-btn').disabled = true;
     const eski = SV.altin || 0; SV.altin = eski - FY(ad); SV.insa = SV.insa || {}; SV.insa[P.id] = a + 1; A.save();
     const yeni = yukle(a + 1);
+    const vid = INSAV && P.id === 'gemi' ? await new Promise((ok) => { if (!yolculukOynat([IVID(a + 1)], '', '', () => ok(true), A.muzikKis)) ok(false); }) : false;   // v12.45: Foxi gemiyi yapiyor
     const r = SAH.getBoundingClientRect(), cx = r.left + r.width * 0.55, cy = r.top + r.height * 0.6;
     const h = hapEl().getBoundingClientRect(), N = 8;
     ucur2d(h.left + h.width / 2, h.top + h.height / 2, cx, cy, N, (k) => { altinYaz(Math.round(eski - FY(ad) * (k + 1) / N)); A.ses('para', 0.35, 1.25 - k * 0.03); });
     await bekle(900 + N * 55);
     const sr = SAH.getBoundingClientRect(), nok = [[0.42, 0.62], [0.66, 0.55], [0.54, 0.7]];
-    for (let k = 0; k < 3; k++) { vurus(sr.width * nok[k][0], sr.height * nok[k][1], k); await bekle(330); }
+    if (!vid) for (let k = 0; k < 3; k++) { vurus(sr.width * nok[k][0], sr.height * nok[k][1], k); await bekle(330); }
     await yeni; await bekle(120);
     // parlama ve resim degisimi
     FL.classList.remove('on'); void FL.offsetWidth; FL.classList.add('on');
@@ -113,6 +121,9 @@ export function insaKur(o) {
     if (son) { A.sfx('kazan'); for (let k = 0; k < 4; k++) setTimeout(() => parca(sr.width * (0.2 + Math.random() * 0.6), sr.height * (0.25 + Math.random() * 0.4), 24, 'y'), k * 280); }
     const pip = $('in-pip').children[a]; if (pip) { pip.classList.add('on', 'pat'); }
     mesgul = false; altinYaz(SV.altin || 0); ciz();
+    // v12.45: gemi bitti -> denize indirme + yolculuk (Foxi yalniz, sonra simdiye kadar kurtarilan tayfa sirayla gemiye katilir)
+    if (son && INSAV && P.id === 'gemi') setTimeout(() => { const ds = SV.dost || []; const ls = ['../karakter/insa/denize.mp4?v=1', 0].concat(DOSTLAR.map((d, i) => (ds.includes(d.id) ? i + 1 : 0)).filter((x) => x));
+      yolculukOynat(ls, 'Foxi\'nin gemisi denizde!', 'Yolculuk başladı! Kafesteki tayfanı kurtardıkça gemine katılacaklar.', null, A.muzikKis); }, 3400);
   }
   const bekle = (ms) => new Promise((ok) => setTimeout(ok, ms));
   function goster(v) { gor = v; F.classList.toggle('on', v); if (v) ciz(); }
