@@ -42,7 +42,8 @@ export function insaKur(o) {
   const hapEl = () => M.querySelector('#m-ahap .coin');
   const $ = (id) => sayfa.querySelector('#' + id);
 
-  function hazirMi() { const a = asama(); return a < P.n && (SV.altin || 0) >= P.adim[a + 1].f; }
+  const FY = (ad) => Math.round(ad.f * ((SV.dost || []).includes('kunduz') && !/[?&]dost=0/.test(location.search) ? 0.9 : 1));   // v12.41 Kunduz Kundi (Marangoz): insa %10 ucuz
+  function hazirMi() { const a = asama(); return a < P.n && (SV.altin || 0) >= FY(P.adim[a + 1]); }
   function ciz() {
     const a = asama();
     if (!mesgul && gor) { RA.src = P.res(a); }
@@ -52,10 +53,10 @@ export function insaKur(o) {
     if (a >= P.n) {
       K.innerHTML = '<div class="in-bit"><b>Gemi tamamlandı!</b><small>Yeni projeler çok yakında, Kaptan!</small></div>';
     } else {
-      const ad = P.adim[a + 1], ok = al >= ad.f;
+      const ad = P.adim[a + 1], ok = al >= FY(ad);
       K.innerHTML = '<div class="in-sir"><small>SIRADAKİ AŞAMA</small><b>' + ad.ad + '</b></div>' +
-        '<button class="m-btn uz in-btn' + (ok ? ' hazir' : ' az tur') + '" id="in-btn">' + (ok ? 'İnşa Et' : 'Altın Topla') + '<span class="in-f"><i class="coin"></i>' + ad.f + '</span></button>' +
-        (ok ? '' : '<div class="in-not">' + (ad.f - al) + ' altın daha lazım. Bölüm geç, altın kazan!</div>');
+        '<button class="m-btn uz in-btn' + (ok ? ' hazir' : ' az tur') + '" id="in-btn">' + (ok ? 'İnşa Et' : 'Altın Topla') + '<span class="in-f"><i class="coin"></i>' + FY(ad) + '</span></button>' +
+        (ok ? '' : '<div class="in-not">' + (FY(ad) - al) + ' altın daha lazım. Bölüm geç, altın kazan!</div>');
       $('in-btn').onclick = () => { tik(); if (ok) insa(); else oyna(); };
     }
     const nb = M.querySelector('.m-alt button[data-s="insa"]'); if (nb) nb.classList.toggle('in-nok', hazirMi());
@@ -86,13 +87,13 @@ export function insaKur(o) {
   }
 
   async function insa() {
-    const a = asama(); if (mesgul || a >= P.n) return; const ad = P.adim[a + 1]; if ((SV.altin || 0) < ad.f) return;
+    const a = asama(); if (mesgul || a >= P.n) return; const ad = P.adim[a + 1]; if ((SV.altin || 0) < FY(ad)) return;
     mesgul = true; $('in-btn').disabled = true;
-    const eski = SV.altin || 0; SV.altin = eski - ad.f; SV.insa = SV.insa || {}; SV.insa[P.id] = a + 1; A.save();
+    const eski = SV.altin || 0; SV.altin = eski - FY(ad); SV.insa = SV.insa || {}; SV.insa[P.id] = a + 1; A.save();
     const yeni = yukle(a + 1);
     const r = SAH.getBoundingClientRect(), cx = r.left + r.width * 0.55, cy = r.top + r.height * 0.6;
     const h = hapEl().getBoundingClientRect(), N = 8;
-    ucur2d(h.left + h.width / 2, h.top + h.height / 2, cx, cy, N, (k) => { altinYaz(Math.round(eski - ad.f * (k + 1) / N)); A.ses('para', 0.35, 1.25 - k * 0.03); });
+    ucur2d(h.left + h.width / 2, h.top + h.height / 2, cx, cy, N, (k) => { altinYaz(Math.round(eski - FY(ad) * (k + 1) / N)); A.ses('para', 0.35, 1.25 - k * 0.03); });
     await bekle(900 + N * 55);
     const sr = SAH.getBoundingClientRect(), nok = [[0.42, 0.62], [0.66, 0.55], [0.54, 0.7]];
     for (let k = 0; k < 3; k++) { vurus(sr.width * nok[k][0], sr.height * nok[k][1], k); await bekle(330); }

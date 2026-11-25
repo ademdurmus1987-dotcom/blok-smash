@@ -276,3 +276,9 @@ Rakipte yapi ekran genisliginin %80-90'i, blok ~90-100 px; bizde yapi ~%30, blok
 - v12.38: kaplumbaga -> Maymun Miko (Direkci, 10. bolum), fok -> Kedi Mirmir (Ambar Bekcisi, 40. bolum). Resimler Adem (CapCut AI, Pixar tarzi istem) -> karakter/dost/{maymun,kedi}.webp. Eski kaplumbaga.webp/fok.webp duruyor (kullanilmiyor). Videolari bekleniyor.
 - v12.39: Maymun videosu (Flow). Kedi videosunda yelek YESIL geldi, ayiklamada siliniyor; kullanilmadi (kaynak/kedi_kafes_video_yesilyelek.mp4). VIDEOLU 7/8.
 - v12.40: Kedi videosu (Flow, kahverengi yelek). MURETTEBAT TAMAM: 8/8 videolu (papagan 5, maymun 10, ahtapot 15, kunduz 20, penguen 25, kirpi 30, kurbaga 35, kedi 40). 45. bolumden sonra sira basa doner ama hepsi kurtarildiysa anahtar cikmaz.
+
+## v12.41 (25 Kas 2026): korsan tayfasi tasarimi, 1. asama
+- Adem kararlari: tarihi figur YOK (Topcu Ocagi ?ocak=1 rafta), korsan dunyasi; kotu karakter Rakun Rako (kuleleri o diziyor, sakar/komik); kurtarma seyrek: 10 (tanisma), 100, 200 ... 700; hikaye kartlari (Rako kuleyi diziyor, tayfa su an ne yapiyor) resim bekliyor. Gelistirme asamasi: eski oyuncu yok, kayit tasima gerekmez.
+- dost.js TAKVIM, YARDIM, dostVar, dostSonraki. Yardimlar: papagan sandik 4 bolumde (merkez SANDIK_HEDEF valueOf), maymun sandik +%25 altin, ahtapot gunluk +%25, kunduz insa %10 ucuz (insa.js FY), penguen +1 top (oyun.js shotsFor), kirpi bolum altini +%10, kurbaga 3 yildizda +10, kedi devam 80 (DEVAM_FIYAT valueOf).
+- Ana sayfa: 'Korsan' dugmesi yerine 'Tayfa' (n/8), Oyna ustunde 'N bolum sonra kafesten kurtar' seridi (siradaki uyenin golgesi). Tayfa sayfasi: 8 kart (kurtarilan renkli + gorev + yardim, kalan golge + Bolum N).
+- Siradaki: Rako resmi (Adem) -> hikaye kartlari sistemi; gemi ekraninda tayfa; paylas dugmesi.

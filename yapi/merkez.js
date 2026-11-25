@@ -7,12 +7,13 @@
 import * as THREE from '../three.module.min.js';
 import { KARAKTERLER, AVATARLAR, profilOku, profilYaz, acikMi, seciliKarakter } from '../karakter/profil.js?v=1';
 import { kazanSahne, yazi, sevincSec } from './kazan2.js?v=13';
+import { DOST, DOSTLAR, TAKVIM, YARDIM, dostVar, dostSonraki } from './dost.js?v=23';   // v12.41 murettebat sayfasi, yardimlar
 import { logoSVG } from './logo2.js?v=4';
 import { GOR, ARABA, GULLE, gorSec, arabaSvg, gulleSvg, OCAK, KOSTUM, kostumSec, kostumResim } from './gorunum.js?v=2';   // v12.2 Gardirop (eski ?gor=0)   // v10.13: Blender ile gercek 3B logo resmi (ikon/logo3d.webp, uretici/blender/logo3d.py); eski: ?logo=eski
 const LOGO2 = !/[?&]logo=eski/.test(location.search);   // v4.8: (Adem 14 Kas) yeni kazanma sahnesi: Dev yildizlar + havai fisek gecesi
 
 import { ADA, adaKur } from './ada.js?v=1';
-import { insaKur } from './insa.js?v=2';   // v7.2: (Adem 18 Kas) ayri Insa sayfasi (gemi 10 asama)   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
+import { insaKur } from './insa.js?v=3';   // v7.2: (Adem 18 Kas) ayri Insa sayfasi (gemi 10 asama)   // v7.0: (Adem 18 Kas) Hazine Adasi insasi (ana menu)
 const $ = (id) => document.getElementById(id);
 const ESKI_MENU = !/[?&]ada=1/.test(location.search);   // v7.1: (Adem 18 Kas) ada ana sayfadan kaldirildi (ayri sayfa olacak); deneme: ?ada=1
 const ALT3B = /[?&]altnav=eski/.test(location.search) ? '' : '_3b';   // v10.43 (Adem 21 Kas): alt menu ikonlari konturu temizlenmis 3B surum (ikon/*_3b.webp); eski: ?altnav=eski
@@ -61,12 +62,13 @@ const URUN = [
 ];
 // gunluk odul: 7 gunluk dongu (a: altin, g: guclendirici, n: adet)
 const GUNLUK = [{ a: 50 }, { a: 75 }, { g: 'roket', n: 1 }, { a: 120 }, { g: 'bomba', n: 1 }, { a: 200 }, { a: 300, g: 'yildirim', n: 1 }];
-const SANDIK_HEDEF = 5;   // bu kadar yeni bolum gecilince hazine sandigi acilir
+const SANDIK_HEDEF0 = 5;   // bu kadar yeni bolum gecilince hazine sandigi acilir (v12.41: Papagan Pako kurtarildiysa 4)
 const SOZ = ['Ahoy Kaptan!', 'Kuleyi yıkalım!', 'Toplar hazır!', 'Hazine bizi bekliyor!', 'Alt sıraya nişan al!', 'Yelkenler fora!'];
 
 let KZA = false;
 export function merkezKur(A) {
   const SV = A.SV;
+  const SANDIK_HEDEF = { valueOf: () => (dostVar(SV, 'papagan') ? 4 : SANDIK_HEDEF0), toString() { return String(this.valueOf()); } };   // v12.41
   let acik = false, durak = false, sekmeAd = 'ana', T3 = null, t3yuk = null, popKapat = null;
   const sira = [];   // ana sayfa acilinca sirayla gosterilecek kartlar (yeni karakter, sandik, gunluk odul)
   const maxL = () => Math.max(1, SV.max || 1);
@@ -92,8 +94,8 @@ export function merkezKur(A) {
     '<div class="m-yan sol"><button class="m-yb" id="m-gorev"><span class="m-yk">' + I3('gorev') + '<em class="m-rz" id="m-gorevn"></em></span><small>Görevler</small></button>' +
     '<button class="m-yb" id="m-gunluk"><span class="m-yk">' + I3('hediye') + '<em class="m-rz" id="m-gunlukn">!</em></span><small>Günlük</small></button></div>' +
     '<div class="m-yan sag"><button class="m-yb" id="m-sandik"><span class="m-yk">' + I3('sandik') + '<em class="m-rz" id="m-sandikn">!</em><span class="m-mc"><i id="m-sandikc"></i></span></span><small>Hazine</small></button>' +
-    '<button class="m-yb" id="m-korsan"><span class="m-yk">' + I3('capa') + '</span><small>Korsan</small></button></div></div>' +
-    '<div class="m-oynak" id="m-oynak"><div class="m-seri" id="m-seri"></div><span class="m-zor">Zor bölüm!</span><button class="m-btn m-oyna" id="m-oyna"><b></b><small></small></button></div></div></section>' +
+    (DOST ? '<button class="m-yb" id="m-tayfa"><span class="m-yk"><img class="m-tayfa-ik" src="../karakter/dost/papagan.webp?v=1" alt=""><em class="m-rz" id="m-tayfan"></em></span><small>Tayfa</small></button>' : '<button class="m-yb" id="m-korsan"><span class="m-yk">' + I3('capa') + '</span><small>Korsan</small></button>') + '</div></div>' +
+    '<div class="m-oynak" id="m-oynak"><button class="m-sdost" id="m-sdost"></button><div class="m-seri" id="m-seri"></div><span class="m-zor">Zor bölüm!</span><button class="m-btn m-oyna" id="m-oyna"><b></b><small></small></button></div></div></section>' +
     '<section class="m-sayfa" id="s-insa"><div class="m-ic" id="in-ic"></div></section>' +
     '<section class="m-sayfa" id="s-harita"><div class="m-ic"><h2 class="m-sb">Hazine Haritası</h2><div class="m-kay" id="h-kay"><div class="h-yol" id="h-yol"></div></div></div></section>' +
     '</main><nav class="m-alt"><button data-s="magaza">' + IK.magaza + '<span>Mağaza</span></button><button data-s="ana" class="on">' + IK.ev + '<span>Ana Sayfa</span></button><button data-s="insa">' + IK.insa + '<span>İnşa</span></button><button data-s="harita">' + IK.harita + '<span>Harita</span></button></nav>';
@@ -252,6 +254,9 @@ export function merkezKur(A) {
     const zor = A.zor(max), b = $('m-oyna'), Pl = A.plan ? A.plan(max) : null, ek = egEtiket(Pl, zor);   // v8.0: bolum turu rozeti
     const ok = $('m-oynak'); ok.classList.toggle('zor', zor); ok.classList.toggle('etk', !!ek); ok.classList.toggle('cokzor', !!Pl && (Pl.etiket === 'cokzor')); ok.classList.toggle('t-altin', !!Pl && Pl.tip === 'altin'); $('m-oynak').querySelector('.m-zor').textContent = ek || 'Zor bölüm!';
     b.querySelector('b').textContent = 'Bölüm ' + max; b.querySelector('small').textContent = A.bolumAdi(max) || '';
+    if (DOST) { const sd = dostSonraki(SV), e = $('m-sdost'), kalan = sd ? sd.L - max : 0;   // v12.41: siradaki murettebat
+      e.style.display = sd ? '' : 'none'; if (sd) e.innerHTML = '<img src="../karakter/dost/' + sd.d.id + '.webp?v=1" alt=""><span>' + (kalan > 0 ? '<b>' + kalan + '</b> bölüm sonra kafesten kurtar' : '<b>Bu bölümde</b> kafesi aç') + '<small>' + sd.d.ad + ' · Bölüm ' + sd.L + '</small></span>';
+      e.classList.toggle('simdi', !!sd && kalan <= 0); $('m-tayfan').textContent = (SV.dost || []).length + '/' + DOSTLAR.length; $('m-tayfan').classList.add('on'); }
     $('m-seri').innerHTML = I.seri >= 2 ? IK.alev + ' ' + I.seri + ' bölümlük seri' : '';
     const tilkiAcik = acikMi('tilki', max), kr = KARAKTERLER.find((k) => k.id === 'tilki');
     $('m-sahne').classList.toggle('kilitli', !tilkiAcik); $('m-kilyaz').textContent = 'Bölüm ' + kr.sart + '\'e ulaş, ' + kr.ad + '\'yi kazan!';
@@ -501,13 +506,13 @@ export function merkezKur(A) {
       '<button class="m-btn' + (alinabilir ? '' : ' mavi kck') + '" id="p-tm">' + (alinabilir ? 'Ödülü Al' : 'Tamam') + '</button>');
     $('p-tm').onclick = () => {
       if (!alinabilir) { tik(); pkapat(); return; }
-      const o = GUNLUK[idx], r = P.querySelector('.bugun').getBoundingClientRect(), eski = SV.altin || 0; SV.go = { gun: bugun(), i: go.i + 1 }; odulVer(o);
+      const o0 = GUNLUK[idx], o = o0.a && dostVar(SV, 'ahtapot') ? Object.assign({}, o0, { a: Math.round(o0.a * 1.25) }) : o0, r = P.querySelector('.bugun').getBoundingClientRect(), eski = SV.altin || 0; SV.go = { gun: bugun(), i: go.i + 1 }; odulVer(o);
       A.sfx('bonus'); A.ses('sandik', 0.5); A.buzz(40); pkapat(); ciz(); if (o.a) ucur(r.left + r.width / 2, r.top + r.height / 2, 10, eski, SV.altin);
     };
   }
 
   // ---------------- hazine sandigi ----------------
-  function sandikOdul() { const n = SV.sa || 0; return { a: 120 + 20 * Math.min(n, 9), g: ['roket', 'bomba', 'top', 'yildirim'][n % 4], n: n % 3 === 2 ? 2 : 1 }; }
+  function sandikOdul() { const n = SV.sa || 0; return { a: Math.round((120 + 20 * Math.min(n, 9)) * (dostVar(SV, 'maymun') ? 1.25 : 1)), g: ['roket', 'bomba', 'top', 'yildirim'][n % 4], n: n % 3 === 2 ? 2 : 1 }; }
   function sandikKarti() {
     const sn = SV.sn || 0;
     if (sn < SANDIK_HEDEF) {
@@ -679,7 +684,17 @@ export function merkezKur(A) {
   $('m-sandik').onclick = () => { tik(); sandikKarti(); };
   // v10.44 (Adem 21 Kas): Korsan Pilot yapim asamasinda: 'Denize Acil' pasif + 'Yakinda' rozeti, eski mavi ekrana gitmez. Gelistirici: adres ?korsan=1
   const KORSAN_ACIK = /[?&]korsan=1/.test(location.search);
-  $('m-korsan').onclick = () => { tik(); pop(bas('Korsan Pilot') + '<div class="p-ic"><h3>' + (KORSAN_ACIK ? 'Deneme modu' : 'Çok Yakında Açılıyor!') + '</h3><p>Açık denizde düşman gemilerini ve kuleleri batır.' + (KORSAN_ACIK ? ' Bu mod hâlâ yapım aşamasında.' : ' Foxi gemisini hazırlıyor, az kaldı!') + '</p></div><button class="m-btn tur' + (KORSAN_ACIK ? '' : ' m-yakinda') + '" id="p-dv"' + (KORSAN_ACIK ? '' : ' disabled aria-disabled="true"') + '>Denize Açıl' + (KORSAN_ACIK ? '' : '<i class="m-rozet">Yakında</i>') + '</button>'); if (KORSAN_ACIK) $('p-dv').onclick = () => { location.href = '../korsan/'; }; };
+  // v12.41 Tayfa sayfasi: kurtarilanlar renkli (gorevi ve yardimi yazili), kalanlar golge + 'Bolum N'
+  function tayfaKarti() {
+    const ds = SV.dost || [];
+    pop(bas('Foxi\'nin Tayfası') + '<div class="p-ic"><p class="ty-ust">Rako\'nun kulelerini yık, kafesteki tayfanı kurtar! Her tayfa Foxi\'ye yardım eder.</p><div class="ty-izg">' + DOSTLAR.map((d, i) => { const v = ds.includes(d.id);
+      return '<div class="ty-k' + (v ? ' var' : '') + '"><div class="ty-r"><img src="../karakter/dost/' + d.id + '.webp?v=1" alt=""></div><b>' + (v ? d.ad : '???') + '</b><small>' + (v ? d.gorev : 'Bölüm ' + TAKVIM[i]) + '</small><em>' + (v ? YARDIM[d.id] : '🔒 Kafeste') + '</em></div>'; }).join('') +
+      '</div><p class="p-not">' + ds.length + ' / ' + DOSTLAR.length + ' tayfa kurtarıldı</p></div><button class="m-btn kck" id="p-tm">Tamam</button>');
+    $('p-tm').onclick = () => { tik(); pkapat(); };
+  }
+  if ($('m-tayfa')) $('m-tayfa').onclick = () => { tik(); tayfaKarti(); };
+  $('m-sdost').onclick = () => { tik(); tayfaKarti(); };
+  if ($('m-korsan')) $('m-korsan').onclick = () => { tik(); pop(bas('Korsan Pilot') + '<div class="p-ic"><h3>' + (KORSAN_ACIK ? 'Deneme modu' : 'Çok Yakında Açılıyor!') + '</h3><p>Açık denizde düşman gemilerini ve kuleleri batır.' + (KORSAN_ACIK ? ' Bu mod hâlâ yapım aşamasında.' : ' Foxi gemisini hazırlıyor, az kaldı!') + '</p></div><button class="m-btn tur' + (KORSAN_ACIK ? '' : ' m-yakinda') + '" id="p-dv"' + (KORSAN_ACIK ? '' : ' disabled aria-disabled="true"') + '>Denize Açıl' + (KORSAN_ACIK ? '' : '<i class="m-rozet">Yakında</i>') + '</button>'); if (KORSAN_ACIK) $('p-dv').onclick = () => { location.href = '../korsan/'; }; };
   $('m-oyna').onclick = () => { tik(); bolumKarti(maxL()); };
 
   return { ac, kapat, kazan, kaybet, bolumKarti, duraklat: () => ayarKarti(true), durdur: () => acik || durak || KZA, acik: () => acik };

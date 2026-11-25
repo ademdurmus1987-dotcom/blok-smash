@@ -18,11 +18,18 @@ export const DOSTLAR = [
 export const VIDEOLU = new Set(['papagan', 'maymun', 'ahtapot', 'kunduz', 'penguen', 'kirpi', 'kurbaga', 'kedi']);
 const VYOL = (id, uz) => '../karakter/dost/video/' + id + '.' + uz + '?v=1';
 export function dostOnYukle(d) { if (!d || !VIDEOLU.has(d.id)) return; for (const u of ['mp4', 'mp3']) fetch(VYOL(d.id, u)).catch(() => {}); }
-// bu bolumde kurtarilacak uye (yoksa null): 5, 10, 15 ... sirayla; daha once kurtarildiysa anahtar yok
+// v12.41 (Adem 25 Kas: '100 bolumde bir kurtarma, cok sayida murettebat sikinti'): takvim 10 (ilk tanisma), 100, 200 ... 700. Uye kurtarilana kadar o bolumde anahtar cikar.
+export const TAKVIM = [10, 100, 200, 300, 400, 500, 600, 700];
+// her uyenin kucuk yardimi (oyun.js / merkez.js / insa.js dostVar ile bakar)
+export const YARDIM = { papagan: 'Hazine sandığı 5 yerine 4 bölümde açılır', maymun: 'Hazine sandığından %25 fazla altın', ahtapot: 'Günlük ödülde %25 fazla altın',
+  kunduz: 'Gemi inşası %10 ucuz', penguen: 'Her bölümde +1 top', kirpi: 'Bölüm altınına +%10', kurbaga: '3 yıldızda +10 altın', kedi: 'Devam etmek %20 ucuz' };
+export const dostVar = (SV, id) => DOST && (SV.dost || []).includes(id);
+// siradaki kurtarilmamis uye ve bolumu (yoksa null)
+export function dostSonraki(SV) { const ds = SV.dost || []; for (let i = 0; i < DOSTLAR.length; i++) if (!ds.includes(DOSTLAR[i].id)) return { d: DOSTLAR[i], L: TAKVIM[i] }; return null; }
+// bu bolumde kurtarilacak uye (yoksa null); ?sv= deneme baglantisinda kurtarilmis uye yine cikar
 export function dostBolum(L, SV) {
-  if (!DOST || L < 5 || L % 5) return null;
-  const d = DOSTLAR[(L / 5 - 1) % DOSTLAR.length];
-  return (SV.dost || []).includes(d.id) && !/[?&]sv=/.test(location.search) ? null : d;   // v12.32: ?sv= deneme baglantisinda kurtarilmis uye yine cikar (Adem tekrar tekrar deneyebilsin)
+  const i = TAKVIM.indexOf(L); if (!DOST || i < 0) return null;
+  const d = DOSTLAR[i]; return (SV.dost || []).includes(d.id) && !/[?&]sv=/.test(location.search) ? null : d;
 }
 const ANAHTAR = '<img src="../karakter/dost/anahtar.webp?v=1" alt="" draggable="false">';   // v12.25: Adem'in Gemini anahtari (kulpta tilki patisi)
   '<g stroke="#ffd23a" stroke-width="4.2"><circle cx="10" cy="12" r="6.5"/><path d="M16.5 12h27M35 12v7.5M41.5 12v6"/></g></g></svg>';

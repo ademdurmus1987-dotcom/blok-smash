@@ -18,7 +18,7 @@ import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
-import { DOST, dostBolum, dostKafes, dostUc, dostEkran, dostOnYukle } from './dost.js?v=22';   // v12.20 deneme ?dost=1: kafesteki dost
+import { DOST, dostBolum, dostKafes, dostUc, dostEkran, dostOnYukle, dostVar } from './dost.js?v=23';   // v12.20 deneme ?dost=1: kafesteki dost
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)
 import { patiYukle } from './pati.js?v=2';   // v5.1: Adem'in patili oyuncak kupu
 import { kapaliHucre, kapaliMi } from './kapali.js?v=2';   // v5.1: kapali bloklar (kaliteli karsiligiyla kurulur)
@@ -26,7 +26,7 @@ import { ornekKur } from './ornek.js?v=3';
 import { CILA } from './cila.js?v=1';   // v5.1: bloklar tur basina tek InstancedMesh
 import { kaleYapi, hazineYapi } from './kale.js?v=4';
 import { kaideKur } from './kaide.js?v=6';   // v4.4: turkuaz-bakir kaide platform ve yeni top arabasi   // v4.3: Korsan Kalesi ve Hazine Kulesi yapilari   // v3.1: kodla cizilen 3B sekiller ve uc yeni yapi
-import { merkezKur } from './merkez.js?v=50';
+import { merkezKur } from './merkez.js?v=51';
 import * as EG from './egri.js?v=6';   // v8.0 (Adem 18 Kas): zorluk egrisi, bolum turleri (hazine, zincir, kaptan, altin yagmuru), Foxi yardimi. Kapatma: ?egri=0
 import { finalSahne } from './final.js?v=2';   // v5.0: son bolum gecilince
 import { BOLUMLER, uret2, AILE, aileOf, MEKBLOK } from './bolum.js?v=9';
@@ -1865,7 +1865,8 @@ function videoFon(fo) {
   if (!v._d) { v._d = 1; addEventListener('pointerup', () => { if (bg.classList.contains('vid') && v.paused) v.play().catch(() => {}); }, { passive: true }); }   // otomatik oynatma engellenirse ilk dokunusta
 }
 // v6.1: top sayisi blok sayisina gore (her sey kirildigi icin yaklasik 5 bloga 1 top, en az 6, en cok 16)
-function shotsFor(n, Y) {
+function shotsFor(n, Y) { return shotsFor0(n, Y) + (!K && !PILOTQ && dostVar(SV, 'penguen') ? 1 : 0); }   // v12.41: Penguen Pengo (Gulle Ustasi) +1 top
+function shotsFor0(n, Y) {
   if (K) return Math.max(7, Math.min(18, Math.round(n / 4.5) + 2));
   if (Y && Y.top) return Y.top + (Y.anahtar ? 4 : 0);   // v5.0: kayitli bolumun top sayisi dogrulamada (bot atislari + pay) belirlendi
   // Blok Smash 2. asama: top artik ilk carpista yavasladigi icin taban biraz yukarida; bolum ilerledikce %15'e kadar azalir, her engel +1 top
@@ -3860,7 +3861,7 @@ function win() {
   const yag = PLAN && PLAN.tip === 'altin' ? Math.min(EG.AYAR.altinTavan, g.yagmur || 0) : 0;   // v8.0: altin yagmuru
   const hed = PLAN && PLAN.tip === 'kaptan' && ilk ? kaptanHediye() : null;   // v8.0: kaptan bolumu: hediye guclendirici
   if (SV.kyb) { delete SV.kyb; }   // v8.0: Foxi yardimi sayaci sifirlanir
-  const bonus = Math.min(60, g.shots * 5), kaz = Math.round((10 + st * 10 + bonus + yag) * (ilk ? 1 : 0.5)) + zorB, once = SV.altin || 0; SV.altin = once + kaz;
+  const bonus = Math.min(60, g.shots * 5), kaz = Math.round((10 + st * 10 + bonus + yag) * (ilk ? 1 : 0.5) * (dostVar(SV, 'kirpi') ? 1.1 : 1)) + zorB + (st >= 3 && dostVar(SV, 'kurbaga') ? 10 : 0),   /* v12.41 Kirpi +%10, Kurbaga 3 yildizda +10 */ once = SV.altin || 0; SV.altin = once + kaz;
   if (M) {   // v3.0: istatistik (ilk denemede kazanma, seri), hazine sandigi ilerlemesi ve yeni kazanma sahnesi
     const I = ist(); I.kazan++; if (SV.dus !== LV) { I.ilk++; I.seri++; I.enSeri = Math.max(I.enSeri, I.seri); } else I.seri = 1; SV.dus = 0;
     if (ilk) SV.sn = (SV.sn || 0) + 1;
@@ -3881,7 +3882,7 @@ function win() {
   $('nx').onclick = () => { sfx('tik'); start(LV + 1); };
   $('hrt').onclick = () => { sfx('tik'); start(LV + 1); haritaAc(); };
 }
-const DEVAM_FIYAT = 100;
+const DEVAM_FIYAT0 = 100; const DEVAM_FIYAT = { valueOf: () => (dostVar(SV, 'kedi') ? 80 : DEVAM_FIYAT0), toString() { return String(this.valueOf()); } };   // v12.41 Kedi Mirmir: devam %20 ucuz
 function finalGoster() {
   const yil = SV.yil || {}; let eksik = 0, ilk = 0, top = 0;
   for (let L = 1; L <= TOPLAM(); L++) { const s = yil[L] || 0; top += s; if (s < 3) { eksik++; if (!ilk) ilk = L; } }
@@ -3896,7 +3897,7 @@ function lose() {
   // v2.0: bolum basina bir kez bedava devam; sonrakiler altinla
   const bedava = !g.devam, yeter = (SV.altin || 0) >= DEVAM_FIYAT;
   if (PLAN && !g.devam) { if (!SV.kyb || SV.kyb.L !== LV) SV.kyb = { L: LV, n: 0 }; SV.kyb.n++; save(); }   // v8.0: Foxi yardimi icin kayip sayaci (devam edilen deneme bir kez sayilir)
-  if (M) { M.kaybet({ L: LV, kaldi: g.hedef != null ? g.hedef : g.left, hazine: g.hedef != null, bedava, fiyat: DEVAM_FIYAT, yardim: PLAN ? EG.yardim(((SV.kyb && SV.kyb.L === LV && SV.kyb.n) || 0) + 1) : 0 }); return; }
+  if (M) { M.kaybet({ L: LV, kaldi: g.hedef != null ? g.hedef : g.left, hazine: g.hedef != null, bedava, fiyat: +DEVAM_FIYAT, yardim: PLAN ? EG.yardim(((SV.kyb && SV.kyb.L === LV && SV.kyb.n) || 0) + 1) : 0 }); return; }
   modal('<div class="rib r">Toplar bitti!</div><h2>' + g.left + ' blok kaldı</h2><p>' + (g.left <= 5 ? 'Çok az kalmıştı, tekrar dene!' : 'Alt sıraları hedefle, kule devrilsin!') + '</p>' +
     (bedava || yeter ? '<button class="btn o" id="rv">+3 Top ile Devam' + (bedava ? '' : ' <i class="coin"></i> ' + DEVAM_FIYAT) + '</button>' : '') +
     '<button class="btn" id="rt">Tekrar Dene</button><button class="btn o kck" id="hrt">Harita</button>');
