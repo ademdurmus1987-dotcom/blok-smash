@@ -11,6 +11,26 @@ export const YK = ['Rako yine kule diziyor. Bu sefer daha yüksek, daha sallant�
 // v12.62 (Adem 26 Kas, rakip ekranlari: 'kartlari bu sekilde istiyordum, suresi cok az'): en az 3.6 sn, cubuk soldan saga dolar,
 // 'Yukleniyor...' noktalari, kenarli beyaz yazi (koyu perde yok), ucusan isiltilar. Hazirlik uzarsa cubuk %90'da bekler.
 const MIN = 3600;
+// v12.63 (Adem 26 Kas: 'zaten vermistim kartlari'): Adem'in 14 Higgsfield karti karakter/acilis/yk2/kNN.webp, eski video kareleri ?ykart=eski.
+// [resim no, yazi, tayfa id]: tayfa kartlari o uye kurtarilinca cikar (surpriz bozulmasin).
+const ESKI = /[?&]ykart=eski/.test(location.search);
+let DESTE = [];
+export const YK2 = [
+  [1, 'Kaptan uyuyor, Pako bağırıyor: Rako yine kule dikmiş!', 'papagan'],
+  [2, 'Rako kulenin tepesinde. Foxi topu hazırladı!'],
+  [3, 'Tek atış, koca kule yerde! Rako ne olduğunu anlamadı.'],
+  [4, 'Miko direkte gözcü. Ufukta yeni bir kule var!', 'maymun'],
+  [5, 'Mırmır altınların üstünde uyuyor. Ama bir gözü hep açık!', 'kedi'],
+  [6, 'Vırak borazanı öttürdü, martılar kaçıştı!', 'kurbaga'],
+  [7, 'Diken haritayı çözdü. Sıradaki ada bu yolda!', 'kirpi'],
+  [8, 'Pengo topa kar topu doldurdu. Bu da bir fikir!', 'penguen'],
+  [9, 'Kundi testereyi kaptı. Gemiye yeni tahta lazım!', 'kunduz'],
+  [10, 'Ahmo sekiz koluyla krep yapıyor. Tayfa aç!', 'ahtapot'],
+  [11, 'Rako gece gizlice kule diziyor. Şşşt!'],
+  [12, 'Ufukta Rako\'nun kulesi! Tam yol ileri, Kaptan!', 'papagan'],
+  [13, 'Foxi gülleleri parlatıyor. Kuleler, hazır olun!'],
+  [14, 'Rako balonla kuleye blok taşıyor. Ter döküyor!']
+];
 let E = null, t0 = 0, hazir = false, son = -1, CSS = false, tH = 0;
 function stil() {
   if (CSS) return; CSS = true; const s = document.createElement('style');
@@ -33,13 +53,18 @@ function dongu() {
   if (u) u.style.width = (k * 100).toFixed(1) + '%'; if (b) b.textContent = 'Yükleniyor' + '...'.slice(0, Math.floor(t / 400) % 4);
   requestAnimationFrame(dongu);
 }
-export function ykGoster() {
+export function ykGoster(dost) {
   if (!YKART || E) return false; stil(); hazir = false; t0 = performance.now();
-  let n = Math.floor(Math.random() * YK.length); if (n === son) n = (n + 1) % YK.length; son = n;
-  E = document.createElement('div'); E.id = 'ykart'; E.style.backgroundImage = 'url(../karakter/acilis/yk/y' + String(n + 1).padStart(2, '0') + '.webp?v=2)';
+  let n, resim, yazi;
+  if (ESKI) { n = Math.floor(Math.random() * YK.length); if (n === son) n = (n + 1) % YK.length; resim = '../karakter/acilis/yk/y' + String(n + 1).padStart(2, '0') + '.webp?v=2'; yazi = YK[n]; }
+  else { const ac = YK2.filter((k) => !k[2] || (dost || []).includes(k[2]));
+    DESTE = DESTE.filter((k) => ac.includes(k)); if (!DESTE.length) { DESTE = ac.slice().sort(() => Math.random() - 0.5); if (DESTE.length > 1 && DESTE[0][0] === son) DESTE.push(DESTE.shift()); }   // karisik deste: hepsi bir kez gorunmeden tekrar yok
+    const k = DESTE.shift(); resim = '../karakter/acilis/yk2/k' + String(k[0]).padStart(2, '0') + '.webp?v=1'; yazi = k[1]; n = k[0]; }
+  son = n;
+  E = document.createElement('div'); E.id = 'ykart'; E.style.backgroundImage = 'url(' + resim + ')';
   let ss = ''; for (let k = 0; k < 9; k++) ss += `<s style="left:${(k * 11 + Math.random() * 8).toFixed(0)}%;animation-duration:${(5 + Math.random() * 4).toFixed(1)}s;animation-delay:-${(Math.random() * 6).toFixed(1)}s"></s>`;
   for (let k = 0; k < 8; k++) ss += `<s class="p" style="left:${(Math.random() * 96).toFixed(0)}%;animation-duration:${(3 + Math.random() * 3).toFixed(1)}s;animation-delay:-${(Math.random() * 4).toFixed(1)}s"></s>`;
-  E.innerHTML = ss + '<p></p><b>Yükleniyor</b><i><u></u></i>'; E.querySelector('p').textContent = YK[n];
+  E.innerHTML = ss + '<p></p><b>Yükleniyor</b><i><u></u></i>'; E.querySelector('p').textContent = yazi;
   const el = E; el.addEventListener('pointerdown', (e) => { e.stopPropagation(); if (hazir && performance.now() - t0 > 1500) kapa(el); });
   document.body.appendChild(el); requestAnimationFrame(dongu); return true;   // yeni acildi: cagiran, agir kurulumu kart cizildikten sonra baslatir
 }

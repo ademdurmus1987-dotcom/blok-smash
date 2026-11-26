@@ -339,3 +339,6 @@ Sonra (uretim gerektirmez):
 ## v12.62 (26 Kas 2026): yukleme karti rakip tarzi (Adem rakip ekranlari, 'suresi cok az')
 - yukkart.js: en az 3.6 sn (eski 1.6), cubuk soldan saga dolar (hazirlik uzarsa %90'da bekler), 'Yukleniyor...' noktalari, kalin kenarli beyaz yazi, koyu perde hafif, ucusan yaprak + isilti. Dokununca gecme en erken 1.5 sn.
 - Resimler hala video kareleri (yk/y01..17): yeni tam sahne resimleri (Higgsfield) gelince degisecek, istem uretici/istem/yukleme_kartlari.md.
+
+## v12.63 (26 Kas 2026): Adem'in 14 yukleme karti (Higgsfield) oyunda
+- karakter/acilis/yk2/k01..k14.webp (900x1612), yazilar yukkart.js YK2. Tayfa kartlari (Pako, Miko, Mirmir, Virak, Diken, Pengo, Kundi, Ahmo) o uye kurtarilinca cikar. Karisik deste: hepsi gorunmeden tekrar yok. Eski video kareleri ?ykart=eski.
