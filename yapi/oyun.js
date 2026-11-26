@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=2';
 import { sekilKur, YAPI } from './sekil.js?v=13';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=51';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=53';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { ENG3, engel3Kur } from './engel3.js?v=8';   // v11.1: boyali engeller ve top (eski ?eng3=0)
 import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
@@ -595,7 +595,7 @@ const KENV = !PARLA || Q.get('sise') === 'eski' ? null : (() => {
 // v10.41 (Adem 21 Kas): sahne geneline studyo yansimasi (PMREMGenerator ile uretilen SENV: ustte softbox, dikey isik seritleri, zenit).
 // Kendi envMap'i olan bloklar zaten bunu kullaniyordu; simdi envMap'i olmayan platform, top arabasi, zemin gibi nesneler de yansitir. Eski: ?parlak2=0
 if (Q.get('parlak2') !== '0' && !scene.environment) scene.environment = SENV;
-const B3K = blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }), b3Ready = B3K.yukle();   // v6.1
+const B3K = blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader, mergeGeometries }), b3Ready = B3K.yukle();   // v6.1
 const SEK = sekilKur({ THREE, S, canvasTex, ENV, b3: B3K });
 // v6.11 (Adem 17 Kas: 'Bagla'): parlak sekil kutuphanesi (gorsel/sekiller.js) bolumlerdeki bloklara baglandi. Yalniz GORUNUM degisir:
 // turun adi, olcusu, fizik govdesi, kirilmasi ve sesi ayni kalir (kavanoz eski sisenin, kutuk eski ficinin yerinde). Eski gorunum: ?parlak=0

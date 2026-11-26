@@ -351,3 +351,10 @@ Sonra (uretim gerektirmez):
 ## v12.65 (26 Kas 2026): CILA2 varsayilan (Adem'in yapay zeka ile iyilestirdigi ekran goruntusu hedef), eski ?cila2=0
 - blok6.js: renkli bloklarda leke yok, renk %18 daha doygun, ust yuz acik, on yuzde belirgin ustten alta gecis, ustte kalin beyaz parlama bandi, pah 0.065 -> 0.11 (yuvarlak), vernik 1.0 + studyo yansimasi (SENV). Kavanoz parlama seridi daha belirgin.
 - Kalan fark (sirada): platform ve top arabasi da ayni parlak plastik tarzina; genel isikta ust-sol ana isik ve bloklarin altinda temas golgesi.
+
+## v12.66 (26 Kas 2026): Blender Royal seti DENEME ?b8=1 (Adem'in Blender kurallari)
+- uretici/blender/royal_set.py -> model/royal/{kup1-4, buz1, buz3, kav1, sandik, varil}.glb (toplam ~1.3 MB). Bulutta bpy 4.2 (pip, Python 3.11) ile uretildi.
+  Kutu: bmesh pah (4 dilim), on/arka kademeli ic cerceve (inset + iceri), pati 3B silindirler + Boolean fark (gomulu, ince pah), Principled (rough 0.25, coat 0.85/0.12),
+  ahsap Wave damar, sandikta koyu ic panel, buz turkuaz-mavi gecis (rough 0.12), renk + AO 512/1024 pisirme, smooth + weighted normal, tek parca glb.
+- blok8.js: kup/kavanozda dokunun gri kismi blok rengiyle boyanir, krem pati parlatilir; olcu eski modelin kutusuna oturur (fizik ayni). blok3b.js'te B6'dan once.
+- Ucgen: kup1 ~1.9k, kup4 ~6.8k, kav1 ~2.3k, sandik 540, varil 1.8k. Telefonda hiz ve Adem onayi bekliyor; onaylanirsa varsayilan + kalan turler (tas, TNT, yildiz, kalas).

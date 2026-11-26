@@ -4,7 +4,8 @@
 // Modelde renk kose renginde, ortam golgesi + yumusak isik 512'lik dokuya gomulu (malzeme: doku x kose rengi).
 // Tam beyaz kose rengi "govde rengi" isaretidir: o.govde verilirse o renge boyanir (tek dosyadan farkli renkli turler: yakut / elmas).
 import { SEKER, SEKERL, sekerBoya, sekerMat } from './seker.js?v=8';
-import { BLOK6, blok6Kur } from './blok6.js?v=13';   // v12.9 deneme ?blok6=1: boyali dokulu keskin kutular (Smash Kingdom kalitesi)   // v11: varsayilan, eski ?yeni=0
+import { BLOK6, blok6Kur } from './blok6.js?v=13';
+import { BLOK8, blok8Kur } from './blok8.js?v=2';   // v12.66 deneme ?b8=1: Blender Royal set (model/royal)   // v12.9 deneme ?blok6=1: boyali dokulu keskin kutular (Smash Kingdom kalitesi)   // v11: varsayilan, eski ?yeni=0
 export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]
@@ -84,7 +85,8 @@ const oyTur = (f) => /(^|\/)(kav|kavanoz|sise|pl_kavanoz)/.test(f) ? 'kavanoz' :
 if (SEKER) Object.assign(LISTE, SEKERL);   // v11: boyali set (seker.js), eski ?yeni=0
 const yol = (f) => OYUNCAK ? 'model/oyuncak/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=1' : 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 17 : f.startsWith('blok3/') ? 2 : 1);
 
-export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
+export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader, mergeGeometries }) {
+  const B8 = BLOK8 && mergeGeometries ? blok8Kur({ THREE, GLTFLoader, mergeGeometries, SENV }) : null;
   const B6 = BLOK6 ? blok6Kur({ THREE, ENV, SENV, S: 1.55 }) : null;
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)
   const BG = +(new URLSearchParams(location.search).get('bantG') || (/[?&]yayvan=0/.test(location.search) ? 3 : 4)), BR = +(new URLSearchParams(location.search).get('bantR') || (/[?&]yayvan=0/.test(location.search) ? 0.16 : 0.26));
@@ -148,17 +150,19 @@ export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
   // butun dosyalar acilista paralel iner (her biri 20-80 KB); bolum kurulmadan once beklenir
   function yukle() {
     if (!B3) return Promise.resolve();
+    const b8 = B8 ? B8.yukle() : null;
     const dosyalar = [...new Set(Object.values(LISTE).map((x) => x[0]))];
-    return Promise.all(dosyalar.map((f) => new Promise((ok) => new GLTFLoader().load(yol(f), (gl) => {
+    return Promise.all([b8].concat(dosyalar.map((f) => new Promise((ok) => new GLTFLoader().load(yol(f), (gl) => {
       let m = null; gl.scene.traverse((o) => { if (o.isMesh && !m) m = o; });
       if (m) { const map = m.material && m.material.map || null; if (map) map.anisotropy = 8; GLB[f] = { geo: m.geometry, map }; }
       ok();
-    }, undefined, () => { console.warn('blok3b: model yuklenemedi', f); ok(); }))));
+    }, undefined, () => { console.warn('blok3b: model yuklenemedi', f); ok(); })))));
   }
   // sekil.js TUR[k].yap yerine: model hazirsa onun cizimi, degilse null (eski cizim kullanilir). Tur basina bir kez kurulur.
   function yap(k) {
     const L = LISTE[k]; if (!B3 || !L) return null; if (HAZ[k]) return HAZ[k];
     const G = GLB[L[0]]; if (!G) return null;
+    if (B8 && B8.var(k)) { G.geo.computeBoundingBox(); const r = B8.yap(k, (L[3] && L[3].govde) || L[2], G.geo.boundingBox.getSize(new THREE.Vector3())); if (r) return (HAZ[k] = r); }   // v12.66 deneme ?b8=1
     if (B6 && B6.var(k)) { G.geo.computeBoundingBox(); const r = B6.yap(k, (L[3] && L[3].govde) || L[2], G.geo.boundingBox.getSize(new THREE.Vector3())); if (r) return (HAZ[k] = r); }   // v12.9 deneme: olculer mevcut modelden
     const o = L[3] || {};
     if (o.sk && o.parla) {   // v12.8 deneme ?blok5=1: boyali tonlar korunur, malzeme top arabasi gibi parlak vernik (MeshPhysical clearcoat + ENV)
