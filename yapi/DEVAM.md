@@ -342,3 +342,8 @@ Sonra (uretim gerektirmez):
 
 ## v12.63 (26 Kas 2026): Adem'in 14 yukleme karti (Higgsfield) oyunda
 - karakter/acilis/yk2/k01..k14.webp (900x1612), yazilar yukkart.js YK2. Tayfa kartlari (Pako, Miko, Mirmir, Virak, Diken, Pengo, Kundi, Ahmo) o uye kurtarilinca cikar. Karisik deste: hepsi gorunmeden tekrar yok. Eski video kareleri ?ykart=eski.
+
+## v12.64 (26 Kas 2026): 4 yeni fon sirada (Adem, Higgsfield): kale_kum, kale_cim (zem cim), magara_koy, koy_orman (zem cim)
+- Sira (10 bolumde bir): Altin Kumsal, Kale Koyu, Korsan Koyu, Kale Cayiri, Palmiye, Magara Limani, Lagun, Orman Koyu. Deneme ?fonsec=1..8, yalniz eski 4 kumsal ?fon4=0.
+- koy_orman: Adem 'cimi asagi uzat' dedi: ust 420 px gokyuzu kirpildi, alttaki duz cim aynalanip eklendi (koy ekranin yarisina cikti).
+- Bu fonlarda deniz ust kisimda: platform ve dusen bloklar karada (kum/cim), batma yalniz deniz seridinin arkasinda.

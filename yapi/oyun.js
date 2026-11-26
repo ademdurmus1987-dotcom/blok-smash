@@ -957,9 +957,11 @@ Object.assign(YFON, {
 });
 // v12.60 (Adem 26 Kas): ortasi bos sade kumsallar (Higgsfield), 10 bolumde bir degisir. f 'y_plaj' kalir (platform temasi ayni). Eski tek plaj: ?fon3=0; deneme: ?fonsec=1..4
 const FON3 = Q.get('fon3') !== '0';
-const KUMSAL = [['kumsal_altin', '#f5cf8c', 0.513, 'Altın Kumsal'], ['kumsal_koy', '#fee087', 0.545, 'Korsan Koyu'], ['kumsal_palmiye', '#fee599', 0.638, 'Palmiye Plajı'], ['kumsal_lagun', '#f6eddb', 0.529, 'Lagün']];
-const KUFUK = [0.456, 0.491, 0.581, 0.472];   // resimde denizin basladigi yukseklik
-for (const [r, tb, sy, ad] of KUMSAL) YFON[r] = { f: 'y_plaj', tb, r, cy: 0.72, pn: 'platform_4', toz: '#fbe6bc', ad, zem: 'kum', sy };
+// v12.64 (Adem 26 Kas): kale (kum/cim), magara limani, orman koyu (Higgsfield). Koy resminde ust gokyuzu kirpildi, alttaki cim aynalanarak uzatildi. Eski 4 kumsal: ?fon4=0
+const KUMSAL = [['kumsal_altin', '#f5cf8c', 0.513, 'Altın Kumsal'], ['kale_kum', '#f8dc96', 0.335, 'Kale Koyu'], ['kumsal_koy', '#fee087', 0.545, 'Korsan Koyu'], ['kale_cim', '#6cc23a', 0.335, 'Kale Çayırı', 'cim'],
+  ['kumsal_palmiye', '#fee599', 0.638, 'Palmiye Plajı'], ['magara_koy', '#f3cf8e', 0.405, 'Mağara Limanı'], ['kumsal_lagun', '#f6eddb', 0.529, 'Lagün'], ['koy_orman', '#86cc3c', 0, 'Orman Köyü', 'cim']].filter((k) => Q.get('fon4') !== '0' || k[0].startsWith('kumsal'));
+const KUFUK = KUMSAL.map((k) => ({ kumsal_altin: 0.456, kumsal_koy: 0.491, kumsal_palmiye: 0.581, kumsal_lagun: 0.472, kale_kum: 0.255, kale_cim: 0.25, magara_koy: 0.32 })[k[0]] || 0);   // resimde denizin basladigi yukseklik
+for (const [r, tb, sy, ad, zem] of KUMSAL) YFON[r] = Object.assign({ f: 'y_plaj', tb, r, cy: 0.72, pn: 'platform_4', toz: zem === 'cim' ? '#c8e8a0' : '#fbe6bc', ad, zem: zem || 'kum' }, sy ? { sy } : {});
 for (const k in YFON) Object.assign(YFON[k], { yeni: 1, dirt: ['200,170,120', '180,150,100', '150,120,80'] });
 // v10.23 (Adem 20 Kas: 'fonun her yeri su efekti var, cisim karaya dusuyor ama suya batiyor'; 'ucurumdan dusen kup havada kalip yok oluyor'):
 // ZEMIN HARITASI. Her fonda resmin uzerinde (x, y oranlari) bolgeler: su (batar), cim (sert zemin, iskele, kaya: kirilir), bos (ucurum: kup
@@ -979,8 +981,8 @@ const ZHARITA = {
   plaj: [['su', [[0, 0.40], [1, 0.40], [1, 0.495], [0.8, 0.495], [0.65, 0.505], [0.5, 0.532], [0.35, 0.528], [0.2, 0.556], [0, 0.565]]]],
   cayir: [['su', [[0, 0.34], [0.6, 0.35], [0.52, 0.46], [0.36, 0.53], [0.3, 0.6], [0, 0.61]]], ['su', [[0.6, 0.6], [0.9, 0.59], [0.9, 0.75], [0.72, 0.735], [0.6, 0.665]]]]
 };
-KUMSAL.forEach(([r, , sy], i) => { const u = KUFUK[i] - 0.01; ZHARITA[r] = [['su', [[0, u], [1, u], [1, sy], [0, sy]]]]; });
-ZHARITA.kumsal_koy.push(['cim', [[0, 0.40], [0.09, 0.47], [0.11, 0.57], [0, 0.60]]], ['cim', [[1, 0.40], [0.9, 0.49], [0.85, 0.57], [1, 0.62]]]);   // iki yandaki kayalar
+KUMSAL.forEach(([r, , sy], i) => { const u = KUFUK[i] - 0.01; ZHARITA[r] = sy ? [['su', [[0, u], [1, u], [1, sy], [0, sy]]]] : []; });
+if (ZHARITA.kumsal_koy) ZHARITA.kumsal_koy.push(['cim', [[0, 0.40], [0.09, 0.47], [0.11, 0.57], [0, 0.60]]], ['cim', [[1, 0.40], [0.9, 0.49], [0.85, 0.57], [1, 0.62]]]);   // iki yandaki kayalar
 const HARITA = Q.get('harita') !== '0';
 if (HARITA) for (const k in ZHARITA) { const h = ZHARITA[k]; YFON[k].zp = Array.isArray(h) ? h : h.zp; if (h.zb) YFON[k].zb = h.zb; }
 function icinde(P, x, y) { let ic = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) ic = !ic; } return ic; }
