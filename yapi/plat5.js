@@ -73,7 +73,7 @@ export function plat5Kur({ THREE, pKaydir, ENV, GLTFLoader }) {
   }
   // 3 iplikli burgulu halat: yol boyunca sarmal borular (tek geometri)
   function halat(P, y, rr, ri) {
-    const Y = yol(P, 0.035), n = Y.length, sg = 6, pos = [], nor = [], idx = [];
+    const HE = /[?&]halat=eski/.test(location.search), Y = yol(P, HE ? 0.035 : 0.06), n = Y.length, sg = HE ? 6 : 5, pos = [], nor = [], idx = [];   // v12.69: genis platformda 45k -> ~22k ucgen (burgu ayni), eski ?halat=eski
     let L = 0; const s = [0]; for (let i = 1; i < n; i++) { L += Math.hypot(Y[i][0] - Y[i - 1][0], Y[i][1] - Y[i - 1][1]); s.push(L); } L += Math.hypot(Y[0][0] - Y[n - 1][0], Y[0][1] - Y[n - 1][1]);
     const tur = Math.max(6, Math.round(L / 0.32));   // tam sayi tur: halat kapaninca dikis yok
     for (let k = 0; k < 3; k++) {
@@ -114,7 +114,8 @@ export function plat5Kur({ THREE, pKaydir, ENV, GLTFLoader }) {
   // ---------- ayak (Blender) ----------
   let GLB = null, AHATA = ''; const BEK = [];
   const doldur = (g, ad) => { const k = GLB.getObjectByName(ad); if (!k) return; const c = k.clone(true); c.position.set(0, 0, 0); c.traverse((m) => { if (m.isMesh) { m.geometry = m.geometry.clone(); m.castShadow = m.receiveShadow = true; } }); g.add(c); };
-  new GLTFLoader().load('model/plat5/ayak.glb?v=1', (gl) => {
+  // v12.69: ayak2.glb = ayni model, yalniz 12 halat parcasi Decimate %40 (46k -> 18k ucgen; uretici/blender/ayak_halat_hafif.py). Eski: ?halat=eski
+  new GLTFLoader().load(/[?&]halat=eski/.test(location.search) ? 'model/plat5/ayak.glb?v=1' : 'model/plat5/ayak2.glb?v=1', (gl) => {
     gl.scene.traverse((m) => { if (m.isMesh) m.material = mat((m.material && m.material.name || '').replace(/\.\d+$/, '')); });
     GLB = gl.scene; for (const [g, ad] of BEK.splice(0)) doldur(g, ad);
   }, undefined, (e) => { AHATA = String(e && e.message || e).slice(0, 120); console.warn('plat5: ayak modeli yuklenemedi', e); });

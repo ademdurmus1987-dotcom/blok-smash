@@ -34,7 +34,8 @@ export function ornekKur({ THREE, scene, S, kontur = 0.04, rim = 0.28 }) {
     if (!m || m.userData.rim || !(m.isMeshStandardMaterial)) return; m.userData.rim = 1;
     const eski = m.onBeforeCompile;
     m.onBeforeCompile = (sh, r) => { if (eski) eski(sh, r); sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n  totalEmissiveRadiance += vec3(1.0, 0.93, 0.8) * pow(1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0), 3.0) * ' + rim.toFixed(2) + ';'); };
-    m.customProgramCacheKey = () => 'rim' + rim; m.needsUpdate = true;
+    const k0 = m.customProgramCacheKey ? m.customProgramCacheKey() : '';   // v12.69: onceki anahtar korunur (sabit 'rim' anahtari farkli golgelendiricili malzemelere AYNI programi veriyordu: buz gri, temas yuksekligi karisik)
+    m.customProgramCacheKey = () => k0 + '|rim' + rim; m.needsUpdate = true;
   }
   // tur kaydi (bir kez): o = { geo, mat, lod?, golgeKutu?, esik? }
   function tanim(k, o) { if (T.has(k)) return; T.set(k, { o, im: [null, null], n: [0, 0], gk: null }); for (const m of [].concat(o.mat)) rimEkle(m); }

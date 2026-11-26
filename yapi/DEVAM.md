@@ -363,3 +363,8 @@ Sonra (uretim gerektirmez):
 - Adem'in 3 ince ayari: kup rough 0.22 / coat 0.90 / 0.10; pati oyugu gunesle pisirildi (ust ic kenar golge); kavanozda pati yok, dikey cam parlamasi.
 - b8 varsayilan (?b8=0 eski), buz blok6 kristal (?b8buz=1 Royal buz denemesi). Temas karartmasi ?temas=0. Halat golgesi kapali ?halatg=1. bs_dpr: uyarlamali cozunurluk saklanir.
 - Royal kupler %35-40 az ucgen. Bolum dizilimi 6 bolumde birebir ayni dogrulandi.
+
+## v12.69 (26 Kas 2026): Royal A-G plani uygulandi (rapor: GORSEL_RAPOR.md sonu). Yedek dal: yedek-v12.68
+- Buz gri nedeni ornek.js program anahtari (duzeltildi), Royal buz varsayilan (?b8buz=0). Uzun bloklarda 1 buyuk + 2 kucuk pati.
+- Yeni Royal turler: tas1-4, tnt, yildiz, kalas1-3, direk, varilK, sandik M/K (?b8yeni=0). Metal ?metal=0, birlesim ?fuga=0, LOD ?lod=0, halatlar ?halat=eski.
+- Ucgen: 1200. bolum 310k -> 236k (220k hedefi tutmadi), digerleri 220k alti. Dizilim 5 bolumde ayni.

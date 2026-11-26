@@ -73,3 +73,47 @@ Bölüm, fizik, kırılma, ekonomi ve kayıt dosyalarına dokunulmadı (bolum.js
 1. Kalabalık bölümlerde üçgen hâlâ yaklaşık 2 kat. Telefonda takılma olursa arka yüz patileri kaldırılabilir (döner platformda arka yüz görünür, o yüzden şimdilik duruyor).
 2. Royal buzu gri çıkıyor (doku mavi; nedeni ışık ve yansıma karışımı, ayrıca incelenmeli).
 3. Taş, TNT, yıldız, kalas, direk henüz Royal setinde değil (blok6 parlak plastik + temas karartması).
+
+---
+# v12.69 – Royal Smash son iyileştirme (A–G planı, Adem onayı 26 Kas)
+
+**Yedek:** GitHub'da `yedek-v12.68` dalı (değişiklik öncesi hali). Geri dönmek için bu dal main'e alınabilir.
+
+## Değişen dosyalar
+blok8.js, blok6.js, blok3b.js, ornek.js, plat5.js, oyun.js (yalnız `?olc` ölçüm satırları ve sürüm numaraları), uretici/blender/royal_set.py, uretici/blender/ayak_halat_hafif.py (yeni), model/royal/*.glb (11 yeni model), model/plat5/ayak2.glb (yeni), index.html, sw.js.
+**Dokunulmayanlar:** bölüm verisi ve üretimi (bolum.js, egri.js, pilot/), fizik ve kırılma (kale.js, sekil.js, oyun.js fizik satırları), atış, ekonomi, güçlendirmeler, kayıt.
+
+## Yapılanlar
+| Madde | Ne yapıldı | Geri dönüş |
+|---|---|---|
+| E Buz | Gri çıkmasının nedeni bulundu: ornek.js tüm blok malzemelerine aynı gölgelendirici anahtarını veriyordu, bu yüzden buz başka bir malzemenin programıyla çiziliyordu (aynı hata temas karartmasının yüksekliğini de karıştırıyordu). Anahtar düzeltildi, temas yüksekliği uniform oldu. Buz kristal blokla aynı dilde: ton eşlemesiz, içten hafif ışık. Royal buz artık varsayılan. | `?b8buz=0` |
+| A Uzun bloklar | 2'li blokta ortada 1 büyük pati; 3–4'lü blokta ortada büyük, uçlarda iki küçük pati. Üçgen yarıya indi. | yedek dal |
+| B Açık renk | Krem ve beyaz bloklarda pati karamel tonunda; krem üstüne krem kaybolmuyor. | — |
+| C Yeni modeller | Taş (1–4, boyalı dokulu, oyma halka), TNT (kabarık etiket ve yazı), yıldız (kabarık 3B yıldız), kalas (1–3) ve direk (ahşap damar + metal bant ve perçin), kırmızı varil, mor/kırmızı sandık. Ölçü, bugünkü çizimle aynı kutuya oturtuldu. | `?b8yeni=0` |
+| D Metal | Varil çemberi, bant ve perçinler gölgelendiricide metal (yansıma, düşük pürüz, açık gri). | `?metal=0` |
+| F Derinlik | Temas karartmasına yan kenarda ince birleşim çizgisi eklendi (yan yana bloklar ayrışıyor, kirli durmuyor). | `?fuga=0`, `?temas=0` |
+| G Performans | Görünmeyen (önünde blok olan) bloklar sade kutuyla çiziliyor (LOD), platform halatı 45k → 22k, ayak halatları 46k → 18k üçgen. InstancedMesh, gölge vekilleri ve uyarlamalı DPR aynı. | `?lod=0`, `?halat=eski` |
+
+## Ölçümler (bulut, yazılım GPU'su; telefon değil, yalnız karşılaştırma)
+| Bölüm | Blok dizilimi | Üçgen önce → sonra | Çizim çağrısı | Kare süresi (ms) | Sayfa hatası |
+|---|---|---|---|---|---|
+| 3 | **aynı** (50) | 146.514 → 99.592 | 105 → 106 | 437 → 364 | yok |
+| 60 | **aynı** (54) | 177.466 → 126.202 | 127 → 138 | 838 → 672 | yok |
+| 300 | **aynı** (96) | 203.808 → 148.990 | 133 → 146 | 1191 → 973 | yok |
+| 1200 | **aynı** (96) | 309.652 → **236.286** | 145 → 149 | 1436 → 1334 | yok |
+| 1999 | **aynı** (76) | 313.936 → 187.186 | 109 → 137 | 1397 → 1019 | yok |
+
+**220 bin hedefi bölüm 1200'de TUTMADI (236 bin, %7 fazla).** Kalan yük çoğunlukla uzun pembe/gri blokların ön yüzündeki gömülü patiler ve köşe pahları. Daha da düşürmek için pati ve pah kalitesini azaltmak gerekiyordu; "görsel kaliteyi gereksiz düşürme" kuralı gereği yapılmadı. Diğer dört bölüm 220 binin altında.
+Çizim çağrısı 1–28 arttı (yeni türler kendi InstancedMesh'iyle çiziliyor).
+
+## Test
+- Blok sayısı ve başlangıç konumları 5 bölümde önce/sonra birebir aynı.
+- Bölüm 60'ta 14 atışlık oynanış: kavanoz, sandık kırılması, TNT, parçacıklar çalıştı, sayfa hatası yok. Fizik kodu değişmedi.
+- Bütün Royal modeller yüklendi (ağ istekleri kontrol edildi).
+
+**Test edilemeyenler:** gerçek Android cihazda FPS, ısınma, pil (mobil performans için başarı iddiası yok); bölüm sonu ve kazanma ekranı; güçlendirmelerin tek tek kullanımı; döner platformlu bölümlerde arka yüz görünümü.
+
+## Kalan sorunlar
+1. Bölüm 1200 üçgen hedefi %7 aşıldı (yukarıda).
+2. Kemer ve sütun hâlâ blok6 (kod) modelinde.
+3. Royal modeller ilk açılışta ~2 MB ek indirme (sonra önbellekte).

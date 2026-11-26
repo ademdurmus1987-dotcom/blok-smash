@@ -3,7 +3,7 @@
 // ust kenarda ince parlak cizgi). Renk ve motif bizim: turkuaz kristal, tahta sandik, renkli boyali kup + krem tilki patisi (mor-altin ve tac yok).
 // Geometri: BoxGeometry kose pahi (tek dilim) ; doku: tek atlas (sol: on/arka yuz amblemli, sag: diger yuzler duz), kodla boyanir, tur basina bir kez.
 import { BLOK7, blok7Kur } from './blok7.js?v=1';
-import { temasEkle } from './blok8.js?v=8';   // v12.68 temas karartmasi
+import { temasEkle } from './blok8.js?v=16';   // v12.68 temas karartmasi
 export const BLOK6 = new URLSearchParams(location.search).get('blok6') !== '0';   // v12.13: VARSAYILAN (Adem onayladi 24 Kas), eski gorunum ?blok6=0
 // v12.65 (Adem 26 Kas, yapay zeka ile iyilestirilmis ekran goruntusu: 'kalite farkina bak'): CILA2 VARSAYILAN, eski ?cila2=0.
 // Renkli bloklarda leke yok (puruzsuz plastik), daha kalin pah, vernik + studyo yansimasi (SENV: ust kenarda beyaz parlama).
@@ -225,7 +225,7 @@ export function blok6Kur({ THREE, ENV, S, SENV }) {
       const R = Math.min(boy.x, boy.z) / 2 * 0.99, Hh = boy.y * 0.99, geo = stil === 'kavanoz' ? kavanozGeo(R, Hh) : stil === 'sutun' ? sutunGeo(R, Hh) : ficiGeo(R, Hh), t = silBoya(stil, hex);
       const mat = CILA2 && stil === 'kavanoz' ? new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.16, clearcoat: 1, clearcoatRoughness: 0.04, envMap: PENV, envMapIntensity: 0.7 })
         : new THREE.MeshPhysicalMaterial({ map: t, roughness: stil === 'fici' ? 0.55 : stil === 'sutun' ? 0.45 : 0.3, clearcoat: stil === 'fici' ? 0.2 : stil === 'sutun' ? 0.35 : 0.7, clearcoatRoughness: 0.12, envMap: ENV, envMapIntensity: 0.4 }); mat.toneMapped = false; mat.userData.yeni = 1;
-      temasEkle(mat, Hh / 2, 'b6s'); return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: hex, roughness: 0.5 }) });
+      temasEkle(mat, Hh / 2, 'b6s', R); return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: hex, roughness: 0.5 }) });
     }
     const yar = (v) => Math.max(0.5, Math.round(v / S * 2) / 2) * S;   // modelin cikintilari (TNT fitili vb.) olcuye girmesin: yarim kup katlari
     const bx = boy ? yar(boy.x) * 0.994 : n * S * 0.994, by = boy ? yar(boy.y) * 0.992 : S * 0.992, bz = boy ? yar(boy.z) * 0.992 : S * 0.992;
@@ -236,7 +236,7 @@ export function blok6Kur({ THREE, ENV, S, SENV }) {
     const mat = stil === 'kristal' ? new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.22, clearcoat: 0.6, clearcoatRoughness: 0.08, envMap: ENV, envMapIntensity: 0.3, emissive: '#ffffff', emissiveMap: t, emissiveIntensity: 0.35 })
       : CILA2 && !/tahta|kalas|direk/.test(stil) ? new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.24, clearcoat: 1, clearcoatRoughness: 0.05, envMap: PENV, envMapIntensity: stil === 'tas' ? 0.45 : 0.6 })
       : new THREE.MeshPhysicalMaterial({ map: t, roughness: stil === 'tahta' ? 0.6 : 0.38, clearcoat: stil === 'tahta' ? 0.2 : 0.5, clearcoatRoughness: 0.2, envMap: ENV, envMapIntensity: 0.35 });
-    mat.toneMapped = false; mat.userData.yeni = 1; temasEkle(mat, by / 2, 'b6k');
+    mat.toneMapped = false; mat.userData.yeni = 1; temasEkle(mat, by / 2, 'b6k', bx / 2);
     return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: stil === 'kristal' ? '#3fd6f2' : stil === 'tahta' ? '#c9742f' : hex, roughness: 0.5 }) });
   }
   return { var: (k) => !!stilOf(k), yap };

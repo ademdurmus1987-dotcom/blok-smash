@@ -165,10 +165,12 @@ def kup(n):
     o = kutu_cerceveli(W, 1.0, 1.0)
     govde = malzeme('govde', (0.8, 0.8, 0.8, 1), 0.22, 0.90, 0.10); pm = malzeme('pati', KREM, 0.24, 0.90, 0.10)   # v12.67: kavanozla esit parlaklik
     o.data.materials.append(govde); o.data.materials.append(pm)
+    # v12.69 (Adem: uzun bloklar 'pati duvari' gibi; dengeli sadelestir): 1 -> 1 pati, 2 -> ortada 1 buyuk pati,
+    # 3-4 -> ortada 1 buyuk pati + iki ucta birer kucuk pati (blok bos kalmasin, ritim olsun)
+    yer = {1: [(0, 0.62)], 2: [(0, 0.74)], 3: [(-1.0, 0.42), (0, 0.74), (1.0, 0.42)], 4: [(-1.45, 0.42), (0, 0.74), (1.45, 0.42)]}[n]
     for yon in (-1, 1):
-        for i in range(n):
-            cx = -W / 2 + 0.5 + i
-            k = pati_kesici(cx, -0.02, 0.62, yon * (0.5 - 0.035), yon); k.data.materials.append(pm); boolean_fark(o, k)
+        for cx, sc in yer:
+            k = pati_kesici(cx, -0.02 if sc > 0.5 else 0.0, sc, yon * (0.5 - 0.035), yon); k.data.materials.append(pm); boolean_fark(o, k)
     bitir(o); pisir(o, 'kup' + str(n), 1024 if n > 2 else 512, pati_isik=True); disa(o, 'kup' + str(n))
 
 def buz(n):
@@ -208,14 +210,14 @@ def sandik():
             b = k.modifiers.new('p', 'BEVEL'); b.width = 0.006; b.segments = 2; uygula(k); boolean_fark(o, k)
     bitir(o); pisir(o, 'sandik', 1024, ao_guc=0.85); disa(o, 'sandik')
 
-def varil():
+def varil(ad='varil', acik=None, koyu=None):
     temizle()
     P = [(0.0, -0.5)]
     for i in range(13):
         t = i / 12; P.append((0.37 + 0.09 * math.sin(t * math.pi), -0.47 + t * 0.94))
     P[1:1] = [(0.33, -0.5)]; P += [(0.33, 0.5), (0.0, 0.5)]
     o = tornala(P, 32, 'varil')
-    m = malzeme('ahsap', (0.8, 0.45, 0.15, 1), 0.5, 0.3, 0.25); ahsap_dugum(m, olcek=2.4, yon='X'); o.data.materials.append(m)
+    m = malzeme('ahsap', (0.8, 0.45, 0.15, 1), 0.5, 0.3, 0.25); ahsap_dugum(m, olcek=2.4, yon='X', **({'acik': acik, 'koyu': koyu} if acik else {})); o.data.materials.append(m)
     # dikey cita oluklari (16) gomulu
     for i in range(16):
         a = i / 16 * 2 * math.pi; bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0); bmesh.ops.scale(bm, vec=(0.016, 0.06, 1.2), verts=bm.verts)
@@ -227,7 +229,126 @@ def varil():
         r = 0.37 + 0.09 * math.sin((z + 0.47) / 0.94 * math.pi)
         c = tornala([(r - 0.01, z - 0.045), (r + 0.022, z - 0.04), (r + 0.026, z), (r + 0.022, z + 0.04), (r - 0.01, z + 0.045)], 32, 'cember')
         c.data.materials.append(me); sec(o); c.select_set(True); bpy.context.view_layer.objects.active = o; bpy.ops.object.join()
-    bitir(o); pisir(o, 'varil', 1024, ao_guc=0.85); disa(o, 'varil')
+    bitir(o); pisir(o, ad, 1024, ao_guc=0.85); disa(o, ad)
+
+# ================= v12.69 yeni turler (Adem onayi: A-G plani C+D) =================
+def lin(h):   # sRGB hex -> dogrusal (Blender Base Color dogrusal ister)
+    c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+    return tuple(((x + 0.055) / 1.055) ** 2.4 if x > 0.04045 else x / 12.92 for x in c) + (1,)
+
+def tas_dugum(m, renk):
+    """boyali tas: govde renginde hafif lekeli yuzey (Noise) + ince benek (Voronoi)"""
+    nt = m.node_tree; p = nt.nodes['Principled BSDF']; tc = nt.nodes.new('ShaderNodeTexCoord')
+    nz = nt.nodes.new('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 3.5; nz.inputs['Detail'].default_value = 4
+    vo = nt.nodes.new('ShaderNodeTexVoronoi'); vo.inputs['Scale'].default_value = 26
+    nt.links.new(tc.outputs['Object'], nz.inputs['Vector']); nt.links.new(tc.outputs['Object'], vo.inputs['Vector'])
+    rp = nt.nodes.new('ShaderNodeValToRGB'); e = rp.color_ramp.elements
+    e[0].position = 0.3; e[0].color = tuple(c * 0.78 for c in renk[:3]) + (1,); e[1].position = 0.72; e[1].color = tuple(min(1, c * 1.22) for c in renk[:3]) + (1,)
+    nt.links.new(nz.outputs['Fac'], rp.inputs['Fac'])
+    r2 = nt.nodes.new('ShaderNodeValToRGB'); r2.color_ramp.elements[0].position = 0.0; r2.color_ramp.elements[0].color = (0.75, 0.75, 0.78, 1); r2.color_ramp.elements[1].position = 0.06; r2.color_ramp.elements[1].color = (1, 1, 1, 1)
+    nt.links.new(vo.outputs['Distance'], r2.inputs['Fac'])
+    mx = nt.nodes.new('ShaderNodeMix'); mx.data_type = 'RGBA'; mx.blend_type = 'MULTIPLY'; mx.inputs['Factor'].default_value = 1
+    nt.links.new(rp.outputs['Color'], mx.inputs[6]); nt.links.new(r2.outputs['Color'], mx.inputs[7]); nt.links.new(mx.outputs[2], p.inputs['Base Color'])
+
+def halka_kesici(cx, yuzy, yon, R=0.27, r=0.17, derin=0.035):
+    bm = bmesh.new()
+    for rr, ad in ((R, 'dis'), (r, 'ic')):
+        pass
+    g = bmesh.ops.create_cone(bm, cap_ends=True, segments=24, radius1=R, radius2=R, depth=derin * 2 + 0.06)
+    o = obj_bm('halka', bm)
+    bm2 = bmesh.new(); bmesh.ops.create_cone(bm2, cap_ends=True, segments=24, radius1=r, radius2=r, depth=derin * 2 + 0.2); ic = obj_bm('ic', bm2)
+    m = o.modifiers.new('b', 'BOOLEAN'); m.operation = 'DIFFERENCE'; m.solver = 'EXACT'; m.object = ic; uygula(o); bpy.data.objects.remove(ic, do_unlink=True)
+    o.rotation_euler = (math.pi / 2, 0, 0); o.location = (cx, yuzy + yon * (0.06 - derin) / 2 + yon * 0.0, 0); sec(o); bpy.ops.object.transform_apply(location=True, rotation=True)
+    b = o.modifiers.new('p', 'BEVEL'); b.width = 0.006; b.segments = 1; b.limit_method = 'ANGLE'; uygula(o)
+    return o
+
+def tas(n):
+    temizle(); W = float(n)
+    o = kutu_cerceveli(W, 1.0, 1.0, cer=0.06, derin=0.02, pah=0.08, seg=4)
+    m = malzeme('tas', lin('#6470b4'), 0.55, 0.25, 0.3); tas_dugum(m, lin('#6470b4')); o.data.materials.append(m)
+    for yon in (-1, 1):
+        for i in range(n):
+            boolean_fark(o, halka_kesici(-W / 2 + 0.5 + i, yon * (0.5 - 0.02), yon))
+    bitir(o); pisir(o, 'tas' + str(n), 512 if n < 3 else 1024, ao_guc=0.9); disa(o, 'tas' + str(n))
+
+def yazi_mesh(metin, boy, kalin):
+    cu = bpy.data.curves.new('y', 'FONT'); cu.body = metin; cu.size = boy; cu.extrude = kalin; cu.bevel_depth = 0.004; cu.align_x = 'CENTER'; cu.align_y = 'CENTER'
+    o = bpy.data.objects.new('y', cu); bpy.context.collection.objects.link(o); sec(o); bpy.ops.object.convert(target='MESH'); return o
+
+def katil(hedef, parcalar):
+    sec(hedef)
+    for q in parcalar: q.select_set(True)
+    bpy.context.view_layer.objects.active = hedef; bpy.ops.object.join(); return hedef
+
+def tnt():
+    temizle()
+    o = kutu_cerceveli(1.0, 1.0, 1.0, cer=0.07, derin=0.025, pah=0.07)
+    kir = malzeme('kirmizi', lin('#e2342b'), 0.28, 0.85, 0.12); ban = malzeme('bant', KREM, 0.35, 0.6, 0.2); yz = malzeme('yazi', lin('#9e1a14'), 0.35, 0.6, 0.2)
+    o.data.materials.append(kir); o.data.materials.append(ban); o.data.materials.append(yz)
+    ek = []
+    for yon in (-1, 1):
+        bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0); bmesh.ops.scale(bm, vec=(0.9, 0.04, 0.3), verts=bm.verts)
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(0, yon * (0.5 - 0.025 - 0.005), 0)); b = obj_bm('bant', bm)
+        bb = b.modifiers.new('p', 'BEVEL'); bb.width = 0.012; bb.segments = 2; uygula(b); b.data.materials.append(ban); ek.append(b)
+        t = yazi_mesh('TNT', 0.3, 0.012); t.rotation_euler = (math.pi / 2, 0, 0 if yon < 0 else math.pi); t.location = (0, yon * (0.5 - 0.0), -0.005)
+        sec(t); bpy.ops.object.transform_apply(location=True, rotation=True); t.data.materials.append(yz); ek.append(t)
+    katil(o, ek)
+    for f in o.data.polygons:
+        pass
+    bitir(o); pisir(o, 'tnt', 512, ao_guc=0.7); disa(o, 'tnt')
+
+def yildiz():
+    temizle()
+    o = kutu_cerceveli(1.0, 1.0, 1.0, cer=0.07, derin=0.03, pah=0.08)
+    gm = malzeme('govde', lin('#ffb20f'), 0.24, 0.9, 0.1); ym = malzeme('yildiz', KREM, 0.24, 0.9, 0.1)
+    o.data.materials.append(gm); o.data.materials.append(ym)
+    ek = []
+    for yon in (-1, 1):
+        bm = bmesh.new(); vs = []
+        for i in range(10):
+            a = math.pi / 2 + i * math.pi / 5; rr = 0.37 if i % 2 == 0 else 0.165
+            vs.append(bm.verts.new((rr * math.cos(a), 0, rr * math.sin(a) - 0.01)))
+        f = bm.faces.new(vs); r = bmesh.ops.extrude_face_region(bm, geom=[f]); ev = [v for v in r['geom'] if isinstance(v, bmesh.types.BMVert)]
+        bmesh.ops.translate(bm, verts=ev, vec=(0, -0.05, 0)); bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        if yon > 0: bmesh.ops.rotate(bm, verts=bm.verts, cent=(0, 0, 0), matrix=Matrix.Rotation(math.pi, 3, 'Z'))
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(0, yon * (0.5 - 0.03 + 0.012), 0)); s_ = obj_bm('yildiz', bm)
+        bv = s_.modifiers.new('p', 'BEVEL'); bv.width = 0.014; bv.segments = 3; bv.limit_method = 'ANGLE'; uygula(s_); s_.data.materials.append(ym); ek.append(s_)
+    katil(o, ek); bitir(o); pisir(o, 'yildiz', 512, ao_guc=0.8); disa(o, 'yildiz')
+
+def metal_bant(x, W, H, D, me, kal=0.09):
+    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0); bmesh.ops.scale(bm, vec=(kal, D + 0.016, H + 0.016), verts=bm.verts)
+    bmesh.ops.translate(bm, verts=bm.verts, vec=(x, 0, 0)); b = obj_bm('bant', bm)
+    bb = b.modifiers.new('p', 'BEVEL'); bb.width = 0.01; bb.segments = 2; uygula(b); b.data.materials.append(me)
+    ek = [b]
+    for yon in (-1, 1):   # percin
+        for z in (-H * 0.25, H * 0.25):
+            bm = bmesh.new(); bmesh.ops.create_uvsphere(bm, u_segments=8, v_segments=5, radius=0.022)
+            bmesh.ops.translate(bm, verts=bm.verts, vec=(x, yon * (D / 2 + 0.008), z)); r = obj_bm('p', bm); r.data.materials.append(me); ek.append(r)
+    return ek
+
+def kalas(n):
+    temizle(); W = float(n); H = 0.5
+    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0); bmesh.ops.scale(bm, vec=(W, 1.0, H), verts=bm.verts)
+    bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.05, offset_type='OFFSET', segments=3, profile=0.5, affect='EDGES', clamp_overlap=True)
+    o = obj_bm('kalas', bm)
+    m = malzeme('ahsap', (0.8, 0.45, 0.15, 1), 0.5, 0.3, 0.25); ahsap_dugum(m, olcek=4.0, yon='Z'); o.data.materials.append(m)
+    me = malzeme('demir', (0.24, 0.26, 0.31, 1), 0.35, 0.4, 0.2, metal=0.6); o.data.materials.append(me)
+    ek = []
+    for sx in (-1, 1): ek += metal_bant(sx * (W / 2 - 0.16), W, H, 1.0, me)
+    katil(o, ek); bitir(o); pisir(o, 'kalas' + str(n), 512, ao_guc=0.85); disa(o, 'kalas' + str(n))
+
+def direk():
+    temizle(); H = 2.0
+    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0); bmesh.ops.scale(bm, vec=(1.0, 1.0, H), verts=bm.verts)
+    bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.06, offset_type='OFFSET', segments=3, profile=0.5, affect='EDGES', clamp_overlap=True)
+    o = obj_bm('direk', bm)
+    m = malzeme('ahsap', (0.8, 0.45, 0.15, 1), 0.5, 0.3, 0.25); ahsap_dugum(m, olcek=3.0, yon='X'); o.data.materials.append(m)
+    me = malzeme('demir', (0.24, 0.26, 0.31, 1), 0.35, 0.4, 0.2, metal=0.6); o.data.materials.append(me)
+    ek = []
+    for z in (-H / 2 + 0.2, H / 2 - 0.2):
+        bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0); bmesh.ops.scale(bm, vec=(1.016, 1.016, 0.12), verts=bm.verts)
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(0, 0, z)); b = obj_bm('bant', bm); bb = b.modifiers.new('p', 'BEVEL'); bb.width = 0.012; bb.segments = 2; uygula(b); b.data.materials.append(me); ek.append(b)
+    katil(o, ek); bitir(o); pisir(o, 'direk', 512, ao_guc=0.85); disa(o, 'direk')
 
 if __name__ == '__main__':
     ne = [a for a in (sys.argv[sys.argv.index('--') + 2:] if '--' in sys.argv else [])] or ['kup1', 'kup2', 'kup3', 'kup4', 'buz1', 'buz3', 'kav1', 'sandik', 'varil']
@@ -235,4 +356,7 @@ if __name__ == '__main__':
         if a.startswith('kup'): kup(int(a[3:]))
         elif a.startswith('buz'): buz(int(a[3:]))
         elif a == 'kav1': kavanoz()
+        elif a.startswith('tas'): tas(int(a[3:]))
+        elif a.startswith('kalas'): kalas(int(a[5:]))
+        elif a == 'varilK': varil('varilK', acik=(0.75, 0.05, 0.03, 1), koyu=(0.2, 0.01, 0.005, 1))
         else: globals()[a]()
