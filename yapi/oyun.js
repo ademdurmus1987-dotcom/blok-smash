@@ -20,7 +20,7 @@ import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
 import { hikayeKart } from './hikaye.js?v=4';
 import { TANIT } from './tanit.js?v=2';
-import { ykGoster, ykKapat } from './yukkart.js?v=2';   // v12.57 bolum hazirlanirken hikaye karti   // v12.55 yeni blogun ilk bolumu yalniz o bloktan   // v12.42 hikaye kartlari (Rako, firtina)
+import { ykGoster, ykKapat } from './yukkart.js?v=3';   // v12.57 bolum hazirlanirken hikaye karti   // v12.55 yeni blogun ilk bolumu yalniz o bloktan   // v12.42 hikaye kartlari (Rako, firtina)
 import { DOST, DOSTLAR, YARDIM, dostBolum, dostKafes, dostUc, dostEkran, dostOnYukle, dostVar, dostSonraki } from './dost.js?v=23';   // v12.20 deneme ?dost=1: kafesteki dost
 import { YOLCULUK, yolculukOynat, yolOnYukle } from './yolculuk.js?v=3';   // v12.44 Foxi'nin Yolculugu: kurtarmadan sonra gemi parcasi
 import { topModeli3 } from './top4.js?v=1';   // v12.3 deneme: arkadan okunan top arabasi (?top4=1)   // v12.2 Gardirop (eski ?gor=0)   // v11.7 (eski ?top3=0)

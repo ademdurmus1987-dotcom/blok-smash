@@ -335,3 +335,7 @@ Sonra (uretim gerektirmez):
 - oyun.js: kutle katsayisi KAGIR 1.8 -> 4, taban kutle KMIN 1 (makaron, kola, kurabiye gibi hafifler artik balon degil), yercekimi -32 -> -38,
   blok-blok surtunme 0.48 -> 0.6, top-blok sekme 0.25 -> 0.08, top ilk carpista hizinin %30'unu tutar (eski %60), carpisma cevresi hiz siniri 13 -> 7, yukari 1.6 -> 0.7, donme 4 -> 2.8, sonum 0.09 / 0.32.
 - Olcum (390x844, 2 atis, bolum 60): yerinden oynayan blok 38 -> 12. Top sayilari degismedi: telefonda bolumler cok zorlasirsa top sayisi (egri.js) artirilacak.
+
+## v12.62 (26 Kas 2026): yukleme karti rakip tarzi (Adem rakip ekranlari, 'suresi cok az')
+- yukkart.js: en az 3.6 sn (eski 1.6), cubuk soldan saga dolar (hazirlik uzarsa %90'da bekler), 'Yukleniyor...' noktalari, kalin kenarli beyaz yazi, koyu perde hafif, ucusan yaprak + isilti. Dokununca gecme en erken 1.5 sn.
+- Resimler hala video kareleri (yk/y01..17): yeni tam sahne resimleri (Higgsfield) gelince degisecek, istem uretici/istem/yukleme_kartlari.md.

@@ -8,28 +8,43 @@ export const YK = ['Rako yine kule diziyor. Bu sefer daha yüksek, daha sallant�
   'Foxi dalgıç kaskını taktı. Ahmo mutfakta bekliyor!', 'Sal akıntıda hızlanıyor. Kundi, sıkı tutun!', 'Buz mağarası kaygan. Foxi de kayıyor!',
   'Nilüferden nilüfere… Timsahı uyandırmayalım!', 'Rako ambarda nöbette. Ama altına hiç dayanamaz!', 'Anahtar havada! Kafesin kilidi çıt diye açılacak.',
   'TNT patladı, Rako uçtu! Sıradaki kule hazır mı?', 'Tayfa büyüyor! Sıradaki adaya tam yol.', 'Fırtına bitti. Şimdi sıra tayfayı toplamakta!'];
-let E = null, t0 = 0, hazir = false, son = -1, CSS = false;
+// v12.62 (Adem 26 Kas, rakip ekranlari: 'kartlari bu sekilde istiyordum, suresi cok az'): en az 3.6 sn, cubuk soldan saga dolar,
+// 'Yukleniyor...' noktalari, kenarli beyaz yazi (koyu perde yok), ucusan isiltilar. Hazirlik uzarsa cubuk %90'da bekler.
+const MIN = 3600;
+let E = null, t0 = 0, hazir = false, son = -1, CSS = false, tH = 0;
 function stil() {
   if (CSS) return; CSS = true; const s = document.createElement('style');
-  s.textContent = `#ykart{position:fixed;inset:0;z-index:71;background:#1b2a4a center/cover no-repeat;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 46px);opacity:1;transition:opacity .25s}
-#ykart.cik{opacity:0}#ykart:before{content:'';position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(transparent,rgba(5,10,25,.75));pointer-events:none}
-#ykart p{position:relative;margin:0 0 16px;max-width:380px;text-align:center;font:400 25px/1.2 var(--disp,system-ui);color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.55),0 0 14px rgba(0,0,0,.7)}
-#ykart b{position:relative;font:400 18px/1 var(--disp,system-ui);color:#ffe27a;text-shadow:0 2px 0 #7a3c00;letter-spacing:.5px}
-#ykart i{position:relative;display:block;width:min(70vw,280px);height:12px;margin-top:10px;border-radius:8px;background:rgba(0,0,0,.45);overflow:hidden;border:2px solid rgba(255,255,255,.35)}
-#ykart i:after{content:'';position:absolute;inset:0;width:40%;border-radius:6px;background:linear-gradient(90deg,#ffd45a,#ffb43a);animation:ykdol 1.4s ease-in-out infinite}
-@keyframes ykdol{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}`;
+  const kenar = [[0, 3], [2, 2], [3, 0], [2, -2], [0, -3], [-2, -2], [-3, 0], [-2, 2]].map(([x, y]) => `${x}px ${y}px 0 #2a1606`).join(',');
+  s.textContent = `#ykart{position:fixed;inset:0;z-index:71;background:#1b2a4a center/cover no-repeat;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:0 18px calc(env(safe-area-inset-bottom,0px) + 34px);opacity:1;transition:opacity .3s;overflow:hidden}
+#ykart.cik{opacity:0}#ykart:before{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(transparent,rgba(10,6,2,.32));pointer-events:none}
+#ykart p{position:relative;margin:0 0 14px;max-width:370px;text-align:center;font:400 27px/1.18 var(--disp,system-ui);color:#fff;text-shadow:${kenar},0 5px 6px rgba(0,0,0,.45)}
+#ykart b{position:relative;font:400 21px/1 var(--disp,system-ui);color:#fff;text-shadow:${kenar};letter-spacing:.3px;min-width:150px;text-align:left}
+#ykart i{position:relative;display:block;width:min(48vw,190px);height:13px;margin-top:12px;border-radius:9px;background:rgba(40,24,8,.55);overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+#ykart i u{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:9px;background:linear-gradient(#ffe08a,#ffb83a);box-shadow:inset 0 2px 0 rgba(255,255,255,.55)}
+#ykart s{position:absolute;top:-30px;width:16px;height:10px;border-radius:50% 50% 50% 0;background:#8fd14f;opacity:.9;animation:ykyap linear infinite;pointer-events:none}
+#ykart s.p{width:6px;height:6px;border-radius:50%;background:#fff6c8;box-shadow:0 0 8px 3px rgba(255,230,140,.8);animation-name:ykpar}
+@keyframes ykyap{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(30px,55vh) rotate(200deg)}100%{transform:translate(-10px,112vh) rotate(420deg)}}
+@keyframes ykpar{0%{transform:translateY(110vh);opacity:0}20%{opacity:1}100%{transform:translateY(-10vh);opacity:0}}`;
   document.head.appendChild(s);
+}
+function dongu() {
+  if (!E) return; const el = E, t = performance.now() - t0, u = el.querySelector('i u'), b = el.querySelector('b');
+  let k = Math.min(0.9, t / MIN * 0.9); if (hazir) k = Math.min(1, 0.9 * Math.min(1, tH / MIN) + (t - tH) / Math.max(300, MIN - tH) * (1 - 0.9 * Math.min(1, tH / MIN)));
+  if (u) u.style.width = (k * 100).toFixed(1) + '%'; if (b) b.textContent = 'Yükleniyor' + '...'.slice(0, Math.floor(t / 400) % 4);
+  requestAnimationFrame(dongu);
 }
 export function ykGoster() {
   if (!YKART || E) return false; stil(); hazir = false; t0 = performance.now();
   let n = Math.floor(Math.random() * YK.length); if (n === son) n = (n + 1) % YK.length; son = n;
   E = document.createElement('div'); E.id = 'ykart'; E.style.backgroundImage = 'url(../karakter/acilis/yk/y' + String(n + 1).padStart(2, '0') + '.webp?v=2)';
-  E.innerHTML = '<p></p><b>Bölüm hazırlanıyor…</b><i></i>'; E.querySelector('p').textContent = YK[n];
-  const el = E; el.addEventListener('pointerdown', (e) => { e.stopPropagation(); if (hazir) kapa(el); });
-  document.body.appendChild(el); return true;   // yeni acildi: cagiran, agir kurulumu kart cizildikten sonra baslatir
+  let ss = ''; for (let k = 0; k < 9; k++) ss += `<s style="left:${(k * 11 + Math.random() * 8).toFixed(0)}%;animation-duration:${(5 + Math.random() * 4).toFixed(1)}s;animation-delay:-${(Math.random() * 6).toFixed(1)}s"></s>`;
+  for (let k = 0; k < 8; k++) ss += `<s class="p" style="left:${(Math.random() * 96).toFixed(0)}%;animation-duration:${(3 + Math.random() * 3).toFixed(1)}s;animation-delay:-${(Math.random() * 4).toFixed(1)}s"></s>`;
+  E.innerHTML = ss + '<p></p><b>Yükleniyor</b><i><u></u></i>'; E.querySelector('p').textContent = YK[n];
+  const el = E; el.addEventListener('pointerdown', (e) => { e.stopPropagation(); if (hazir && performance.now() - t0 > 1500) kapa(el); });
+  document.body.appendChild(el); requestAnimationFrame(dongu); return true;   // yeni acildi: cagiran, agir kurulumu kart cizildikten sonra baslatir
 }
-function kapa(el) { if (!el || !el.isConnected) return; el.classList.add('cik'); if (E === el) E = null; setTimeout(() => el.remove(), 260); }
+function kapa(el) { if (!el || !el.isConnected) return; el.classList.add('cik'); if (E === el) E = null; setTimeout(() => el.remove(), 320); }
 export function ykKapat() {
-  if (!E) return; hazir = true; const el = E; const b = el.querySelector('b'); if (b) b.textContent = 'Hazır!';
-  setTimeout(() => kapa(el), Math.max(0, 1600 - (performance.now() - t0)));
+  if (!E) return; hazir = true; tH = performance.now() - t0; const el = E;
+  setTimeout(() => kapa(el), Math.max(350, MIN - tH));
 }
