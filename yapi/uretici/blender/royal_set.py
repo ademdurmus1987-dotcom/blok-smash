@@ -78,14 +78,14 @@ def pati_kesici(cx, cz, s, yuzy, yon, derin=0.028):
     parcalar = [(0, -0.06, 0.27, 0.22, 0), (-0.31, 0.15, 0.1, 0.13, -0.45), (-0.11, 0.31, 0.105, 0.135, -0.14), (0.11, 0.31, 0.105, 0.135, 0.14), (0.31, 0.15, 0.1, 0.13, 0.45)]
     bm = bmesh.new()
     for (ex, ez, rx, rz, a) in parcalar:
-        g = bmesh.ops.create_cone(bm, cap_ends=True, segments=20, radius1=1, radius2=1, depth=1)
+        g = bmesh.ops.create_cone(bm, cap_ends=True, segments=14, radius1=1, radius2=1, depth=1)   # v12.68: 20 -> 14 (ucgen)
         vs = g['verts']
         bmesh.ops.rotate(bm, verts=vs, cent=(0, 0, 0), matrix=Matrix.Rotation(math.pi / 2, 3, 'X'))
         bmesh.ops.scale(bm, vec=(rx * s, (derin + 0.06), rz * s), verts=vs)
         bmesh.ops.rotate(bm, verts=vs, cent=(0, 0, 0), matrix=Matrix.Rotation(-a, 3, 'Y'))
         bmesh.ops.translate(bm, verts=vs, vec=(cx + ex * s, yuzy + yon * (0.06 - derin) / 2, cz + ez * s))
     o = obj_bm('pati', bm)
-    b = o.modifiers.new('pah', 'BEVEL'); b.width = 0.006; b.segments = 2; b.limit_method = 'ANGLE'; uygula(o)
+    b = o.modifiers.new('pah', 'BEVEL'); b.width = 0.006; b.segments = 1; b.limit_method = 'ANGLE'; uygula(o)
     return o
 
 def boolean_fark(hedef, kesici):
@@ -107,11 +107,12 @@ def bitir(o):
     sec(o); bpy.ops.object.shade_smooth()
     me = o.data; bm = bmesh.new(); bm.from_mesh(me)
     bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5); bmesh.ops.dissolve_degenerate(bm, dist=1e-5, edges=bm.edges)
+    bmesh.ops.dissolve_limit(bm, angle_limit=math.radians(0.5), use_dissolve_boundaries=False, verts=bm.verts, edges=bm.edges, delimit={'MATERIAL'})   # v12.68: oyma sonrasi duz yuzeydeki parcali ucgenler birlesir
     bm.to_mesh(me); bm.free()
     w = o.modifiers.new('wn', 'WEIGHTED_NORMAL'); w.keep_sharp = True; w.weight = 50; uygula(o)
 
 # ---------- pisirme ----------
-def pisir(o, ad, N=512, ao_guc=0.75):
+def pisir(o, ad, N=512, ao_guc=0.75, pati_isik=False):
     sec(o)
     bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
     bpy.ops.uv.smart_project(angle_limit=math.radians(60), island_margin=0.02); bpy.ops.object.mode_set(mode='OBJECT')
@@ -126,6 +127,23 @@ def pisir(o, ad, N=512, ao_guc=0.75):
     bpy.ops.object.bake(type='AO', use_clear=True)
     ao = np.array(img.pixels[:]).reshape(N, N, 4)[:, :, :1]
     son = renk.copy(); son[:, :, :3] = renk[:, :, :3] * (1 - ao_guc + ao_guc * ao)
+    beyaz = renk[:, :, :3].min(axis=2) > 0.97   # cam parlamasi AO almaz
+    son[:, :, :3] = np.where(beyaz[:, :, None], 1.0, son[:, :, :3])
+    if pati_isik:   # v12.67: krem (pati) pikselleri: AO yerine ust-onden gunes isigiyla pisirilmis gercek oyuk golgesi (ust ic kenar koyu, alt kenar parlak)
+        kr = (renk[:, :, 0] - renk[:, :, 2]) > 0.15
+        gunes = []
+        for yon in (-1, 1):
+            L = bpy.data.lights.new('g', 'SUN'); L.energy = 3.0; L.angle = math.radians(3)
+            lo = bpy.data.objects.new('g', L); bpy.context.collection.objects.link(lo)
+            lo.rotation_euler = (Vector((0, -yon * 0.55, 1.0)).to_track_quat('Z', 'Y')).to_euler(); gunes.append(lo)
+        sc.render.bake.use_pass_direct = True; sc.render.bake.use_pass_color = False
+        bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT'}, use_clear=True)
+        for lo in gunes: bpy.data.objects.remove(lo, do_unlink=True)
+        d = np.array(img.pixels[:]).reshape(N, N, 4)[:, :, 0]
+        ref = np.percentile(d[kr], 70) if kr.any() else 1.0
+        k = np.clip(d / max(ref, 1e-4), 0.28, 1.35)[:, :, None]
+        isik = np.where(k > 1, renk[:, :, :3] + (1 - renk[:, :, :3]) * (k - 1) * 1.6, renk[:, :, :3] * k)
+        son[:, :, :3] = np.where(kr[:, :, None], np.clip(isik, 0, 1), son[:, :, :3])
     img.pixels[:] = son.ravel(); img.update()
     # disa aktarim icin: her malzemede taban renk = pisirilmis doku, prosedurel dugumler devre disi
     for m in o.data.materials:
@@ -145,13 +163,13 @@ def disa(o, ad):
 def kup(n):
     temizle(); W = float(n)
     o = kutu_cerceveli(W, 1.0, 1.0)
-    govde = malzeme('govde', (0.8, 0.8, 0.8, 1), 0.25, 0.85, 0.12); pm = malzeme('pati', KREM, 0.3, 0.85, 0.12)
+    govde = malzeme('govde', (0.8, 0.8, 0.8, 1), 0.22, 0.90, 0.10); pm = malzeme('pati', KREM, 0.24, 0.90, 0.10)   # v12.67: kavanozla esit parlaklik
     o.data.materials.append(govde); o.data.materials.append(pm)
     for yon in (-1, 1):
         for i in range(n):
             cx = -W / 2 + 0.5 + i
             k = pati_kesici(cx, -0.02, 0.62, yon * (0.5 - 0.035), yon); k.data.materials.append(pm); boolean_fark(o, k)
-    bitir(o); pisir(o, 'kup' + str(n)); disa(o, 'kup' + str(n))
+    bitir(o); pisir(o, 'kup' + str(n), 1024 if n > 2 else 512, pati_isik=True); disa(o, 'kup' + str(n))
 
 def buz(n):
     temizle(); W = float(n)
@@ -167,8 +185,11 @@ def kavanoz():
     govde = malzeme('govde', (0.8, 0.8, 0.8, 1), 0.18, 0.9, 0.06); kp = malzeme('kapak', KREM, 0.45, 0.3, 0.3)
     o.data.materials.append(govde); o.data.materials.append(kp)
     for f in o.data.polygons: f.material_index = 1 if f.center.z > 0.305 else 0
-    for yon in (-1, 1):
-        k = pati_kesici(0, -0.1, 0.66, yon * 0.47, yon, derin=0.03); pm = malzeme('pati', KREM, 0.3, 0.85, 0.12); k.data.materials.append(pm); o.data.materials.append(pm); boolean_fark(o, k)
+    # v12.67 (Adem): pati kaldirildi (kavanozda sikisik duruyordu); yerine temiz dikey cam parlamasi (beyaz serit, oyun bunu beyaz birakir)
+    pm = malzeme('parilti', (1, 1, 1, 1), 0.1, 1.0, 0.05); o.data.materials.append(pm)
+    for f in o.data.polygons:
+        c = f.center
+        if -0.24 < c.z < 0.16 and ((c.y < 0 and -0.31 < c.x < -0.17) or (c.y > 0 and 0.17 < c.x < 0.31)): f.material_index = 2   # iki yuzde (oyunda hangisi one gelirse)
     bitir(o); pisir(o, 'kav1'); disa(o, 'kav1')
 
 def sandik():

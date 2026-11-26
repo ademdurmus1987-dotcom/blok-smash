@@ -104,7 +104,7 @@ export function plat5Kur({ THREE, pKaydir, ENV, GLTFLoader }) {
     const H = pKaydir(P, -0.16), zs = H.map((p) => p[1]), z0 = Math.min(...zs), z1 = Math.max(...zs), nk = Math.max(2, Math.round((z1 - z0) / 0.62)), w = (z1 - z0) / nk;
     for (let k = 0; k < nk; k++) { const Qk = kes(kes(H, z0 + k * w + 0.03, 1), z0 + (k + 1) * w - 0.03, -1); if (Qk.length > 2) M(ext(Qk, -0.08, 0, 0.025), 'guv' + ((k * 5 + 1) % 3), false); }
     // ust kenarda halat, yanda altin bant + percinler
-    M(halat(pKaydir(P, 0.05), -0.07, 0.05, 0.06), 'halat');
+    M(halat(pKaydir(P, 0.05), -0.07, 0.05, 0.06), 'halat', false);   // v12.68: halat golge cizmez (performans)
     const yb = -th * 0.62; if (st !== 'deniz') M(ext(pKaydir(P, 0.035), yb - 0.06, yb + 0.06, 0.02, pKaydir(P, -0.12)), 'altin');
     const Y = yol(pKaydir(P, 0.05), 0.05), adim = Math.max(1, Math.round(1.5 / 0.05)), pr = []; for (let i = 0; i < Y.length; i += adim) pr.push(Y[i]);
     const ri = new THREE.InstancedMesh(new THREE.SphereGeometry(st === 'mercan' ? 0.1 : 0.075, 12, 8), mat('altin'), pr.length), o = new THREE.Object3D();

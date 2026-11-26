@@ -12,10 +12,10 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=2';
 import { sekilKur, YAPI } from './sekil.js?v=13';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=53';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=59';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { ENG3, engel3Kur } from './engel3.js?v=8';   // v11.1: boyali engeller ve top (eski ?eng3=0)
 import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
-import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
+import { PLAT5, plat5Kur } from './plat5.js?v=6';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
 import { TOP3, sekerMat, sekerDuz } from './seker.js?v=8';
 import { GOR, gorSec } from './gorunum.js?v=2';
 import { hikayeKart } from './hikaye.js?v=4';
@@ -123,6 +123,7 @@ const GONE_Y = -0.45;    // bunun altina inen kup platformdan dusmus sayilir
 const glc = $('gl');
 const ren = new THREE.WebGLRenderer({ canvas: glc, antialias: true, alpha: true, preserveDrawingBuffer: TEST }); ren.setClearColor(0, 0);
 ren.setPixelRatio(Math.min(Math.min(innerWidth, innerHeight) < 600 ? (Q.get('yeni') !== '0' && Q.get('b3') !== '0' ? 2.2 : CILA ? 1.75 : 1.25) : 2, devicePixelRatio || 1));   // v5.3: (Adem: sekiller kalitesiz) 1.25 bloklari bulanik ve tirtikli gosteriyordu; kontur cizimleri kalkti, yerine cozunurluk   // v3.18: (Adem: telefon cok isiniyor) 1.5 -> 1.25   // v6.29: (Adem: telefon cok isiniyor) telefonda en cok 1.5 (2 yerine %44 daha az piksel)
+try { const sd = +localStorage.getItem('bs_dpr'); if (CILA && sd >= 1 && sd < ren.getPixelRatio() && !Q.has('olc')) ren.setPixelRatio(sd); } catch (e) {}   // v12.68: daha once dusurulen cozunurluk
 ren.outputColorSpace = THREE.SRGBColorSpace; ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 1.12;
 // v9.5 (Adem 19 Kas: 'acik renkler, mesela sari, referansa yaklasmadi'): ACES parlak renkleri kremlestiriyordu (sari -> soluk krem).
 // Khronos PBR Neutral ton eslemesi rengi korur; three r160'ta yok, CustomToneMapping olarak yazildi. ?ton=aces eski
@@ -3071,7 +3072,7 @@ const PRC = Q.get('fx') === '0' ? null : parcacikKur(scene, SOFT, { normal: 1500
 const PAT = Q.get('efk') !== '0' && !K ? patlamaKur({ THREE, scene, S, floorAt: (x, z) => floorAt(x, z), canvasTex }) : null, PATV = new THREE.Vector3();
 const patOn = (p, d) => PATV.copy(p).addScaledVector(TVV.copy(cam.position).sub(p).normalize(), d == null ? S * 0.6 : d).clone();   // kameraya dogru biraz one: komsu bloklarin icinde kalmasin
 function spr(col, add, op) { const v = PRC && PRC.al(col, add, op); if (v) return v; if (PRC) return PRC.bos(add); const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: SOFT, color: col, transparent: true, opacity: op, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false })); scene.add(m); return m; }
-if (Q.has('olc')) window.__olc = () => ({ cagri: ren.info.render.calls, parca: PRC ? PRC.say() : -1, fx: FX.length, program: ren.info.programs.length, geo: ren.info.memory.geometries });   // v4.0: olcum (yalniz ?olc)
+if (Q.has('olc')) window.__sahne = scene; if (Q.has('olc')) window.__olc = () => ({ ucgen: ren.info.render.triangles, doku: ren.info.memory.textures, dpr: ren.getPixelRatio(), cagri: ren.info.render.calls, parca: PRC ? PRC.say() : -1, fx: FX.length, program: ren.info.programs.length, geo: ren.info.memory.geometries });   // v4.0: olcum (yalniz ?olc)
 if (Q.has('olc')) window.__fxDene = () => { const p = new THREE.Vector3(0, 3, 2); burst(p, '#ff3030', 30, 2); const a = spr('#ffd040', true, 1); a.position.set(0, 6, 2); a.scale.setScalar(3); fx(a, 5, () => {}); splash(-3, 3, 1.4, true); };
 const HIS = hisKur({ THREE, spr: (c, a, o) => spr(c, a, o), fx: (o, l, u) => fx(o, l, u) });
 const VR = Q.get('vurus') === '0' ? null : vurusKur({ THREE, scene, fx: (o, l, u) => fx(o, l, u), sesAl: () => (AC && !SV.sessiz ? { AC, out } : null) });   // v7.0
@@ -4586,16 +4587,17 @@ function frame(ts) {
   if (sahneBos()) { BOS++; if (BOS > 12) { ren.shadowMap.autoUpdate = false; if (BOS % 3) { if (!TEST) requestAnimationFrame(frame); return; } } }
   else { BOS = 0; ren.shadowMap.autoUpdate = true; prOlc(dt); }
   if (HIZLI) return;   // v5.0: dogrulayici (YP.run(sn, true)): fizik var, cizim yok
+  if (scene.children.length !== HGN) { HGN = scene.children.length; halatGolge(); }   // v12.68: yeni eklenen platform / araba halatlari golge cizmesin
   if (PRC) PRC.kare(); ORNEK.guncelle(cubes); ren.render(scene, cam); tilkiCiz();
   if (!TEST) requestAnimationFrame(frame);
 }
-let BOS = 0, CN = 0, CDT = 0, HIZLI = false;
+let BOS = 0, CN = 0, CDT = 0, HIZLI = false, HGN = -1;
 // v5.3: cozunurluk 1.25 -> 1.75 oldu. Telefon bunu kaldiramiyorsa (hareketli sahnede ortalama 45 FPS alti) kendiliginden bir kademe duser: 1.75 -> 1.5 -> 1.25
 const PRO = { n: 0, t: 0 };
 function prOlc(dt) {
   if (TEST || !CILA) return; PRO.n++; PRO.t += dt; if (PRO.n < 150) return;
   const ort = PRO.t / PRO.n, pr = ren.getPixelRatio(); PRO.n = 0; PRO.t = 0;
-  if (ort > 1 / 45 && pr > 1.3) { ren.setPixelRatio(pr > 1.6 ? 1.5 : 1.25); ren.setSize(innerWidth, innerHeight, false); }
+  if (ort > 1 / 45 && pr > 1.3) { const y = pr > 1.9 ? 1.75 : pr > 1.6 ? 1.5 : 1.25; ren.setPixelRatio(y); ren.setSize(innerWidth, innerHeight, false); try { localStorage.setItem('bs_dpr', String(y)); } catch (e) {} }   // v12.68: 1.75 ara kademe, secilen deger saklanir (sonraki acilista takilmasin)
 }
 function sahneBos() {
   if (ENG.length || GGA.length || PRV.on) return false;
@@ -4627,6 +4629,8 @@ function start(L) {
     setTimeout(() => { if (n === STARTN && L < TOPLAM()) bolumYukle(L + 1).then(() => { const s2 = gerekliModel(L + 1); modelYukle(s2).then(() => loadPieces(s2)); }); }, 2500); };   // sonraki bolum arkada hazirlanir, gecis beklemesiz olur
   if (ks.every((k) => MHAZIR.has(k) || !MFILE[k])) bitti(); else modelYukle(ks).then(bitti);
 }
+// v12.68 (performans): platform ve top arabasindaki burgulu halatlar (~45 bin ucgen) golge haritasina cizilmez; ekranda birkac piksel, golgeleri gorunmuyordu. Eski: ?halatg=1
+function halatGolge() { if (Q.get('halatg') === '1') return; scene.traverse((o) => { if (o.isMesh && o.castShadow && /halat/i.test((o.name || '') + ' ' + ((o.parent && o.parent.name) || ''))) o.castShadow = false; }); }
 function start0(L) {
   ggIade();
   LV = Math.max(1, Math.floor(+L) || 1); SV.L = LV; gorevKaydet(); save(); CAMI = 0; closeModal();   /* v3.21: (Adem) bolum acilinca kamera donmez, platform sabit gelir */ $('praise').innerHTML = '';

@@ -358,3 +358,8 @@ Sonra (uretim gerektirmez):
   ahsap Wave damar, sandikta koyu ic panel, buz turkuaz-mavi gecis (rough 0.12), renk + AO 512/1024 pisirme, smooth + weighted normal, tek parca glb.
 - blok8.js: kup/kavanozda dokunun gri kismi blok rengiyle boyanir, krem pati parlatilir; olcu eski modelin kutusuna oturur (fizik ayni). blok3b.js'te B6'dan once.
 - Ucgen: kup1 ~1.9k, kup4 ~6.8k, kav1 ~2.3k, sandik 540, varil 1.8k. Telefonda hiz ve Adem onayi bekliyor; onaylanirsa varsayilan + kalan turler (tas, TNT, yildiz, kalas).
+
+## v12.67-v12.68 (26 Kas 2026): Royal set VARSAYILAN + gorsel kalite calismasi (rapor: yapi/GORSEL_RAPOR.md)
+- Adem'in 3 ince ayari: kup rough 0.22 / coat 0.90 / 0.10; pati oyugu gunesle pisirildi (ust ic kenar golge); kavanozda pati yok, dikey cam parlamasi.
+- b8 varsayilan (?b8=0 eski), buz blok6 kristal (?b8buz=1 Royal buz denemesi). Temas karartmasi ?temas=0. Halat golgesi kapali ?halatg=1. bs_dpr: uyarlamali cozunurluk saklanir.
+- Royal kupler %35-40 az ucgen. Bolum dizilimi 6 bolumde birebir ayni dogrulandi.
