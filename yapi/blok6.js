@@ -4,10 +4,15 @@
 // Geometri: BoxGeometry kose pahi (tek dilim) ; doku: tek atlas (sol: on/arka yuz amblemli, sag: diger yuzler duz), kodla boyanir, tur basina bir kez.
 import { BLOK7, blok7Kur } from './blok7.js?v=1';
 export const BLOK6 = new URLSearchParams(location.search).get('blok6') !== '0';   // v12.13: VARSAYILAN (Adem onayladi 24 Kas), eski gorunum ?blok6=0
-export function blok6Kur({ THREE, ENV, S }) {
+// v12.65 (Adem 26 Kas, yapay zeka ile iyilestirilmis ekran goruntusu: 'kalite farkina bak'): CILA2 VARSAYILAN, eski ?cila2=0.
+// Renkli bloklarda leke yok (puruzsuz plastik), daha kalin pah, vernik + studyo yansimasi (SENV: ust kenarda beyaz parlama).
+const CILA2 = !/[?&]cila2=0/.test(location.search);
+export function blok6Kur({ THREE, ENV, S, SENV }) {
+  const PENV = CILA2 && SENV ? SENV : ENV; let LEKE = true;
   const HAZ = {}, B7 = BLOK7 ? blok7Kur({ THREE, ENV }) : null;
   let tohum = 1; const rnd = () => ((tohum = (tohum * 16807) % 2147483647) / 2147483647);
   const hx = (h) => { h = h.replace('#', ''); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)); };   // sRGB (THREE.Color dogrusal verir, renk kayiyordu)
+  const doyur = (c, f) => { const m = (c[0] + c[1] + c[2]) / 3; return c.map((v) => Math.max(0, Math.min(255, m + (v - m) * f))); };
   const rgb = (c, k = 0, a = 1) => { const f = (x) => Math.round(Math.max(0, Math.min(255, k >= 0 ? x + (255 - x) * k : x * (1 + k)))); return `rgba(${f(c[0])},${f(c[1])},${f(c[2])},${a})`; };
   // ---------- geometri: pahli kutu ----------
   function kutu(w, h, d, r) {
@@ -48,14 +53,14 @@ export function blok6Kur({ THREE, ENV, S }) {
     x.save(); x.lineJoin = 'round'; ciz(); x.fillStyle = renk; x.strokeStyle = renk; x.lineWidth = r * 0.16; x.fill(); x.stroke();
     x.globalAlpha = 0.5; x.fillStyle = '#ffffff'; x.beginPath(); x.ellipse(cx - r * 0.18, cy - r * 0.12, r * 0.2, r * 0.09, -0.5, 0, 6.2832); x.fill(); x.restore();
   }
-  function lekeler(x, X, W, H, c, n, a) { for (let i = 0; i < n; i++) { const r = (0.08 + rnd() * 0.25) * H, px = X + rnd() * W, py = rnd() * H, g = x.createRadialGradient(px, py, 0, px, py, r), k = rnd() < 0.5 ? 0.35 : -0.3; g.addColorStop(0, rgb(c, k, a)); g.addColorStop(1, rgb(c, k, 0)); x.fillStyle = g; x.fillRect(px - r, py - r, 2 * r, 2 * r); } }
+  function lekeler(x, X, W, H, c, n, a) { if (!LEKE) return; for (let i = 0; i < n; i++) { const r = (0.08 + rnd() * 0.25) * H, px = X + rnd() * W, py = rnd() * H, g = x.createRadialGradient(px, py, 0, px, py, r), k = rnd() < 0.5 ? 0.35 : -0.3; g.addColorStop(0, rgb(c, k, a)); g.addColorStop(1, rgb(c, k, 0)); x.fillStyle = g; x.fillRect(px - r, py - r, 2 * r, 2 * r); } }
   function kenar(x, X, W, H, c) {   // ust kenarda parlak cizgi, altta koyu, yanlarda hafif koyu (her yuz bolgesi icin)
     let g = x.createLinearGradient(0, 0, 0, H * 0.1); g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(X, 0, W, H * 0.1);
     g = x.createLinearGradient(0, H * 0.88, 0, H); g.addColorStop(0, rgb(c, -0.6, 0)); g.addColorStop(1, rgb(c, -0.6, 0.45)); x.fillStyle = g; x.fillRect(X, H * 0.88, W, H * 0.12);
     for (const [a, b] of [[X, X + W * 0.05], [X + W, X + W * 0.95]]) { g = x.createLinearGradient(a, 0, b, 0); g.addColorStop(0, rgb(c, -0.5, 0.3)); g.addColorStop(1, rgb(c, -0.5, 0)); x.fillStyle = g; x.fillRect(Math.min(a, b), 0, Math.abs(b - a), H); }
   }
   function boya(stil, hex, n) {
-    const H = 256, W1 = 256 * n, W = W1 + 256, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'), c = hx(hex); tohum = 7 + n * 13 + hex.length;
+    const H = 256, W1 = 256 * n, W = W1 + 256, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'), c = hx(hex); tohum = 7 + n * 13 + hex.length; LEKE = !CILA2 || stil === 'tas' || stil === 'tnt' || stil === 'kristal';
     for (const [X, Wb, on] of [[0, W1, 1], [W1, 256, 0]]) {
       x.save(); x.beginPath(); x.rect(X, 0, Wb, H); x.clip();
       if (stil === 'kristal') {
@@ -103,6 +108,14 @@ export function blok6Kur({ THREE, ENV, S }) {
         x.strokeStyle = rgb(T, -0.5, 0.4); x.lineWidth = 2.4; for (let j = 0; j < 6; j++) { const xx = X + 22 + j * (Wb - 44) / 5, f = rnd() * 6; x.beginPath(); for (let v = 0; v <= H; v += 10) x.lineTo(xx + Math.sin(v * 0.03 + f) * 4, v); x.stroke(); }
         x.fillStyle = rgb(T, -0.55, 0.6); x.beginPath(); x.ellipse(X + Wb * (0.3 + rnd() * 0.4), H * 0.5, 7, 12, 0, 0, 6.2832); x.fill();
         if (on) for (const b of [12, H - 34]) { x.fillStyle = '#4a4f5c'; x.fillRect(X, b, Wb, 22); x.fillStyle = '#c9cfdb'; for (const a of [0.25, 0.75]) { x.beginPath(); x.arc(X + Wb * a, b + 11, 5, 0, 6.2832); x.fill(); } }
+      } else if (CILA2 && stil === 'boya') {   // v12.65: puruzsuz parlak plastik: doygun renk, ust yuz acik, onde belirgin gecis, ustte kalin parlama bandi
+        const k2 = doyur(c, 1.18);
+        let g = x.createLinearGradient(0, 0, 0, H);
+        if (on) { g.addColorStop(0, rgb(k2, 0.34)); g.addColorStop(0.22, rgb(k2, 0.08)); g.addColorStop(0.62, rgb(k2, -0.04)); g.addColorStop(1, rgb(k2, -0.3)); }
+        else { g.addColorStop(0, rgb(k2, 0.3)); g.addColorStop(1, rgb(k2, 0.12)); }
+        x.fillStyle = g; x.fillRect(X, 0, Wb, H);
+        if (on) { const gb = x.createLinearGradient(0, H * 0.07, 0, H * 0.24); gb.addColorStop(0, 'rgba(255,255,255,0)'); gb.addColorStop(0.35, 'rgba(255,255,255,0.5)'); gb.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gb; x.fillRect(X + Wb * 0.06, H * 0.07, Wb * 0.88, H * 0.17); }
+        if (on) { const kk = n === 1 ? 1 : 0; pati(x, X + Wb / 2, H * 0.56, H * 0.8, '#fff6e6', rgb(k2, -0.6, 0.6)); }
       } else {
         let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, rgb(c, 0.22)); g.addColorStop(0.5, rgb(c, 0)); g.addColorStop(1, rgb(c, -0.22)); x.fillStyle = g; x.fillRect(X, 0, Wb, H);
         lekeler(x, X, Wb, H, c, 14 * (on ? n : 1), 0.16);
@@ -119,12 +132,12 @@ export function blok6Kur({ THREE, ENV, S }) {
   function ficiGeo(R, H) { const h = H / 2, pr = []; for (let i = 0; i <= 10; i++) { const t = i / 10; pr.push([R * (0.86 + 0.14 * Math.sin(t * Math.PI)), -h + t * H]); } return torna([[0, -h], ...pr, [0, h]], 40); }
   function sutunGeo(R, H) { const h = H / 2; return torna([[0, -h], [R, -h], [R, -h + 0.1 * H], [R * 0.86, -h + 0.13 * H], [R * 0.8, -h + 0.16 * H], [R * 0.76, h - 0.16 * H], [R * 0.86, h - 0.13 * H], [R, h - 0.1 * H], [R, h], [0, h]], 40); }   // v12.10: tas sutun (alt-ust bilezikli)
   function silBoya(stil, hex) {
-    const Wt = 512, Ht = 256, cv = document.createElement('canvas'); cv.width = Wt; cv.height = Ht; const x = cv.getContext('2d'), c = hx(hex); tohum = 31 + hex.length;
+    const Wt = 512, Ht = 256, cv = document.createElement('canvas'); cv.width = Wt; cv.height = Ht; const x = cv.getContext('2d'), c = hx(hex); tohum = 31 + hex.length; LEKE = !CILA2 || stil !== 'kavanoz';
     const yv = (v) => Ht * (1 - v);   // doku v (alt 0) -> tuval y
     if (stil === 'kavanoz') {
       const g = x.createLinearGradient(0, 0, Wt, 0), L = [0.18, 0.05, -0.15, 0.05, 0.18, 0.05, -0.15, 0.05, 0.18]; for (let i = 0; i <= 8; i++) g.addColorStop(i / 8, rgb(c, L[i])); x.fillStyle = g; x.fillRect(0, 0, Wt, Ht);
       lekeler(x, 0, Wt, Ht, c, 14, 0.14);
-      x.fillStyle = 'rgba(255,255,255,0.35)'; for (const u of [0.08, 0.58]) x.fillRect(u * Wt, yv(0.78), 14, yv(0.12) - yv(0.78));   // dikey parlama seridi
+      x.fillStyle = CILA2 ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.35)'; for (const u of [0.08, 0.58]) x.fillRect(u * Wt, yv(0.78), 14, yv(0.12) - yv(0.78));   // dikey parlama seridi
       for (const px of [0, Wt / 2, Wt]) pati(x, px, yv(0.42), Ht * 0.42, '#fff3dc', rgb(c, -0.55, 0.55));
       x.fillStyle = '#fff0cf'; x.fillRect(0, 0, Wt, yv(0.83));   // bez kapak
       x.fillStyle = 'rgba(150,100,50,0.5)'; x.fillRect(0, yv(0.93), Wt, 5);
@@ -209,7 +222,8 @@ export function blok6Kur({ THREE, ENV, S }) {
     if (n < 0) {   // silindir
       if (stil === 'sutun') hex = /Mor/.test(k) ? '#2aa9b4' : '#8790c4';   // mor yerine turkuaz (rakip mor-altin)
       const R = Math.min(boy.x, boy.z) / 2 * 0.99, Hh = boy.y * 0.99, geo = stil === 'kavanoz' ? kavanozGeo(R, Hh) : stil === 'sutun' ? sutunGeo(R, Hh) : ficiGeo(R, Hh), t = silBoya(stil, hex);
-      const mat = new THREE.MeshPhysicalMaterial({ map: t, roughness: stil === 'fici' ? 0.55 : stil === 'sutun' ? 0.45 : 0.3, clearcoat: stil === 'fici' ? 0.2 : stil === 'sutun' ? 0.35 : 0.7, clearcoatRoughness: 0.12, envMap: ENV, envMapIntensity: 0.4 }); mat.toneMapped = false; mat.userData.yeni = 1;
+      const mat = CILA2 && stil === 'kavanoz' ? new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.16, clearcoat: 1, clearcoatRoughness: 0.04, envMap: PENV, envMapIntensity: 0.7 })
+        : new THREE.MeshPhysicalMaterial({ map: t, roughness: stil === 'fici' ? 0.55 : stil === 'sutun' ? 0.45 : 0.3, clearcoat: stil === 'fici' ? 0.2 : stil === 'sutun' ? 0.35 : 0.7, clearcoatRoughness: 0.12, envMap: ENV, envMapIntensity: 0.4 }); mat.toneMapped = false; mat.userData.yeni = 1;
       return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: hex, roughness: 0.5 }) });
     }
     const yar = (v) => Math.max(0.5, Math.round(v / S * 2) / 2) * S;   // modelin cikintilari (TNT fitili vb.) olcuye girmesin: yarim kup katlari
@@ -217,8 +231,9 @@ export function blok6Kur({ THREE, ENV, S }) {
     if (!n) n = Math.max(1, Math.round(bx / Math.max(by, 0.3)));   // dokudaki birim sayisi (uzun taslarda her birimde halka)
     if (stil === 'tas') hex = '#6470b4';
     if (B7 && B7.var(stil)) return (HAZ[k] = B7.yap(stil, hex, bx, by, bz));   // v12.59 deneme ?blok7=1: kabartmali parlak plastik
-    const { t, oran } = boya(stil, hex, n), geo = uvAtlas2(kutu(bx, by, bz, Math.min(0.065 * S, by * 0.2)), oran);
+    const { t, oran } = boya(stil, hex, n), geo = uvAtlas2(kutu(bx, by, bz, CILA2 && stil !== 'tahta' && stil !== 'kalas' && stil !== 'direk' ? Math.min(0.11 * S, by * 0.24) : Math.min(0.065 * S, by * 0.2)), oran);
     const mat = stil === 'kristal' ? new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.22, clearcoat: 0.6, clearcoatRoughness: 0.08, envMap: ENV, envMapIntensity: 0.3, emissive: '#ffffff', emissiveMap: t, emissiveIntensity: 0.35 })
+      : CILA2 && !/tahta|kalas|direk/.test(stil) ? new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.24, clearcoat: 1, clearcoatRoughness: 0.05, envMap: PENV, envMapIntensity: stil === 'tas' ? 0.45 : 0.6 })
       : new THREE.MeshPhysicalMaterial({ map: t, roughness: stil === 'tahta' ? 0.6 : 0.38, clearcoat: stil === 'tahta' ? 0.2 : 0.5, clearcoatRoughness: 0.2, envMap: ENV, envMapIntensity: 0.35 });
     mat.toneMapped = false; mat.userData.yeni = 1;
     return (HAZ[k] = { geo, mat, golgeKutu: 1, parca: new THREE.MeshStandardMaterial({ color: stil === 'kristal' ? '#3fd6f2' : stil === 'tahta' ? '#c9742f' : hex, roughness: 0.5 }) });

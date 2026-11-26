@@ -4,7 +4,7 @@
 // Modelde renk kose renginde, ortam golgesi + yumusak isik 512'lik dokuya gomulu (malzeme: doku x kose rengi).
 // Tam beyaz kose rengi "govde rengi" isaretidir: o.govde verilirse o renge boyanir (tek dosyadan farkli renkli turler: yakut / elmas).
 import { SEKER, SEKERL, sekerBoya, sekerMat } from './seker.js?v=8';
-import { BLOK6, blok6Kur } from './blok6.js?v=11';   // v12.9 deneme ?blok6=1: boyali dokulu keskin kutular (Smash Kingdom kalitesi)   // v11: varsayilan, eski ?yeni=0
+import { BLOK6, blok6Kur } from './blok6.js?v=13';   // v12.9 deneme ?blok6=1: boyali dokulu keskin kutular (Smash Kingdom kalitesi)   // v11: varsayilan, eski ?yeni=0
 export const B3 = !/[?&]b3=0/.test(location.search);
 
 // tur -> [dosya ('klasor/ad' ya da yalniz ad = model/blok/ad), puruzluluk, kirik parca rengi, secenek { govde, emis, emisG, env, metal }]
@@ -85,7 +85,7 @@ if (SEKER) Object.assign(LISTE, SEKERL);   // v11: boyali set (seker.js), eski ?
 const yol = (f) => OYUNCAK ? 'model/oyuncak/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=1' : 'model/' + (f.includes('/') ? f : 'blok/' + f) + '.glb?v=' + (f.startsWith('blok2/') ? 17 : f.startsWith('blok3/') ? 2 : 1);
 
 export function blok3bKur({ THREE, ENV, SENV, JENV, KENV, GLTFLoader }) {
-  const B6 = BLOK6 ? blok6Kur({ THREE, ENV, S: 1.55 }) : null;
+  const B6 = BLOK6 ? blok6Kur({ THREE, ENV, SENV, S: 1.55 }) : null;
   const IOR = +(new URLSearchParams(location.search).get('ior') || 1.6);   // v9.7: yuksek kirilma = guclu yuzey yansimasi (islak, seker gibi)
   const BG = +(new URLSearchParams(location.search).get('bantG') || (/[?&]yayvan=0/.test(location.search) ? 3 : 4)), BR = +(new URLSearchParams(location.search).get('bantR') || (/[?&]yayvan=0/.test(location.search) ? 0.16 : 0.26));
   const PG = +(new URLSearchParams(location.search).get('parlaG') || 1.2);   // v9.7: studyo yansima gucu

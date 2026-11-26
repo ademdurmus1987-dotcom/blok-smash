@@ -347,3 +347,7 @@ Sonra (uretim gerektirmez):
 - Sira (10 bolumde bir): Altin Kumsal, Kale Koyu, Korsan Koyu, Kale Cayiri, Palmiye, Magara Limani, Lagun, Orman Koyu. Deneme ?fonsec=1..8, yalniz eski 4 kumsal ?fon4=0.
 - koy_orman: Adem 'cimi asagi uzat' dedi: ust 420 px gokyuzu kirpildi, alttaki duz cim aynalanip eklendi (koy ekranin yarisina cikti).
 - Bu fonlarda deniz ust kisimda: platform ve dusen bloklar karada (kum/cim), batma yalniz deniz seridinin arkasinda.
+
+## v12.65 (26 Kas 2026): CILA2 varsayilan (Adem'in yapay zeka ile iyilestirdigi ekran goruntusu hedef), eski ?cila2=0
+- blok6.js: renkli bloklarda leke yok, renk %18 daha doygun, ust yuz acik, on yuzde belirgin ustten alta gecis, ustte kalin beyaz parlama bandi, pah 0.065 -> 0.11 (yuvarlak), vernik 1.0 + studyo yansimasi (SENV). Kavanoz parlama seridi daha belirgin.
+- Kalan fark (sirada): platform ve top arabasi da ayni parlak plastik tarzina; genel isikta ust-sol ana isik ve bloklarin altinda temas golgesi.

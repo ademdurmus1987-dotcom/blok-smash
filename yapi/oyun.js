@@ -12,7 +12,7 @@ import { KARAKTERLER, acikMi, seciliKarakter } from '../karakter/profil.js?v=2';
 import { sekilKur, YAPI } from './sekil.js?v=13';
 import { sekilKutuphanesi } from './gorsel/sekiller.js?v=4';   // v6.11: parlak sekil kutuphanesi
 import { hdrOrtam } from './gorsel/ortam.js?v=2';
-import { blok3bKur } from './blok3b.js?v=49';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
+import { blok3bKur } from './blok3b.js?v=51';   // v6.1: ana oyun bloklari icin Blender modelleri (?b3=0 eski gorunum)
 import { ENG3, engel3Kur } from './engel3.js?v=8';   // v11.1: boyali engeller ve top (eski ?eng3=0)
 import { PLAT3, plat3Kur, P3ALTIN, P3YAN, P3KOYU, P3AK } from './plat3.js?v=7';
 import { PLAT5, plat5Kur } from './plat5.js?v=5';   // v12.6 deneme ?plat5=1: platform sekil cesitleri, Blender ayak, parlak vernik   // v11.2: boyali platform (eski ?plat3=0)
